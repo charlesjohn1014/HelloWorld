@@ -18,6 +18,6 @@ PROGRAM TEST.PROGRAM
 
 *-----------------------------------------------------------------------------
 
-    CRT "TEST PROGRAM from web for manoj"
+    CRT "TEST PROGRAM from web for charles"
 
 END
