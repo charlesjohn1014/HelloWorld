@@ -1,5 +1,5 @@
-* @ValidationCode : MjotNTM5MTI3MDY0OkNwMTI1MjoxNTQxNTEwODIwNjMzOkpPSE5DaGFybGVzOi0xOi0xOjA6MDpmYWxzZTpOL0E6UjE4X0FNUi4wOi0xOi0x
-* @ValidationInfo : Timestamp         : 06 Nov 2018 14:27:00
+* @ValidationCode : MjotMTMxMjg1MTQ1MjpDcDEyNTI6MTU0MTUxNDE1MjQ5NzpKT0hOQ2hhcmxlczotMTotMTowOjA6ZmFsc2U6Ti9BOlIxOF9BTVIuMDotMTotMQ==
+* @ValidationInfo : Timestamp         : 06 Nov 2018 15:22:32
 * @ValidationInfo : Encoding          : Cp1252
 * @ValidationInfo : User Name         : JOHNCharles
 * @ValidationInfo : Nb tests success  : N/A
@@ -18,6 +18,6 @@ PROGRAM TEST.PROGRAM
 
 *-----------------------------------------------------------------------------
 
-    CRT "TEST PROGRAM from web "
+    CRT "TEST PROGRAM from web for manoj"
 
 END
