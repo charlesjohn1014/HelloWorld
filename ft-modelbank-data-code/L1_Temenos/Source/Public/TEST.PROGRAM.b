@@ -1,5 +1,5 @@
-* @ValidationCode : Mjo4OTA4MjY5NjpDcDEyNTI6MTU0MTU4NTkwMTgwOTpKT0hOQ2hhcmxlczotMTotMTowOjA6ZmFsc2U6Ti9BOlIxOF9BTVIuMDotMTotMQ==
-* @ValidationInfo : Timestamp         : 07 Nov 2018 11:18:21
+* @ValidationCode : MjotMjgyNDEzNDk2OkNwMTI1MjoxNTQxNTg2ODU0ODQ4OkpPSE5DaGFybGVzOi0xOi0xOjA6MDpmYWxzZTpOL0E6UjE4X0FNUi4wOi0xOi0x
+* @ValidationInfo : Timestamp         : 07 Nov 2018 11:34:14
 * @ValidationInfo : Encoding          : Cp1252
 * @ValidationInfo : User Name         : JOHNCharles
 * @ValidationInfo : Nb tests success  : N/A
@@ -17,6 +17,6 @@ PROGRAM TEST.PROGRAM
 *-----------------------------------------------------------------------------
 
 *-----------------------------------------------------------------------------
-    CRT "TEST PROGRAM from web for charles from chennai changed onsite - venu"
+    CRT "TEST PROGRAM from web for charles from chennai changed onsite - ven    u"
 
 END
