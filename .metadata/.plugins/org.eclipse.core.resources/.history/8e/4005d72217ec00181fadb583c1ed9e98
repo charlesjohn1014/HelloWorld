@@ -1,0 +1,290 @@
+Enquiry "INC.MSG.DETS" for "name:/DE_Config:DE.I.HISTORY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Incoming Message Details"
+    }
+
+    no-selection: true
+    start-line: 7
+    end-line: 99
+    custom-selection {
+
+        field "KEY" {
+        }
+
+        None
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Incoming Message\'s Tag Details\""
+    }
+
+    field "MSG" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.DISP.DE.I.MSG"
+    }
+
+    field "MESSAGE.KEY.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Message Key\""
+    }
+
+    field "MESSAGE.TYPE.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Message Type\""
+    }
+
+    field "RECEIVER.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Receiver Date and Time\""
+    }
+
+    field "SENDER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Sender\""
+    }
+
+    field "RECEIVER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        operation: constant "\"Receiver\""
+    }
+
+    field "ID" {
+        display-type: "CLASS-ENQ.H.DATA"
+        alignment: Right
+        comma-separator: false
+        fmtMask: "##############-#######"
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "SENDER.INFO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 4
+        }
+
+        operation: field-number 39
+    }
+
+    field "RECEIVER.INFO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 5
+        }
+
+        operation: field-number 37
+    }
+
+    field "CAR" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        escapeSequence: UL
+        processing-mode: Single
+        operation: field-number 26
+        conversion: extract from 1 to 5
+    }
+
+    field "FSIC" {
+        length: 100
+        alignment: Left
+        comma-separator: false
+        operation: field-number 39
+    }
+
+    field "FSWI" {
+        comma-separator: false
+        operation: field-number 39
+    }
+
+    field "SI" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"SIC\""
+    }
+
+    field "SW" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"SWIFT\""
+    }
+
+    field "DISP.FROM" {
+        label {
+            en = "Message"
+        }
+
+        comma-separator: false
+        escapeSequence: RV
+        position {
+            column: 3
+        }
+
+        operation: if "CAR" Equals "SI" process "FSIC" "FSWI"
+    }
+
+    field "MSG.TYPE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 4
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 2
+        }
+
+        operation: field-number 2
+    }
+
+    field "MSG.DESC" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Translate
+        length: 24
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        operation: field-number 2
+        conversion: getFrom "DE.MESSAGE" "DESCRIPTION" false
+    }
+
+    field "SPACER" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "RCVD.DATE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 8
+    }
+
+    field "DISP.1" {
+        comma-separator: false
+        operation: calc "RCVD.DATE":"SPACER"
+    }
+
+    field "RCVD.TIME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 9
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 3
+        }
+
+        operation: field-number 38
+    }
+
+    field "DISP.TIME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 19
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 3
+        }
+
+        operation: calc "DISP.1":"RCVD.TIME"
+    }
+
+    field "MSG.DETS" {
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+    }
+
+    field "B.ID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ID"
+    }
+
+}
