@@ -1,0 +1,187 @@
+Enquiry "PP.WAREHOUSE.PAYMENTS.NAU" for "name:/PP_WarehousingGUI:NOFILE.WAREHOUSE.PAYMENTS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Warehouse Payments Unauthorised List"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "ID.LIST" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            label {
+                en = "Company ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "FTNumber" {
+            label {
+                en = "FT Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ProcessingDate" {
+            label {
+                en = "Processing Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company ID"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "FTNumber" {
+        label {
+            en = "FT Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "Processing Date" {
+        label {
+            en = "Processing Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "StatusCode" {
+        label {
+            en = "Status Code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No Records Found in Warehouse PaymentsUnauthorised List\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "CompanyID"
+        image: "txnauthorise.gif"
+        criteria: "CURRENT.OldID" > "ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "PP.WAREHOUSE.PAYMENTS,APPROVE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reject"
+        }
+
+        label-field: "CompanyID"
+        image: "reject.gif"
+        criteria: "CURRENT.OldID" > "ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "PP.WAREHOUSE.PAYMENTS,REJECT1"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CompanyID"
+        image: "view.gif"
+        criteria: "@ID" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "POR.AUDIT.TRAIL,PAYMENTSTATUSCODE"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

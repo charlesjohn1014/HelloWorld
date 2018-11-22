@@ -1,0 +1,636 @@
+Enquiry "PM.FXPOS" for "name:/PM_Reports:NOFILE.PM.FXPOS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "FX Position"
+    }
+
+    description {
+        en = "FX Position and Break Even Analysis"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "PM.ENQ.PARAM" {
+        Equals "FXP"
+    }
+
+    custom-selection {
+
+        field "CCY" {
+            mandatory: true
+            label {
+                en = "Ccy"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DEALER.DESK" {
+            label {
+                en = "Dealer Desk"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CCY.MARKET" {
+            label {
+                en = "Ccy Market"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "INIT.COMMON" {
+        comments: "Initialisw the PM.ENQ.COMMON common area and read the PM.ENQ.PARAM fil e using the ID passed."
+        break-condition {
+            break: Once
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "BUILD.DATA" {
+        comments:
+        "Selects the correct POSN.CLASS file based on the contects of the PM.EN Q.PARAM record and builds R.RECORD."
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.FX.POSITION"
+    }
+
+    field "NULL.STR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"FX Position\""
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 13
+            line: 0
+        }
+
+        operation: constant "\" and Break\""
+    }
+
+    field "HEADER.3" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 0
+        }
+
+        operation: constant "\" Even Analysis\""
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency : \""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 1
+        }
+
+        operation: constant "\"Amounts in\""
+    }
+
+    field "TH.TEXT" {
+        comma-separator: false
+        operation: constant "\"000\'s\""
+    }
+
+    field "MI.TEXT" {
+        comma-separator: false
+        operation: constant "\"000000\'s \""
+    }
+
+    field "FULL" {
+        comma-separator: false
+        operation: constant "\"Full \""
+    }
+
+    field "PM.AMT.FMT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"FXP\""
+        conversion: getFrom "PM.ENQ.PARAM" "AMOUNT.FORMAT" false
+    }
+
+    field "TH" {
+        comma-separator: false
+        operation: constant "\"TH\""
+    }
+
+    field "HDR.COND.1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: if "PM.AMT.FMT" Equals "TH" process "TH.TEXT" "MI.TEXT"
+    }
+
+    field "AMT.FMT.DSPL" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 76
+            line: 1
+        }
+
+        operation: if "PM.AMT.FMT" Equals "NULL.STR" process "FULL" "HDR.COND.1"
+    }
+
+    field "CURRENCY" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "PM.CCY" {
+        label {
+            en = "Currency :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "B.PM.CCY" {
+        comma-separator: false
+        operation: break-change "PM.CCY"
+    }
+
+    field "SPACE1" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 85
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "DESK" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 1
+        }
+
+        operation: constant "\"Dealer Desk : \""
+    }
+
+    field "DEALER.DESK" {
+        format: User
+        length: 2
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "DEALER.DESK"
+    }
+
+    field "ALL.DEAL" {
+        comma-separator: false
+        operation: constant "\"All\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SELECTION.DEAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 115
+            line: 1
+        }
+
+        operation: if "DEALER.DESK" NotEquals "NULL" process "DEALER.DESK" "ALL.DEAL"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date/Period"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE"
+    }
+
+    field "ASST.PRIN" {
+        label {
+            en = "Asset Principal"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PLACINGS"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.ASST.PRIN" {
+        label {
+            en = "Asset Principal"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ASST.PRIN"
+    }
+
+    field "PLACINGS" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PLACINGS"
+    }
+
+    field "ASST.RATE" {
+        label {
+            en = "Asset Rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TAK.RATE"
+        conversion: iconv "MD9"
+        conversion: oconv "MD9"
+    }
+
+    field "LIAB.PRIN" {
+        label {
+            en = "Liability Principal"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TAKINGS"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.LIAB.PRIN" {
+        label {
+            en = "Liability Principal"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        processing-mode: Multi
+        operation: field-extract "LIAB.PRIN"
+    }
+
+    field "TAKINGS" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TAKINGS"
+    }
+
+    field "LIAB.RATE" {
+        label {
+            en = "Liability Rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PLAC.RATE"
+        conversion: iconv "MD9"
+        conversion: oconv "MD9"
+    }
+
+    field "NET.PRIN" {
+        label {
+            en = "Net Principal"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NET.MOVEMENT"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.NET.PRIN" {
+        label {
+            en = "Net Principal"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 122
+        }
+
+        processing-mode: Multi
+        operation: field-extract "NET.PRIN"
+    }
+
+    field "BK.EVEN" {
+        label {
+            en = "Break Even"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NET.RATE"
+        conversion: iconv "MD9"
+        conversion: oconv "MD9"
+    }
+
+    field "TOT.LINE1" {
+        break-condition {
+            field: "B.PM.CCY"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: constant "\"=============\""
+    }
+
+    field "TOT.LINE2" {
+        break-condition {
+            field: "B.PM.CCY"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        operation: constant "\"=============\""
+    }
+
+    field "TEXTE1" {
+        break-condition {
+            field: "B.PM.CCY"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 122
+        }
+
+        processing-mode: Single
+        operation: constant "\"=============\""
+    }
+
+    field "TOTAL.PLACINGS" {
+        format: User break-condition {
+            field: "B.PM.CCY"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOT.PLACINGS"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.TOTAL.PLACING" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.PM.CCY"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOTAL.PLACINGS"
+    }
+
+    field "TOTAL.TAKINGS" {
+        format: User break-condition {
+            field: "B.PM.CCY"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOT.TAKINGS"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.TOTAL.TAKINGS" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.PM.CCY"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 67
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOTAL.TAKINGS"
+    }
+
+    field "TOTAL.MOVEMENT" {
+        break-condition {
+            field: "B.PM.CCY"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOT.MOVEMENT"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.TOTAL.MOVE1" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.PM.CCY"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 122
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOTAL.MOVEMENT"
+    }
+
+    field "TXN.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.IDS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transactions"
+        }
+
+        label-field: "DATE"
+        image: "view.gif"
+        criteria: "ID2" Equals "TXN.REF"
+        enquiry: "DPC.TXNS"
+    }
+
+}

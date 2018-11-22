@@ -1,0 +1,213 @@
+Enquiry "AA.OVERVIEW-SUBHEADING.ADDITIONAL.AG" for "name:/AA_PaymentSchedule:AA.ACCOUNT.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Further Arrangement Details"
+    }
+
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "ARR" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: field-extract "ARR"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "CONST1" {
+        comma-separator: false
+        operation: constant "\"...\""
+    }
+
+    field "ARR.OD" {
+        comma-separator: false
+        operation: calc "ARR.ID":"CONST1"
+    }
+
+    field "SIM" {
+        comma-separator: false
+        operation: selection "SIMULATION.REF"
+    }
+
+    field "FV" {
+        comma-separator: false
+        operation: selection "FILE.VERSION"
+    }
+
+    field "FROM.DATE" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "TO.DATE" {
+        comma-separator: false
+        operation: calc "FROM.DATE" + "10000"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "C.NULL" {
+        comma-separator: false
+        operation: constant "\"\'\'\""
+    }
+
+    field "P.FV" {
+        comma-separator: false
+        operation: if "FV" Equals "\"\"" process "C.NULL" "FV"
+    }
+
+    field "P.SIM" {
+        comma-separator: false
+        operation: if "SIM" Equals "\"\"" process "C.NULL" "SIM"
+    }
+
+    field "ARC.ID" {
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ACTIVITY.HISTORY" "ARC.ID" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "C.COS.ACT.LOG" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.ACTIVITY.LOG.FIN.AG \""
+    }
+
+    field "COS.ACT.LOG" {
+        comma-separator: false
+        operation: calc "C.COS.ACT.LOG":"ARR.ID":"SP":"P.FV":"SP":"P.SIM"
+    }
+
+    field "ADDITIONAL.DETAILS" {
+        display-type: "CLASS-COS.SUBHEADING"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 310
+        operation: constant "\"Additional Details\""
+    }
+
+    field "CHK.HIST" {
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ACCOUNT.DETAILS.HIST" "BILL.ID" false
+    }
+
+    field "SP.02" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "COS.BILLS" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.BILLS \""
+    }
+
+    field "C.BILLS" {
+        comma-separator: false
+        operation: calc "COS.BILLS":"ARR.ID":"SP":"P.FV":"SP":"P.SIM"
+    }
+
+    field "E.BILLS" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.BILLS.AG\""
+    }
+
+    field "BILL.DRILLDOWN" {
+        comma-separator: false
+        operation: if "CHK.HIST" Equals "NULL" process "E.BILLS" "C.BILLS"
+    }
+
+    field "C.COS.PAY.ORDER" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.PAY.ORDER \""
+    }
+
+    field "COS.PAY.ORDER" {
+        comma-separator: false
+        operation: calc "C.COS.PAY.ORDER":"ARR"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Activity Log"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        from-field: "COS.ACT.LOG"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Bills"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        criteria: "@ID" Equals "ARR.ID"
+        criteria: "FILE.VERSION" Equals "FV"
+        criteria: "SIMULATION.REF" Equals "SIM"
+        from-field: "BILL.DRILLDOWN"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Charges"
+        }
+
+        label-field: "ADDITIONAL.DETAILS" parameters {
+            field: "ARR.ID"
+            field: "P.FV"
+            field: "P.SIM"
+        }
+
+        composite-screen: "AA.DETAILS.CHARGE.WAIVE"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Correspondence"
+        }
+
+        label-field: "ADDITIONAL.DETAILS" parameters {
+            field: "ARR.ID"
+        }
+
+        composite-screen: "AA.DETAILS.DOCUMENTS"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Payment Orders"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        from-field: "COS.PAY.ORDER"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "HORIZONTAL.DRILLDOWNS" ;
+    "SINGLE.BACKGROUND.COLOUR"
+}

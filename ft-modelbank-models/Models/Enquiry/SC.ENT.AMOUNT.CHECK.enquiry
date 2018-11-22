@@ -1,0 +1,422 @@
+Enquiry "SC.ENT.AMOUNT.CHECK" for "name:/SC_SccEntitlements:ENTITLEMENT$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Entitlement Exceptions"
+    }
+
+    description {
+        en = "Entitlement Exceptions"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "DIARY.ID" {
+            label {
+                en = "Diary Id"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security"
+            }
+
+        }
+
+        AND
+
+        field "EVENT.TYPE" {
+            label {
+                en = "Event Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DIARY.ID" {
+        label {
+            en = "Transaction Reference"
+        }
+
+        length: 97
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 16
+    }
+
+    field "BC" {
+        comma-separator: false
+        processing-mode: Single
+        operation: break-change "DIARY.ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Entitlement Exceptions\""
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SECURITY.DESC" {
+        label {
+            en = "Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "DESCRIPT" false
+    }
+
+    field "ISIN" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 175
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "EVENT.TYPE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "EVENT.TYPE"
+    }
+
+    field "EVENT" {
+        label {
+            en = "Event Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 185
+        }
+
+        operation: field-extract "EVENT.TYPE"
+        conversion: getFrom "DIARY.TYPE" "EVENT.DESC" false
+    }
+
+    field "EVENT.AMOUNT" {
+        label {
+            en = "Total Event Amount"
+        }
+
+        display-type: "CLASS-BOLD.RED" break-condition {
+            field: "BC"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 205
+            line: + 1
+        }
+
+        operation: field-extract "DIARY.ID"
+        conversion: getFrom "DIARY" "EVENT.AMOUNT" false
+    }
+
+    field "TOT.AMT" {
+        label {
+            en = "Total Event Amount"
+        }
+
+        comma-separator: false
+        position {
+            column: 205
+        }
+
+        operation: constant "\"\""
+    }
+
+    field "EVENT.NOMINAL" {
+        label {
+            en = "Total Event Nominal"
+        }
+
+        display-type: "CLASS-BOLD.RED" break-condition {
+            field: "BC"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 230
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "DIARY.ID"
+        conversion: getFrom "DIARY" "EVENT.NOMINAL" false
+    }
+
+    field "TOT.NOM" {
+        label {
+            en = "Total Event Nominal"
+        }
+
+        comma-separator: false
+        position {
+            column: 230
+        }
+
+        operation: constant "\"\""
+    }
+
+    field "ENT.AMT" {
+        label {
+            en = "Ent Amount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 260
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ENTITLEMENT.AMT"
+    }
+
+    field "QUAL.HOLDING" {
+        label {
+            en = "Qualifying Holding"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 285
+        }
+
+        processing-mode: Single
+        operation: application-field-name "QUALIFY.HOLDING"
+    }
+
+    field "SUBTOTAL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        position {
+            column: 185
+            line: + 1
+        }
+
+        operation: constant "\"SUB TOTAL:\""
+    }
+
+    field "TOT.ENT.AMT" {
+        display-type: "CLASS-BOLD.RED" break-condition {
+            field: "BC"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 260
+            line: + 1
+        }
+
+        operation: total "ENT.AMT"
+    }
+
+    field "TOT.QUAL.HLDNG" {
+        display-type: "CLASS-BOLD.RED" break-condition {
+            field: "BC"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 285
+            line: + 1
+        }
+
+        operation: total "QUAL.HOLDING"
+    }
+
+    field "DIFF.EVENT.AMT" {
+        break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        operation: calc "EVENT.AMOUNT" - "TOT.ENT.AMT"
+    }
+
+    field "DIFF.NOM" {
+        break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        operation: calc "EVENT.NOMINAL" - "TOT.QUAL.HLDNG"
+    }
+
+    field "TOTAL" {
+        break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        operation: calc "DIFF.EVENT.AMT" + "DIFF.NOM"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "EXCEPTION" {
+        label {
+            en = "Exception"
+        }
+
+        display-type: "CLASS-BOLD" break-condition {
+            field: "BC"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 320
+            line: + 1
+        }
+
+        operation: if "TOTAL" NotEquals "ZERO" process "YES" "NO"
+    }
+
+    field "EXP" {
+        label {
+            en = "Exception"
+        }
+
+        comma-separator: false
+        position {
+            column: 320
+        }
+
+        operation: constant "\"\""
+    }
+
+    field "ZERONOREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: constant "\"No Exceptions available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ENTITLEMENT,BASIC"
+    }
+
+}

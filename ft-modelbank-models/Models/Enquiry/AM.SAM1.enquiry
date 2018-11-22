@@ -1,0 +1,244 @@
+Enquiry "AM.SAM1" for "name:/AM_Modelling:AM.LAST.COMPARE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "AM.SAM"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "DEVIATION" Descending
+    custom-selection {
+
+        field "SESSION.CODE" {
+            label {
+                en = "Session Code"
+            }
+
+        }
+
+        AND
+
+        field "LAST.COMPARE" {
+            label {
+                en = "Last Compare"
+            }
+
+        }
+
+        AND
+
+        field "SAM.CODE" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "DEVIATION" {
+            label {
+                en = "Deviation"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEAD" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 0
+        }
+
+        operation: constant "\"Last Comparisons\""
+    }
+
+    field "DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 1
+        }
+
+        operation: constant "\"Date : \""
+    }
+
+    field "DATE.DISPLAY" {
+        label {
+            en = "Date :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: NewPage
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 38
+            line: 1
+        }
+
+        operation: today
+    }
+
+    field "SESSION.CODE" {
+        label {
+            en = "Session"
+        }
+
+        format: User
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: i-desc "SESSION.CODE"
+    }
+
+    field "SAM.CODE" {
+        label {
+            en = "Portfolio"
+        }
+
+        format: User
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: i-desc "SAM.CODE"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Acct.Off."
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: field-extract "SAM.CODE"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.OFFICER" false
+    }
+
+    field "REFERENCE.CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: field-extract "SAM.CODE"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "STRATEGY" {
+        label {
+            en = "Strategy"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        processing-mode: Single
+        operation: field-extract "SAM.CODE"
+        conversion: getFrom "SEC.ACC.MASTER" "INVESTMENT.PROGRAM" false
+    }
+
+    field "DEVIATION" {
+        label {
+            en = "Deviation"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEVIATION"
+    }
+
+    field "OUTBOUND" {
+        label {
+            en = "Outb."
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+    }
+
+    field "LAST.COMPARE" {
+        label {
+            en = "Last Compare date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LAST.COMPARE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Portfolio"
+        }
+
+        label-field: "SAM.CODE" parameters {
+            function:  See
+            field: "SAM.CODE"
+        }
+
+        screen: "SEC.ACC.MASTER,INP.CUS"
+    }
+
+}

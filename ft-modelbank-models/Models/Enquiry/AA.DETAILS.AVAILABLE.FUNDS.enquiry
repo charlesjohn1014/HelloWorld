@@ -1,0 +1,263 @@
+Enquiry "AA.DETAILS.AVAILABLE.FUNDS" for "name:/RE_ConBalanceUpdates:EB.CONTRACT.BALANCES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Funds Availability"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.CONVERT.ARR.ACCOUNT"
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 200
+        operation: constant "\"Cashflow Projection\""
+    }
+
+    field "Z.HEADING" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 200
+        operation: constant "\"Cashflow Projection\""
+    }
+
+    field "ACCOUNT.NO" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "TODAY" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: today
+    }
+
+    field "NOREC" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"None recorded\""
+    }
+
+    field "ACC.AVAIL.DATE" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: getFrom "ACCOUNT" "AVAILABLE.DATE" false
+    }
+
+    field "AVAIL.DATE.DESC" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Date\""
+    }
+
+    field "L.AVAILABLE.DATE.NO" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 200
+        operation: if "ACC.AVAIL.DATE" Equals "\"\"" process "NOREC" "AVAIL.DATE.DESC"
+    }
+
+    field "L.AVAILABLE.DATE" {
+        display-type: "CLASS-BOLD"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 200
+        operation: if "ACC.AVAIL.DATE" Equals "\"\"" process "NOREC" "AVAIL.DATE.DESC"
+    }
+
+    field "NULL" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "AVAILABLE.DATE" {
+        format: Date
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AVAILABLE.DATE"
+    }
+
+    field "AVAIL.DATE" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 200
+        processing-mode: Multi
+        operation: if "ACC.AVAIL.DATE" Equals "\"\"" process "NULL" "AVAILABLE.DATE"
+    }
+
+    field "L.MOVEMENTS.DESC" {
+        format: Translate
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Credits/Debits\""
+    }
+
+    field "L.MOVEMENTS" {
+        display-type: "CLASS-BOLD"
+        format: Translate
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: if "ACC.AVAIL.DATE" Equals "\"\"" process "NULL" "L.MOVEMENTS.DESC"
+    }
+
+    field "DR.MVMT" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AV.AUTH.DB.MVMT"
+    }
+
+    field "DR.MVMT.02" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "DR.MVMT" Equals "\"\"" process "0" "DR.MVMT"
+    }
+
+    field "CR.MVMT" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AV.AUTH.CR.MVMT"
+    }
+
+    field "CR.MVMT.02" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CR.MVMT" Equals "\"\"" process "0" "CR.MVMT"
+    }
+
+    field "CR.DR.MOVEMENTS" {
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CR.MVMT" + "DR.MVMT"
+    }
+
+    field "MOVEMENTS" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CR.DR.MOVEMENTS" Equals "\"0\"" process "NULL" "CR.DR.MOVEMENTS"
+    }
+
+    field "L.AVAILABLE.BAL.DESC" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Cashflow\""
+    }
+
+    field "L.AVAILABLE.BAL" {
+        display-type: "CLASS-BOLD"
+        format: Translate
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 350
+        processing-mode: Single
+        operation: if "ACC.AVAIL.DATE" Equals "\"\"" process "NULL" "L.AVAILABLE.BAL.DESC"
+    }
+
+    field "AVAIL.BAL" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AVAILABLE.BAL"
+    }
+
+    field "D.AVAILABLE.BAL" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 40
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 350
+        processing-mode: Multi
+        operation: if "AVAILABLE.BAL" NotEquals "\"\"" process "AVAILABLE.BAL" "NULL"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

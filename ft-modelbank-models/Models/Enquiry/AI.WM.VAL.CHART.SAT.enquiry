@@ -1,0 +1,454 @@
+Enquiry "AI.WM.VAL.CHART.SAT" for "name:/SC_ScvValuationUpdates:SC.POS.ASSET#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "SC.VAL.PL"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 98
+    build-routines {
+        jBC: "E.OL.VAL"
+    }
+
+    fixed-selection "SECURITY.ACC" {
+        Equals "!CURRENT.PORTFOLIO"
+    }
+
+    fixed-sort: "SUB.ASSET.TYPE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.ACC" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Valuation by Asset Breakdown\""
+    }
+
+    field "PORTFOLIO.NO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: i-desc "PORTFOLIO.NO"
+    }
+
+    field "PORTFOLIO.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "CCY.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Reference Ccy:\""
+    }
+
+    field "VAL.CCY" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "REF.CCY" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.CURRENCY" false
+    }
+
+    field "RUN.DTE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.SC.VAL.RUN.DATE"
+    }
+
+    field "D.RATE.D" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "RUN.DTE"
+    }
+
+    field "SEC.ACC" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "SEC.NME" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "D.REF.CY" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-extract "REF.CCY"
+    }
+
+    field "D.SEC.AC" {
+        break-condition {
+            break: Page
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "SEC.ACC"
+    }
+
+    field "D.SEC.NA" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "SEC.NME"
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NUL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "REF.CUR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.SC.VAL.CCY.PARAM"
+    }
+
+    field "SEC.CODE" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "DESC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SEC.CODE"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" true
+    }
+
+    field "NM.DATE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "ID" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "CUST.GRP" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "SAT" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CUST.GRP"
+        conversion: getFrom "SUB.ASSET.TYPE" "SHORT.DESCR" false
+    }
+
+    field "T.SAT" {
+        comma-separator: false
+        operation: field-extract "SAT"
+    }
+
+    field "DESC.NAM" {
+        label {
+            en = "Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "NM.DATE"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "SECURITY.CCY" {
+        label {
+            en = "Sec Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.CCY"
+    }
+
+    field "EST" {
+        label {
+            en = "Estimation"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 13
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Multi
+        operation: application-field-name "ESTIMATION"
+        conversion: call
+        jBC: "@ E.SC.VAL.RATE"
+    }
+
+    field "EST.RND" {
+        label {
+            en = "Estimation"
+        }
+
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "EST"
+        conversion: oconv "MD0"
+        conversion: oconv "MD2"
+        conversion: oconv "MD1"
+    }
+
+    field "GRAND" {
+        comma-separator: false
+        operation: field-extract "GRAND"
+        conversion: call
+        jBC: "@ E.SC.VAL.PL"
+    }
+
+    field "PER1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EST" / "GRAND"
+    }
+
+    field "PERC" {
+        label {
+            en = "Percentage(%)"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Multi
+        operation: calc "PER1" * "ONE.H"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "ID.02" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "B.G" {
+        comma-separator: false
+        operation: break-change "CUST.GRP"
+    }
+
+    field "TOTAL.FLD" {
+        label {
+            en = "Asset Breakup"
+        }
+
+        display-type: "PIELABEL" break-condition {
+            field: "B.G"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "T.SAT"
+    }
+
+    field "D.TOT.C" {
+        label {
+            en = "Estimation"
+        }
+
+        display-type: "PIE" break-condition {
+            field: "B.G"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        operation: total "EST"
+    }
+
+    field "VAL.SEL" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.NO"
+        conversion: call
+        jBC: "@ E.SC.VAL.SELECTION"
+    }
+
+    field "ENQ.NAME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "VAL.SEL"
+        conversion: extract from 1 to 1 delimited by "~"
+    }
+
+    field "ENQ.SEL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "VAL.SEL"
+        conversion: extract from 2 to 1 delimited by "~"
+        conversion: extract from 1 to 1 delimited by "+"
+    }
+
+    field "ENQ.SEL2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "VAL.SEL"
+        conversion: extract from 2 to 1 delimited by "~"
+        conversion: extract from 2 to 1 delimited by "+"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.COLUMN.HEADER"
+}

@@ -1,0 +1,411 @@
+Enquiry "CO.100.HP" for "name:/CO_Contract:COLLATERAL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Collateral Details"
+    }
+
+    description {
+        en = "Collateral Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "COLLATERAL.RIGHT" {
+            label {
+                en = "Collateral Right"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Collateral\""
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 0
+        }
+
+        operation: constant "\"Details\""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer :\""
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Right no :\""
+    }
+
+    field "COLLATERAL.ID" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "COLL.RIGHT.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "COLLATERAL.ID"
+        conversion: extract from 1 to 2 delimited by "."
+    }
+
+    field "BK" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Single
+        operation: break-change "COLL.RIGHT.ID"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer :"
+        }
+
+        display-type: "CLASS-ENQ.H.ID"
+        format: User break-condition {
+            field: "BK"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "COLL.RIGHT.ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "NAME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "BK"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "COLLAT.RIGHT.NO" {
+        label {
+            en = "Right no :"
+        }
+
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            field: "BK"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "COLL.RIGHT.ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "COLLATERAL.ID"
+    }
+
+    field "COLLATERAL.TYPE" {
+        label {
+            en = "Collateral type"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "COLLATERAL.TYPE"
+    }
+
+    field "TYPE.DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        length: 23
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "COLLATERAL.TYPE"
+        conversion: getFrom "COLLATERAL.TYPE" "DESCRIPTION" false
+    }
+
+    field "STATUS" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "CUR" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"CUR\""
+    }
+
+    field "TEST1" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        escapeSequence: BL
+        processing-mode: Single
+        operation: if "STATUS" Equals "CUR" process "NULL" "ASTERISK"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 47
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "NOMINAL.VALUE" {
+        label {
+            en = "Nominal"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 51
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOMINAL.VALUE"
+    }
+
+    field "EXECUTION.VALUE" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: application-field-name "EXECUTION.VALUE"
+    }
+
+    field "THIRD.PARTY.VALUE" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: application-field-name "THIRD.PARTY.VALUE"
+    }
+
+    field "NET.VALUE" {
+        label {
+            en = "Net"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 63
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: calc "EXECUTION.VALUE" - "THIRD.PARTY.VALUE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "ASTERISK" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"*\""
+    }
+
+    field "APPLICATION.ID" {
+        label {
+            en = "Appln Id"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 108
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "APPLICATION.ID"
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 123
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "APPL.ID" {
+        comma-separator: false
+        operation: field-extract "APPLICATION.ID"
+        conversion: extract from 1 to 2
+    }
+
+    field "CQ" {
+        comma-separator: false
+        operation: constant "\"CQ\""
+    }
+
+    field "CQ.BASE.FILE" {
+        comma-separator: false
+        operation: constant "\"CQ.COLL.DETAILS\""
+    }
+
+    field "BASE.FILE" {
+        comma-separator: false
+        operation: constant "\"%COLLATERAL\""
+    }
+
+    field "APPL.DRILL" {
+        comma-separator: false
+        operation: if "APPL.ID" Equals "CQ" process "CQ.BASE.FILE" "BASE.FILE"
+    }
+
+    field "NEXT.ID" {
+        comma-separator: false
+        operation: if "APPL.ID" Equals "CQ" process "APPLICATION.ID" "COLLATERAL.ID"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Collateral Cover Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Collateral"
+        }
+
+        label-field: "ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "COLLATERAL.ID"
+        }
+
+        application: "COLLATERAL"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

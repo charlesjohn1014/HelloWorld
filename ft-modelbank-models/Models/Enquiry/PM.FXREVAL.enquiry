@@ -1,0 +1,361 @@
+Enquiry "PM.FXREVAL" for "name:/PM_Reports:NOFILE.PM.FXREVAL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Forex Position"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "ID.LIST" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "PM.ENQ.PARAM" {
+        Equals "FXP"
+    }
+
+    custom-selection {
+
+        field "CCY" {
+            label {
+                en = "Ccy"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CCY.MARKET" {
+            label {
+                en = "Ccy Market"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DEALER.DESK" {
+            label {
+                en = "Dealer Desk"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 33
+            line: 0
+        }
+
+        operation: constant "\"FX Position - Mark to Market\""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency:\""
+    }
+
+    field "LCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "NULL.STR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "INIT.COMMON" {
+        comments: "Initialise the PM.ENQ.COMMON common area and read the PM.ENQ.PARAM file using the ID passed."
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "BUILD.DATA" {
+        comments:
+        "Selects the correct POSN.CLASS file based on the contects of the PM.ENQ.PARAM record and builds R.RECORD."
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.FXREVAL"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 69
+            line: 1
+        }
+
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "DISPLAY.DATE" {
+        label {
+            en = "Period/Date"
+        }
+
+        format: User
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DISPLAY.DATE"
+    }
+
+    field "NET.FCY" {
+        label {
+            en = "Position Outstanding"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NET.FCY"
+    }
+
+    field "COST.RATE" {
+        label {
+            en = "Cost"
+        }
+
+        format: User
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 37
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "COST.RATE"
+        conversion: iconv "MD9"
+        conversion: oconv "MD9"
+    }
+
+    field "REVAL.RATE" {
+        label {
+            en = "Market"
+        }
+
+        format: User
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REVAL.RATE"
+        conversion: iconv "MD9"
+        conversion: oconv "MD9"
+    }
+
+    field "NEG" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"-1\""
+    }
+
+    field "UNREAL.PL" {
+        format: Currency "LCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "UNREAL.PL"
+    }
+
+    field "D.UNREAL.PL" {
+        label {
+            en = "Unreal Profit/Loss"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 69
+        }
+
+        processing-mode: Multi
+        operation: calc "NEG" * "UNREAL.PL"
+    }
+
+    field "TOT.LINE1" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        operation: constant "\"===================\""
+    }
+
+    field "TOT.LINE2" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 69
+        }
+
+        operation: constant "\"=================\""
+    }
+
+    field "TOT.NET.FCY" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+            line: + 1
+        }
+
+        operation: application-field-name "TOT.NET.FCY"
+    }
+
+    field "TOT.UNREAL.PL" {
+        format: Currency "LCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "TOT.UNREAL.PL"
+    }
+
+    field "D.TOT.UNREAL.PL" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 69
+            line: + 1
+        }
+
+        operation: calc "NEG" * "TOT.UNREAL.PL"
+    }
+
+    field "TXN.REF" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.IDS"
+    }
+
+    field "DD.CCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CURRENCY" Equals "NULL.STR" process "DISPLAY.DATE" "CURRENCY"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No data available for Forex Revaluation\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transactions"
+        }
+
+        label-field: "DISPLAY.DATE"
+        image: "view.gif"
+        criteria: "ID2" Equals "TXN.REF"
+        criteria: "TXN.TOT" Equals "DD.CCY"
+        enquiry: "DPC.TXNS"
+    }
+
+}

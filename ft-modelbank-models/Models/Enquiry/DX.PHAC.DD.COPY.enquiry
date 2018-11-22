@@ -1,0 +1,206 @@
+Enquiry "DX.PHAC.DD.COPY" for "name:/DX_Position:DX.REP.POSITION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Dx Hedge positions for all contract"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "POSITION.TYPE" {
+        Equals "\"OPTION\""
+    }
+
+    fixed-selection "DELIVERY.CURRENCY" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "OWN.BOOK" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "CONTRACT" Null
+    fixed-sort: "MATURITY.DATE" Null
+    fixed-sort: "CALL.PUT" Null
+    fixed-sort: "STRIKE.PRICE" Null
+    custom-selection {
+
+        field "CONTRACT" {
+        }
+
+        None
+    }
+
+    field "CONTRACT.CODE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTRACT"
+    }
+
+    field "CONTRACT.NAME" {
+        label {
+            en = "Contract"
+        }
+
+        display-type: "PIELABEL"
+        length: 75
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ GET.KEY.DATA"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "OPTION.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CALL.PUT"
+    }
+
+    field "DMP.KEY" {
+        length: 68
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ GET.DMP.ID"
+    }
+
+    field "NET.LOTS" {
+        label {
+            en = "Net Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NET.LOTS"
+    }
+
+    field "STRIKE" {
+        label {
+            en = "Strike Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STRIKE.PRICE"
+    }
+
+    field "DELTA" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "DMP.KEY"
+        conversion: getFrom "DX.MARKET.PRICE" "DELTA" false
+    }
+
+    field "MULT.MIN.1" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "HUNDRED" {
+        comma-separator: false
+        operation: constant "\"100\""
+    }
+
+    field "MIN.HUN" {
+        comma-separator: false
+        operation: constant "\"-100\""
+    }
+
+    field "DELTA.PCT" {
+        comma-separator: false
+        operation: calc "DELTA" * "HUNDRED"
+    }
+
+    field "DISP.DELTA" {
+        label {
+            en = "Delta %"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: field-extract "DELTA.PCT"
+    }
+
+    field "HEDGE" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: calc "NET.LOTS" * "DELTA"
+    }
+
+    field "HEDGE.FIN" {
+        format: Currency "D.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: NoDisplay
+        operation: calc "HEDGE" * "MULT.MIN.1"
+    }
+
+    field "HEDGE.FIN.ABS" {
+        label {
+            en = "Hedge"
+        }
+
+        display-type: "PIE"
+        format: Currency "D.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: NoDisplay
+        position {
+            column: 30
+        }
+
+        operation: if "HEDGE" LessThan "0" process "HEDGE.FIN" "HEDGE"
+    }
+
+    field "D.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DELIVERY.CURRENCY"
+    }
+
+    attributes: "ALLDATA"
+}

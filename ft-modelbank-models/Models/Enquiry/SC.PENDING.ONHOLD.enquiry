@@ -1,0 +1,558 @@
+Enquiry "SC.PENDING.ONHOLD" for "name:/SC_ModelBank:NOFILE.SC.PEND.HLD#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Rebalanced Orders to be completed"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 19 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "TXN.ID" {
+            label {
+                en = "Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security No"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 26
+            line: 0
+        }
+
+        operation: constant "\"Pending Orders from Rebalancing\""
+    }
+
+    field "L." {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction No."
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "SECURITY.NO" false
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SECURITY.ACCNT" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "SEC.ACC.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SECURITY.ACCNT"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Buy/Sell"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "LAST.PRICE" {
+        label {
+            en = "Latest Price"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    field "STOCK.EXCHANGE" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "STOCK.EXCHANGE" false
+    }
+
+    field "ST.EXCH" {
+        label {
+            en = "Stock.Exc"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "STOCK.EXCHANGE"
+        conversion: getFrom "STOCK.EXCHANGE" "SHORT.DESCR" false
+    }
+
+    field "ST.EXCH.DAYS" {
+        label {
+            en = "Stk Exc Days"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "STOCK.EXCHANGE"
+        conversion: getFrom "STOCK.EXCHANGE" "SETTLEMENT.DAYS" false
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "TRADE.CCY" false
+    }
+
+    field "SETT.CCY" {
+        label {
+            en = "Sett. Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CU.EX.RATE.ACC" {
+        label {
+            en = "Exch.Rate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "CU.EX.RATE.ACC" false
+    }
+
+    field "CUST.ACC.NO" {
+        label {
+            en = "Account"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "VAL.IN.SETT.CCY" {
+        label {
+            en = "Approx Value"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "VAL.IN.SETT.CCY" false
+    }
+
+    field "ORDER.TYPE" {
+        label {
+            en = "Order type"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "ORDER.TYPE" false
+    }
+
+    field "ROUT.COMPANY" {
+        label {
+            en = "Routing Co"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "ROUT.COMPANY" false
+    }
+
+    field "ROUTED.ORDER.REF" {
+        label {
+            en = "Routed Ord Ref"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "ROUTED.ORDER.REF" false
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Order date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "ORDER.DATE" false
+    }
+
+    field "ORDER.TIME" {
+        label {
+            en = "Order time"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "ORDER.TIME" false
+    }
+
+    field "THREAD.KEY" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "PARENT.REF" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "BULK" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "BULK.REF" {
+        comma-separator: false
+        operation: calc "THREAD.KEY":"PARENT.REF"
+    }
+
+    field "BULK.ORD" {
+        label {
+            en = "Bulk Order?"
+        }
+
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        hidden: true
+        operation: if "BULK.REF" NotEquals "NULL" process "BULK" "NULL"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.OPEN.ORDER$NAU" "RECORD.STATUS" false
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records Found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Complete"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SEC.OPEN.ORDER,BUY.STP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Complete Bulk Order"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SEC.OPEN.ORDER,SOO.ONHOLD"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SEC.OPEN.ORDER,INPUT"
+    }
+
+}

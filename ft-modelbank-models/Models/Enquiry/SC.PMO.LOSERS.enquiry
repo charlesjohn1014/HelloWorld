@@ -1,0 +1,230 @@
+Enquiry "SC.PMO.LOSERS" for "name:/SC_ScoSecurityMasterMaintenance:SECURITY.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Sc Price Changes"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "BOND.OR.SHARE" {
+        Equals "\"S\""
+    }
+
+    fixed-selection "QUOTED.LISTED.NO" {
+        Equals "QUOTED"
+    }
+
+    fixed-selection "LAST.PRICE" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Security Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Top Losers\""
+    }
+
+    field "@ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SHORT.NAME" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "PRICE.CURRENCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRICE.CURRENCY"
+    }
+
+    field "PRICE.UPDATE.CODE" {
+        comma-separator: false
+        operation: application-field-name "PRICE.UPDATE.CODE"
+    }
+
+    field "DATE.LAST.PRICE" {
+        comma-separator: false
+        operation: application-field-name "DATE.LAST.PRICE"
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SC.PC" {
+        comma-separator: false
+        operation: calc "@ID":"DOT":"DATE.LAST.PRICE"
+    }
+
+    field "OLDPRICE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SC.PC"
+        conversion: getFrom "SC.PRICE.CHANGE" "OLD.PRICE" false
+        conversion: call
+        jBC: "@ E.MB.SCPRICE.OLD"
+    }
+
+    field "LAST.PRICE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LAST.PRICE"
+    }
+
+    field "DIFF" {
+        comma-separator: false
+        operation: calc "LAST.PRICE" - "OLDPRICE"
+    }
+
+    field "PER1" {
+        comma-separator: false
+        operation: calc "DIFF" / "OLDPRICE"
+    }
+
+    field "PER2" {
+        comma-separator: false
+        operation: calc "PER1" * "100"
+    }
+
+    field "POS" {
+        comma-separator: false
+        operation: if "LAST.PRICE" LessThan "OLDPRICE" process "SEC" "NULL"
+    }
+
+    field "Y" {
+        comma-separator: false
+        operation: constant "\"-2\""
+    }
+
+    field "SEC" {
+        label {
+            en = "Sec No"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: if "PER2" LessThan "Y" process "@ID" "NULL"
+    }
+
+    field "NAME" {
+        label {
+            en = "Name"
+        }
+
+        display-type: "CLASS-TAMNUM"
+        format: User
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: if "SEC" NotEquals "NULL" process "SHORT.NAME"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: if "SEC" NotEquals "NULL" process "PRICE.CURRENCY"
+    }
+
+    field "OPRICE" {
+        label {
+            en = "Old Price"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: if "SEC" NotEquals "NULL" process "OLDPRICE"
+    }
+
+    field "PRICE" {
+        label {
+            en = "Price"
+        }
+
+        display-type: "CLASS-TAMNUM"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: if "SEC" NotEquals "NULL" process "LAST.PRICE"
+    }
+
+    field "PERCENTAGE" {
+        label {
+            en = "% Change"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: if "SEC" NotEquals "NULL" process "PER2"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

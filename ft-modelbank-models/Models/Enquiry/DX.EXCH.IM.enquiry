@@ -1,0 +1,294 @@
+Enquiry "DX.EXCH.IM" for "name:/DX_ModelBank:NOFILE.DX.EXCH.IM#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Derivatives Exch Initial Margin"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "DATA.ITEM" {
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO" {
+        }
+
+        AND
+
+        field "CONTRACT" {
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+        }
+
+        AND
+
+        field "EXT.STRIKE.PRI" {
+        }
+
+        AND
+
+        field "CALL.PUT" {
+        }
+
+        None
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-TITLE"
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Derivatives Exchange Initial Margin\""
+    }
+
+    field "F.CUSTOMER" {
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Customer\""
+    }
+
+    field "E.CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        display-type: "CLASS-FDCT"
+        format: User
+        length: 12
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: selection "CUSTOMER"
+    }
+
+    field "T.CUSTOMER" {
+        label {
+            en = "Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 31
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: selection "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "F.PORT" {
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: constant "\"Portfolio\""
+    }
+
+    field "PORT" {
+        label {
+            en = "Portfolio"
+        }
+
+        display-type: "CLASS-FDCT"
+        format: User
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: selection "PORTFOLIO"
+    }
+
+    field "T.PORT" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 31
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: selection "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "@ID" {
+        format: User
+        length: 70
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "EXCH.IM.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "EXCH.NO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "EXCH.NAME" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "EXCH.NO"
+        conversion: getFrom "DX.EXCHANGE.MASTER" "SHORT.NAME" false
+    }
+
+    field "EXCH.IM.AMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 3 to 0 delimited by "*"
+    }
+
+    field "B.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: break-change "EXCH.IM.CCY"
+    }
+
+    field "EXCH.IM.CCY.DISP" {
+        label {
+            en = "Currency"
+        }
+
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "EXCH.IM.CCY"
+    }
+
+    field "EXCH.NO.DISP" {
+        label {
+            en = "Exchange"
+        }
+
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "EXCH.NO"
+    }
+
+    field "EXCH.NAME.DISP" {
+        label {
+            en = "Name"
+        }
+
+        display-type: "CLASS-DESCR" break-condition {
+            field: "B.CCY"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "EXCH.NAME"
+    }
+
+    field "EXCH.IM.AMT.DISP" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "EXCH.IM.CCY" negative-pattern -# break-condition {
+            field: "B.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "EXCH.IM.AMT"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

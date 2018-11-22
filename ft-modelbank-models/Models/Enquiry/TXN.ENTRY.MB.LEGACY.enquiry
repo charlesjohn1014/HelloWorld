@@ -1,0 +1,377 @@
+Enquiry "TXN.ENTRY.MB.LEGACY" for "name:/AC_ModelBank:NOFILE.TXN.ENTRY#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "List Of Entries"
+    }
+
+    description {
+        en = "List Of Entries"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TXN.ENTRY"
+    }
+
+    custom-selection {
+
+        field "TRANSACTION.REF" {
+            mandatory: true
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DC.BATCH.DATE" {
+            label {
+                en = "DC Batch Date"
+            }
+
+        }
+
+        AND
+
+        field "APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        None
+    }
+
+    field "FILL.REC" {
+        comma-separator: false
+        operation: application-field-name "DC.BATCH.DATE"
+        conversion: call
+        jBC: "@ E.MB.TXN.ENTRY.FILL"
+    }
+
+    field "HDR.TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Transaction Entry\""
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Transaction Ref :\""
+    }
+
+    field "TXN.REF" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 24
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: selection "TRANSACTION.REF"
+    }
+
+    field "VDATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 11
+    }
+
+    field "BDATE" {
+        comma-separator: false
+        operation: field-number 25
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "BDATE"
+    }
+
+    field "PL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"PL\""
+    }
+
+    field "ACC.CAT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 1
+    }
+
+    field "CAT" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 7
+    }
+
+    field "DCAT" {
+        comma-separator: false
+        operation: calc "PL":"CAT"
+    }
+
+    field "DACC.CAT" {
+        label {
+            en = "Account"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: if "ACC.CAT" NotEquals "NULL" process "ACC.CAT" "DCAT"
+    }
+
+    field "CUS" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 38
+        }
+
+        processing-mode: Single
+        operation: field-number 8
+    }
+
+    field "LCCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: field-number 12
+    }
+
+    field "CO.CODE" {
+        label {
+            en = "Company code"
+        }
+
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DC.BATCH.DATE"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "DBDATE" {
+        label {
+            en = "Value date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 51
+        }
+
+        operation: field-extract "VDATE"
+    }
+
+    field "DEF.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 63
+        }
+
+        processing-mode: Single
+        operation: if "CCY" Equals "NULL" process "LCCY" "CCY"
+    }
+
+    field "FCY.AMT" {
+        label {
+            en = "FCY Amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 71
+        }
+
+        processing-mode: Single
+        operation: field-number 13
+    }
+
+    field "LCY.AMT" {
+        label {
+            en = "LCY Amount"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 88
+        }
+
+        processing-mode: Single
+        operation: field-number 3
+    }
+
+    field "NEXT.FILE" {
+        comma-separator: false
+        operation: field-extract "FILL.REC"
+        conversion: extract from 1 to 1
+        conversion: replace {
+            oldData: "S"
+            newData: "STMT.ENTRY"
+        }
+
+        conversion: replace {
+            oldData: "R"
+            newData: "RE.SPEC.ENTRY.DETAIL"
+        }
+
+        conversion: replace {
+            oldData: "D"
+            newData: "RE.CONSOL.SPEC.ENTRY"
+        }
+
+        conversion: replace {
+            oldData: "C"
+            newData: "CATEG.ENTRY"
+        }
+
+        conversion: replace {
+            oldData: "E"
+            newData: "CONSOL.ENT.TODAY"
+        }
+
+        conversion: replace {
+            oldData: "N"
+            newData: "CATEG.ENTRY.DETAIL"
+        }
+
+        conversion: replace {
+            oldData: "T"
+            newData: "STMT.ENTRY.DETAIL"
+        }
+
+    }
+
+    field "ENT.ID" {
+        comma-separator: false
+        operation: application-field-name "DC.BATCH.DATE"
+        conversion: extract from 2 to 99
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "NOT.FOUND" {
+        format: Translate break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 13
+            line: + 2
+        }
+
+        operation: constant "\"No entries found for deal \""
+    }
+
+    field "SEL.TRANS.REF" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 32
+            line: + 2
+        }
+
+        operation: selection "TRANSACTION.REF"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "DATE" parameters {
+            function:  See
+            field: "ENT.ID"
+        }
+
+        from-field: "NEXT.FILE"
+    }
+
+}

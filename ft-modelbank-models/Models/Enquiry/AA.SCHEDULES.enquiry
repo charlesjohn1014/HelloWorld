@@ -1,0 +1,225 @@
+Enquiry "AA.SCHEDULES" for "name:/AA_ModelBank:NOFILE.AA.SCHEDS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Arrangement Schedule Projection"
+        }
+
+        column: 40
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Arrangement Id :"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Product Name :"
+        }
+
+        column: 35
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Customer Id :"
+        }
+
+        column: 1
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Currency :"
+        }
+
+        column: 1
+        line: 4
+    }
+
+    start-line: 7
+    end-line: 16 fixed-selection "XID" {
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "SIM.REF" {
+            operands: Equals
+        }
+
+        AND
+
+        field "DATE.FROM" {
+        }
+
+        AND
+
+        field "DATE.TO" {
+        }
+
+        None
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "D.ARR.ID" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 2
+        }
+
+        operation: field-extract "ARR.ID"
+    }
+
+    field "PRODUCT" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 55
+            line: 2
+        }
+
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.AA.GET.PRODUCT.ID"
+    }
+
+    field "PROD.NAME" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 2
+        }
+
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CUST.ID" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 3
+        }
+
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+    }
+
+    field "SH.NAME" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 3
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ARR.CCY" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 4
+        }
+
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "SCHED.DATE" {
+        label {
+            en = "DUE DATE"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: julian
+        conversion: oconv "D2/E"
+    }
+
+    field "DUE.DATE" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TOTAL.PAYMENT" {
+        label {
+            en = "TOTAL PAYMENT"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CURR.OUTS" {
+        label {
+            en = "OUTSTANDING AMOUNT"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 33
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Show Details"
+        }
+
+        label-field: "SCHED.DATE"
+        criteria: "ARRANGEMENT.ID" Equals "ARR.ID"
+        criteria: "DATE.DUE" Equals "DUE.DATE"
+        enquiry: "AA.SCHEDULE.DETAILS"
+    }
+
+    attributes: "PAGE"
+}

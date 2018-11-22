@@ -1,0 +1,183 @@
+Enquiry "CUSTOMER.RELATION.LIST" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Customer Details"
+    }
+
+    description {
+        en = "Customer Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CUSTOMER.CODE" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.CODE" {
+            label {
+                en = "Customer No"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "CTYPE" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.TYPE"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Relationship Details\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Customer No"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Short Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "RELATION.CODE" {
+        label {
+            en = "Relation Code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RELATION.CODE"
+    }
+
+    field "REL.CUSTOMER" {
+        label {
+            en = "Linked Cust"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REL.CUSTOMER"
+    }
+
+    field "REL.CUST.NAME" {
+        label {
+            en = "Related Customer"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: field-extract "REL.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "REVERS.REL.CODE" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "REVERS.REL.CODE"
+    }
+
+    field "REV.REL.CODE" {
+        label {
+            en = "Relationship"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: field-extract "REVERS.REL.CODE"
+        conversion: getFrom "RELATION" "DESCRIPTION" false
+    }
+
+    field "ROLE" {
+        label {
+            en = "Role"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ROLE"
+        conversion: getFrom "EB.ROLE" "DESCRIPTION" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Relation"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "CUSTOMER,RELATION.CORP"
+    }
+
+}

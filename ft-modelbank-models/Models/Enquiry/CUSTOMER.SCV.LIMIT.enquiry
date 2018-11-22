@@ -1,0 +1,621 @@
+Enquiry "CUSTOMER.SCV.LIMIT" for "name:/LI_ModelBank:CUSTOMER.LIMITS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Customer Limit Exposure"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "LIABILITY.NO" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "RISK.GROUP.ID" {
+        Equals "!CURRENT.ID"
+    }
+
+    fixed-sort: "LIABILITY.NO" Null
+    fixed-sort: "SERIAL.NUMBER" Null
+    fixed-sort: "CREDIT.LINE.NO" Null
+    fixed-sort: "TIME.BAND" Null
+    fixed-sort: "LIMIT.PRODUCT" Null
+    fixed-sort: "RECORD.PARENT" Null
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Customer Limit Exposure\""
+    }
+
+    field "LIAB.NO" {
+        label {
+            en = "Customer Id"
+        }
+
+        display-type: "STARTTREE"
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.NO"
+    }
+
+    field "DISP.NAME" {
+        comma-separator: false
+        operation: field-extract "LIAB.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "DISP.LIAB" {
+        label {
+            en = "Customer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        hidden: true
+        operation: if "DISP.NAME" Equals "P.LIAB" process "NULL" "DISP.NAME"
+    }
+
+    field "P.LIAB" {
+        comma-separator: false
+        operation: field-extract "DISP.NAME"
+    }
+
+    field "BRK.LIAB" {
+        comma-separator: false
+        operation: break-change "DISP.NAME"
+    }
+
+    field "LIM.PRODUCT1" {
+        comma-separator: false
+        operation: constant "\"Customer Total\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LIM.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.TYPE"
+    }
+
+    field "DISP.PRODUCT" {
+        label {
+            en = "Category"
+        }
+
+        display-type: "CLASS-FDCT"
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIMIT.PRODUCT"
+        conversion: getFrom "LIMIT.REFERENCE" "DESCRIPTION" false
+    }
+
+    field "CREDIT.LINE.NO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CREDIT.LINE.NO"
+    }
+
+    field "REF.DESC" {
+        comma-separator: false
+        operation: field-extract "CREDIT.LINE.NO"
+        conversion: extract from 1 to 1 delimited by "/"
+        conversion: getFrom "LIMIT.REFERENCE" "DESCRIPTION" false
+    }
+
+    field "REF.DESC1" {
+        comma-separator: false
+        operation: if "REF.DESC" Equals "NULL" process "LIM.PRODUCT1" "REF.DESC"
+    }
+
+    field "TIME.BAND" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TIME.BAND"
+    }
+
+    field "SERIAL.NO" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SERIAL.NUMBER"
+    }
+
+    field "TEXT" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "CHK.ID" {
+        comma-separator: false
+        operation: calc "REF.DESC1":"TEXT":"TIME.BAND":"TEXT":"SERIAL.NO"
+    }
+
+    field "REPEAT" {
+        comma-separator: false
+        operation: if "CHK.ID" Equals "P.CR.DESC" process "CHK.REPEAT" "0"
+    }
+
+    field "CHK.REPEAT" {
+        comma-separator: false
+        operation: if "CREDIT.LINE.NO" NotEquals "P.CR.LI.ID" process "1" "0"
+    }
+
+    field "P.CR.LI.ID" {
+        comma-separator: false
+        operation: field-extract "CREDIT.LINE.NO"
+    }
+
+    field "P.CR.DESC" {
+        comma-separator: false
+        operation: field-extract "CHK.ID"
+    }
+
+    field "CNT" {
+        comma-separator: false
+        operation: if "CHK.ID" NotEquals "P.CR.DESC" process "0" "UPD.CNT"
+    }
+
+    field "UPD.CNT" {
+        comma-separator: false
+        operation: calc "CNT" + "REPEAT"
+    }
+
+    field "ADD.CNT" {
+        comma-separator: false
+        operation: if "CNT" GreaterOrEquals "1" process "CNT" "NULL"
+    }
+
+    field "CCAT" {
+        display-type: "STARTTREE"
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: calc "REF.DESC1":"TEXT":"TIME.BAND":"TEXT":"SERIAL.NO":"TEXT":"ADD.CNT"
+    }
+
+    field "BRK.CCAT" {
+        comma-separator: false
+        operation: break-change "CCAT"
+    }
+
+    field "REPORT.CCY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REPORT.CURRENCY"
+    }
+
+    field "BUSINESS.UNIT" {
+        label {
+            en = "BU"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BUSINESS.UNIT"
+    }
+
+    field "INTERNAL.AMOUNT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INTERNAL.AMT"
+    }
+
+    field "DISP.INTERNAL" {
+        label {
+            en = "Approved Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: calc "INTERNAL.AMOUNT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "ADVISED.AMOUNT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ADVISED.AMT"
+    }
+
+    field "DISP.ADVISED" {
+        label {
+            en = "Advised Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: calc "ADVISED.AMOUNT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "UTILIZED.AMOUNT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOTAL.OS"
+    }
+
+    field "DISP.UTILIZED" {
+        label {
+            en = "Utilised Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: calc "UTILIZED.AMOUNT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "AVAILABLE.AMOUNT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AVAIL.AMT"
+    }
+
+    field "DISP.AVAILABLE" {
+        label {
+            en = "Available Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: calc "AVAILABLE.AMOUNT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "EXCESS.AMOUNT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXCESS.AMT"
+    }
+
+    field "DISP.EXCESS" {
+        label {
+            en = "Excess Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: calc "EXCESS.AMOUNT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "DEPOSITS" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOTAL.CR"
+    }
+
+    field "DISP.DEPOSITS" {
+        label {
+            en = "Deposits"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: calc "DEPOSITS" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SHARED.LIMIT" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SHARED.LIMIT"
+    }
+
+    field "SHAR.VAL" {
+        comma-separator: false
+        operation: constant "\"Shared\""
+    }
+
+    field "LIM.SHARED" {
+        comma-separator: false
+        operation: if "SHARED.LIMIT" Equals "YES" process "SHAR.VAL" "NULL"
+    }
+
+    field "JOINT.LIMIT" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "JOINT.LIMIT"
+    }
+
+    field "JOINT.VAL" {
+        comma-separator: false
+        operation: constant "\"Joint\""
+    }
+
+    field "LIM.JOINT" {
+        comma-separator: false
+        operation: if "JOINT.LIMIT" Equals "YES" process "JOINT.VAL" "NULL"
+    }
+
+    field "LIMIT.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: if "LIM.SHARED" NotEquals "NULL" process "LIM.SHARED" "LIM.JOINT"
+    }
+
+    field "REL.CUSTOMER" {
+        label {
+            en = "Rel Customer"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "REL.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "REL.CUST.ID" {
+        label {
+            en = "Rel Customer ID"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "REL.CUSTOMER"
+    }
+
+    field "PRODUCT.FINAL1" {
+        display-type: "ENDTREE" break-condition {
+            field: "BRK.CCAT"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "CCAT"
+    }
+
+    field "ZERO" {
+        length: 100
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"0\""
+    }
+
+    field "IDL.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "IDL.TYPE"
+        conversion: replace {
+            oldData: "YES"
+            newData: "Intraday"
+        }
+
+        conversion: replace {
+            oldData: "SETTLEMENT"
+            newData: "Settlement"
+        }
+
+    }
+
+    field "FINAL.TYPE" {
+        display-type: "CLASS-ITALIC"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: if "LIM.TYPE" Equals "REPORTING" process "IDL.TYPE" "NULL"
+    }
+
+    field "IDL.APPROVED" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "IDL.APPROVED.AMT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "DISP.IDL.APP" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "IDL.APPROVED" Equals "ZERO" process "NULL" "IDL.APPROVED"
+    }
+
+    field "IDL.FINAL.APP" {
+        display-type: "CLASS-ITALIC"
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: if "LIM.TYPE" Equals "REPORTING" process "DISP.IDL.APP" "NULL"
+    }
+
+    field "IDL.ADVISED" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "IDL.ADVISED.AMT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "DISP.IDL.ADV" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "IDL.ADVISED" Equals "ZERO" process "NULL" "IDL.ADVISED"
+    }
+
+    field "IDL.FINAL.ADV" {
+        display-type: "CLASS-ITALIC"
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: if "LIM.TYPE" Equals "REPORTING" process "DISP.IDL.ADV" "NULL"
+    }
+
+    field "PRODUCT.FINAL" {
+        comma-separator: false
+        operation: field-extract "CCAT"
+    }
+
+    field "LIAB.FINAL" {
+        display-type: "ENDTREE" break-condition {
+            field: "BRK.LIAB"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 3
+        }
+
+        operation: field-extract "LIAB.NO"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS"
+        comma-separator: false
+        operation: constant "\"No Records Available\""
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.FOOTER.STYLE"
+}

@@ -1,0 +1,178 @@
+Enquiry "MM.TK.CALL" for "name:/MM_Contract:MM.MONEY.MARKET#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "List of MM Call Notice Takings"
+    }
+
+    description {
+        en = "MM Call/Notice Taking Contracts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CATEGORY" {
+        Between "21001", "21039"
+    }
+
+    fixed-selection "MATURITY.DATE" {
+        LessOrEquals "999"
+    }
+
+    fixed-sort: "MATURITY.DATE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CLIENT" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\" MM Call/Notice Takings \""
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRINCIPAL"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Call/Notice Days"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Contracts available for Amendment or Maturity\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend/Mature"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "MM.MONEY.MARKET,TKCALLAMD"
+    }
+
+}

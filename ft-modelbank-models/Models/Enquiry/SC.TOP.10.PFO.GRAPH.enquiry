@@ -1,0 +1,116 @@
+Enquiry "SC.TOP.10.PFO.GRAPH" for "name:/SC_ModelBank:NOFILE.SC.TOP.TEN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Top 10 Pvt Clients"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "CUST.LIST" {
+        NotEquals "\"\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Client No"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "VAL.AMT" {
+        label {
+            en = "Valuation in Lcy"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "VALUATION.AMT" {
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "VAL.AMT"
+    }
+
+    field "NO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No portfolio linked to your ID\""
+    }
+
+    graph {
+        type: "BAR.ORDINAL"
+        label {
+            en = "Top 10 Private Customers" x: 120 y: 30
+        }
+
+        dimension {
+            width: 450 height: 300
+        }
+
+        margins {
+            top: 50 bottom: 100 left: 75 right: 50
+        }
+
+        scale {
+            x: 100 y: 100
+        }
+
+        legend {
+            x: 400 y: 50
+        }
+
+        x-axis {
+            field: "CUST.NAME"
+            display-legend: true
+            show-grid: true
+        }
+
+        y-axis {
+            field: "VALUATION.AMT"
+            display-legend: true
+            show-grid: true
+        }
+
+    }
+
+    enquiry-graph-id {
+        "SC.TOP.10.PFO.GRAPH"
+    }
+
+    attributes: "ALLDATA"
+}

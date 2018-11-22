@@ -1,0 +1,327 @@
+Enquiry "IS.FINANCE.APPROVAL.CM" for "name:/PW_Foundation:PW.ACTIVITY.TXN#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Credit Manager\'s Pending Activities"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    description {
+        en = "Process Activity Txn"
+    }
+
+    no-selection: true
+    start-line: 2
+    end-line: 4 fixed-selection "OWNER" {
+        Equals "ISLAMIC.CREDIT.MANAGER"
+    }
+
+    fixed-selection "PW.ACTIVITY.STATUS" {
+        Equals "PENDING"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "PW.ACTIVITY.TXN.ID"
+            }
+
+        }
+
+        AND
+
+        field "PROCESS" {
+            label {
+                en = "Process"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NUMBER" {
+            label {
+                en = "Customer Number"
+            }
+
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+        }
+
+        AND
+
+        field "DUE.DATE" {
+            label {
+                en = "Due Date"
+            }
+
+        }
+
+        AND
+
+        field "COMPLETION.DATE" {
+            label {
+                en = "Completion Date"
+            }
+
+        }
+
+        AND
+
+        field "TARGET" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "PW.ACTIVITY.STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Id"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "PW" {
+        label {
+            en = "ID"
+        }
+
+        display-type: "PWACTIVITY"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PW.ACTIVITY.TXN.ID"
+    }
+
+    field "PROCESS" {
+        label {
+            en = "Process"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PROCESS"
+    }
+
+    field "CUSTOMER.NUMBER" {
+        label {
+            en = "Customer"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: i-desc "CUSTOMER.NUMBER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY"
+        conversion: getFrom "PW.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "ASSIGN.DATE" {
+        label {
+            en = "Assign Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 76
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ASSIGN.DATE"
+    }
+
+    field "ASSIGN.REASON" {
+        label {
+            en = "Assign Reason"
+        }
+
+        length: 29
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 91
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ASSIGN.REASON"
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 141
+        }
+
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "DUE.DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 155
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DUE.DATE"
+    }
+
+    field "COMPLETION.DATE" {
+        label {
+            en = "Completion Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 168
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COMPLETION.DATE"
+    }
+
+    field "TARGET" {
+        label {
+            en = "Target"
+        }
+
+        length: 99
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TARGET"
+    }
+
+    field "TRANS.REF" {
+        label {
+            en = "Transaction Ref. ID"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 210
+        }
+
+        operation: field-extract "TARGET"
+        conversion: call
+        jBC: "@ GET.TXN.ID"
+    }
+
+    field "PW.ACTIVITY.STATUS" {
+        label {
+            en = "Activity Status"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 225
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PW.ACTIVITY.STATUS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Execute Activity"
+        }
+
+        label-field: "@ID"
+        image: "action.gif" parameters {
+            pw-activity: "PW"
+        }
+
+        from-field: "TARGET"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES"
+}

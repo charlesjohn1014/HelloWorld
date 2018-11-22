@@ -1,0 +1,569 @@
+Enquiry "CR.CUSTOMER.INTELLIGENCE.DETAILS" for "name:/CR_Analytical:CR.CUSTOMER.INTELLIGENCE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Customer Intelligence Details"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "CUSTOMER.CODE" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.CODE" {
+            label {
+                en = "Customer Number"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TREND.DOWN" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/ARROW_DOWN.gif\""
+    }
+
+    field "TREND.STABLE" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/ARROW_STABLE.gif\""
+    }
+
+    field "TREND.UP" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/ARROW_UP.gif\""
+    }
+
+    field "STATUS.GREEN" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/LIGHT_GREEN.gif\""
+    }
+
+    field "STATUS.BLUE" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/LIGHT_BLUE.gif\""
+    }
+
+    field "STATUS.RED" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/LIGHT_RED.gif\""
+    }
+
+    field "L.SCORE" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        operation: constant "\"Score\""
+    }
+
+    field "L.STATUS" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        operation: constant "\"Status\""
+    }
+
+    field "L.TREND" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        operation: constant "\"Trend\""
+    }
+
+    field "L.PROFITABILITY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 150
+        operation: constant "\"Profitability\""
+    }
+
+    field "PROFIT.GROUP" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: application-field-name "PROFIT.GRP"
+        conversion: replace {
+            oldData: "1"
+            newData: "< (1000)"
+        }
+
+        conversion: replace {
+            oldData: "2"
+            newData: "(1000) - (500)"
+        }
+
+        conversion: replace {
+            oldData: "3"
+            newData: "(500) - (100)"
+        }
+
+        conversion: replace {
+            oldData: "4"
+            newData: "(100) - (10)"
+        }
+
+        conversion: replace {
+            oldData: "5"
+            newData: "(10) - 1"
+        }
+
+        conversion: replace {
+            oldData: "6"
+            newData: " 0 - 10"
+        }
+
+        conversion: replace {
+            oldData: "7"
+            newData: " 10 - 100"
+        }
+
+        conversion: replace {
+            oldData: "8"
+            newData: "100 - 500"
+        }
+
+        conversion: replace {
+            oldData: "9"
+            newData: "500 - 1000"
+        }
+
+        conversion: replace {
+            oldData: "10"
+            newData: "1000+"
+        }
+
+        conversion: replace {
+            oldData: "0"
+            newData: "0"
+        }
+
+    }
+
+    field "PROFIT.GROUP.STATUS" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROFIT.GRP.STATUS"
+    }
+
+    field "PGS.1" {
+        comma-separator: false
+        operation: field-extract "PROFIT.GROUP.STATUS"
+    }
+
+    field "PGS.2" {
+        comma-separator: false
+        operation: if "PGS.1" Equals "\"-1\"" process "STATUS.RED" "PGS.1"
+    }
+
+    field "PGS.3" {
+        comma-separator: false
+        operation: if "PGS.2" Equals "\"0\"" process "STATUS.BLUE" "PGS.2"
+    }
+
+    field "D.PROFIT.GROUP.STATUS" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 50
+        operation: if "PGS.3" Equals "\"1\"" process "STATUS.GREEN" "PGS.3"
+    }
+
+    field "PROFIT.GROUP.TREND" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROFIT.GRP.TREND"
+    }
+
+    field "PGT.1" {
+        comma-separator: false
+        operation: field-extract "PROFIT.GROUP.TREND"
+    }
+
+    field "PGT.2" {
+        comma-separator: false
+        operation: if "PGT.1" Equals "\"-1\"" process "TREND.DOWN" "PGT.1"
+    }
+
+    field "PGT.3" {
+        comma-separator: false
+        operation: if "PGT.2" Equals "\"0\"" process "TREND.STABLE" "PGT.2"
+    }
+
+    field "D.PROFIT.GROUP.TREND" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        column-width: 50
+        operation: if "PGT.3" Equals "\"1\"" process "TREND.UP" "PGT.3"
+    }
+
+    field "L.LOYALTY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 150
+        operation: constant "\"Loyalty\""
+    }
+
+    field "LOYALTY.SCORE" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: application-field-name "LOYALTY.SCORE"
+        conversion: replace {
+            oldData: "1"
+            newData: "0"
+        }
+
+        conversion: replace {
+            oldData: "2"
+            newData: "0 - 25"
+        }
+
+        conversion: replace {
+            oldData: "3"
+            newData: "25 - 50"
+        }
+
+        conversion: replace {
+            oldData: "4"
+            newData: "50 - 75"
+        }
+
+        conversion: replace {
+            oldData: "5"
+            newData: "75 - 100"
+        }
+
+    }
+
+    field "LOYALTY.STATUS" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOYALTY.STATUS"
+    }
+
+    field "LS.1" {
+        comma-separator: false
+        operation: field-extract "LOYALTY.STATUS"
+    }
+
+    field "LS.2" {
+        comma-separator: false
+        operation: if "LS.1" Equals "\"-1\"" process "STATUS.RED" "LS.1"
+    }
+
+    field "LS.3" {
+        comma-separator: false
+        operation: if "LS.2" Equals "\"0\"" process "STATUS.BLUE" "LS.2"
+    }
+
+    field "D.LOYALTY.STATUS" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        column-width: 50
+        operation: if "LS.3" Equals "\"1\"" process "STATUS.GREEN" "LS.3"
+    }
+
+    field "LOYALTY.TREND" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOYALTY.TREND"
+    }
+
+    field "LT.1" {
+        comma-separator: false
+        operation: field-extract "LOYALTY.TREND"
+    }
+
+    field "LT.2" {
+        comma-separator: false
+        operation: if "LT.1" Equals "\"-1\"" process "TREND.DOWN" "LT.1"
+    }
+
+    field "LT.3" {
+        comma-separator: false
+        operation: if "LT.2" Equals "\"0\"" process "TREND.STABLE" "LT.2"
+    }
+
+    field "D.LOYALTY.TREND" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 2
+        }
+
+        column-width: 50
+        operation: if "LT.3" Equals "\"1\"" process "TREND.UP" "LT.3"
+    }
+
+    field "L.ATTRITION.RISK" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 3
+        }
+
+        column-width: 150
+        operation: constant "\"Attrition Risk\""
+    }
+
+    field "ATTRITION.RISK" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 3
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: application-field-name "ATTRITION.RISK"
+        conversion: replace {
+            oldData: "1"
+            newData: "High"
+        }
+
+        conversion: replace {
+            oldData: "2"
+            newData: "Medium"
+        }
+
+        conversion: replace {
+            oldData: "3"
+            newData: "Low"
+        }
+
+    }
+
+    field "ATTRITION.STATUS" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ATTRITION.STATUS"
+    }
+
+    field "AS.1" {
+        comma-separator: false
+        operation: field-extract "ATTRITION.STATUS"
+    }
+
+    field "AS.2" {
+        comma-separator: false
+        operation: if "AS.1" Equals "\"-1\"" process "STATUS.RED" "AS.1"
+    }
+
+    field "AS.3" {
+        comma-separator: false
+        operation: if "AS.2" Equals "\"0\"" process "STATUS.BLUE" "AS.2"
+    }
+
+    field "D.ATTRITION.STATUS" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 30
+            line: + 3
+        }
+
+        column-width: 50
+        operation: if "AS.3" Equals "\"1\"" process "STATUS.GREEN" "AS.3"
+    }
+
+    field "ATTRITION.TREND" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ATTRITION.TREND"
+    }
+
+    field "AT.1" {
+        comma-separator: false
+        operation: field-extract "ATTRITION.TREND"
+    }
+
+    field "AT.2" {
+        comma-separator: false
+        operation: if "AT.1" Equals "\"-1\"" process "TREND.DOWN" "AT.1"
+    }
+
+    field "AT.3" {
+        comma-separator: false
+        operation: if "AT.2" Equals "\"0\"" process "TREND.STABLE" "AT.2"
+    }
+
+    field "D.ATTRITION.TREND" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 3
+        }
+
+        column-width: 50
+        operation: if "AT.3" Equals "\"1\"" process "TREND.UP" "AT.3"
+    }
+
+    field "L.NO.OF.PRODUCTS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 4
+        }
+
+        column-width: 150
+        operation: constant "\"Number of Products\""
+    }
+
+    field "PRODUCTS.NUMBER" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 4
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: application-field-name "NO.PRODTS"
+    }
+
+    field "PRODUCTS.STATUS" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NO.PRODTS.STATUS"
+    }
+
+    field "PS.1" {
+        comma-separator: false
+        operation: field-extract "PRODUCTS.STATUS"
+    }
+
+    field "PS.2" {
+        comma-separator: false
+        operation: if "PS.1" Equals "\"-1\"" process "STATUS.RED" "PS.1"
+    }
+
+    field "PS.3" {
+        comma-separator: false
+        operation: if "PS.2" Equals "\"0\"" process "STATUS.BLUE" "PS.2"
+    }
+
+    field "D.PRODUCTS.STATUS" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 30
+            line: + 4
+        }
+
+        column-width: 50
+        operation: if "PS.3" Equals "\"1\"" process "STATUS.GREEN" "PS.3"
+    }
+
+    field "PRODUCTS.TREND" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NO.PRODTS.TREND"
+    }
+
+    field "PT.1" {
+        comma-separator: false
+        operation: field-extract "PRODUCTS.TREND"
+    }
+
+    field "PT.2" {
+        comma-separator: false
+        operation: if "PT.1" Equals "\"-1\"" process "TREND.DOWN" "PT.1"
+    }
+
+    field "PT.3" {
+        comma-separator: false
+        operation: if "PT.2" Equals "\"0\"" process "TREND.STABLE" "PT.2"
+    }
+
+    field "D.PRODUCTS.TREND" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 4
+        }
+
+        column-width: 50
+        operation: if "PT.3" Equals "\"1\"" process "TREND.UP" "PT.3"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 150
+        operation: constant "\"No PLAN to Display\""
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

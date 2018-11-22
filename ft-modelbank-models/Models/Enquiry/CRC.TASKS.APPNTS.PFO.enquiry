@@ -1,0 +1,270 @@
+Enquiry "CRC.TASKS.APPNTS.PFO" for "name:/CR_Analytical:CR.CONTACT.LOG#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Find Appointment"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CONTACT.TYPE" {
+        NotEquals "COMPLAINT", "TRANSACTION"
+    }
+
+    fixed-sort: "CONTACT.DATE" Null
+    custom-selection {
+
+        field "CONTACT.TYPE" {
+            label {
+                en = "Contact Type"
+            }
+
+        }
+
+        AND
+
+        field "CONTACT.STATUS" {
+            label {
+                en = "Contact Status"
+            }
+
+        }
+
+        AND
+
+        field "CONTACT.STAFF" {
+            label {
+                en = "Contact Staff"
+            }
+
+        }
+
+        AND
+
+        field "CONTACT.CHANNEL" {
+            label {
+                en = "Contact Channel"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Appointment and Tasks\""
+    }
+
+    field "TODAY" {
+        format: Date
+        comma-separator: false
+        operation: today
+    }
+
+    field "ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "CONTACT.DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTACT.DATE"
+    }
+
+    field "CONTACT.TYPE" {
+        label {
+            en = "Contact Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTACT.TYPE"
+    }
+
+    field "CONTACT.CLIENT" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CONTACT.CLIENT"
+    }
+
+    field "CONTACT.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        operation: field-extract "CONTACT.CLIENT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CONTACT.DESC" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTACT.DESC"
+    }
+
+    field "USER" {
+        label {
+            en = "User"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        hidden: true
+        operation: user
+    }
+
+    field "CONTACT.STAFF" {
+        label {
+            en = "Contact Staff"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CONTACT.STAFF"
+    }
+
+    field "WALK.IN.CUSTOMER" {
+        label {
+            en = "Walk In Customer"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        processing-mode: Single
+        operation: application-field-name "WALK.IN.CUSTOMER"
+    }
+
+    field "AO" {
+        label {
+            en = "Dept"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        hidden: true
+        operation: field-extract "USER"
+        conversion: getFrom "USER" "DEPARTMENT.CODE" false
+    }
+
+    field "ZERORECORD" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Appointment or Task found !\""
+    }
+
+    field "CUSTOM" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTACT.CLIENT"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ID"
+        image: "view.gif" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "CR.CONTACT.LOG,SCV.UPD"
+    }
+
+}

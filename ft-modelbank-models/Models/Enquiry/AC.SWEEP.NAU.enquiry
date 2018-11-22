@@ -1,0 +1,268 @@
+Enquiry "AC.SWEEP.NAU" for "name:/RS_Sweeping:AC.ACCOUNT.LINK$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Account Sweep"
+    }
+
+    description {
+        en = "Unauthorised Account Sweep"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5 fixed-selection "RECORD.STATUS" {
+        NotEquals "IHLD", "FHLD", "SHLD"
+    }
+
+    field "@ID" {
+        label {
+            en = "Sweep Id"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised Account Sweep\""
+    }
+
+    field "SWEEP.TYPE" {
+        label {
+            en = "Sweep"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SWEEP.TYPE"
+    }
+
+    field "SWP.TYPE" {
+        label {
+            en = "Sweep Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "SWEEP.TYPE"
+        conversion: getFrom "AC.SWEEP.TYPE" "DESCRIPTION" false
+    }
+
+    field "SWEEP.FQU" {
+        label {
+            en = "Sweep Fqu"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FREQUENCY"
+        conversion: call
+        jBC: "@ E.MB.FREQ.TEXT"
+    }
+
+    field "SW.TYPE" {
+        comma-separator: false
+        operation: field-extract "SWEEP.TYPE"
+        conversion: getFrom "AC.SWEEP.TYPE" "SWEEP.STYLE" false
+    }
+
+    field "DEC.VER" {
+        comma-separator: false
+        operation: field-extract "SW.TYPE"
+        conversion: replace {
+            oldData: "MAINTENANCE"
+            newData: "MAIN"
+        }
+
+        conversion: replace {
+            oldData: "SURPLUS"
+            newData: "SURP"
+        }
+
+        conversion: replace {
+            oldData: "TWO-WAY"
+            newData: "TWOWAY"
+        }
+
+    }
+
+    field "ACCOUNT1" {
+        label {
+            en = "Account 1"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT.TO"
+    }
+
+    field "ACCOUNT2" {
+        label {
+            en = "Account 2"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT.FROM"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Account Sweeps\""
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"AC.ACCOUNT.LINK,\""
+    }
+
+    field "DRILL.NEW" {
+        comma-separator: false
+        operation: calc "APPL":"DEC.VER"
+    }
+
+    field "AUTH.VER" {
+        comma-separator: false
+        operation: constant "\".AUTH\""
+    }
+
+    field "DRILL" {
+        comma-separator: false
+        operation: calc "DRILL.NEW":"AUTH.VER"
+    }
+
+    field "RNAU" {
+        comma-separator: false
+        operation: constant "\".RNAU.AUTH\""
+    }
+
+    field "RNAU.VERSION" {
+        comma-separator: false
+        operation: calc "DRILL.NEW":"RNAU"
+    }
+
+    field "VERSION.NAME" {
+        comma-separator: false
+        operation: if "RECORD.STATUS" Equals "\"RNAU\"" process "RNAU.VERSION" "DRILL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif"
+        criteria: "CURRENT.DBACC" > "ACCOUNT2"
+        criteria: "CURRENT.DETAILS" > "@ID" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        from-field: "VERSION.NAME"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif"
+        criteria: "CURRENT.DBACC" > "ACCOUNT2"
+        criteria: "CURRENT.DETAILS" > "@ID" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "VERSION.NAME"
+    }
+
+}

@@ -1,0 +1,256 @@
+Enquiry "PP.QUEUE.MONITOR.MODEL" for "name:/PP_PaymentFlowMonitorGUI:NOFILE.PP.POR.TRANSACTION.MODEL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Virtual Queue Monitor"
+    }
+
+    description {
+        en = "Virtual Queue Monitor"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "OUT.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            label {
+                en = "Company"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Virtual Queue Monitor List\""
+    }
+
+    field "QUEUE.NAME" {
+        label {
+            en = "Queue Name"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "QNUM" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "QNO1" {
+        comma-separator: false
+        operation: field-extract "QNUM"
+    }
+
+    field "RED.DIS" {
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/redlight.gif\""
+    }
+
+    field "GREEN.DIS" {
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/greenlight.gif\""
+    }
+
+    field "AMBER.DIS" {
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/amberlight.gif\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"\""
+    }
+
+    field "ALERT.DISP" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: if "QNO1" Greater "5" process "AMBER.DIS"
+    }
+
+    field "ALERT.DISP.02" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: if "QNO1" Greater "15" process "RED.DIS"
+    }
+
+    field "ALERT.DISP.03" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: if "QNO1" LessOrEquals "5" process "GREEN.DIS"
+    }
+
+    field "ALERT.DISP.04" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: if "QNO1" Equals "0" process "GREEN.DIS"
+    }
+
+    field "FLAG" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "QUEUE.NAME.02" {
+        label {
+            en = "Queue Name"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "QUEUE.DESCRIPTION" {
+        label {
+            en = "\"\""
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "QUEUE.COMPANY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TOTAL.RECORDS" {
+        label {
+            en = "Queue"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "REFRESHTIME" {
+        label {
+            en = "No. of payment"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "dummy.hdr" {
+        label {
+            en = "Refresh Date Time"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: constant "\"\""
+    }
+
+    field "RECORD.IDS" {
+        label {
+            en = "Record Ids"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "NORECTODISPLAY" {
+        label {
+            en = "CLASS-ENQ.NORECS"
+        }
+
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: constant "\"No Payments in Queue\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "QUEUE.DESCRIPTION"
+        image: "view.gif"
+        criteria: "@ID" Equals "RECORD.IDS"
+        from-field: "QUEUE.NAME"
+    }
+
+}

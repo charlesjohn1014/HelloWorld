@@ -1,0 +1,285 @@
+Enquiry "NAU.FWD.ENTRY" for "name:/AC_CashFlow:FWD.ENTRY.HOLD#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Unauthorised FWD entries"
+        }
+
+        column: 20
+        line: 0
+    }
+
+    header {
+        label {
+            en = " Transaction Ref:"
+        }
+
+        column: 3
+        line: 1
+    }
+
+    header {
+        label {
+            en = "R = Reversal Entry"
+        }
+
+        column: 62
+        line: 1
+    }
+
+    description {
+        en = "Unauthorised Forward Entries"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "TRANSACTION.REF" {
+            mandatory: true
+        }
+
+        None
+    }
+
+    field "@ID" {
+        format: User
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DISP.ID" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 21
+            line: 1
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "BID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "@ID"
+    }
+
+    field "FULL.REC" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.MB.CONSTRUCT.ENTRY"
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "Accout no"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+    }
+
+    field "PL.CATEGORY" {
+        label {
+            en = "Account No"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-number 7
+    }
+
+    field "AMOUNT.LCY" {
+        label {
+            en = "Amt Lcy"
+        }
+
+        format: Currency "LCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: field-number 3
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 12
+    }
+
+    field "DISP.CCY" {
+        label {
+            en = "FCcy"
+        }
+
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Multi
+        operation: if "CURRENCY" Equals "NULL" process "LCY" "CURRENCY"
+    }
+
+    field "AMOUNT.FCY" {
+        label {
+            en = "Amount Fcy"
+        }
+
+        format: Currency "DISP.CCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        operation: field-number 13
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 51
+        }
+
+        processing-mode: Multi
+        operation: field-number 11
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "CRF.TYPE" {
+        label {
+            en = "Asset Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: field-number 36
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Transaction Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 71
+        }
+
+        processing-mode: Multi
+        operation: field-number 4
+    }
+
+    field "CRF.TXN.CODE" {
+        label {
+            en = "Crf Txn Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Multi
+        operation: field-number 37
+    }
+
+    field "REV.ENTRY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 33
+    }
+
+    field "DISP.REV" {
+        label {
+            en = "Reversal Marker"
+        }
+
+        comma-separator: false
+        position {
+            column: 79
+        }
+
+        processing-mode: Multi
+        operation: if "REV.ENTRY" Equals "REV" process "RM" "NULL"
+    }
+
+    field "LCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "REV" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"REV\""
+    }
+
+    field "RM" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        escapeSequence: HI
+        operation: constant "\"R\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"NULL\""
+    }
+
+}

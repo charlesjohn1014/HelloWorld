@@ -1,0 +1,425 @@
+Enquiry "AA.DETAILS.COLLATERAL.AL" for "name:/CO_Contract:COLLATERAL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Collateral Details"
+    }
+
+    description {
+        en = "Collateral Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "STATUS" {
+        NotEquals "LIQ"
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "EXC"
+    }
+
+    custom-selection {
+
+        field "COLLATERAL.RIGHT" {
+            label {
+                en = "Collateral Right"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Collateral Details\""
+    }
+
+    field "COLLATERAL.ID" {
+        length: 22
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "COLL.RIGHT.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "COLLATERAL.ID"
+        conversion: extract from 1 to 2 delimited by "."
+    }
+
+    field "COLL.RIGHT.BEN" {
+        format: User
+        comma-separator: false
+        operation: field-extract "COLLATERAL.ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "CUST" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\"Customer\""
+    }
+
+    field "COLL.BEN.NAME" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        operation: field-extract "COLL.RIGHT.BEN"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BK" {
+        comma-separator: false
+        processing-mode: Single
+        operation: break-change "COLL.RIGHT.ID"
+    }
+
+    field "COLLAT.RIGHT.NO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "COLL.RIGHT.ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "ID" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "COLLATERAL.ID"
+    }
+
+    field "COLLATERAL.TYPE" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COLLATERAL.TYPE"
+    }
+
+    field "COLL" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        operation: constant "\"Collateral Type\""
+    }
+
+    field "TYPE.DESCRIPTION" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "COLLATERAL.TYPE"
+        conversion: getFrom "COLLATERAL.TYPE" "DESCRIPTION" false
+    }
+
+    field "STATUS" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "CUR" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"CUR\""
+    }
+
+    field "STAT.CHK" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "STATUS" Equals "CUR" process "NULL" "ASTERISK"
+    }
+
+    field "CURR" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        operation: constant "\"Ccy\""
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "NOM.VAL" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 1
+        }
+
+        operation: constant "\"Nominal\""
+    }
+
+    field "NOMINAL.VALUE" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOMINAL.VALUE"
+    }
+
+    field "EXE.VAL" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+            line: + 1
+        }
+
+        operation: constant "\"Execution\""
+    }
+
+    field "EXECUTION.VALUE" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXECUTION.VALUE"
+    }
+
+    field "THIRD.VAL" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+            line: + 1
+        }
+
+        operation: constant "\"Third Party\""
+    }
+
+    field "THIRD.PARTY.VALUE" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+            line: + 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "THIRD.PARTY.VALUE"
+    }
+
+    field "NET.VAL" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+            line: + 1
+        }
+
+        operation: constant "\"Net Value\""
+    }
+
+    field "NET.VALUE" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+            line: + 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: calc "EXECUTION.VALUE" - "THIRD.PARTY.VALUE"
+    }
+
+    field "MAX.VAL" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Max Value\""
+    }
+
+    field "MAXIMUM.VALUE" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "MAXIMUM.VALUE"
+    }
+
+    field "GL.VAL" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Gen Ledg Value\""
+    }
+
+    field "GEN.LEDGER.VALUE" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "GEN.LEDGER.VALUE"
+    }
+
+    field "CB.VAL" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Central Bank Value\""
+    }
+
+    field "CENTRAL.BANK.VALUE" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CENTRAL.BANK.VALUE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "ASTERISK" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"*\""
+    }
+
+    field "APPLICATION.ID" {
+        length: 34
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION.ID"
+    }
+
+    field "EXP.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+            line: + 1
+        }
+
+        operation: constant "\"Expiry Date\""
+    }
+
+    field "EXPIRY.DATE" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "APPL.ID" {
+        comma-separator: false
+        operation: field-extract "APPLICATION.ID"
+        conversion: extract from 1 to 2
+    }
+
+    fileVersion: Live
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

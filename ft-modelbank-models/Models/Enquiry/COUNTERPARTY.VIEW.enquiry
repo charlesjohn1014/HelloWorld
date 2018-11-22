@@ -1,0 +1,165 @@
+Enquiry "COUNTERPARTY.VIEW" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Single Counterparty Overview"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "SECTOR" {
+        Between "1500", "3999"
+    }
+
+    fixed-sort: "MNEMONIC" Null
+    custom-selection {
+
+        field "CUSTOMER.CODE" {
+            label {
+                en = "Counterparty"
+            }
+
+        }
+
+        None
+    }
+
+    field "ID1" {
+        break-condition {
+            break: Once
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "@ID" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Single Counterparty View\""
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        format: User
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Relationship Manager"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "SECTOR" {
+        label {
+            en = "Sector"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECTOR"
+        conversion: getFrom "SECTOR" "DESCRIPTION" false
+    }
+
+    field "RESIDENCE" {
+        label {
+            en = "Residence"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RESIDENCE"
+        conversion: getFrom "COUNTRY" "COUNTRY.NAME" false
+        conversion: value 1 1
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Customer records to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Counterparty View"
+        }
+
+        label-field: "@ID"
+        image: "custscv.gif"
+        criteria: "CURRENT.CUSTOMER" > "@ID" parameters {
+            field: "@ID"
+        }
+
+        composite-screen: "CUSTOMER.OVERVIEW.CP"
+    }
+
+    attributes: "ALLDATA" ; "NO.BREADCRUMBS" ; "DISABLE.NO.SORT.OPTIONS"
+}

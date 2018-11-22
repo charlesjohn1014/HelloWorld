@@ -1,0 +1,316 @@
+Enquiry "GB.AM.SHARE.REPORT" for "name:/AM_Modelling:AM.RECOMMENDATION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Share Recommendations"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "BOND.OR.SHARE" {
+        Equals "S"
+    }
+
+    fixed-sort: "INDUSTRY.CODE" Null
+    fixed-sort: "SECURITY.CURRENCY" Null
+    fixed-sort: "RATING" Null
+
+    field "POINT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "INDUSTRY.CODE" {
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "INDUSTRY.CODE"
+    }
+
+    field "INDUSTRY" {
+        label {
+            en = "Industry"
+        }
+
+        display-type: "STARTTREE"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: i-desc "INDUSTRY.CODE"
+        conversion: getFrom "SC.INDUSTRY" "DESCRIPTION" false
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 28
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "B.IND" {
+        comma-separator: false
+        operation: break-change "INDUSTRY"
+    }
+
+    field "RECOMMENDATION.NO" {
+        label {
+            en = "RECOMMENDATION"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECOMMENDATION.NO"
+    }
+
+    field "I.S.I.N" {
+        label {
+            en = "I.S.I.N"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 76
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "SECURITY.NO" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+    }
+
+    field "SECNO" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+    }
+
+    field "SECURITY.CURRENCY" {
+        label {
+            en = "Reference CCY"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 89
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "SECURITY.CURRENCY" false
+    }
+
+    field "RATED" {
+        label {
+            en = "Rating"
+        }
+
+        display-type: "CLASS-RATING"
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 97
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RATING"
+    }
+
+    field "INV.OBJECTIVE" {
+        label {
+            en = "Objective"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 104
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INV.OBJECTIVE"
+    }
+
+    field "LAST.PRICE" {
+        label {
+            en = "Last Price"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 117
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    field "PRICE.CURRENCY" {
+        label {
+            en = "Price CCY"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "PRICE.CURRENCY" false
+    }
+
+    field "PRICE.EARN.RATIO" {
+        label {
+            en = "P.E.R"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 138
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.SUPP" "PRICE.EARN.RATIO" false
+    }
+
+    field "LAST.RCD" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "RECOMMENDATION.NO"
+        conversion: call
+        jBC: "@ E.AM.GET.LAST.RCD"
+    }
+
+    field "LAST.RCD.RATED" {
+        label {
+            en = "Last Rating"
+        }
+
+        display-type: "CLASS-RATING"
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 144
+        }
+
+        operation: field-extract "LAST.RCD"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "LAST.RCD.DATE" {
+        label {
+            en = "Last Rated"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 154
+        }
+
+        processing-mode: Single
+        operation: field-extract "LAST.RCD"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "SECNO.POINT" {
+        comma-separator: false
+        operation: calc "SECNO":"POINT"
+    }
+
+    field "SECNO.DATE" {
+        comma-separator: false
+        operation: calc "SECNO.POINT":"LAST.RCD.DATE"
+    }
+
+    field "INIT.PRICE" {
+        label {
+            en = "Init. Price"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 164
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECNO.DATE"
+        conversion: getFrom "SC.PRICE.CHANGE" "OLD.PRICE" false
+    }
+
+    field "ENDTREE" {
+        display-type: "ENDTREE" break-condition {
+            field: "B.IND"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "INDUSTRY"
+    }
+
+    drilldown "1" {
+        description {
+            en = "MODIFY"
+        }
+
+        label-field: "RECOMMENDATION.NO" parameters {
+            function:  Input
+            field: "RECOMMENDATION.NO"
+        }
+
+        screen: "AM.RECOMMENDATION,AM"
+    }
+
+    attributes: "ALLDATA"
+}

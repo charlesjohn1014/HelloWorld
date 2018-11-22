@@ -1,0 +1,1280 @@
+Enquiry "AM.GRID.MASTER" for "name:/AM_Modelling:AM.GRID.FMT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Asset Allocation Comparison"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AM.GRID.REFRESH"
+    }
+
+    custom-selection {
+
+        field "GRID.CODE" {
+            label {
+                en = "Grid Code"
+            }
+
+        }
+
+        AND
+
+        field "MATRIX.CODE" {
+            label {
+                en = "Matrix Code"
+            }
+
+        }
+
+        AND
+
+        field "SAM.CODE" {
+            label {
+                en = "SAM Code"
+            }
+
+        }
+
+        AND
+
+        field "SESSION.CODE" {
+            label {
+                en = "Session Code"
+            }
+
+        }
+
+        None
+    }
+
+    field "GRID.FMT.CODE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "GRID.FMT.CODE"
+    }
+
+    field "MATRIX.CODE" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "MATRIX.CODE"
+    }
+
+    field "SAM.CODE" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "SAM.CODE"
+    }
+
+    field "TYPE.CODE" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "TYPE.CODE"
+    }
+
+    field "SESSION.CODE" {
+        format: User
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "SESSION.CODE"
+    }
+
+    field "MATRIX" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "MATRIX.CODE"
+    }
+
+    field "SAM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "SAM.CODE"
+    }
+
+    field "SESSION" {
+        comma-separator: false
+        operation: field-extract "SESSION.CODE"
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TYPE.CODE"
+    }
+
+    field "B.MATRIX" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Single
+        operation: break-change "MATRIX"
+    }
+
+    field "B.SAM" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Single
+        operation: break-change "SAM"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DOT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "DDOUT" {
+        break-condition {
+            break: Once
+        }
+
+        length: 1
+        alignment: Right
+        comma-separator: false
+        operation: constant "\"#\""
+    }
+
+    field "DDIN" {
+        break-condition {
+            break: Once
+        }
+
+        length: 1
+        alignment: Right
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "YES" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "NO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"NO\""
+    }
+
+    field "ENQ.LINK" {
+        comma-separator: false
+        operation: constant "\"AM.GRID\""
+    }
+
+    field "ENQ.SELECT" {
+        comma-separator: false
+        operation: constant "\"AM.ELIGIBLE.LIST\""
+    }
+
+    field "ENQ.POSN" {
+        comma-separator: false
+        operation: constant "\"AM.POS\""
+    }
+
+    field "TYPE.SAM" {
+        comma-separator: false
+        operation: constant "\"SAM\""
+    }
+
+    field "SESSION.DOT" {
+        comma-separator: false
+        operation: calc "SESSION":"DOT"
+    }
+
+    field "POS.CODE" {
+        comma-separator: false
+        operation: calc "SESSION.DOT":"SAM.CODE"
+    }
+
+    field "SCENARIO.CODE" {
+        comma-separator: false
+        operation: calc "SESSION.DOT":"SAM.CODE"
+    }
+
+    field "POS.SCE" {
+        comma-separator: false
+        operation: field-extract "POS.CODE"
+        conversion: call
+        jBC: "@ E.AM.GET.POS.TYPE"
+    }
+
+    field "GRID.CODE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "GRID.CODE"
+    }
+
+    field "TXT1" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: constant "\"Portfolio : \""
+    }
+
+    field "TXT2" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: constant "\"Compare : \""
+    }
+
+    field "ENRI1" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" true
+    }
+
+    field "ENRI2" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: field-extract "SAM"
+        conversion: getFrom "AM.COMPARE" "DESCRIPTION" true
+    }
+
+    field "HEAD1" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 26
+            line: 0
+        }
+
+        operation: constant "\"ASSET ALLOCATION COMPARISON\""
+    }
+
+    field "HEAD11" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 56
+            line: 0
+        }
+
+        operation: field-extract "POS.SCE"
+    }
+
+    field "HEAD2" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        operation: if "TYPE" Equals "TYPE.SAM" process "TXT1" "TXT2"
+    }
+
+    field "HEAD3" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: field-extract "SAM"
+    }
+
+    field "HEAD4" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: if "TYPE" Equals "TYPE.SAM" process "ENRI1" "ENRI2"
+    }
+
+    field "HEAD5" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        operation: constant "\"Matrix :\""
+    }
+
+    field "HEAD6" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 2
+        }
+
+        operation: field-extract "MATRIX"
+    }
+
+    field "HEAD7" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 2
+        }
+
+        operation: field-extract "MATRIX"
+        conversion: getFrom "AM.MATRIX" "DESCRIPTION" false
+    }
+
+    field "HEAD8" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 75
+            line: 1
+        }
+
+        operation: constant "\"Date :\""
+    }
+
+    field "HEAD9" {
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 82
+            line: 1
+        }
+
+        operation: today
+    }
+
+    field "COL.01" {
+        label {
+            en = "Ccy / Asset"
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 1
+    }
+
+    field "COL.02" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 2
+    }
+
+    field "COL.03" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 3
+    }
+
+    field "COL.04" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 4
+    }
+
+    field "COL.05" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 24
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 5
+    }
+
+    field "COL.06" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 6
+    }
+
+    field "COL.07" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 7
+    }
+
+    field "COL.08" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 27
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 8
+    }
+
+    field "COL.09" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 9
+    }
+
+    field "COL.10" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 10
+    }
+
+    field "COL.11" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 11
+    }
+
+    field "COL.12" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COL"
+        conversion: value 12
+    }
+
+    field "OUTB.02" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 2
+    }
+
+    field "OUTB.03" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 3
+    }
+
+    field "OUTB.04" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 4
+    }
+
+    field "OUTB.05" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 5
+    }
+
+    field "OUTB.06" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 6
+    }
+
+    field "OUTB.07" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 7
+    }
+
+    field "OUTB.08" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 8
+    }
+
+    field "OUTB.09" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 9
+    }
+
+    field "OUTB.10" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 10
+    }
+
+    field "OUTB.11" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 11
+    }
+
+    field "OUTB.12" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTBOUND"
+        conversion: value 12
+    }
+
+    field "DDOUTB02" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.02" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB03" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.03" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB04" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.04" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB05" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.05" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB06" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.06" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB07" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.07" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB08" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.08" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB09" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.09" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB10" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.10" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB11" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.11" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DDOUTB12" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.12" Equals "YES" process "DDIN" "DDOUT"
+    }
+
+    field "DD02" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.02" NotEquals "NULL" process "DDOUTB02" "NULL"
+    }
+
+    field "DD03" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.03" NotEquals "NULL" process "DDOUTB03" "NULL"
+    }
+
+    field "DD04" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.04" NotEquals "NULL" process "DDOUTB04" "NULL"
+    }
+
+    field "DD05" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.05" NotEquals "NULL" process "DDOUTB05" "NULL"
+    }
+
+    field "DD06" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.06" NotEquals "NULL" process "DDOUTB06" "NULL"
+    }
+
+    field "DD07" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.07" NotEquals "NULL" process "DDOUTB07" "NULL"
+    }
+
+    field "DD08" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.08" NotEquals "NULL" process "DDOUTB08" "NULL"
+    }
+
+    field "DD09" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.09" NotEquals "NULL" process "DDOUTB09" "NULL"
+    }
+
+    field "DD10" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.10" NotEquals "NULL" process "DDOUTB10" "NULL"
+    }
+
+    field "DD11" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.11" NotEquals "NULL" process "DDOUTB11" "NULL"
+    }
+
+    field "DD12" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "OUTB.12" NotEquals "NULL" process "DDOUTB12" "NULL"
+    }
+
+    field "LINK.02" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 2
+    }
+
+    field "LINK.03" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 3
+    }
+
+    field "LINK.04" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 4
+    }
+
+    field "LINK.05" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 5
+    }
+
+    field "LINK.06" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 6
+    }
+
+    field "LINK.07" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 7
+    }
+
+    field "LINK.08" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 8
+    }
+
+    field "LINK.09" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 9
+    }
+
+    field "LINK.10" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 10
+    }
+
+    field "LINK.11" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 11
+    }
+
+    field "LINK.12" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK"
+        conversion: value 12
+    }
+
+    field "REF.02" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 2
+    }
+
+    field "REF.03" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 3
+    }
+
+    field "REF.04" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 4
+    }
+
+    field "REF.05" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 5
+    }
+
+    field "REF.06" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 6
+    }
+
+    field "REF.07" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 7
+    }
+
+    field "REF.08" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 8
+    }
+
+    field "REF.09" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 9
+    }
+
+    field "REF.10" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 10
+    }
+
+    field "REF.11" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 11
+    }
+
+    field "REF.12" {
+        length: 26
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE"
+        conversion: value 12
+    }
+
+    field "REF02" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 2
+    }
+
+    field "REF03" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 3
+    }
+
+    field "REF04" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 4
+    }
+
+    field "REF05" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 5
+    }
+
+    field "REF06" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 6
+    }
+
+    field "REF07" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 7
+    }
+
+    field "REF08" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 8
+    }
+
+    field "REF09" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 9
+    }
+
+    field "REF10" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 10
+    }
+
+    field "REF11" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 11
+    }
+
+    field "REF12" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CODE"
+        conversion: value 12
+    }
+
+    field "SEL.02" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 2
+    }
+
+    field "SEL.03" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 3
+    }
+
+    field "SEL.04" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 4
+    }
+
+    field "SEL.05" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 5
+    }
+
+    field "SEL.06" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 6
+    }
+
+    field "SEL.07" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 7
+    }
+
+    field "SEL.08" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 8
+    }
+
+    field "SEL.09" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 9
+    }
+
+    field "SEL.10" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 10
+    }
+
+    field "SEL.11" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 11
+    }
+
+    field "SEL.12" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECT"
+        conversion: value 12
+    }
+
+    field "DD.PROP.1" {
+        comma-separator: false
+        operation: constant "\"SCENARIO.CODE EQ \""
+    }
+
+    field "DD.PROP.2" {
+        comma-separator: false
+        operation: calc "DD.PROP.1":"SCENARIO.CODE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Position"
+        }
+
+        label-field: "COL.01" parameters {
+            function:  See
+            field: "POS.CODE"
+        }
+
+        screen: "AM.POS,DETAIL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Scenario"
+        }
+
+        label-field: "COL.01" parameters {
+            function:  See
+            field: "SCENARIO.CODE"
+        }
+
+        screen: "AM.SCENARIO,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Edit Scenario"
+        }
+
+        label-field: "COL.01" parameters {
+            function:  Input
+            field: "SCENARIO.CODE"
+        }
+
+        screen: "AM.SCENARIO,INPUT"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Proposed Orders"
+        }
+
+        label-field: "COL.01"
+        criteria: "DD.PROP.2"
+        enquiry: "AM.PROPOSED.ORDER"
+    }
+
+    attributes: "NO.COLUMN.HEADER"
+}

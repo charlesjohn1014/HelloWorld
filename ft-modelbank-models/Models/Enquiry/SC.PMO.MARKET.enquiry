@@ -1,0 +1,214 @@
+Enquiry "SC.PMO.MARKET" for "name:/EB_Template:EB.LOOKUP#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        Matches "MARKET.WATCH..."
+    }
+
+    fixed-sort: "DESCRIPTION" Descending
+
+    field "@ID" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Market Watch\""
+    }
+
+    field "DESC" {
+        label {
+            en = "."
+        }
+
+        display-type: "CLASS-TITLE"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "GREEN" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/up.gif\""
+    }
+
+    field "RED" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/down.gif\""
+    }
+
+    field "HOT" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/offline/deal/hot.gif\""
+    }
+
+    field "RECO" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/star.gif\""
+    }
+
+    field "VIEW" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/required.gif\""
+    }
+
+    field "TOP" {
+        comma-separator: false
+        operation: constant "\"ENQ SC.PMO.TOP\""
+    }
+
+    field "LOSS" {
+        comma-separator: false
+        operation: constant "\"ENQ SC.PMO.LOSERS\""
+    }
+
+    field "SHOCK" {
+        comma-separator: false
+        operation: constant "\"ENQ SC.PMO.SHOCK\""
+    }
+
+    field "RECOM" {
+        comma-separator: false
+        operation: constant "\"ENQ SC.PMO.RECOM\""
+    }
+
+    field "ACTIVE" {
+        comma-separator: false
+        operation: constant "\"ENQ PMO.MARKET.DATA\""
+    }
+
+    field "DESC1" {
+        comma-separator: false
+        operation: constant "\"Top Gainers\""
+    }
+
+    field "DESC2" {
+        comma-separator: false
+        operation: constant "\"Top Losers\""
+    }
+
+    field "DESC3" {
+        comma-separator: false
+        operation: constant "\"Recent Recommendations\""
+    }
+
+    field "DESC4" {
+        comma-separator: false
+        operation: constant "\"Price Shockers\""
+    }
+
+    field "DESC5" {
+        comma-separator: false
+        operation: constant "\"Major Indices\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ENQ1" {
+        comma-separator: false
+        operation: if "DESC" Equals "DESC1" process "TOP" "ENQ2"
+    }
+
+    field "ENQ2" {
+        comma-separator: false
+        operation: if "DESC" Equals "DESC2" process "LOSS" "ENQ3"
+    }
+
+    field "ENQ3" {
+        comma-separator: false
+        operation: if "DESC" Equals "DESC3" process "RECOM" "ENQ4"
+    }
+
+    field "ENQ4" {
+        comma-separator: false
+        operation: if "DESC" Equals "DESC4" process "SHOCK" "ENQ5"
+    }
+
+    field "ENQ5" {
+        comma-separator: false
+        operation: if "DESC" Equals "DESC5" process "ACTIVE" "NULL"
+    }
+
+    field "ENQD1" {
+        comma-separator: false
+        operation: if "ENQ1" Equals "NULL" process "ENQ2" "ENQ1"
+    }
+
+    field "ENQD" {
+        comma-separator: false
+        operation: field-extract "ENQD1"
+    }
+
+    field "EN1" {
+        comma-separator: false
+        operation: if "ENQD" Equals "TOP" process "GREEN" "EN2"
+    }
+
+    field "EN2" {
+        comma-separator: false
+        operation: if "ENQD" Equals "LOSS" process "RED" "EN3"
+    }
+
+    field "EN3" {
+        comma-separator: false
+        operation: if "ENQD" Equals "SHOCK" process "HOT" "EN4"
+    }
+
+    field "EN4" {
+        comma-separator: false
+        operation: if "ENQD" Equals "RECOM" process "RECO" "VIEW"
+    }
+
+    field "END1" {
+        comma-separator: false
+        operation: if "EN1" Equals "NULL" process "EN2" "EN1"
+    }
+
+    field "END" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "END1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "DESC"
+        image: "view.gif"
+        from-field: "ENQD"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

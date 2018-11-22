@@ -1,0 +1,105 @@
+Enquiry "AP.ASSET.CCY.POS.PIE" for "name:/AM_ModelBank:NOFILE.AP.ASSET.CCY.POS.PIE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Asset Classes vs Currency Positions"
+    }
+
+    start-line: 5
+    end-line: 19 fixed-selection "@ID" {
+    }
+
+    fixed-selection "SAM.NO" {
+        Equals "!CURRENT.SELECTED.PORTFOLIOS"
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            label {
+                en = "SAM.NO"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Asset Class vs Currency Matrix\""
+    }
+
+    field "SAM.NO" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 9 to 0 delimited by "*"
+    }
+
+    field "F.REF.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 10 to 0 delimited by "*"
+    }
+
+    field "PORTF.ID" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "SAM.NO"
+    }
+
+    field "B.PORTF.NO" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "SAM.NO"
+    }
+
+    field "T.PORTF.NO" {
+        comma-separator: false
+        operation: field-extract "SAM.NO"
+    }
+
+    field "ASSET.LABEL" {
+        display-type: "PIELABEL"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CCY.TOT" {
+        display-type: "PIE"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        display-section: NoDisplay
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "ALLDATA"
+}

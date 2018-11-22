@@ -1,0 +1,388 @@
+Enquiry "FT.AUTH.NAU.PAYMENTS" for "name:/FT_Contract:FUNDS.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Funds Transfer"
+    }
+
+    description {
+        en = "Unauthorised Funds Transfers"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RECORD.STATUS" {
+        Equals "INAU"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        Matches "OT...", "EQ", "\'AC\'", "\'IT\'", "\'OD\'", "\'OD10\'"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        NotEquals "\'OTTC\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.ACCT.NO" {
+            label {
+                en = "Credit Account No"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.CURRENCY" {
+            label {
+                en = "Credit Currency"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.AMOUNT" {
+            label {
+                en = "Credit Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised Funds Transfer\""
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Txn Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "Debit Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Debit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.CURRENCY"
+    }
+
+    field "DEBIT.AMOUNT" {
+        label {
+            en = "Debit Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        operation: application-field-name "DEBIT.AMOUNT"
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "CCY2" {
+        label {
+            en = "Credit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: application-field-name "CREDIT.CURRENCY"
+    }
+
+    field "CREDIT.AMOUNT" {
+        label {
+            en = "Credit Amount"
+        }
+
+        format: Currency "CCY2" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        operation: application-field-name "CREDIT.AMOUNT"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        hidden: true
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "INWARD.PAY.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INWARD.PAY.TYPE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TXN.DRILLDOWN" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "TRANSACTION.TYPE"
+        conversion: replace {
+            oldData: "OD"
+            newData: "OD.FCY"
+        }
+
+        conversion: replace {
+            oldData: "OD10"
+            newData: "OD.110"
+        }
+
+        conversion: replace {
+            oldData: "OT03"
+            newData: "OT103.SERIAL"
+        }
+
+        conversion: replace {
+            oldData: "OT12"
+            newData: "OT103.COVER"
+        }
+
+        conversion: replace {
+            oldData: "OT40"
+            newData: "OT400.202"
+        }
+
+        conversion: replace {
+            oldData: "IT"
+            newData: "INWARD.REMIT.HP"
+        }
+
+        conversion: replace {
+            oldData: "OT20"
+            newData: "ACTR.NOST"
+        }
+
+        conversion: replace {
+            oldData: "OT22"
+            newData: "ACTTR.NOST"
+        }
+
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,\""
+    }
+
+    field "TXN.DRILL" {
+        comma-separator: false
+        operation: calc "APPL":"TXN.DRILLDOWN"
+    }
+
+    field "VER.DEC1" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,INW\""
+    }
+
+    field "VER.DEC2" {
+        comma-separator: false
+        operation: if "TELEX.FROM.CUST" NotEquals "NULL" process "VER.DEC1" "TXN.DRILL"
+    }
+
+    field "VER.DEFAULT" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,AUTH\""
+    }
+
+    field "CHK.VER" {
+        comments: "Check and See if the version Exists or not !!"
+        comma-separator: false
+        operation: field-extract "VER.DEC2"
+        conversion: getFrom "VERSION" "FIELDS.PER.LINE" false
+    }
+
+    field "VER.FINAL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "CHK.VER" NotEquals "NULL" process "VER.DEC2" "VER.DEFAULT"
+    }
+
+    field "ZERONORECORD" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "VER.FINAL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "VER.FINAL"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "VER.FINAL"
+    }
+
+}

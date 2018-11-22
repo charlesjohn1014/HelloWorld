@@ -1,0 +1,271 @@
+Enquiry "NDF.DEAL" for "name:/FX_Contract:ND.DEAL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "NDF Deals Done Today"
+    }
+
+    description {
+        en = "NDF Deals Done today"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DEAL.DATE" {
+        Equals "!TODAY"
+    }
+
+    custom-selection {
+
+        field "NDF.TYPE" {
+            label {
+                en = "NDF Type"
+            }
+
+        }
+
+        AND
+
+        field "COUNTERPARTY" {
+            label {
+                en = "Counterparty"
+            }
+
+        }
+
+        AND
+
+        field "DEALER.DESK" {
+            label {
+                en = "Dealer Desk"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "Header" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"NDF Deals\""
+    }
+
+    field "NDF.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NDF.TYPE"
+    }
+
+    field "COUNTERPARTY" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "COUNTERPARTY"
+    }
+
+    field "COUNTERPARTY1" {
+        label {
+            en = "Counterparty Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COUNTERPARTY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BUY.SELL.IND" {
+        label {
+            en = "Buy/Sell"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "BUY.SELL.IND"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Deal Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.CURRENCY"
+    }
+
+    field "DEAL.AMOUNT" {
+        label {
+            en = "Deal Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.AMOUNT"
+    }
+
+    field "NOTIONAL.RATE" {
+        label {
+            en = "Notional Rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOTIONAL.RATE"
+    }
+
+    field "SETTLEMENT.CCY" {
+        label {
+            en = "Settle Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.CCY"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "SETTLEMENT.DATE" {
+        label {
+            en = "Settlement Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No NDF Deals done available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "ND.DEAL"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES"
+}

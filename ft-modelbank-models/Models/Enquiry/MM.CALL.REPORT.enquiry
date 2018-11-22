@@ -1,0 +1,315 @@
+Enquiry "MM.CALL.REPORT" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Maint Margin Call to be Triggered"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 20 fixed-selection "MAINT.MGN.DATE" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "ADDNL.MGN.DATE" {
+        Equals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "REFERENCE.CURRENCY" {
+            label {
+                en = "Reference Ccy"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Maint Margin Call Report\""
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "REFERENCE.CURRENCY" {
+        label {
+            en = "Ref Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.CURRENCY"
+    }
+
+    field "VT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "VALUATION.AMT"
+    }
+
+    field "LN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOAN.MARGIN.AMT"
+    }
+
+    field "SPM" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SHORT.POS.MGN.AMT"
+    }
+
+    field "VAT" {
+        label {
+            en = "Portfolio Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: calc "VT" - "LN"
+    }
+
+    field "MV" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MARGIN.VALUE"
+    }
+
+    field "MV1" {
+        comma-separator: false
+        operation: calc "MV" - "LN"
+    }
+
+    field "NMV" {
+        comma-separator: false
+        operation: calc "LN" + "SPM"
+    }
+
+    field "MV2" {
+        comma-separator: false
+        operation: calc "MV" - "NMV"
+    }
+
+    field "CC" {
+        comma-separator: false
+        operation: company
+    }
+
+    field "ADJ.VAL" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "ADJ.SHORT.POS" false
+    }
+
+    field "YE" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "FMV" {
+        label {
+            en = "Margin Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        operation: if "ADJ.VAL" Equals "YE" process "MV1" "MV2"
+    }
+
+    field "LOA" {
+        label {
+            en = "Loan Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        operation: calc "LN" + "SPM"
+    }
+
+    field "EQ" {
+        label {
+            en = "Equity"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        operation: calc "FMV" + "LOA"
+    }
+
+    field "MAMT" {
+        label {
+            en = "Maint Mgn Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MAINT.MARGIN.AMT"
+    }
+
+    field "MMA" {
+        label {
+            en = "Margin Call Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: calc "EQ" - "MAMT"
+    }
+
+    field "MDATE" {
+        label {
+            en = "Maint Margin Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MAINT.MGN.DATE"
+    }
+
+    field "TD" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "MAINT.MGN.DAYS" false
+    }
+
+    field "TMD" {
+        comma-separator: false
+        operation: field-extract "MDATE"
+        conversion: julian
+    }
+
+    field "DD" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: calc "TMD" + "TD"
+        conversion: oconv "D"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records with Margin Call Found\""
+    }
+
+}

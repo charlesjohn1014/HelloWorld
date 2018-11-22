@@ -1,0 +1,191 @@
+Enquiry "AA.DETAILS.PRICING.AB" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Pricing Plan"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "L.LINK.TYPE" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Plan\""
+    }
+
+    field "LINK.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RELATIONSHIP.PLAN"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "L.PRICING" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Pricing Arrangement\""
+    }
+
+    field "LINK.ARR" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RELATIONSHIP.ARR"
+    }
+
+    field "L.LINK.ARR" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 140
+        operation: if "LINK.ARR" NotEquals "NULL" process "L.PRICING" "NULL"
+    }
+
+    field "D.LINK.ARR" {
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 130
+        operation: if "LINK.ARR" NotEquals "NULL" process "LINK.ARR" "NULL"
+    }
+
+    field "L.LINK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        column-width: 95
+        operation: if "LINK.TYPE" NotEquals "NULL" process "L.LINK.TYPE" "NULL"
+    }
+
+    field "D.LINK.TYPE" {
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        column-width: 165
+        operation: if "LINK.TYPE" NotEquals "NULL" process "LINK.TYPE" "NULL"
+    }
+
+    field "INT.FX.PC" {
+        comma-separator: false
+        operation: constant "\"PREFERENTIAL.PRICING.FX\""
+    }
+
+    field "DELIM" {
+        comma-separator: false
+        operation: constant "\"~\""
+    }
+
+    field "C.INT.FX.COND" {
+        comma-separator: false
+        operation: calc "LINK.ARR":"DELIM":"INT.FX.PC"
+        conversion: call
+        jBC: "@ E.AA.CONV.GET.PROPERTY.RECORD"
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "PROD.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "D.LINK.ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ACT.VALUE" {
+        comma-separator: false
+        operation: constant "\"-UPDATE-\""
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "C.INT.FX.COND"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"ACT.VALUE":"PROPERTY"
+    }
+
+    field "ARRANGEMENT.ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "D.LINK.ARR"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "D.LINK.TYPE"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "DRILL.VER"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Pricing Details"
+        }
+
+        label-field: "D.LINK.TYPE"
+        image: "view.gif" parameters {
+            field: "D.LINK.ARR"
+        }
+
+        composite-screen: "AA.OVERVIEW.PR"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

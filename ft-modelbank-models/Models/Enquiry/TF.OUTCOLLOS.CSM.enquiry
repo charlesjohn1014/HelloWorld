@@ -1,0 +1,369 @@
+Enquiry "TF.OUTCOLLOS.CSM" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Outstanding Outward Doc Collection"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "BENEFICIARY.CUSTNO" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "LC.TYPE" {
+        Equals "CCOS", "CCOT", "CDOS", "CDOT"
+    }
+
+    fixed-sort: "EXPIRY.DATE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "EXPIRY.DATE" {
+            label {
+                en = "Reversal Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BENEFICIARY.CUSTNO" {
+            label {
+                en = "Drawer Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "Doc Currency"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 0
+        }
+
+        operation: constant "\"Outward Collections Outstanding\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "Collection Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "LC.TYPE"
+        conversion: getFrom "LC.TYPES" "DESCRIPTION" false
+    }
+
+    field "DRAWER.ID" {
+        label {
+            en = "Drawer Id"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY.CUSTNO"
+    }
+
+    field "BENEFICIARY.CUSTNO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY.CUSTNO"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "BENEFICIARY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BENEFICIARY"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.DRAWEE" {
+        label {
+            en = "Drawer"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "BENEFICIARY.CUSTNO" Equals "NULL" process "BENEFICIARY" "BENEFICIARY.CUSTNO"
+    }
+
+    field "ISSUING.BANK.NO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ISSUING.BANK.NO"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "ISSUING.BANK" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ISSUING.BANK"
+    }
+
+    field "NULL.02" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.COLLBK" {
+        label {
+            en = "Collecting Bank"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "ISSUING.BANK.NO" Equals "NULL" process "ISSUING.BANK" "ISSUING.BANK.NO"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "ADVICE.EXPIRY.DATE" {
+        label {
+            en = "Original Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ADVICE.EXPIRY.DATE"
+    }
+
+    field "LCTYPE" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.TYPE"
+        conversion: replace {
+            oldData: "CCOS"
+            newData: "CLOUTCOLL"
+        }
+
+        conversion: replace {
+            oldData: "CCOT"
+            newData: "CLOUTCOLL"
+        }
+
+        conversion: replace {
+            oldData: "CDOS"
+            newData: "CDOS"
+        }
+
+        conversion: replace {
+            oldData: "CDOT"
+            newData: "CDOT"
+        }
+
+    }
+
+    field "LC" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,\""
+    }
+
+    field "DRILL.VERSION" {
+        comma-separator: false
+        operation: calc "LC":"LCTYPE"
+    }
+
+    field "COS.NAME" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.TYPE"
+        conversion: replace {
+            oldData: "CCOS"
+            newData: "LC.OUTCOLL.OVERVIEW.CSA"
+        }
+
+        conversion: replace {
+            oldData: "CCOT"
+            newData: "LC.TENOR.OUTCOLL.OVERVIEW.CSA"
+        }
+
+        conversion: replace {
+            oldData: "CDOS"
+            newData: "LC.OUTCOLL.OVERVIEW.CSA"
+        }
+
+        conversion: replace {
+            oldData: "CDOT"
+            newData: "LC.TENOR.OUTCOLL.OVERVIEW.CSA"
+        }
+
+    }
+
+    field "COS" {
+        comma-separator: false
+        operation: constant "\"COS \""
+    }
+
+    field "COS.DECIDE" {
+        comma-separator: false
+        operation: calc "COS":"COS.NAME"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Documentary Collection Outstanding\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "DRILL.VERSION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Outward Coll Overview"
+        }
+
+        label-field: "@ID"
+        image: "oview.gif" parameters {
+            field: "@ID"
+        }
+
+        from-field: "COS.DECIDE"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

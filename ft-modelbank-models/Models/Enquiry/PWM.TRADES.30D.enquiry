@@ -1,0 +1,182 @@
+Enquiry "PWM.TRADES.30D" for "name:/AM_ModelBank:NOFILE.E.MB.TRADES.30D#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Recent Trades"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 5
+    end-line: 98 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Client No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO" {
+            label {
+                en = "Portfolio No"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Trades for Last 30 Days\""
+    }
+
+    field "TRANS.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "#"
+    }
+
+    field "SEC.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "#"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "#"
+    }
+
+    field "INPUTTER" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "#"
+    }
+
+    field "INPUTT" {
+        label {
+            en = "Inputter"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "APPLN" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "#"
+    }
+
+    field "VER.INPUT" {
+        comma-separator: false
+        operation: constant "\",INPUT\""
+    }
+
+    field "VER.DRILL" {
+        comma-separator: false
+        operation: calc "APPLN":"VER.INPUT"
+    }
+
+    field "NO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No trades in last 30 days\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "TRANS.REF"
+        image: "view.gif" parameters {
+            function:  See
+            field: "TRANS.REF"
+        }
+
+        from-field: "VER.DRILL"
+    }
+
+}

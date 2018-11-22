@@ -1,0 +1,328 @@
+Enquiry "CL.PROMISES.KEPT" for "name:/CL_ModelBank:NOFILE.CL.PROMISES.KEPT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Promises Kept"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    description {
+        en = "Collection Promises"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "COLLECTOR.ID" {
+    }
+
+    fixed-selection "AUTOREFRESH" {
+        Equals "60"
+    }
+
+    custom-selection {
+
+        field "COLLECTOR.ID" {
+            label {
+                en = "Collector"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "COLLECTOR.ID" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "COLLECTOR.ID"
+    }
+
+    field "LABEL.COLL" {
+        comma-separator: false
+        operation: constant "\"Collector :\""
+    }
+
+    field "DISP.COLL" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: if "COLLECTOR.ID" NotEquals "\"\"" process "LABEL.COLL"
+    }
+
+    field "DISP.VALUE" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: if "COLLECTOR.ID" NotEquals "\"\"" process "COLLECTOR.ID"
+    }
+
+    field "CUSTOMER.NO" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        hidden: true
+        operation: field-extract "CUSTOMER.NO"
+    }
+
+    field "TOT.OD.AMT" {
+        label {
+            en = "Total OD"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PTP.DATE" {
+        label {
+            en = "PTP Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "PTP.PAID.AMT" {
+        label {
+            en = "PTP Amount"
+        }
+
+        display-type: "AMOUNT"
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 17 to 1 delimited by "*"
+    }
+
+    field "CONTRACT.ID" {
+        label {
+            en = "Contract ID"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "PRODUCT" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 15 to 1 delimited by "*"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CAT.DESCR" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: getFrom "CATEGORY" "SHORT.NAME" false
+    }
+
+    field "AA.ID" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: extract from 1 to 2
+    }
+
+    field "DESCR" {
+        label {
+            en = "Product"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: if "AA.ID" Equals "AA" process "PRODUCT" "CAT.DESCR"
+    }
+
+    field "ACTION.CODE" {
+        label {
+            en = "Action"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "NO.OF.DAYS.PD" {
+        label {
+            en = "DPD"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ACTION.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "OUTCOME.CODE" {
+        label {
+            en = "Outcome"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Contact Log"
+        }
+
+        label-field: "CUST.ID"
+        image: "sell.gif"
+        criteria: "CONTACT.CLIENT" Equals "CUST.ID"
+        enquiry: "CR.CONTACT.LOG"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Execute Activity"
+        }
+
+        label-field: "CUST.ID"
+        image: "action.gif"
+        criteria: "COLLECTOR" Equals "COLLECTOR.ID" parameters {
+            function:  Input
+            field: "CUST.ID"
+        }
+
+        screen: "CL.COLLECTION.ITEM,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Single Customer View"
+        }
+
+        label-field: "CUST.ID"
+        image: "custscv.gif"
+        criteria: "CURRENT.CUSTOMER" > "CUST.ID" parameters {
+            field: "CUST.ID"
+        }
+
+        composite-screen: "CUSTOMER.OVERVIEW.CSM"
+    }
+
+    attributes: "ALLDATA" ; "DISABLE.NO.SORT.OPTIONS" ; "NO.ENQUIRY.FAVOURITES" ; "NO.MORE.OPTIONS"
+}

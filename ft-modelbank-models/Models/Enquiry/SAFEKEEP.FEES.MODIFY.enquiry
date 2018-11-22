@@ -1,0 +1,259 @@
+Enquiry "SAFEKEEP.FEES.MODIFY" for "name:/SC_ScfSafekeepingFees:SAFEKEEP.HOLDING#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Modified Safekeep Fees"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99 fixed-selection "PROCESS.STAGE" {
+        Equals "CALCULATED"
+    }
+
+    fixed-selection "CURR.NO" {
+        Greater "1"
+    }
+
+    field "IHDR1" {
+        comma-separator: false
+        operation: constant "\"Details of Safekeeping fee changes - Amounts in\""
+    }
+
+    field "IHDR2" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "IHDR3" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: calc "IHDR1":"IHDR2":"IHDR3"
+    }
+
+    field "ID" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CUR.SH.FEES" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CHARGES.LCY"
+    }
+
+    field "SH.INPUT" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio No"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "HIST.SH.FEES" NotEquals "CUR.SH.FEES" process "ID" "NUL"
+    }
+
+    field "HIST.FEE" {
+        label {
+            en = "Fee Before Modification"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z2"
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACT.CHARGES"
+    }
+
+    field "LOCAL.CHG.LCY" {
+        label {
+            en = "Local Chrg"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z2"
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LOCAL.CHG.LCY"
+    }
+
+    field "FOREIGN.CHG.LCY" {
+        label {
+            en = "Foreign Chrg"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z2"
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FOREIGN.CHG.LCY"
+    }
+
+    field "DISC.AMOUNT.LCY" {
+        label {
+            en = "Disc Amt"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z2"
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DISC.AMOUNT.LCY"
+    }
+
+    field "CURRENT.FEE" {
+        label {
+            en = "Fee After Modification"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z2"
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHARGES.LCY"
+    }
+
+    field "DIFF" {
+        label {
+            en = "Modified Amount"
+        }
+
+        display-type: "CLASS-TAMNUM"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 11
+        }
+
+        operation: calc "HIST.FEE" - "CURRENT.FEE"
+    }
+
+    field "REASON" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "REASON.NARR"
+    }
+
+    field "REASON.NARR" {
+        label {
+            en = "Reason"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: if "HIST.SH.FEES" Equals "CUR.SH.FEES" process "NUL" "REASON"
+    }
+
+    field "SAFEKEEPING.INPUT" {
+        label {
+            en = "Modified by"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records found with modified safekeep fees\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "PORTFOLIO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "PORTFOLIO"
+        }
+
+        screen: "SAFEKEEP.HOLDING,INP"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

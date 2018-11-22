@@ -1,0 +1,389 @@
+Enquiry "NDPC3" for "name:/PM_Config:PM.DLY.POSN.CLASS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "FX POSITION BY TYPE"
+        }
+
+        column: 33
+        line: 0
+    }
+
+    header {
+        label {
+            en = "POS TYPE"
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "PERD END DATE"
+        }
+
+        column: 18
+        line: 2
+    }
+
+    header {
+        label {
+            en = "PURCHASE AMOUNT"
+        }
+
+        column: 37
+        line: 2
+    }
+
+    header {
+        label {
+            en = "SALE AMOUNT"
+        }
+
+        column: 64
+        line: 2
+    }
+
+    description {
+        en = "NDPC3"
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "@ID" {
+        }
+
+        None
+    }
+
+    field "PCL" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "PCLASS" {
+        comma-separator: false
+        operation: break-change "PCL"
+    }
+
+    field "CUR" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 5 to 1 delimited by "."
+    }
+
+    field "DATE" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 6 to 1 delimited by "."
+    }
+
+    field "PERD.DT" {
+        comma-separator: false
+        operation: field-extract "PCL"
+        conversion: getFrom "PM.POSN.CLASS" "SHORT.NAME" false
+    }
+
+    field "PERDPR" {
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "PERD.DT"
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZE" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "AMT1" {
+        comma-separator: false
+        operation: application-field-name "AMOUNT"
+        conversion: value 1 1
+    }
+
+    field "DATE.PR" {
+        format: Date
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        operation: field-extract "DATE"
+    }
+
+    field "AMT2" {
+        comma-separator: false
+        operation: application-field-name "AMOUNT"
+        conversion: value 2 1
+    }
+
+    field "AM1" {
+        format: Currency "CUR" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        operation: if "AMT1" Equals "NUL" process "ZE" "AMT1"
+    }
+
+    field "AM2" {
+        format: Currency "CUR" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: if "AMT2" Equals "NUL" process "ZE" "AMT2"
+    }
+
+    field "DASH" {
+        break-condition {
+            field: "PCLASS"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: constant "\"------------------------------\""
+    }
+
+    field "D1" {
+        break-condition {
+            field: "PCLASS"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        operation: constant "\"-------------------------\""
+    }
+
+    field "TAM1" {
+        format: Currency "CUR" negative-pattern -# break-condition {
+            field: "PCLASS"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 32
+            line: + 1
+        }
+
+        operation: total "AM1"
+    }
+
+    field "TXN.REF" {
+        comma-separator: false
+        operation: application-field-name "TXN.REFERENCE"
+    }
+
+    field "TAM2" {
+        format: Currency "CUR" negative-pattern -# break-condition {
+            field: "PCLASS"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+            line: + 1
+        }
+
+        operation: total "AM2"
+    }
+
+    field "BLANK" {
+        break-condition {
+            field: "PCASS"
+        }
+
+        length: 1
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+            line: + 2
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "APPLN" {
+        comma-separator: false
+        operation: field-extract "PCL"
+        conversion: extract from 1 to 2
+        conversion: replace {
+            oldData: "AC"
+            newData: "DUMMY"
+        }
+
+        conversion: replace {
+            oldData: "AN"
+            newData: "DUMMY"
+        }
+
+        conversion: replace {
+            oldData: "FA"
+            newData: "DUMMY"
+        }
+
+    }
+
+    field "DUMMY" {
+        comma-separator: false
+        operation: constant "\"DUMMY\""
+    }
+
+    field "FXL" {
+        comma-separator: false
+        operation: constant "\"FXLIST\""
+    }
+
+    field "DCL" {
+        comma-separator: false
+        operation: constant "\"NDCL\""
+    }
+
+    field "FXAP" {
+        comma-separator: false
+        operation: constant "\"E\""
+    }
+
+    field "DCAP" {
+        comma-separator: false
+        operation: constant "\"FDC\""
+    }
+
+    field "NEXTENQ" {
+        comma-separator: false
+        operation: constant "\"ACTLIST\""
+    }
+
+    field "NEXTENQ1" {
+        comma-separator: false
+        operation: if "APPLN" NotEquals "DUMMY" process "NEXTENQ" "DUMMY"
+    }
+
+    field "CLEF1" {
+        comma-separator: false
+        operation: field-extract "TXN.REF"
+        conversion: extract from 1 to 2
+        conversion: replace {
+            oldData: "DC"
+            newData: "DATA.CAPTURE"
+        }
+
+        conversion: replace {
+            oldData: "FR"
+            newData: "FRA.DEAL"
+        }
+
+        conversion: replace {
+            oldData: "FT"
+            newData: "FUNDS.TRANSFER"
+        }
+
+        conversion: replace {
+            oldData: "FX"
+            newData: "FOREX"
+        }
+
+        conversion: replace {
+            oldData: "LD"
+            newData: "LD.LOANS.AND.DEPOSITS"
+        }
+
+        conversion: replace {
+            oldData: "MG"
+            newData: "MG.MORTGAGE"
+        }
+
+        conversion: replace {
+            oldData: "MM"
+            newData: "MM.MONEY.MARKET"
+        }
+
+        conversion: replace {
+            oldData: "PC"
+            newData: "PM.POSITION.CAPTURE"
+        }
+
+        conversion: replace {
+            oldData: "SC"
+            newData: "SEC.TRADE"
+        }
+
+        conversion: replace {
+            oldData: "SE"
+            newData: "SECURITY.TRANSFER"
+        }
+
+        conversion: replace {
+            oldData: "99"
+            newData: "SC.TRADING.POSITION"
+        }
+
+        conversion: replace {
+            oldData: "TT"
+            newData: "TELLER"
+        }
+
+        conversion: replace {
+            oldData: "SW"
+            newData: "SWAP"
+        }
+
+    }
+
+    field "DUMMY.FIELD" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: constant "\"\""
+    }
+
+    drilldown "1" {
+        label-field: "PERDPR" parameters {
+            function:  See
+            field: "TXN.REF"
+        }
+
+        from-field: "CLEF1"
+    }
+
+}

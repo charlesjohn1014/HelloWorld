@@ -1,0 +1,382 @@
+Enquiry "SC.NOTIFY.CANCEL" for "name:/SC_SctOrderCapture:SEC.OPEN.ORDER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Orders Not Executed/Partially Execu"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DEAL.STATUS" {
+        Equals "TRANSMITTED"
+    }
+
+    fixed-selection "ACCT.NARRATIVE" {
+        NotEquals "\'CANCEL", "ORDER\'"
+    }
+
+    fixed-sort: "@ID" Descending
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Trans Ref"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security No"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.ACCNT" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Orders Not Executed/Partially Executed\""
+    }
+
+    field "TITLE2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 36
+            line: 1
+        }
+
+        operation: constant "\"to Notify Cancellation\""
+    }
+
+    field "SECURITY.ACCNT" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.ACCNT"
+    }
+
+    field "SECURITY.ACC" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.ACCNT"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "SEC.ACCNT" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SECURITY.ACC"
+    }
+
+    field "REL.NAME" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "SECURITY.ACCNT"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.OFFICER" false
+    }
+
+    field "RM" {
+        label {
+            en = "RM/Acc Officer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "REL.NAME"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "DEAL.STATUS" {
+        label {
+            en = "Deal Status"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.STATUS"
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Order Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.DATE"
+    }
+
+    field "LIMIT.EXP.DATE" {
+        label {
+            en = "Order Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 87
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIMIT.EXP.DATE"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 97
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SECURITY.NOM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SEC.NAM" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 118
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NOM"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "ORDER.NOMINAL" {
+        label {
+            en = "Total Nominal"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 135
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.NOMINAL"
+    }
+
+    field "SETT.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SETTLEMENT.CCY"
+    }
+
+    field "VAL.IN.SETT.CCY" {
+        label {
+            en = "App Sett Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "SETT.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 155
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VAL.IN.SETT.CCY"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Type"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 175
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 183
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 200
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "INPUTTER"
+    }
+
+    field "DATE.TIME" {
+        label {
+            en = "Date/Time"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 216
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.TIME"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Notify Cancellation"
+        }
+
+        label-field: "@ID"
+        image: "notify.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SEC.OPEN.ORDER,NOTIFY.REJECT"
+    }
+
+}

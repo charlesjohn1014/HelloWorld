@@ -1,0 +1,343 @@
+Enquiry "ENQ.COMP.TELLER.OVERRIDE" for "name:/EB_ModelBank:NOFILE.MB.GET.TT.OVERRIDE#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    start-line: 4
+    end-line: 99 fixed-selection "OVERRIDE.ID" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "BRANCH" {
+            label {
+                en = "Branch Code"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TRAN.CODE" {
+            label {
+                en = "Teller Transaction"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "OVERRIDE" {
+            label {
+                en = "Override"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "INPUTTER" {
+            label {
+                en = "Inputter"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TT.ID" {
+        label {
+            en = "Teller Tran Reference"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TELL.ID" {
+        label {
+            en = "Teller Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "TELLER.ID.1" false
+    }
+
+    field "TRAN.TYPE" {
+        label {
+            en = "Transaction Type"
+        }
+
+        format: User
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "TRANSACTION.CODE" false
+        conversion: getFrom "TELLER.TRANSACTION" "DESC" false
+    }
+
+    field "DR.CR.IND" {
+        comma-separator: false
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "DR.CR.MARKER" false
+    }
+
+    field "VALUE" {
+        comma-separator: false
+        operation: constant "\"CREDIT\""
+    }
+
+    field "DR.ACC" {
+        comma-separator: false
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "ACCOUNT.1" false
+    }
+
+    field "CR.ACC" {
+        comma-separator: false
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "ACCOUNT.2" false
+    }
+
+    field "DB.ACC" {
+        label {
+            en = "Debit Account Number"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "DR.CR.IND" NotEquals "VALUE" process "DR.ACC" "CR.ACC"
+    }
+
+    field "CR.ACC.02" {
+        label {
+            en = "Credit Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "DR.CR.IND" Equals "VALUE" process "CR.ACC" "DR.ACC"
+    }
+
+    field "DB.VAL.DATE" {
+        label {
+            en = "Debit Value Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "VALUE.DATE.1" false
+    }
+
+    field "CR.VAL.DATE" {
+        label {
+            en = "Credit Value Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "VALUE.DATE.2" false
+    }
+
+    field "AMT.DR" {
+        label {
+            en = "Local Amount"
+        }
+
+        comma-separator: false
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "AMOUNT.LOCAL.1" false
+    }
+
+    field "AMT.CR" {
+        comma-separator: false
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "AMOUNT.LOCAL.2" false
+    }
+
+    field "AMOUNT.DR" {
+        label {
+            en = "Local Amount Debited"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        operation: if "DR.CR.IND" Equals "VALUE" process "AMT.CR" "AMT.DR"
+    }
+
+    field "AMOUNT.CR" {
+        label {
+            en = "Local Amount Credited"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 9
+        }
+
+        operation: if "DR.CR.IND" Equals "VALUE" process "AMT.DR" "AMT.CR"
+    }
+
+    field "OVER" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TT.ID"
+        conversion: call
+        jBC: "@ E.GET.TRAN.OVERRIDE"
+    }
+
+    field "OVERR.DISP" {
+        label {
+            en = "Override"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-number 300
+    }
+
+    field "BRAN.NAME" {
+        label {
+            en = "Branch Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "CO.CODE" false
+    }
+
+    field "INP.NAME" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "INPUTTER" false
+        conversion: extract from 2 to 1 delimited by "_"
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "AUTHORI" {
+        label {
+            en = "Authoriser"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "AUTHORISER" false
+        conversion: extract from 2 to 1 delimited by "_"
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "DAT.TIME" {
+        label {
+            en = "Date/TIme"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: field-extract "TT.ID"
+        conversion: getFrom "TELLER" "DATE.TIME" false
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transactions Exists for Override\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "TT.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "TT.ID"
+        }
+
+        screen: "TELLER,COMP.VIEW"
+    }
+
+}

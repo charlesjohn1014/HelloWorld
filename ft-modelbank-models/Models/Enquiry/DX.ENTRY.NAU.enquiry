@@ -1,0 +1,279 @@
+Enquiry "DX.ENTRY.NAU" for "name:/DX_ModelBank:NOFILE.DX.ENTRY.NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List Of Unauthorised Entries"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RET.ARRAY" {
+    }
+
+    custom-selection {
+
+        field "TRANS.REF" {
+            mandatory: true
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        format: User
+        comma-separator: false
+        operation: selection "TRANS.REF"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised Entries\""
+    }
+
+    field "TRANSACTION REF" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Transaction Ref:\""
+    }
+
+    field "DISP.ID" {
+        label {
+            en = "Transaction Ref:"
+        }
+
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: NewPage
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 22
+    }
+
+    field "BID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ID"
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "A/c or P/l"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "PL.CATEGORY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "#"
+    }
+
+    field "FULL.PL.CAT" {
+        alignment: Left
+        comma-separator: false
+        fmtMask: "## ##-###"
+        processing-mode: Multi
+        operation: calc "PL":"PL.CATEGORY"
+    }
+
+    field "DISP.PL.CAT" {
+        label {
+            en = "P/l category"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: if "PL.CATEGORY" NotEquals "NULL" process "FULL.PL.CAT" "NULL"
+    }
+
+    field "AMOUNT.LCY" {
+        label {
+            en = "LCY amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "LCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "#"
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 12 to 1 delimited by "#"
+    }
+
+    field "DISP.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Multi
+        operation: if "CURRENCY" Equals "NULL" process "LCY" "CURRENCY"
+    }
+
+    field "AMOUNT.FCY" {
+        label {
+            en = "FCY amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "DISP.CCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "#"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 51
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "#"
+    }
+
+    field "TXN.CODE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "#"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Txn Narrative"
+        }
+
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        processing-mode: Multi
+        operation: field-extract "TXN.CODE"
+        conversion: getFrom "TRANSACTION" "SHORT.DESC" false
+    }
+
+    field "LCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"PL\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Entries available\""
+    }
+
+}

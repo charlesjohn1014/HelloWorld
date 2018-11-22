@@ -1,0 +1,488 @@
+Enquiry "PM.WIPAL" for "name:/PM_Reports:NOFILE.PM.WIPAL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "What if Profit and Loss Analysis"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "PM.ENQ.PARAM" {
+        Equals "CAS"
+    }
+
+    custom-selection {
+
+        field "CCY" {
+            mandatory: true
+            label {
+                en = "Ccy"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "YEILD" {
+            label {
+                en = "Yield"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "INIT.COMMON" {
+        break-condition {
+            break: Once
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "WIPAL" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"What if Profit and Loss Analysis\""
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency\""
+    }
+
+    field "BUILD.DATA" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.WHAT.IF.PL"
+    }
+
+    field "YIELD" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Yield Curve\""
+    }
+
+    field "CURVE.NUMBER" {
+        label {
+            en = "Yield Curve"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        length: 2
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "YEILD"
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "STARS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"******\""
+    }
+
+    field "CURRENCY" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "PM.CCY" {
+        display-type: "CLASS-ENQ.H.ID"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "B.PM.CCY" {
+        comma-separator: false
+        operation: break-change "PM.CCY"
+    }
+
+    field "PM.CCY.02" {
+        label {
+            en = "Currency"
+        }
+
+        display-type: "CLASS-ENQ.H.ID"
+        length: 6
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "NO.OF.DAYS" {
+        label {
+            en = "No. of Days"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NO.OF.DAYS"
+    }
+
+    field "NET.MOVEMENT" {
+        label {
+            en = "Net Movement"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NET.MOVEMENT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "DISP.NET.MOVEMENT" {
+        label {
+            en = "Net Movement"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: field-extract "NET.MOVEMENT"
+    }
+
+    field "VAL.MID.RATE" {
+        label {
+            en = "Yield Curve 01"
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 44
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "VAL.MID.RATE"
+        conversion: iconv "MD4"
+        conversion: oconv "MD4"
+    }
+
+    field "WHAT.IF.MID.RATE" {
+        label {
+            en = "Yield Curve"
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "WHAT.IF.MID.RATE"
+        conversion: iconv "MD4"
+        conversion: oconv "MD4"
+    }
+
+    field "WHAT.IF.P&L" {
+        label {
+            en = "Profit/Loss"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        processing-mode: Multi
+        operation: application-field-name "WHAT.IF.P&L"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.WHAT.IF.P&L" {
+        label {
+            en = "Profit/Loss"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+        }
+
+        processing-mode: Multi
+        operation: field-extract "WHAT.IF.P&L"
+    }
+
+    field "DISCOUNT.FACTOR" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DISCOUNT.FACTOR"
+        conversion: iconv "MD4"
+        conversion: oconv "MD4"
+    }
+
+    field "P.DFACT" {
+        label {
+            en = "Discount Factor"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 99
+        }
+
+        processing-mode: Multi
+        operation: if "DISCOUNT.FACTOR" Equals "ZERO" process "STARS" "DISCOUNT.FACTOR"
+    }
+
+    field "PV.P&L" {
+        label {
+            en = "PV P&L"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PV.P&L"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.PV.P&L" {
+        label {
+            en = "PV P&L"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Multi
+        operation: field-extract "PV.P&L"
+    }
+
+    field "TOT.WHAT.IF.P&L" {
+        break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOT.WHAT.IF.P&L"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.TOT.WHAT.P&L1" {
+        label {
+            en = "Total"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+            line: + 0
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOT.WHAT.IF.P&L"
+    }
+
+    field "TOT.PV.P&L" {
+        break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        processing-mode: Single
+        operation: application-field-name "TOT.PV.P&L"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.TOT.PV.P&L" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 105
+            line: + 0
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOT.PV.P&L"
+    }
+
+    field "TOT.LABEL" {
+        break-condition {
+            break: End
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 44
+            line: + 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Total\""
+    }
+
+    field "FINAL.DATE" {
+        format: Date break-condition {
+            break: End
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FINAL.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Data Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transactions"
+        }
+
+        label-field: "NO.OF.DAYS"
+        image: "view.gif"
+        criteria: "CCY" Equals "PM.CCY"
+        enquiry: "PM.DPALII"
+    }
+
+}

@@ -1,0 +1,347 @@
+Enquiry "PROCESS.DEFN.LIST" for "name:/PW_Foundation:PW.PROCESS.DEFINITION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of Process Definitions"
+    }
+
+    no-selection: true
+    start-line: 1
+    end-line: 8
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Process Defn Id"
+            }
+
+        }
+
+        AND
+
+        field "ACTIVITY" {
+            label {
+                en = "Activity"
+            }
+
+        }
+
+        AND
+
+        field "EB.MAPPING" {
+            label {
+                en = "Mapping Source"
+            }
+
+        }
+
+        None
+    }
+
+    field "PW.DEF.ID" {
+        label {
+            en = "Process ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PW.DEF.ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        operation: constant "\"List Of Process Definitions\""
+    }
+
+    field "SHORT.DESC" {
+        label {
+            en = "Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SHORT.DESC"
+    }
+
+    field "DEF.DURATION" {
+        label {
+            en = "Dur."
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DEF.DURATION"
+    }
+
+    field "ACTIVITY" {
+        label {
+            en = "ACT ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACTIVITY"
+    }
+
+    field "ACTIVITY.DESC" {
+        label {
+            en = "Activity"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACTIVITY"
+        conversion: getFrom "PW.ACTIVITY" "SHORT.DESC" false
+    }
+
+    field "COMP.FLAG" {
+        label {
+            en = "Notes"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ACTIVITY"
+        conversion: call
+        jBC: "@ E.PW.FLAG.END"
+        conversion: replace {
+            oldData: "COMPLETION"
+            newData: "Possible end"
+        }
+
+    }
+
+    field "PRE.REQ.ACT" {
+        label {
+            en = "Pre req act"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRE.REQ.ACT"
+    }
+
+    field "PRE.REQ.ACT.DESC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRE.REQ.ACT"
+        conversion: getFrom "PW.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "PRE.REQ.STAT" {
+        label {
+            en = "Pre req stat"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRE.REQ.STAT"
+    }
+
+    field "PRE.REQ.RULE" {
+        label {
+            en = "Transition"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRE.REQ.RULE"
+    }
+
+    field "PRE1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PRE.REQ.ACT.DESC":"EQUAL.SIGN"
+    }
+
+    field "PRE2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PRE1":"PRE.REQ.STAT"
+    }
+
+    field "TRAN1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "RULE.EQ":"TRANSITION.RULE"
+    }
+
+    field "TRAN2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TRANSITION.RULE" NotEquals "NULL" process "TRAN1" "NULL"
+    }
+
+    field "DISP.PRE.REQ.TRAN" {
+        label {
+            en = "Pre requisites"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: if "PRE.REQ.ACT" NotEquals "NULL" process "PRE2" "TRAN2"
+    }
+
+    field "TARGET" {
+        label {
+            en = "TARGET"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACTIVITY"
+        conversion: getFrom "PW.ACTIVITY" "TARGET" false
+    }
+
+    field "TARGET.VERSION" {
+        label {
+            en = "T VERSION"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TARGET"
+        conversion: extract from 1 to 0 delimited by " \" \""
+    }
+
+    field "ACTIVITY.LIST" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY"
+    }
+
+    field "EQUAL.SIGN" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" = \""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "RULE.EQ" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Rule = \""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Activity Details"
+        }
+
+        label-field: "ACTIVITY.DESC"
+        criteria: "PW.ACTIVITY.ID" Equals "ACTIVITY"
+        enquiry: "ACTIVITY.DEFN.LIST"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Screen Designer"
+        }
+
+        label-field: "ACTIVITY.DESC" parameters {
+            function:  Input
+            field: "TARGET.VERSION"
+        }
+
+        screen: "VERSION,COMPOSITE.VI"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Update Process Definition"
+        }
+
+        label-field: "ACTIVITY.DESC" parameters {
+            function:  Input
+            field: "PW.DEF.ID"
+        }
+
+        screen: "PW.PROCESS.DEFINITION,SETUP"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Update Activity Definition"
+        }
+
+        label-field: "ACTIVITY.DESC" parameters {
+            function:  Input
+            field: "ACTIVITY"
+        }
+
+        screen: "PW.ACTIVITY,SETUP"
+    }
+
+}

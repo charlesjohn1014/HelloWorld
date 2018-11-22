@@ -1,0 +1,222 @@
+Enquiry "MM.PLACEMENT.ENTRIES" for "name:/MM_Contract:MM.MONEY.MARKET#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Repayment Of Placement/Contract"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "VALUE.DATE" {
+        LessThan "!TODAY"
+    }
+
+    fixed-selection "DEAL.DATE" {
+        LessThan "!TODAY"
+    }
+
+    fixed-selection "CATEGORY" {
+        Between "21075", "21084"
+    }
+
+    fixed-selection "NEGATIVE.RATE" {
+        NotEquals "YES"
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "LIQ"
+    }
+
+    fixed-selection "MATURITY.DATE" {
+        Greater "999"
+    }
+
+    fixed-sort: "CUSTOMER.ID" Null
+    custom-selection {
+
+        field "CUSTOMER.ID" {
+            label {
+                en = "CounterParty"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Category"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Cuurency"
+            }
+
+        }
+
+        AND
+
+        field "PRINCIPAL" {
+            label {
+                en = "Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CLIENT" {
+        label {
+            en = "CounterParty"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CATEGORY" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 0
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "CATEGORY"
+        conversion: getFrom "CATEGORY" "SHORT.NAME" false
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Repayment Of Placement/Contract\""
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRINCIPAL"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Receive Part Payment"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "MM.RECEIPT.ENTRY,INPUT"
+    }
+
+}

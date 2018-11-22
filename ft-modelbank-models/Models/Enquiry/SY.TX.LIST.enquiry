@@ -1,0 +1,408 @@
+Enquiry "SY.TX.LIST" for "name:/SY_Trading:SY.TRANSACTION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Structured Product Deals"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "TERMINATED" {
+        NotEquals "\"YES\""
+    }
+
+    fixed-selection "TRANSACTION.ID" {
+        NotMatches "......."
+    }
+
+    field "TRANSACTION.ID" {
+        label {
+            en = "Transaction Id"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.ID"
+    }
+
+    field "USER.APP.ID" {
+        label {
+            en = "User App Id"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "USER.APP.ID"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.DEFINITION"
+        conversion: getFrom "SY.PRODUCT.DEFINITION" "SHORT.NAME" false
+    }
+
+    field "HEADTXT" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Traded Instruments\""
+    }
+
+    field "P.DESC" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Product: \""
+    }
+
+    field "P.TXT" {
+        label {
+            en = "Product:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        operation: field-extract "PRODUCT"
+    }
+
+    field "SAT.T" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Sub Asset: \""
+    }
+
+    field "SAT.ID" {
+        label {
+            en = "Sub Asset:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.DEFINITION"
+        conversion: getFrom "SY.PRODUCT.DEFINITION" "SUB.ASSET.TYPE" false
+    }
+
+    field "SAT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 2
+        }
+
+        operation: field-extract "SAT.ID"
+        conversion: getFrom "SUB.ASSET.TYPE" "DESCRIPTION" false
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Client"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 99
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 111
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "DEPOSIT.AMT" {
+        label {
+            en = "Deposit Amt"
+        }
+
+        display-type: "AMOUNT"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 131
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSIT.AMT"
+    }
+
+    field "DEPOSIT.CCY" {
+        label {
+            en = "Deposit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 152
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSIT.CCY"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 154
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "DD.AUTH" {
+        label {
+            en = "DD.AUTH"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.DEFINITION"
+        conversion: call
+        jBC: "@ E.SY.AUTH.DEAL"
+    }
+
+    field "DD.EDIT" {
+        label {
+            en = "DD.EDIT"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.DEFINITION"
+        conversion: call
+        jBC: "@ E.SY.EDIT.DEAL"
+    }
+
+    field "DD.SEE" {
+        label {
+            en = "DD.SEE"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.DEFINITION"
+        conversion: call
+        jBC: "@ E.SY.SEE.DEAL"
+    }
+
+    field "DD.DELETE" {
+        label {
+            en = "DD.DELETE"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.DEFINITION"
+        conversion: call
+        jBC: "@ E.SY.DELE.DEAL"
+    }
+
+    field "DD.REVERSE" {
+        label {
+            en = "DD.REVERSE"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.DEFINITION"
+        conversion: call
+        jBC: "@ E.SY.REVE.DEAL"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 200
+        }
+
+        processing-mode: Single
+        operation: application-field-name "USER.APP.ID"
+        conversion: call
+        jBC: "@ E.SY.DEAL.STATUS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "TRANSACTION.ID"
+        image: "../drill.gif" parameters {
+            function:  See
+            field: "TRANSACTION.ID"
+        }
+
+        application: "SY.TRANSACTION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View"
+        }
+
+        label-field: "TRANSACTION.ID"
+        image: "view.gif"
+        from-field: "DD.SEE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Auth"
+        }
+
+        label-field: "TRANSACTION.ID"
+        image: "../../tools/txnauthorise.gif"
+        from-field: "DD.AUTH"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Edit Deal"
+        }
+
+        label-field: "TRANSACTION.ID"
+        image: "edit.gif"
+        from-field: "DD.EDIT"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Reverse Deal"
+        }
+
+        label-field: "TRANSACTION.ID"
+        image: "trashcan.gif"
+        from-field: "DD.REVERSE"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Cancel Deal"
+        }
+
+        label-field: "TRANSACTION.ID"
+        image: "undo.gif"
+        from-field: "DD.DELETE"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Events"
+        }
+
+        label-field: "TRANSACTION.ID"
+        image: "../../tools/recent.gif"
+        criteria: "TRANSACTION" Equals "TRANSACTION.ID"
+        enquiry: "SY.EV.LIST"
+    }
+
+    drilldown "8" {
+        description {
+            en = "Units"
+        }
+
+        label-field: "TRANSACTION.ID"
+        image: "records.gif"
+        criteria: "SY.TRANSACTION" Equals "TRANSACTION.ID"
+        enquiry: "SY.UN.LIST"
+    }
+
+}

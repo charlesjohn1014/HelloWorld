@@ -1,0 +1,217 @@
+Enquiry "CHQ.REVOKE" for "name:/ST_ChqPaymentStop:PAYMENT.STOP.HIST#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cheques Revoked"
+    }
+
+    description {
+        en = "Cheques Revoked"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "ACCOUNT.NUMBER" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "FIRST.CHEQUE.NO" {
+            label {
+                en = "Cheque No"
+            }
+
+        }
+
+        AND
+
+        field "CHEQUE.TYPE" {
+            label {
+                en = "Cheque Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACCT.NO" {
+        comma-separator: false
+        operation: application-field-name "ACCOUNT.NUMBER"
+    }
+
+    field "BC.ACCT.NO" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACCT.NO"
+    }
+
+    field "CHEQUES" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Cheques\""
+    }
+
+    field "CHEQUES1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 9
+            line: 0
+        }
+
+        operation: constant "\"Revoked\""
+    }
+
+    field "ACCOUNTNO" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Account No:\""
+    }
+
+    field "DISP.ACCT.NO" {
+        label {
+            en = "Account No:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BC.ACCT.NO"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 1
+        }
+
+        operation: field-extract "ACCT.NO"
+    }
+
+    field "ACC.NAME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BC.ACCT.NO"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 1
+        }
+
+        operation: field-extract "ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CHQ.TYP" {
+        label {
+            en = "Cheque Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHEQUE.TYPE"
+        conversion: getFrom "CHEQUE.TYPE" "DESCRIPTION" false
+    }
+
+    field "CHQ.NO" {
+        label {
+            en = "Cheque No"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FIRST.CHEQUE.NO"
+    }
+
+    field "STOP.DATE" {
+        label {
+            en = "Stop Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "STOP.DATE"
+    }
+
+    field "ID" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Revoked Cheques to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CHQ.NO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        application: "PAYMENT.STOP.HIST"
+    }
+
+}

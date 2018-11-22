@@ -1,0 +1,669 @@
+Enquiry "DX.OPTION.MONEY" for "name:/DX_ModelBank:NOFILE.DX.TRADE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "DX Options in or out of the money"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DATA.ITEM" {
+    }
+
+    custom-selection {
+
+        field "CONTRACT.CODE" {
+            label {
+                en = "Contract Code"
+            }
+
+        }
+
+        AND
+
+        field "TRADE.TYPE" {
+            label {
+                en = "Trade Type"
+            }
+
+        }
+
+        AND
+
+        field "OPTION.TYPE" {
+            label {
+                en = "Option Type"
+            }
+
+        }
+
+        AND
+
+        field "EXOTIC.TYPE" {
+            label {
+                en = "Exotic Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\" Options In / At the Money \""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 70
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "M.ITM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"ITM\""
+    }
+
+    field "M.ATM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"ATM\""
+    }
+
+    field "M.OTM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"OTM\""
+    }
+
+    field "ITM.DESC" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"In the Money\""
+    }
+
+    field "ATM.DESC" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"At the Money\""
+    }
+
+    field "OTM.DESC" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Out of the Money\""
+    }
+
+    field "MONEYNESS" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 0 delimited by "_"
+    }
+
+    field "ITM" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "MONEYNESS" Equals "M.ITM" process "ITM.DESC" "NULL"
+    }
+
+    field "ATM" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "MONEYNESS" Equals "M.ATM" process "ATM.DESC" "NULL"
+    }
+
+    field "OTM" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "MONEYNESS" Equals "M.OTM" process "OTM.DESC" "NULL"
+    }
+
+    field "MDESC" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "ITM":"ATM":"OTM"
+    }
+
+    field "VALUE" {
+        label {
+            en = "Value"
+        }
+
+        display-type: "STARTTREE"
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "MDESC"
+    }
+
+    field "B.VALUE" {
+        comma-separator: false
+        operation: break-change "VALUE"
+    }
+
+    field "TRADE.ID" {
+        label {
+            en = "Trade ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 0 delimited by "_"
+    }
+
+    field "CONTRACT.CODE" {
+        label {
+            en = "Contract"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 3 to 0 delimited by "_"
+    }
+
+    field "CONTRACT.NAME" {
+        label {
+            en = "Contract Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "CONTRACT.CODE"
+        conversion: getFrom "DX.CONTRACT.MASTER" "DESCRIPT" false
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity"
+        }
+
+        display-type: "DATE"
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 4 to 0 delimited by "_"
+    }
+
+    field "EXOTIC.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 5 to 0 delimited by "_"
+    }
+
+    field "EXOTIC.DESC" {
+        label {
+            en = "Exotic Type"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "EXOTIC.TYPE"
+        conversion: getFrom "DX.OPTION.TYPE" "DESCRIPTION" false
+    }
+
+    field "UNDERLYING" {
+        label {
+            en = "Underlying"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: extract from 25 to 0 delimited by "_"
+    }
+
+    field "STRIKE.PRICE" {
+        label {
+            en = "Strike"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 90
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 6 to 0 delimited by "_"
+    }
+
+    field "T.CCY" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 15 to 0 delimited by "_"
+    }
+
+    field "D.CCY" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 16 to 0 delimited by "_"
+    }
+
+    field "Q.CCY" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 19 to 0 delimited by "_"
+    }
+
+    field "HY" {
+        comma-separator: false
+        operation: constant "\"_\""
+    }
+
+    field "U.PRICE" {
+        comma-separator: false
+        operation: calc "T.CCY":"HY":"Q.CCY":"HY":"D.CCY"
+        conversion: call
+        jBC: "@ E.GET.UNDERLY.QUOTE.CCY"
+    }
+
+    field "UND.PRICE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 7 to 0 delimited by "_"
+    }
+
+    field "CA" {
+        comma-separator: false
+        operation: constant "\"CASH\""
+    }
+
+    field "UPRICE" {
+        label {
+            en = "Underlying Price"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: if "UNDERLYING" NotEquals "CA" process "UND.PRICE" "U.PRICE"
+    }
+
+    field "PAYOFF" {
+        label {
+            en = "Payoff"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 8 to 0 delimited by "_"
+    }
+
+    field "PRI.BUY.SELL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 9 to 0 delimited by "_"
+    }
+
+    field "OPTION.TYPE" {
+        label {
+            en = "Call/Put"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 10 to 0 delimited by "_"
+    }
+
+    field "PRI.LOTS" {
+        label {
+            en = "No. of Lots"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 140
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 11 to 0 delimited by "_"
+    }
+
+    field "PRI.CUST.NO" {
+        label {
+            en = "Buyer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 12 to 0 delimited by "_"
+    }
+
+    field "PRI.CUST.NAME" {
+        label {
+            en = "Buyer\'s Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "PRI.CUST.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PRI.SEC.ACC" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 170
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: extract from 13 to 0 delimited by "_"
+    }
+
+    field "SEC.CUST.NO" {
+        label {
+            en = "Seller"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 180
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: extract from 14 to 0 delimited by "_"
+    }
+
+    field "LAST.TXN" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 21 to 0 delimited by "_"
+    }
+
+    field "POS.ID" {
+        comma-separator: false
+        operation: field-extract "LAST.TXN"
+        conversion: getFrom "DX.TRANSACTION" "LAST.REP.POS" false
+    }
+
+    field "ARGS" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 22 to 0 delimited by "_"
+    }
+
+    field "PRICE.APP" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 23 to 0 delimited by "_"
+    }
+
+    field "I" {
+        comma-separator: false
+        operation: constant "\",INPUT\""
+    }
+
+    field "APP" {
+        comma-separator: false
+        operation: calc "PRICE.APP":"I"
+    }
+
+    field "PRICE.ID" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 24 to 0 delimited by "_"
+    }
+
+    field "TOTAL.FLD" {
+        display-type: "ENDTREE" break-condition {
+            field: "B.VALUE"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "VALUE"
+    }
+
+    field "EX" {
+        comma-separator: false
+        operation: constant "\"DX.CO.EXERCISE.MANUAL,INPUT\""
+    }
+
+    field "AS" {
+        comma-separator: false
+        operation: constant "\"DX.CO.ASSIGN.MANUAL,INPUT\""
+    }
+
+    field "INP" {
+        comma-separator: false
+        operation: constant "\" I F3 \""
+    }
+
+    field "EXER" {
+        comma-separator: false
+        operation: calc "EX":"INP":"ARGS"
+    }
+
+    field "ASSN" {
+        comma-separator: false
+        operation: calc "AS":"INP":"ARGS"
+    }
+
+    field "EXP" {
+        comma-separator: false
+        operation: constant "\"DX.CO.EXPIRE.MANUAL,INPUT\""
+    }
+
+    field "EXPIRE" {
+        comma-separator: false
+        operation: calc "EXP":"INP":"ARGS"
+    }
+
+    field "DDOWN1" {
+        comma-separator: false
+        operation: if "PRI.BUY.SELL" Equals "\"BUY\"" process "EXER" "ASSN"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Exercise/Assign"
+        }
+
+        label-field: "TRADE.ID"
+        from-field: "DDOWN1"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Expire"
+        }
+
+        label-field: "TRADE.ID"
+        from-field: "EXPIRE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Trade"
+        }
+
+        label-field: "TRADE.ID" parameters {
+            function:  See
+            field: "TRADE.ID"
+        }
+
+        screen: "DX.TRADE,VIEW"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View Position"
+        }
+
+        label-field: "TRADE.ID"
+        criteria: "REP.POSITION.KEY" Equals "POS.ID"
+        criteria: "CUSTOMER" Equals "PRI.CUST.NO"
+        enquiry: "DX.NET.POSITIONS"
+    }
+
+    drilldown "5" {
+        description {
+            en = "View Market Price"
+        }
+
+        label-field: "TRADE.ID" parameters {
+            function:  See
+            field: "PRICE.ID"
+        }
+
+        from-field: "APP"
+    }
+
+}

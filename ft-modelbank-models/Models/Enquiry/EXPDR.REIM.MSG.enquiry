@@ -1,0 +1,276 @@
+Enquiry "EXPDR.REIM.MSG" for "name:/LC_Contract:DRAWINGS$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Inward Delivery Header"
+    }
+
+    description {
+        en = "Inward Delivery Header"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "INWARD.MSG.TYPE" {
+        Equals "\'MT742\'"
+    }
+
+    custom-selection {
+
+        field "MESSAGE.TYPE" {
+            label {
+                en = "Message Type"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"List of Inward Claims\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PRESENTOR.CUST" {
+        label {
+            en = "Presentor Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "DOC.CCY" {
+        label {
+            en = "Doc Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Doc Amount"
+        }
+
+        format: Currency "DOC.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "INWARD.MSG.TYPE" {
+        label {
+            en = "Message Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INWARD.MSG.TYPE"
+    }
+
+    field "MSG.NAME" {
+        label {
+            en = "Message Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INWARD.MSG.TYPE"
+        conversion: extract from 2 to 1 delimited by "MT"
+        conversion: getFrom "DE.MESSAGE" "DESCRIPTION" false
+    }
+
+    field "MSG.REF" {
+        label {
+            en = "Inward Delivery Ref"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "INWARD.MSG.REF"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Received Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE.TIME"
+        conversion: extract from 1 to 6
+        conversion: iconv "D"
+        conversion: oconv "D4"
+    }
+
+    field "MINUTES" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DATE.TIME"
+        conversion: extract from 7 to 2
+    }
+
+    field "SECS" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DATE.TIME"
+        conversion: extract from 9 to 2
+    }
+
+    field "CONCAT" {
+        comma-separator: false
+        operation: constant "\":\""
+    }
+
+    field "DATE.TIME" {
+        label {
+            en = "Received Time"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: calc "MINUTES":"CONCAT":"SECS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No MT742 messages available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Process the Message"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,MT742.INWARD"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Inward Message"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "KEY" Equals "MSG.REF"
+        enquiry: "INC.MSG.DETS"
+    }
+
+}

@@ -1,0 +1,356 @@
+Enquiry "IS.CUSTOMER.SCV.CM" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Find Customer"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.SCV.CUSTOMER.PW.BUILD"
+    }
+
+    fixed-sort: "MNEMONIC" Null
+    custom-selection {
+
+        field "CUSTOMER.CODE" {
+            label {
+                en = "Customer ID"
+            }
+
+        }
+
+        AND
+
+        field "MNEMONIC" {
+            label {
+                en = "Mnemonic"
+            }
+
+        }
+
+        AND
+
+        field "SHORT.NAME" {
+            label {
+                en = "Short Name"
+            }
+
+        }
+
+        AND
+
+        field "SMS.1" {
+            label {
+                en = "Mobile No"
+            }
+
+        }
+
+        AND
+
+        field "POST.CODE" {
+            label {
+                en = "Post Code"
+            }
+
+        }
+
+        AND
+
+        field "DATE.OF.BIRTH" {
+            label {
+                en = "Date of Birth"
+            }
+
+        }
+
+        AND
+
+        field "BIRTH.INCORP.DATE" {
+            label {
+                en = "Incorporation Date"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.NO" {
+            label {
+                en = "Account/Loan/Deposit"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CARD.NO" {
+            label {
+                en = "Card Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "INCLUDE.IMAGE" {
+            label {
+                en = "Show Image of Type"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID1" {
+        break-condition {
+            break: Once
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "@ID" {
+        label {
+            en = "Customer ID"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Customer Details\""
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        format: User
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "STREET" {
+        label {
+            en = "Address"
+        }
+
+        format: User
+        length: 40
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "STREET"
+    }
+
+    field "DATE.BIRTH" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.OF.BIRTH"
+    }
+
+    field "BIRTH.INCORP" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BIRTH.INCORP.DATE"
+    }
+
+    field "DATE.CHK" {
+        label {
+            en = "Date of Birth / Incorporation"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "DATE.BIRTH" Equals "\"\"" process "BIRTH.INCORP" "DATE.BIRTH"
+    }
+
+    field "MOBILE.NO" {
+        label {
+            en = "Mobile No"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SMS.1"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Account Officer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "IMAGE.TYPE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: selection "INCLUDE.IMAGE"
+    }
+
+    field "PATH" {
+        comma-separator: false
+        operation: field-extract "IMAGE.TYPE"
+        conversion: getFrom "IM.IMAGE.TYPE" "PATH" false
+    }
+
+    field "PATH.PREFIX" {
+        comma-separator: false
+        operation: constant "\"../\""
+    }
+
+    field "FULL.PATH" {
+        comma-separator: false
+        operation: calc "PATH.PREFIX":"PATH"
+    }
+
+    field "IMAGE" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "IMAGE.TYPE"
+        conversion: call
+        jBC: "@ E.SCV.CUSTOMER.PW.CONV.IMAGE"
+        conversion: getFrom "IM.DOCUMENT.IMAGE" "IMAGE" false
+    }
+
+    field "IMAGE.WITH.PATH" {
+        comma-separator: false
+        operation: calc "FULL.PATH":"IMAGE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "D.IMAGE" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        no-header: true
+        operation: if "IMAGE" NotEquals "NULL" process "IMAGE.WITH.PATH" "NULL"
+    }
+
+    field "CUST.SCV" {
+        comma-separator: false
+        operation: constant "\"COS IS.CUSTOMER.OVERVIEW.CM\""
+    }
+
+    field "CORP.SCV" {
+        comma-separator: false
+        operation: constant "\"COS IS.CUSTOMER.OVERVIEW.SME.MGR\""
+    }
+
+    field "SEC.CHK" {
+        comma-separator: false
+        operation: constant "\"2005\""
+    }
+
+    field "SECTOR" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECTOR"
+    }
+
+    field "DRILL.CHK" {
+        comma-separator: false
+        operation: if "SECTOR" Equals "SEC.CHK" process "CORP.SCV" "CUST.SCV"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Customer records to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Single Customer View"
+        }
+
+        label-field: "@ID"
+        image: "custscv.gif"
+        criteria: "CURRENT.CUSTOMER" > "@ID"
+        from-field: "DRILL.CHK"
+    }
+
+    attributes: "ALLDATA" ; "NO.BREADCRUMBS"
+}

@@ -1,0 +1,360 @@
+Enquiry "LIMIT.DOCMGMT" for "name:/LI_ModelBank:NOFILE.LIMIT.DOC.MGMT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Limits Approved"
+    }
+
+    description {
+        en = "Limits Approved"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "USER.RTN" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "LIABILITY.NUMBER" {
+            mandatory: true
+            label {
+                en = "Liability Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "LIMIT.REF" {
+            label {
+                en = "Product Number"
+            }
+
+            operands: Matches
+        }
+
+        None
+    }
+
+    field "ID" {
+        comments: "Returns nofile routine data"
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "LIMIT.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Customer: \""
+    }
+
+    field "LIMIT.CUST.ID" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 2
+        }
+
+        operation: field-extract "LIMIT.ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "LIMIT.CUST.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 2
+        }
+
+        operation: field-extract "LIMIT.CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Account Officer :\""
+    }
+
+    field "DAO.ID" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 3
+        }
+
+        operation: field-extract "LIMIT.CUST.ID"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "LIMIT.REF" {
+        label {
+            en = "Product Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 7 to 1 delimited by "#"
+        conversion: getFrom "LIMIT.REFERENCE" "DESCRIPTION" false
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Limits Approved\""
+    }
+
+    field "LIMIT.CCY" {
+        label {
+            en = "Limit Currency"
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "#"
+    }
+
+    field "ONLINE.LIMIT" {
+        label {
+            en = "Limit Amount"
+        }
+
+        format: Currency "LIMIT.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "#"
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        comments: "Expiry Date in Limit"
+        format: Date
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 5 to 1 delimited by "#"
+    }
+
+    field "COLLATERAL.CODE" {
+        label {
+            en = "Collateral Code"
+        }
+
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "#"
+    }
+
+    field "MAX.SEC.AMT" {
+        label {
+            en = "Covered Amount"
+        }
+
+        format: Currency "LIMIT.CCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 8 to 1 delimited by "#"
+    }
+
+    field "DOCS.LINKED" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 6 to 1 delimited by "#"
+    }
+
+    field "DOCUMENTS" {
+        label {
+            en = "Documents"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DOCS.LINKED"
+        conversion: extract from 4 to 1 delimited by "*"
+        conversion: replace {
+            oldData: "LOANAGRMNT"
+            newData: "Loan Agreement"
+        }
+
+        conversion: replace {
+            oldData: "GUARLETTER"
+            newData: "Guarantee Letter"
+        }
+
+        conversion: replace {
+            oldData: "PROMNOTE"
+            newData: "Promisory Note"
+        }
+
+        conversion: replace {
+            oldData: "ISDAAGRE"
+            newData: "ISDA Agreement"
+        }
+
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DOCS.LINKED"
+        conversion: getFrom "TRANS.DOCUMENT" "STATUS" false
+        conversion: replace {
+            oldData: "1"
+            newData: "Received"
+        }
+
+        conversion: replace {
+            oldData: "2"
+            newData: "Not Received"
+        }
+
+        conversion: replace {
+            oldData: "3"
+            newData: "Expired"
+        }
+
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Limits outstanding for this customer\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "New Document"
+        }
+
+        label-field: "STATUS"
+        image: "edit.gif"
+        criteria: "CURRENT.LIMIT.REF" > "LIMIT.ID"
+        criteria: "CURRENT.DOCUM.REF" > "DOCUMENTS" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "IM.DOCUMENT.IMAGE,CAPTURE.LIMIT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Document"
+        }
+
+        label-field: "STATUS"
+        image: "view.gif"
+        criteria: "IMAGE.REFERENCE" Equals "LIMIT.ID"
+        enquiry: "LIMIT.DOCUMENT.VIEW"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Amend Document"
+        }
+
+        label-field: "STATUS"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "DOCS.LINKED"
+        }
+
+        screen: "TRANS.DOCUMENT,INPUT"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

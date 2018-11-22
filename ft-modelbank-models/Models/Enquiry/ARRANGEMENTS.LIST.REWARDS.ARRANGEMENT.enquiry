@@ -1,0 +1,227 @@
+Enquiry "ARRANGEMENTS.LIST.REWARDS.ARRANGEMENT" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Financial Arrangements List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 19 fixed-selection "ARR.STATUS" {
+        Equals "CURRENT", "AUTH"
+    }
+
+    fixed-sort: "CUSTOMER" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+        }
+
+        AND
+
+        field "CURRENCY" {
+        }
+
+        AND
+
+        field "PRODUCT.LINE" {
+        }
+
+        AND
+
+        field "PRODUCT.GROUP" {
+        }
+
+        AND
+
+        field "PRODUCT" {
+        }
+
+        AND
+
+        field "REWARDS.ARR.ID" {
+        }
+
+        None
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Financial Arrangement For Rewards Arrangement\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Financial Arrangement"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: calc "LINKED.APPL.ID":"\"*\"":"\"CURACCOUNT\""
+        conversion: call
+        jBC: "@ E.GET.ACCOUNT.BALANCE"
+        conversion: abs
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Name"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "C.DEP" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"DEPOSITS\"" process "C.DEP.OVER" "C.LEND"
+    }
+
+    field "C.DEP.OVER" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.AD @ID\""
+    }
+
+    field "C.LEND" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"LENDING\"" process "C.LEND.OVER" "C.ACCT"
+    }
+
+    field "C.LEND.OVER" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.AL @ID\""
+    }
+
+    field "C.ACCT" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"ACCOUNTS\"" process "C.ACCT.OVER" "\"\""
+    }
+
+    field "C.ACCT.OVER" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.AR @ID\""
+    }
+
+    field "ZERO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No Financial Arrangement for this Reward Scheme\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Customer Details"
+        }
+
+        label-field: "PRODUCT"
+        image: "custscv.gif"
+        criteria: "CUSTOMER.CODE" Equals "CUSTOMER"
+        enquiry: "CUSTOMER.SCV"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Arrangement Details"
+        }
+
+        label-field: "PRODUCT"
+        image: "view.gif"
+        from-field: "C.DEP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Points "
+        }
+
+        label-field: "PRODUCT"
+        image: "drill.gif"
+        criteria: "ARRANGEMENT" Equals "@ID"
+        criteria: "AMOUNT" NotEquals "0.00"
+        enquiry: "DETAILS.COMMISSION.ARRANGEMENT"
+    }
+
+    attributes: "ALLDATA"
+}

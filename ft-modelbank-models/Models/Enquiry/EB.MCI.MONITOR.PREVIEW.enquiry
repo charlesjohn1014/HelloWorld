@@ -1,0 +1,591 @@
+Enquiry "EB.MCI.MONITOR.PREVIEW" for "name:/EB_MCI:EB.MASS.CHANGE.INSTRUCTION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Monitor for task - Preview"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "AUTOREFRESH" {
+        Equals "5"
+    }
+
+    fixed-selection "TASK" {
+        Equals "PREVIEW"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "EB.MCI.ID" {
+            label {
+                en = "MCI.ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        column-width: 150
+        operation: constant "\"Mass Change Instruction\""
+    }
+
+    field "H.ID" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        column-width: 150
+        operation: field-extract "ID"
+    }
+
+    field "H.STS" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        column-width: 150
+        processing-mode: Single
+        operation: constant "\"Status\""
+    }
+
+    field "DEF.STS" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Waiting to be Processed\""
+    }
+
+    field "SYS.STS" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "STS" {
+        display-type: "CLASS-BOLD.ITALIC"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: if "SYS.STS" Equals "NULL" process "DEF.STS" "SYS.STS"
+    }
+
+    field "H.BO" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        column-width: 150
+        operation: constant "\"Business Operation\""
+    }
+
+    field "BUSINESS.OPERATION" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BUSINESS.OPERATION"
+        conversion: getFrom "EB.MCI.BUSINESS.OPERATION" "DESCRIPTION" false
+    }
+
+    field "H.DES.TIT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 3
+        }
+
+        column-width: 150
+        operation: constant "\"Reason\""
+    }
+
+    field "DESCRIPTION" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "H.TASK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 4
+        }
+
+        column-width: 150
+        operation: constant "\"Task\""
+    }
+
+    field "TASK" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TASK"
+        conversion: replace {
+            oldData: "PREVIEW"
+            newData: "Preview"
+        }
+
+        conversion: replace {
+            oldData: "NEW"
+            newData: "New"
+        }
+
+        conversion: replace {
+            oldData: "CREATE.LIST"
+            newData: "Create List"
+        }
+
+        conversion: replace {
+            oldData: "EDIT.LIST"
+            newData: "Edit List"
+        }
+
+        conversion: replace {
+            oldData: "EXECUTE"
+            newData: "Execute"
+        }
+
+        conversion: replace {
+            oldData: "UNDO"
+            newData: "Undo"
+        }
+
+        conversion: replace {
+            oldData: "VERIFY"
+            newData: "Verify"
+        }
+
+    }
+
+    field "H.DATE.TITLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 5
+        }
+
+        column-width: 150
+        operation: constant "\"Effective Date\""
+    }
+
+    field "EFFECTIVE.DATE" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "SOURCE" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SOURCE"
+        conversion: replace {
+            oldData: "CUSTOMER"
+            newData: "CUS"
+        }
+
+    }
+
+    field "SRC.TEXT" {
+        comma-separator: false
+        operation: constant "\"-SOURCE\""
+    }
+
+    field "TGT.TEXT" {
+        comma-separator: false
+        operation: constant "\"-TARGET\""
+    }
+
+    field "C.SRC.ID" {
+        comma-separator: false
+        operation: calc "ID":"SRC.TEXT"
+        conversion: getFrom "EB.MCI.SOURCE.TARGET.LIST" "1" false
+    }
+
+    field "C.TGT.ID" {
+        comma-separator: false
+        operation: calc "ID":"TGT.TEXT"
+        conversion: getFrom "EB.MCI.SOURCE.TARGET.LIST" "1" false
+    }
+
+    field "S.P.ID" {
+        comma-separator: false
+        operation: calc "ID":"SRC.TEXT"
+    }
+
+    field "T.P.ID" {
+        comma-separator: false
+        operation: calc "ID":"TGT.TEXT"
+    }
+
+    field "C.S.T.IM" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/success.gif\""
+    }
+
+    field "C.TGT" {
+        comma-separator: false
+        operation: if "C.TGT.ID" NotEquals "NULL" process "C.S.T.IM" "NULL"
+    }
+
+    field "C.SRC" {
+        comma-separator: false
+        operation: if "C.SRC.ID" NotEquals "NULL" process "C.S.T.IM" "NULL"
+    }
+
+    field "H.SOURCE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 6
+        }
+
+        column-width: 150
+        operation: constant "\"Source List\""
+    }
+
+    field "D.SRC" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 2
+            line: + 6
+        }
+
+        operation: if "STS" Matches "\"Completed...\"" process "C.SRC" "NULL"
+    }
+
+    field "H.TARGET" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 7
+        }
+
+        column-width: 150
+        operation: constant "\"Target List\""
+    }
+
+    field "D.TGT" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 2
+            line: + 7
+        }
+
+        operation: if "STS" Matches "\"Completed...\"" process "C.TGT" "NULL"
+    }
+
+    field "B.O" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: getFrom "EB.MASS.CHANGE.INSTRUCTION" "BUSINESS.OPERATION" false
+    }
+
+    field "PROP.CLS" {
+        comma-separator: false
+        operation: field-extract "B.O"
+        conversion: getFrom "EB.MCI.BUSINESS.OPERATION" "PROPERTY.CLASS" false
+    }
+
+    field "ENQ.ID" {
+        comma-separator: false
+        operation: constant "\"EB.MCI.T.P.\""
+    }
+
+    field "ENQ.P.C" {
+        comma-separator: false
+        operation: calc "ENQ.ID":"PROP.CLS"
+    }
+
+    field "E.DES.P.C" {
+        comma-separator: false
+        operation: field-extract "ENQ.P.C"
+        conversion: getFrom "ENQUIRY" "PAGE.SIZE" false
+    }
+
+    field "ENQ.B.O" {
+        comma-separator: false
+        operation: calc "ENQ.ID":"B.O"
+    }
+
+    field "E.DES.B.O" {
+        comma-separator: false
+        operation: field-extract "ENQ.B.O"
+        conversion: getFrom "ENQUIRY" "PAGE.SIZE" false
+    }
+
+    field "T24.APP" {
+        comma-separator: false
+        operation: field-extract "B.O"
+        conversion: getFrom "EB.MCI.BUSINESS.OPERATION" "T24.APPLICATION" false
+    }
+
+    field "ENQ.APP" {
+        comma-separator: false
+        operation: calc "ENQ.ID":"T24.APP"
+    }
+
+    field "E.DES.APP" {
+        comma-separator: false
+        operation: field-extract "ENQ.APP"
+        conversion: getFrom "ENQUIRY" "PAGE.SIZE" false
+    }
+
+    field "ENQ.S.DEF" {
+        comma-separator: false
+        operation: constant "\"EB.MCI.S.P.DEFAULT\""
+    }
+
+    field "ENQ.APP.02" {
+        comma-separator: false
+        operation: constant "\"EB.EMCI.S.P.\""
+    }
+
+    field "SOURCE.02" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SOURCE"
+    }
+
+    field "C.ENQ.S" {
+        comma-separator: false
+        operation: calc "ENQ.APP":"SOURCE"
+    }
+
+    field "ENQ.S.C" {
+        comma-separator: false
+        operation: field-extract "C.ENQ.S"
+        conversion: getFrom "ENQUIRY" "PAGE.SIZE" false
+    }
+
+    field "ENQ.SRC.DRILL" {
+        comma-separator: false
+        operation: if "ENQ.S.C" NotEquals "NULL" process "C.ENQ.S" "ENQ.S.DEF"
+    }
+
+    field "ENQ.TGT.2" {
+        comma-separator: false
+        operation: constant "\"EB.MCI.T.P.DEFAULT\""
+    }
+
+    field "ENQ.TGT.1" {
+        comma-separator: false
+        operation: if "E.DES.P.C" NotEquals "NULL" process "ENQ.P.C" "ENQ.TGT.2"
+    }
+
+    field "ENQ.TGT" {
+        comma-separator: false
+        operation: if "E.DES.APP" NotEquals "NULL" process "ENQ.APP" "ENQ.TGT.1"
+    }
+
+    field "ENQ.TGT.DRILL" {
+        comma-separator: false
+        operation: if "E.DES.B.O" NotEquals "NULL" process "ENQ.B.O" "ENQ.TGT"
+    }
+
+    field "VER.NAME" {
+        comma-separator: false
+        operation: constant "\"EB.MASS.CHANGE.INSTRUCTION,CREATE.LIST I \""
+    }
+
+    field "MCI.ID" {
+        comma-separator: false
+        operation: field-extract "ID"
+    }
+
+    field "EXE.DRILL" {
+        comma-separator: false
+        operation: calc "VER.NAME":"MCI.ID"
+    }
+
+    field "STS.COMP.SUCC" {
+        comma-separator: false
+        operation: constant "\"Completed Successfully\""
+    }
+
+    field "DISP.RTG" {
+        display-type: "CLASS-BOLD.ITALIC"
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        operation: if "STATUS" Equals "STS.COMP.SUCC" process "STS.COMP.SUCC" "NULL"
+    }
+
+    field "ENQ.T.P.DRILL" {
+        comma-separator: false
+        operation: field-extract "ENQ.TGT.2"
+    }
+
+    field "P.VER.NAME" {
+        comma-separator: false
+        operation: constant "\"EB.MASS.CHANGE.INSTRUCTION,PREVIEW I \""
+    }
+
+    field "P.EXE.DRILL" {
+        comma-separator: false
+        operation: calc "P.VER.NAME":"MCI.ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Attribute Changes"
+        }
+
+        label-field: "DISP.RTG"
+        image: "records.gif"
+        criteria: "@ID" Equals "T.P.ID"
+        from-field: "ENQ.T.P.DRILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Source Preview"
+        }
+
+        label-field: "DISP.RTG"
+        image: "view.gif"
+        criteria: "@ID" Equals "S.P.ID"
+        from-field: "ENQ.SRC.DRILL"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Target Preview"
+        }
+
+        label-field: "DISP.RTG"
+        image: "drill.gif"
+        criteria: "@ID" Equals "T.P.ID"
+        from-field: "ENQ.TGT.DRILL"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Create List"
+        }
+
+        label-field: "DISP.RTG"
+        image: "execute.gif"
+        criteria: "@ID" Equals "H.ID"
+        from-field: "EXE.DRILL"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Refine Criteria"
+        }
+
+        label-field: "DISP.RTG"
+        image: "edit3.gif"
+        criteria: "@ID" Equals "H.ID"
+        from-field: "P.EXE.DRILL"
+    }
+
+    attributes: "SINGLE.BACKGROUND.COLOUR" ; "NO.CLEAR.SELECTION" ; "NO.MORE.OPTIONS" ; "NO.BREADCRUMBS" ;
+    "NO.ENQUIRY.FAVOURITES"
+}

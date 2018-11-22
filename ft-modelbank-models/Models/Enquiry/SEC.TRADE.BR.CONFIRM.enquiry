@@ -1,0 +1,205 @@
+Enquiry "SEC.TRADE.BR.CONFIRM" for "name:/SC_SctTrading:SEC.TRADE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "SEC.TRADE.BR.CONFIRM"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 1
+    end-line: 19 fixed-selection "CONF.BY.BROKER" {
+        Equals "\'\'"
+    }
+
+    custom-selection {
+
+        field "BROKER.NO" {
+        }
+
+        AND
+
+        field "SECURITY.CODE" {
+        }
+
+        AND
+
+        field "TRADE.DATE" {
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+        }
+
+        AND
+
+        field "TRADE.CCY" {
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comments: "ID"
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Trades Awaiting Confirmation\""
+    }
+
+    field "BROKER.NO" {
+        label {
+            en = "Broker"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "BROKER.NO"
+    }
+
+    field "SECURITY.CODE" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Deal Date"
+        }
+
+        comments: "TRADE DATE"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "DELIMIT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"*\""
+    }
+
+    field "CONCAT.ID.DELIMIT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "@ID":"DELIMIT"
+    }
+
+    field "TXN.REF.BY.BROKER" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CONCAT.ID.DELIMIT":"BROKER.NO"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"No trades found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Verify"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif"
+        criteria: "@ID" parameters {
+            function:  Verify
+            field: "@ID"
+        }
+
+        screen: "SEC.TRADE,INPUT"
+    }
+
+}

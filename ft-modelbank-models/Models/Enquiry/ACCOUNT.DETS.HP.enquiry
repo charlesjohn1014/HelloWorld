@@ -1,0 +1,568 @@
+Enquiry "ACCOUNT.DETS.HP" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Account Details"
+    }
+
+    description {
+        en = "Account Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CATEGORY" {
+        NotBetween "6601", "6999"
+    }
+
+    fixed-selection "CATEGORY" {
+        NotBetween "3001", "4999"
+    }
+
+    fixed-sort: "MNEMONIC" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "MNEMONIC" {
+            label {
+                en = "Mnemonic"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account officer"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.NUMBER" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "SHORT.TITLE" {
+            label {
+                en = "Account Name"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Customer\'s Accounts\""
+    }
+
+    field "ID1" {
+        break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "@ID" {
+        label {
+            en = "Account"
+        }
+
+        format: User
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "ACCOUNT.TITLE.1" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.TITLE.1"
+    }
+
+    field "CATEGORY" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+    }
+
+    field "DESC.CATEGORY" {
+        label {
+            en = "Acct Type"
+        }
+
+        comments: "F *,3"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Account Officer"
+        }
+
+        comments: "F *,4"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "LIMIT.REF" {
+        label {
+            en = "Limit"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LIMIT.REF"
+    }
+
+    field "WORKING.BALANCE" {
+        label {
+            en = "Working Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "ONLINE.ACTUAL.BAL" {
+        label {
+            en = "Ledger Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "ONLINE.CLEARED.BAL" {
+        label {
+            en = "Cleared Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.CLEARED.BALANCE"
+    }
+
+    field "LOCKED.AMOUNT" {
+        label {
+            en = "Locked Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LOCKED.AMOUNT"
+    }
+
+    field "CHEQ.TYPE" {
+        comma-separator: false
+        operation: field-extract "CATEGORY"
+        conversion: replace {
+            oldData: "6001"
+            newData: "SB."
+        }
+
+        conversion: replace {
+            oldData: "1001"
+            newData: "CURR."
+        }
+
+    }
+
+    field "FORM.CHQ.ID" {
+        comma-separator: false
+        operation: calc "CHEQ.TYPE":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend Account"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "AC,SB.AMEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Capture Image"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "IM.DOCUMENT.IMAGE,CAPTURE.HP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Credit Interest"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.CREDIT.INT,CR.MAIN"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Debit Interest"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.DEBIT.INT,DR.MAIN"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Capitalisation Frequency"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCT.CAPITALISATION,INPUT"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Statement Frequency"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.STATEMENT,INPUT"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Posting Restrict"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT,PO"
+    }
+
+    drilldown "8" {
+        description {
+            en = "Block Funds"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  Input
+        }
+
+        screen: "AC.LOCKED.EVENTS,INPUT"
+    }
+
+    drilldown "9" {
+        description {
+            en = "Issue Debit Card"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  Input
+        }
+
+        screen: "CARD.ISSUE,INPUT"
+    }
+
+    drilldown "10" {
+        description {
+            en = "Manage Card"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT" Equals "@ID"
+        enquiry: "AMEND.CARD"
+    }
+
+    drilldown "11" {
+        description {
+            en = "Cheque Issue"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "FORM.CHQ.ID"
+        }
+
+        screen: "CHEQUE.ISSUE,INPUT"
+    }
+
+    drilldown "12" {
+        description {
+            en = "Stop Payment"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "PAYMENT.STOP,INPUT"
+    }
+
+    drilldown "13" {
+        description {
+            en = "Revoke Stop Payment"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "PAYMENT.STOP,REVOKE"
+    }
+
+    drilldown "14" {
+        description {
+            en = "Cash Deposit"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "TELLER,LOCAL.CASHIN.HP"
+    }
+
+    drilldown "15" {
+        description {
+            en = "Cash Withdrawal"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "TELLER,LCY.CASHWDL.INPUT.HP"
+    }
+
+    drilldown "16" {
+        description {
+            en = "Transfer Out"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "FUNDS.TRANSFER,ACTR"
+    }
+
+    drilldown "17" {
+        description {
+            en = "Transfer In"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "FUNDS.TRANSFER,ACTR.IN"
+    }
+
+    drilldown "18" {
+        description {
+            en = "Issue Passbook"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "TT.PASSBOOK.PRINT,PBK"
+    }
+
+    drilldown "19" {
+        description {
+            en = "Active Alerts Subscription"
+        }
+
+        label-field: "@ID"
+        criteria: "CONTRACT.REF" Equals "!", "@ID"
+        enquiry: "ACCOUNT.ALERTS"
+    }
+
+}

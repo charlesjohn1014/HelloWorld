@@ -1,0 +1,201 @@
+Enquiry "AA.SDB.BOX.DUE.AMOUNT" for "name:/BX_ModelBank:NOFILE.AA.SDB.BOX.DUE.AMOUNT#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RECORD" {
+    }
+
+    fixed-selection "STATUS" {
+        Equals "!CURRENT.BX.STS"
+    }
+
+    custom-selection {
+
+        field "BOX.TYPE" {
+            label {
+                en = "Box Type"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Safe Deposit Box Report\""
+    }
+
+    field "BOX.NO" {
+        label {
+            en = "Box No"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 0 delimited by "*"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "EB.TYPE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"AA.SDB.BOX.TYPE*\""
+    }
+
+    field "C.TYPE" {
+        label {
+            en = "Box Type"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: calc "EB.TYPE":"TYPE"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 3 to 0 delimited by "*"
+    }
+
+    field "EB.STATUS" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"AA.SDB.BOX.STATUS*\""
+    }
+
+    field "C.STATUS" {
+        label {
+            en = "Box Status"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: calc "EB.STATUS":"STATUS"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "ARRANGEMENT" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 4 to 0 delimited by "*"
+    }
+
+    field "ARR.TEXT" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Box not alloted\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ARR.DES" {
+        label {
+            en = "Arrangement"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: if "ARRANGEMENT" Equals "NULL" process "ARR.TEXT" "ARRANGEMENT"
+    }
+
+    field "AGE.STATUS" {
+        label {
+            en = "Overdue Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: extract from 5 to 0 delimited by "*"
+    }
+
+    field "DUE.AMOUNT" {
+        label {
+            en = "Overdue Amount"
+        }
+
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 6 to 0 delimited by "*"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS"
+        format: Translate break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    attributes: "SINGLE.BACKGROUND.COLOUR" ; "NO.ENQUIRY.FAVOURITES"
+}

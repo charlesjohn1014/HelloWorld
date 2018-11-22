@@ -1,0 +1,322 @@
+Enquiry "MD.CLAIM.SET.UNAUTH" for "name:/MD_Fees:MD.FEE.SETTLEMENT$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Guarantee Commission"
+    }
+
+    description {
+        en = "Guarantee Commission"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99 fixed-selection "REFUND.AMT" {
+        Equals "NULL"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised Guarantee Commission Transactions\""
+    }
+
+    field "TYPE" {
+        label {
+            en = "Transaction Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.TYPE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CSN.CURRENCY"
+    }
+
+    field "TOT.CSN.AMOUNT" {
+        label {
+            en = "Commission Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.CSN.AMOUNT"
+    }
+
+    field "CSN.AMOUNT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CSN.AMOUNT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "REFUND" {
+        comma-separator: false
+        operation: constant "\"REFUND\""
+    }
+
+    field "CLAIM.SETTLEMENT" {
+        comma-separator: false
+        operation: constant "\"CLAIM SETTLEMENT\""
+    }
+
+    field "SETTLED.AMT" {
+        label {
+            en = "Settled Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        operation: calc "TOT.CSN.AMOUNT" - "CSN.AMOUNT"
+    }
+
+    field "COM.SETL.AMT" {
+        label {
+            en = "Settled Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "TYPE" Equals "CLAIM.SETTLEMENT" process "SETTLED.AMT" "NULL"
+    }
+
+    field "CLAIM.STLE.AMT" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CLAIM.STLE.AMT"
+    }
+
+    field "CLAIM.DIFF.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CLAIM.DIFF.AMT"
+    }
+
+    field "PRESENT.STLE.AMT" {
+        label {
+            en = "Current Settlement"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: calc "CLAIM.STLE.AMT" + "CLAIM.DIFF.AMT"
+    }
+
+    field "COM.REF.AMT" {
+        label {
+            en = "Commission Refunded"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "TOT.CSN.AMOUNT" - "CSN.AMOUNT"
+    }
+
+    field "REFUNDED.AMOUNT" {
+        label {
+            en = "Refunded Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: if "TYPE" Equals "REFUND" process "COM.REF.AMT" "NULL"
+    }
+
+    field "CSN.REFUND.AMT" {
+        label {
+            en = "Refund Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CSN.REFUND.AMT"
+    }
+
+    field "SETTLE" {
+        comma-separator: false
+        operation: field-extract "TYPE"
+        conversion: replace {
+            oldData: "CLAIM SETTLEMENT"
+            newData: "CLAIM"
+        }
+
+        conversion: replace {
+            oldData: "REFUND"
+            newData: "RF"
+        }
+
+        conversion: replace {
+            oldData: "CLAIM WRITEOFF"
+            newData: "WF"
+        }
+
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"MD.FEE.SETTLEMENT,\""
+    }
+
+    field "TXN.DRILL" {
+        comma-separator: false
+        operation: calc "APPL":"SETTLE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Tasks Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "TXN.DRILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "TXN.DRILL"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "TXN.DRILL"
+    }
+
+    attributes: "NO.BREADCRUMBS"
+}

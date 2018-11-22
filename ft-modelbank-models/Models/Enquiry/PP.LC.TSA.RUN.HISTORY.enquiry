@@ -1,0 +1,169 @@
+Enquiry "PP.LC.TSA.RUN.HISTORY" for "name:/PP_LocalClearingGUI:NOFILE.LC.TSA.RUN.HISTORY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "View History"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "TSA.RUN.HISTORY" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Local clearing Time Scheduled Process - History\""
+    }
+
+    field "ClearingId" {
+        label {
+            en = "Clearing Name"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TSAServiceDescID" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "TSAServiceID" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ServiceID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "ServiceDesc" {
+        label {
+            en = "Service Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "TSAServiceID"
+        conversion: getFrom "TSA.SERVICE" "DESCRIPTION" false
+    }
+
+    field "START.TIME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "StartTimeStamp" {
+        label {
+            en = "Start Time"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "START.TIME"
+    }
+
+    field "END.TIME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "EndTimeStamp" {
+        label {
+            en = "End Time"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "END.TIME"
+    }
+
+    field "TSA.RUN.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "StartTimeStamp"
+        image: "view.gif" parameters {
+            function:  See
+            field: "TSA.RUN.ID"
+        }
+
+        screen: "PPT.LCTSARUN,DETAILS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "AuditTrial"
+        }
+
+        label-field: "StartTimeStamp"
+        image: "details.gif"
+        criteria: "ServiceName" Equals "ServiceID"
+        criteria: "Starttime" Equals "START.TIME"
+        criteria: "Endtime" Equals "END.TIME"
+        enquiry: "PP.LC.SCHEDPROCESS.HISTLOG"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

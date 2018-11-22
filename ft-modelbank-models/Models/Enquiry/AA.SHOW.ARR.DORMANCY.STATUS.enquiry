@@ -1,0 +1,197 @@
+Enquiry "AA.SHOW.ARR.DORMANCY.STATUS" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+
+    field "@ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "RESET.ACTION" {
+        comma-separator: false
+        operation: constant "\"-MANUAL.RESET-DORMANCY\""
+    }
+
+    field "ARR.PL" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "RESET.ACTIVITY" {
+        comma-separator: false
+        operation: calc "ARR.PL":"RESET.ACTION"
+    }
+
+    field "DORM.LOOKUP" {
+        comma-separator: false
+        operation: constant "\"AA.DORMANCY.STATUS*\""
+    }
+
+    field "DORM.STATUS" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "ARR.DORMANCY.STATUS" false
+    }
+
+    field "DORM.DESC" {
+        comma-separator: false
+        operation: calc "DORM.LOOKUP":"DORM.STATUS"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "LINKED.APPL.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "INACT.STATUS" {
+        comma-separator: false
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "INACTIV.MARKER" false
+    }
+
+    field "INACT.DESC" {
+        comma-separator: false
+        operation: field-extract "INACT.STATUS"
+        conversion: replace {
+            oldData: "Y"
+            newData: "Inactive"
+        }
+
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.DESC.1" {
+        comma-separator: false
+        operation: if "INACT.STATUS" NotEquals "NULL" process "INACT.DESC" "NULL"
+    }
+
+    field "DISP.DESC.2" {
+        comma-separator: false
+        operation: if "DORM.STATUS" NotEquals "NULL" process "DORM.DESC" "DISP.DESC.1"
+    }
+
+    field "AC.LAST.DR" {
+        comma-separator: false
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "DATE.LAST.DR.CUST" false
+    }
+
+    field "AC.LAST.CR" {
+        comma-separator: false
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "DATE.LAST.CR.CUST" false
+    }
+
+    field "AC.INACT.DATE" {
+        comma-separator: false
+        operation: if "AC.LAST.DR" Greater "AC.LAST.CR" process "AC.LAST.DR" "AC.LAST.CR"
+    }
+
+    field "AA.DORM.DATE" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "DORMANCY.DATE" false
+        conversion: value 1
+    }
+
+    field "DORM.DATE" {
+        format: Date
+        comma-separator: false
+        operation: if "DORM.STATUS" NotEquals "NULL" process "AA.DORM.DATE" "AC.INACT.DATE"
+    }
+
+    field "L.SINCE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\" since \""
+    }
+
+    field "DORM.TEXT" {
+        comma-separator: false
+        operation: calc "DISP.DESC.2":"L.SINCE":"DORM.DATE"
+    }
+
+    field "DISP.DORM.TEXT" {
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 200
+        operation: if "DISP.DESC.2" NotEquals "NULL" process "DORM.TEXT" "NULL"
+    }
+
+    field "INACT.DD" {
+        comma-separator: false
+        operation: constant "\"ACCT.INACTIVE.RESET,AA.INPUT I \""
+    }
+
+    field "INACT.DD.C" {
+        comma-separator: false
+        operation: calc "INACT.DD":"LINKED.APPL.ID"
+    }
+
+    field "DORM.DD.C" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.RESET.DORMANCY I F3 \""
+    }
+
+    field "V.RESET.DD.1" {
+        comma-separator: false
+        operation: if "INACT.STATUS" NotEquals "NULL" process "INACT.DD.C" "DORM.DD.C"
+    }
+
+    field "V.RESET.DD.C" {
+        comma-separator: false
+        operation: if "DISP.DESC.2" NotEquals "NULL" process "V.RESET.DD.1" "NULL"
+    }
+
+    field "E.ACTIVITY.LIST" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.ACTIVITIES\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Reset"
+        }
+
+        label-field: "DISP.DORM.TEXT"
+        image: "reexecute.gif"
+        criteria: "AA.ACTIVITY" > "RESET.ACTIVITY"
+        criteria: "AA.ARRANGEMENT" > "@ID"
+        from-field: "V.RESET.DD.C"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Explore History"
+        }
+
+        label-field: "DISP.DORM.TEXT"
+        image: "records.gif"
+        criteria: "ARRANGEMENT.ID" Equals "@ID"
+        from-field: "E.ACTIVITY.LIST"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.TOOLBAR"
+}

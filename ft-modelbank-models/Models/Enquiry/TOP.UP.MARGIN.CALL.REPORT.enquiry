@@ -1,0 +1,356 @@
+Enquiry "TOP.UP.MARGIN.CALL.REPORT" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Top Up Margin Call to be Triggered"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 20 fixed-selection "TOP.UP.MGN.DATE" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "SELL.OUT.MGN.DATE" {
+        Equals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "REFERENCE.CURRENCY" {
+            label {
+                en = "Reference Ccy"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Top Up Margin Call Report\""
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "REFERENCE.CURRENCY" {
+        label {
+            en = "Ref Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.CURRENCY"
+    }
+
+    field "VT" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "VALUATION.AMT"
+    }
+
+    field "LN" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOAN.MARGIN.AMT"
+    }
+
+    field "SPM" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SHORT.POS.MGN.AMT"
+    }
+
+    field "VAT" {
+        label {
+            en = "Portfolio Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: calc "VT" - "LN"
+    }
+
+    field "MV" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MARGIN.VALUE"
+    }
+
+    field "MV1" {
+        comma-separator: false
+        operation: calc "MV" - "LN"
+    }
+
+    field "NMV" {
+        comma-separator: false
+        operation: calc "LN" + "SPM"
+    }
+
+    field "MV2" {
+        comma-separator: false
+        operation: calc "MV" - "NMV"
+    }
+
+    field "CC" {
+        comma-separator: false
+        operation: company
+    }
+
+    field "ADJ.VAL" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "ADJ.SHORT.POS" false
+    }
+
+    field "YE" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "FMV" {
+        label {
+            en = "Margin Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        operation: if "ADJ.VAL" Equals "YE" process "MV1" "MV2"
+    }
+
+    field "LOA" {
+        label {
+            en = "Loan Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        operation: calc "LN" + "SPM"
+    }
+
+    field "BUFF" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "BUFFER" false
+    }
+
+    field "PER" {
+        comma-separator: false
+        operation: calc "BUFF" / "100"
+    }
+
+    field "TOPAMT" {
+        label {
+            en = "Topup Mgn Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOP.UP.MARGIN.AMT"
+    }
+
+    field "TOBUFF" {
+        comma-separator: false
+        operation: calc "TOPAMT" * "PER"
+    }
+
+    field "TWB" {
+        comma-separator: false
+        operation: calc "TOBUFF" + "TOPAMT"
+    }
+
+    field "TC" {
+        label {
+            en = "Topup Call Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: calc "TWB" + "LN"
+    }
+
+    field "TOP.DATE" {
+        label {
+            en = "Top Up Date"
+        }
+
+        format: Date
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOP.UP.MGN.DATE"
+    }
+
+    field "TD" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "TOP.UP.MGN.DAYS" false
+    }
+
+    field "TMD" {
+        comma-separator: false
+        operation: field-extract "TOP.DATE"
+        conversion: julian
+    }
+
+    field "DD" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: calc "TMD" + "TD"
+        conversion: oconv "D"
+    }
+
+    field "TDATE" {
+        comma-separator: false
+        operation: today
+        conversion: julian
+    }
+
+    field "TOP.UP.DATE" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOP.UP.MGN.DATE"
+        conversion: julian
+    }
+
+    field "AGE" {
+        label {
+            en = "Age"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: calc "TDATE" - "TOP.UP.DATE"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records with Margin Call Found\""
+    }
+
+}

@@ -1,0 +1,629 @@
+Enquiry "AM.GROUP.TIMESERIES" for "name:/AM_ModelBank:NOFILE.AM.GROUP.TIMESERIES#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "BANK :"
+        }
+
+        column: 52
+        line: 0
+    }
+
+    header {
+        label {
+            en = "#GROUP TIMESERIES PERFORMANCE#"
+        }
+
+        column: 45
+        line: 1
+    }
+
+    header {
+        label {
+            en = "PERIOD CALCULATED      :"
+        }
+
+        column: 38
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CALCULATION METHOD     :"
+        }
+
+        column: 38
+        line: 3
+    }
+
+    header {
+        label {
+            en = "PERFORMANCE CALCULATED :"
+        }
+
+        column: 38
+        line: 4
+    }
+
+    header {
+        label {
+            en = "GROUP ID        :       "
+        }
+
+        column: 1
+        line: 0
+    }
+
+    header {
+        label {
+            en = "GROUP NAME      :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "GROUP OPENED    :"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "GROUP CLOSED    :"
+        }
+
+        column: 1
+        line: 3
+    }
+
+    header {
+        label {
+            en = "ACCOUNT OFFICER :"
+        }
+
+        column: 1
+        line: 4
+    }
+
+    header {
+        label {
+            en = "BEGIN MARKET VALUE :"
+        }
+
+        column: 79
+        line: 1
+    }
+
+    header {
+        label {
+            en = "END MARKET VALUE   :"
+        }
+
+        column: 79
+        line: 2
+    }
+
+    header {
+        label {
+            en = "USER               :"
+        }
+
+        column: 79
+        line: 3
+    }
+
+    header {
+        label {
+            en = "CURRENT DATE       : "
+        }
+
+        column: 79
+        line: 4
+    }
+
+    header {
+        label {
+            en = "-"
+        }
+
+        column: 98
+        line: 0
+    }
+
+    start-line: 5
+    end-line: 18 fixed-selection "E.AM.GROUP.TIMES" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "GROUP.ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "END.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "DECIMAL.RANGE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "CALC.METHOD" {
+            operands: Equals
+        }
+
+        AND
+
+        field "GROSS.OR.NET" {
+            operands: Equals
+        }
+
+        AND
+
+        field "PERIOD.CALCULATED" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "GET.DETAIL" {
+        format: User
+        length: 100
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ID"
+    }
+
+    field "GID" {
+        comma-separator: false
+        operation: selection "GROUP.ID"
+    }
+
+    field "PSEL" {
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 21 to 1 delimited by "*"
+    }
+
+    field "DSEL" {
+        comma-separator: false
+        operation: selection "DECIMAL.RANGE"
+    }
+
+    field "P1" {
+        comma-separator: false
+        operation: constant "\"Y\""
+    }
+
+    field "P2" {
+        comma-separator: false
+        operation: constant "\"Q\""
+    }
+
+    field "P3" {
+        comma-separator: false
+        operation: constant "\"M\""
+    }
+
+    field "P4" {
+        comma-separator: false
+        operation: constant "\"D\""
+    }
+
+    field "P5" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "GNO" {
+        comma-separator: false
+        operation: if "PSEL" Equals "P4" process "P5" "GID"
+    }
+
+    field "P6" {
+        comma-separator: false
+        operation: if "PSEL" Equals "P1" process "P2" "P2"
+    }
+
+    field "P7" {
+        comma-separator: false
+        operation: if "PSEL" Equals "P2" process "P3" "P6"
+    }
+
+    field "P8" {
+        comma-separator: false
+        operation: if "PSEL" Equals "P3" process "P4" "P7"
+    }
+
+    field "DISP.BANK" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 59
+            line: 0
+        }
+
+        operation: company
+        conversion: getFrom "COMPANY" "COMPANY.NAME" false
+    }
+
+    field "DISP.TODAY" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 4
+        }
+
+        operation: today
+    }
+
+    field "DISP.USER" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 3
+        }
+
+        operation: user
+    }
+
+    field "DISP.PERIOD" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 63
+            line: 2
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    field "DISP.GROSS.OR.NET" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 63
+            line: 4
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "DISP.CALC.METHOD" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 63
+            line: 3
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "DISP.START.DATE" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 86
+            line: 0
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "DISP.END.DATE" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 0
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "GROUP.NO" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 19
+            line: 0
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "GROUP.NAME" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 19
+            line: 1
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "GROUP.OPENED" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 19
+            line: 2
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "GROUP.CLOSED" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 19
+            line: 3
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 17 to 1 delimited by "*"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 19
+            line: 4
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 18 to 1 delimited by "*"
+    }
+
+    field "DISP.BEG.HEAD" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 1
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "DISP.END.HEAD" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 2
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "DISP.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 20 to 1 delimited by "*"
+    }
+
+    field "DISP.VAL.CCY" {
+        label {
+            en = "Val.Ccy"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 19 to 1 delimited by "*"
+    }
+
+    field "DISP.END.VAL" {
+        label {
+            en = "End.Market.Value"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 22 to 1 delimited by "*"
+    }
+
+    field "DISP.NET.FLOW" {
+        label {
+            en = "Net.Flows"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "DISP.FEES.FLOW" {
+        label {
+            en = "Fees.Flow"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "DISP.AVG.VAL" {
+        label {
+            en = "Avg.Capital.Inv"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "DISP.PERFORMANCE" {
+        label {
+            en = "Return"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "DISP.NO.OF.PORT" {
+        label {
+            en = "No.of.port.Linked"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "DISP.START.VALUE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "DISP.END.VALUE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 20 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        label-field: "DISP.DATE"
+        criteria: "GROUP.ID" Equals "GNO"
+        criteria: "PERIOD.CALCULATED" Equals "P8"
+        criteria: "DECIMAL.RANGE" Equals "DSEL"
+        criteria: "GROSS.OR.NET" Equals "DISP.GROSS.OR.NET"
+        criteria: "CALC.METHOD" Equals "DISP.CALC.METHOD"
+        criteria: "END.DATE" Equals "DISP.END.VALUE"
+        criteria: "START.DATE" Equals "DISP.START.VALUE"
+        enquiry: "AM.GROUP.TIMESERIES"
+    }
+
+}

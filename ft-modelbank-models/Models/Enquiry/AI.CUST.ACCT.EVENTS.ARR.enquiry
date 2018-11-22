@@ -1,0 +1,165 @@
+Enquiry "AI.CUST.ACCT.EVENTS.ARR" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Accounts"
+    }
+
+    description {
+        en = "Available Alerts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 10 fixed-selection "PRODUCT.LINE" {
+        Equals "ACCOUNTS", "LENDING", "DEPOSITS"
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "UNAUTH", "CANCELLED", "MATURED", "CLOSE"
+    }
+
+    fixed-selection "LINKED.APPL.ID" {
+        Equals "!EXT.SMS.ACCOUNTS.SEE"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Available Alerts\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Account Number"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "ACCT.NAME" {
+        label {
+            en = "Nickname"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "ACCT.NO" {
+        label {
+            en = "Account Number"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "ARRANGEMENT.ID" {
+        label {
+            en = "Reference"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "DESC" {
+        label {
+            en = "Product"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "ZERORECS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Accounts/Products for this Customer\""
+    }
+
+    field "ZERO.RECORD.HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Available Alerts\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Choose Alerts"
+        }
+
+        label-field: "ACCT.NAME"
+        criteria: "ACCT.NUMBER" Equals "@ID"
+        criteria: "CURRENT.ACC" > "ARRANGEMENT.ID"
+        enquiry: "AI.AC.GET.ELIGIBLE.EVENTS"
+    }
+
+    attributes: "UNDERLINE.HEADER.ROW"
+}

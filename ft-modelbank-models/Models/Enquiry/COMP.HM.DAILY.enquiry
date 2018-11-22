@@ -1,0 +1,604 @@
+Enquiry "COMP.HM.DAILY" for "name:/AM_Composite:AM.COMP.HIST.CONCAT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Composite Performance -Daily"
+    }
+
+    description {
+        en = "Composite Performance -Daily"
+    }
+
+    start-line: 4
+    end-line: 17
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Comp Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "YEAR" {
+            label {
+                en = "Year"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "L.COMPOSITE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 1
+        }
+
+        operation: constant "\"Composite\""
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Composite\""
+    }
+
+    field "L.CALC.DLY.MTHD" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 0
+        }
+
+        operation: constant "\"Performance Calculated - Daily Method\""
+    }
+
+    field "L.REF.CCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: constant "\"Ref Ccy\""
+    }
+
+    field "L.FOR.THE.YEAR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 0
+        }
+
+        operation: constant "\"-For The Year\""
+    }
+
+    field "CON.REC1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DET.ID"
+        conversion: call
+        jBC: "@ E.DISPLAY.CONCAT.HM"
+    }
+
+    field "CONCAT.RECORD" {
+        comma-separator: false
+        operation: application-field-name "DET.ID"
+        conversion: call
+        jBC: "@ E.DISPLAY.CONCAT.HM"
+    }
+
+    field "ONE.TIME" {
+        comma-separator: false
+        operation: constant "\"X\""
+        conversion: call
+        jBC: "@ E.WT.MUL.TOT"
+    }
+
+    field "EQT.PERF.ONE" {
+        comma-separator: false
+        operation: constant "\"Y\""
+        conversion: call
+        jBC: "@ E.EQ.MUL.TOT"
+    }
+
+    field "STAR" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "C.ONE" {
+        comma-separator: false
+        operation: constant "\"1\""
+    }
+
+    field "M.END" {
+        comma-separator: false
+        operation: constant "\"1231\""
+    }
+
+    field "THOUS" {
+        comma-separator: false
+        operation: constant "\"1000\""
+    }
+
+    field "HUND" {
+        comma-separator: false
+        operation: constant "\"100\""
+    }
+
+    field "ONE" {
+        comma-separator: false
+        operation: constant "\"01\""
+    }
+
+    field "COMPID" {
+        label {
+            en = "Composite"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "COMP.CCY" {
+        label {
+            en = "Ref Ccy"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 45
+            line: 1
+        }
+
+        operation: field-extract "COMPID"
+        conversion: getFrom "AM.COMPOSITE" "CURRENCY.REF" false
+    }
+
+    field "DETID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DET.ID"
+    }
+
+    field "PRD01" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DETID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "YYYY" {
+        comma-separator: false
+        operation: field-extract "PRD01"
+        conversion: extract from 1 to 4
+    }
+
+    field "PRD.END" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 8
+        alignment: Left
+        comma-separator: false
+        operation: calc "YYYY":"M.END"
+        conversion: julian
+        conversion: oconv "D"
+        conversion: replace {
+            oldData: "--"
+        }
+
+        conversion: extract from 8 to 4
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "S.YEAR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        position {
+            column: 105
+            line: 0
+        }
+
+        operation: selection "YEAR"
+    }
+
+    field "YEAR.END" {
+        label {
+            en = "-For The Year"
+        }
+
+        comma-separator: false
+        position {
+            column: 105
+            line: 0
+        }
+
+        operation: if "PRD.END" Equals "NULL" process "S.YEAR" "PRD.END"
+    }
+
+    field "PERIOD" {
+        label {
+            en = "Period"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: calc "PRD01":"ONE"
+        conversion: julian
+        conversion: oconv "D"
+        conversion: replace {
+            oldData: "--"
+        }
+
+        conversion: extract from 4 to 8
+    }
+
+    field "B.COMPID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "COMPID"
+    }
+
+    field "CP.RET" {
+        label {
+            en = "Cp Return"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        decimals: 4
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DETID"
+        conversion: getFrom "AM.COMPOSITE.HIST" "CP.RET.W.D" false
+    }
+
+    field "TOTALS" {
+        break-condition {
+            field: "B.COMPID"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\"Cum Total\""
+    }
+
+    field "WT.PERF.VAL7" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CP.RET" / "HUND"
+    }
+
+    field "WT.PERF.VAL1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "WT.PERF.VAL7" + "C.ONE"
+    }
+
+    field "WT.PERF.VAL2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CP.RET":"STAR"
+    }
+
+    field "WT.PERF.VAL3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "WT.PERF.VAL2":"WT.PERF.VAL1"
+    }
+
+    field "WT.PERF.VAL4" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        processing-mode: Multi
+        operation: field-extract "WT.PERF.VAL3"
+        conversion: call
+        jBC: "@ E.WT.MUL.TOT"
+    }
+
+    field "WT.PERF.VAL5" {
+        break-condition {
+            field: "B.COMPID"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        operation: field-extract "WT.PERF.VAL4"
+    }
+
+    field "WT.PERF.VAL6" {
+        break-condition {
+            field: "B.COMPID"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        operation: calc "WT.PERF.VAL5" - "C.ONE"
+    }
+
+    field "TOT.WT.PERF" {
+        break-condition {
+            field: "B.COMPID"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 10
+            line: + 1
+        }
+
+        operation: calc "WT.PERF.VAL6" * "HUND"
+    }
+
+    field "EQ.RET" {
+        label {
+            en = "Eq Return"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        decimals: 4
+        position {
+            column: 27
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DETID"
+        conversion: getFrom "AM.COMPOSITE.HIST" "CP.RET.EQW.D" false
+    }
+
+    field "EQ.PERF.VAL7" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EQ.RET" / "HUND"
+    }
+
+    field "EQ.PERF.VAL1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EQ.PERF.VAL7" + "C.ONE"
+    }
+
+    field "EQ.PERF.VAL2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EQ.RET":"STAR"
+    }
+
+    field "EQ.PERF.VAL3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EQ.PERF.VAL2":"EQ.PERF.VAL1"
+    }
+
+    field "EQ.PERF.VAL4" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        decimals: 4
+        processing-mode: Multi
+        operation: field-extract "EQ.PERF.VAL3"
+        conversion: call
+        jBC: "@ E.EQ.MUL.TOT"
+    }
+
+    field "EQ.PERF.VAL5" {
+        break-condition {
+            field: "B.COMPID"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        decimals: 4
+        operation: field-extract "EQ.PERF.VAL4"
+    }
+
+    field "EQ.PERF.VAL6" {
+        break-condition {
+            field: "B.COMPID"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        decimals: 4
+        operation: calc "EQ.PERF.VAL5" - "C.ONE"
+    }
+
+    field "TOT.EQ.PERF" {
+        break-condition {
+            field: "B.COMPID"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        decimals: 4
+        position {
+            column: 27
+            line: + 1
+        }
+
+        operation: calc "EQ.PERF.VAL6" * "HUND"
+    }
+
+    field "TOT.PORT" {
+        label {
+            en = "No.Of.Portfolios"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 36
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DETID"
+        conversion: getFrom "AM.COMPOSITE.HIST" "NB.PORTFOLIOS" false
+    }
+
+    field "ENDVAL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DETID"
+        conversion: getFrom "AM.COMPOSITE.HIST" "TOT.END.M.VALUE" false
+    }
+
+    field "ENDVAL.IN.MILL" {
+        label {
+            en = "End Value (Mil)"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: true
+        decimals: 0
+        position {
+            column: 43
+        }
+
+        processing-mode: Multi
+        operation: calc "ENDVAL" / "THOUS"
+    }
+
+    field "TOT.FIRM" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DETID"
+        conversion: getFrom "AM.COMPOSITE.HIST" "TOT.D.PTF.V.END.M" false
+    }
+
+    field "FIRM.PERC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "ENDVAL" / "TOT.FIRM"
+    }
+
+    field "D.FIRM.PERC" {
+        label {
+            en = "Firm Percentage"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 65
+        }
+
+        processing-mode: Multi
+        operation: calc "FIRM.PERC" * "HUND"
+    }
+
+    field "D.TOT.FIRM" {
+        label {
+            en = "Tot Mgd Assts(Mil)"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 0
+        position {
+            column: 75
+        }
+
+        processing-mode: Multi
+        operation: calc "TOT.FIRM" / "THOUS"
+    }
+
+    field "B.COMPID.02" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "COMPID"
+    }
+
+    attributes: "PAGE"
+}

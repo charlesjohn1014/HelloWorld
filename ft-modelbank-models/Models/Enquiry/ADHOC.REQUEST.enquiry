@@ -1,0 +1,263 @@
+Enquiry "ADHOC.REQUEST" for "name:/DE_Config:DE.STATEMENT.REQUEST#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "View Adhoc Request for Account Report"
+    }
+
+    description {
+        en = "Adhoc Request for Account Report"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Statement Id"
+            }
+
+        }
+
+        AND
+
+        field "IN.ACCOUNT" {
+            label {
+                en = "Account Id"
+            }
+
+        }
+
+        AND
+
+        field "INSTITUTION" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "CREATION.DATE" {
+            label {
+                en = "Creation Date"
+            }
+
+        }
+
+        AND
+
+        field "DIRECTION" {
+            label {
+                en = "Direction"
+            }
+
+        }
+
+        AND
+
+        field "XML.STATEMENT.TYPE" {
+            label {
+                en = "XML.STATEMENT.TYPE"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        label {
+            en = "Header"
+        }
+
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Adhoc Account Report\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Statement Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IN.ACCOUNT" {
+        label {
+            en = "Account Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "IN.ACCOUNT"
+    }
+
+    field "INSTITUTION" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INSTITUTION"
+    }
+
+    field "XML.STATEMENT.TYPE" {
+        label {
+            en = "XML Stmt Type"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "XML.STATEMENT.TYPE"
+    }
+
+    field "CREATION.DATE" {
+        label {
+            en = "Creation Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREATION.DATE"
+    }
+
+    field "OUT.DELIVERY.REF" {
+        label {
+            en = "Delivery Ref"
+        }
+
+        length: 46
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUT.DELIVERY.REF"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "MSG.DRILL" {
+        comma-separator: false
+        operation: constant "\"INTRADAY.MESSAGE\""
+    }
+
+    field "APP.NAME" {
+        comma-separator: false
+        operation: constant "\"XML.OUTPUT.MSG\""
+    }
+
+    field "SEE" {
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "XMLDRILL.1" {
+        comma-separator: false
+        operation: calc "APP.NAME":"SPACE":"SEE"
+    }
+
+    field "XMLDRILL" {
+        comma-separator: false
+        operation: calc "XMLDRILL.1":"SPACE":"OUT.DELIVERY.REF"
+    }
+
+    field "ENQ.DRILL" {
+        comma-separator: false
+        operation: if "OUT.DELIVERY.REF" NotEquals "NULL" process "XMLDRILL" "MSG.DRILL"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Account Statements to Display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Adhoc Request"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "DE.STATEMENT.REQUEST,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Camt Delivery Ref"
+        }
+
+        label-field: "OUT.DELIVERY.REF"
+        image: "drill.gif"
+        from-field: "ENQ.DRILL"
+    }
+
+    fileVersion: Live, History
+}

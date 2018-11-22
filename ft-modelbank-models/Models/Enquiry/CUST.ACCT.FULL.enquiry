@@ -1,0 +1,322 @@
+Enquiry "CUST.ACCT.FULL" for "name:/ST_ModelBank:NOFILE.CUSTOMER.AC.LIST#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Customer Accounts"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "MB.CUSTOMER.ID" {
+            mandatory: true
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "MB.CUSTOMER.ID" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: selection "MB.CUSTOMER.ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Accounts of a Customer\""
+    }
+
+    field "HEADER.02" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer :\""
+    }
+
+    field "CUSTOMER.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 1
+        }
+
+        operation: field-extract "MB.CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "@ID" {
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "AC.ID" {
+        label {
+            en = "Account"
+        }
+
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "JOINT.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "ACCOUNT.TITLE.1" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 3 to 0 delimited by "*"
+    }
+
+    field "LIM.REF" {
+        label {
+            en = "Limit"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 6 to 0 delimited by "*"
+    }
+
+    field "TYPE" {
+        label {
+            en = "Acct Type"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 4 to 0 delimited by "*"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 5 to 0 delimited by "*"
+    }
+
+    field "WORK.BAL" {
+        label {
+            en = "Working Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 7 to 0 delimited by "*"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Ledger Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 8 to 0 delimited by "*"
+    }
+
+    field "CLEARED" {
+        label {
+            en = "Cleared Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 9 to 0 delimited by "*"
+    }
+
+    field "LOCK.AMT" {
+        label {
+            en = "Locked Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        hidden: true
+        operation: field-extract "AC.ID"
+        conversion: call
+        jBC: "@ E.TOTAL.LOCK.AMT"
+    }
+
+    field "USE.BALANCE" {
+        label {
+            en = "Useable Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 11
+        }
+
+        operation: calc "WORK.BAL" - "LOCK.AMT"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Statement entries today"
+        }
+
+        label-field: "AC.ID"
+        criteria: "ACCT.ID" Equals "AC.ID"
+        enquiry: "STMT.ENT.TODAY"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Entries since last statement"
+        }
+
+        label-field: "AC.ID"
+        criteria: "ACCT.ID" Equals "AC.ID"
+        enquiry: "STMT.ENT.LAST"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Forward Movements"
+        }
+
+        label-field: "AC.ID"
+        criteria: "ACCOUNT.ID" Equals "AC.ID"
+        enquiry: "NOSTRO.FWD.BAL"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View Account"
+        }
+
+        label-field: "AC.ID" parameters {
+            function:  See
+            field: "AC.ID"
+        }
+
+        application: "ACCOUNT"
+    }
+
+}

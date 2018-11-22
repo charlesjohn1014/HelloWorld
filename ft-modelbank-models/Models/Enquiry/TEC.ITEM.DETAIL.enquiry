@@ -1,0 +1,235 @@
+Enquiry "TEC.ITEM.DETAIL" for "name:/EB_Logging:TEC.DISPLAY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "TEC Detail"
+    }
+
+    start-line: 4
+    end-line: 29
+    build-routines {
+        jBC: "TEC.PRODUCE.DISPLAY"
+    }
+
+    fixed-sort: "THRESHOLD" Null
+    custom-selection {
+
+        field "ITEM.TYPE" {
+        }
+
+        AND
+
+        field "THRESHOLD" {
+        }
+
+        None
+    }
+
+    field "ITEM.TYPE" {
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "ITEM.TYPE"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "MY.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "THRESHOLD"
+    }
+
+    field "BLANK" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "INFO" {
+        comma-separator: false
+        operation: constant "\"info\""
+    }
+
+    field "THRESH" {
+        comma-separator: false
+        operation: if "MY.TYPE" Equals "BLANK" process "INFO" "MY.TYPE"
+    }
+
+    field "BASE.PATH" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "IMG.PATH":"THRESH"
+    }
+
+    field "TYPE" {
+        label {
+            en = "Severity"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: calc "BASE.PATH":"GIF.TXT"
+    }
+
+    field "DISP.TEXT" {
+        label {
+            en = "Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "ITEM.TYPE"
+    }
+
+    field "ITEM.DET" {
+        label {
+            en = "Detail"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ITEM.DETAIL"
+    }
+
+    field "DISP.COUNT" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "METRIC.COUNT"
+    }
+
+    field "METRIC.TOTAL" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "METRIC.TOTAL"
+    }
+
+    field "TOT.TOTAL" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "METRIC.TOTAL"
+    }
+
+    field "AVG" {
+        label {
+            en = "Average"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: calc "TOT.TOTAL" / "DISP.COUNT"
+    }
+
+    field "METRIC.AVG" {
+        display-type: "BAR"
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "AVG"
+    }
+
+    field "METRIC.HIGH" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "METRIC.HIGH"
+    }
+
+    field "WORK.HIGH" {
+        comma-separator: false
+        operation: if "METRIC.HIGH" Greater "HIGH.VAL" process "METRIC.HIGH" "HIGH.VAL"
+    }
+
+    field "HIGH.VAL" {
+        comma-separator: false
+        operation: field-extract "WORK.HIGH"
+    }
+
+    field "HIGH" {
+        label {
+            en = "Highest Value"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "METRIC.HIGH"
+    }
+
+    field "BAR.HIGH" {
+        display-type: "BAR"
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "METRIC.HIGH"
+    }
+
+    field "IMG.PATH" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"../components/tec/images/\""
+    }
+
+    field "GIF.TXT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\".gif\""
+    }
+
+    field "TOP.KEY" {
+        label {
+            en = "Highest Item"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOP.KEY"
+    }
+
+    attributes: "ALLDATA"
+}

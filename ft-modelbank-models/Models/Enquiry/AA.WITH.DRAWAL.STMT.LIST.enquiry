@@ -1,0 +1,204 @@
+Enquiry "AA.WITH.DRAWAL.STMT.LIST" for "name:/AA_Framework:AA.SIMULATION.RUNNER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Simulated Withdrawal List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "U.ACTIVITY" {
+        Equals "DEPOSITS-WITHDRAW-PO.EARLY.WITHDRAWAL"
+    }
+
+    fixed-selection "STATUS" {
+        Equals "\"COMPLETED", "-", "SUCCESSFULLY\""
+    }
+
+    fixed-selection "SIM.END.DATE" {
+        GreaterOrEquals "!TODAY"
+    }
+
+    fixed-sort: "SIM.END.DATE" Descending
+    custom-selection {
+
+        field "ARRANGEMENT.REF" {
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SIM.RUN" {
+        comma-separator: false
+        operation: field-extract "@ID"
+    }
+
+    field "SUB.TITLE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Withdrawal Statement of \""
+    }
+
+    field "ARR.REFERENCE" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.REF"
+    }
+
+    field "L.RED.TEXT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"As on \""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ARR.REF" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARR.REFERENCE"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "AR.CCY" {
+        comma-separator: false
+        operation: field-extract "ARR.REF"
+    }
+
+    field "U.ACTIVITY" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "U.ACTIVITY"
+    }
+
+    field "L.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SIM.END.DATE"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "L.REDEEM" {
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        operation: calc "L.RED.TEXT":"L.DATE"
+    }
+
+    field "L.FOR" {
+        display-type: "CLASS-BOLD.ITALIC"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 2
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: constant "\"for\""
+    }
+
+    field "T.AMOUNT" {
+        format: Currency "AR.CCY" negative-pattern -#
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SIM.CAPTURE.REF"
+        conversion: getFrom "AA.SIMULATION.CAPTURE" "TXN.AMOUNT" false
+    }
+
+    field "ENQ.DRILL" {
+        comma-separator: false
+        operation: constant "\"AA.WITHDRWAL.STATEMENT.DETAILS\""
+    }
+
+    field "CAP.REFERENCE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SIM.CAPTURE.REF"
+    }
+
+    field "CAP.REFERENCE.02" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SIM.CAPTURE.REF"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Withdrawal Details"
+        }
+
+        label-field: "L.REDEEM"
+        image: "action.gif"
+        criteria: "SIM.CAPTURE.REF" Equals "CAP.REFERENCE"
+        from-field: "ENQ.DRILL"
+    }
+
+    attributes: "ALLDATA" ; "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

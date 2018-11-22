@@ -1,0 +1,198 @@
+Enquiry "GENERIC.CHARGES" for "name:/IC_Config:IC.CHARGE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Generic Charges"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.MB.BUILD.CUST.ACCT.RTN"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "IC.CHARGE.ID" {
+            label {
+                en = "Account"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Generic Charges(IC)\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Chrg ID"
+        }
+
+        length: 21
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IC.CHG.PRODUCT" {
+        label {
+            en = "Chrg Product"
+        }
+
+        length: 32
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "IC.CHG.PRODUCT"
+    }
+
+    field "CAL.STEP.PERIOD" {
+        label {
+            en = "Calc Step Period"
+        }
+
+        length: 1
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CAL.STEP.PERIOD"
+    }
+
+    field "F.CAL1" {
+        comma-separator: false
+        operation: field-extract "CAL.STEP.PERIOD"
+    }
+
+    field "M.VAL" {
+        comma-separator: false
+        operation: constant "\"Monthly\""
+    }
+
+    field "P.VAL" {
+        comma-separator: false
+        operation: constant "\"Periodical\""
+    }
+
+    field "F.CAL.STP.PRD" {
+        label {
+            en = "Calc Step Period"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 33
+        }
+
+        processing-mode: Multi
+        operation: if "F.CAL.1" Equals "\'M\'" process "M.VAL" "P.VAL"
+    }
+
+    field "CHRG.FREQUENCY" {
+        label {
+            en = "Frequency"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.FREQUENCY"
+    }
+
+    field "CHRG.EFF.DATE" {
+        label {
+            en = "Effective Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.EFF.DATE"
+    }
+
+    field "ZERO.RECS" {
+        label {
+            en = "Zero Recs display"
+        }
+
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Generic Charges Set\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View IC Charge"
+        }
+
+        label-field: "IC.CHG.PRODUCT"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "IC.CHARGE,ADMIN.INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View IC Charge Product"
+        }
+
+        label-field: "IC.CHG.PRODUCT"
+        image: "details.gif" parameters {
+            function:  See
+            field: "IC.CHG.PRODUCT"
+        }
+
+        screen: "IC.CHARGE.PRODUCT,ADMIN.INPUT"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES"
+}

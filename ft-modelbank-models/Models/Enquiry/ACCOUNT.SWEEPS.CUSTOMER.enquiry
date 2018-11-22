@@ -1,0 +1,143 @@
+Enquiry "ACCOUNT.SWEEPS.CUSTOMER" for "name:/PO_Cashpooling:AC.CASH.POOL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Sweeps"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.SWEEPS.FOR.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Customer No"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Account Sweeps\""
+    }
+
+    field "LINK.ACCT" {
+        label {
+            en = "Account from"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LINK.ACCT"
+    }
+
+    field "MAIN.MASTER" {
+        label {
+            en = "Account to"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MAIN.MASTER"
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-extract "MAIN.MASTER"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "SWEEP.TYPE" {
+        label {
+            en = "Sweep Type"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "RULE"
+        conversion: getFrom "AC.SWEEP.TYPE" "SHORT.DESCRIPTION" false
+    }
+
+    field "MINIMUM.AMT" {
+        label {
+            en = "Minimum Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MINIMUM.AMT"
+    }
+
+    field "MAXIMUM.AMT" {
+        label {
+            en = "Maximum Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MAXIMUM.AMT"
+    }
+
+    field "ZERORECORDDISPLAY" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES" ; "NO.CLEAR.SELECTION" ; "NO.MORE.OPTIONS"
+}

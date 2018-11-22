@@ -1,0 +1,108 @@
+Enquiry "PWM.ACCT.STMT" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Generate statement"
+    }
+
+    description {
+        en = "Generate statement"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        Equals "!CURRENT.ACC"
+    }
+
+    field "ACCOUNT.STATEMENT" {
+        comma-separator: false
+        operation: constant "\"ACCOUNT.STATEMENT\""
+    }
+
+    field "ACCT.STMT.ANONYMISED" {
+        comma-separator: false
+        operation: constant "\"ACCT.STMT.ANONYMISED\""
+    }
+
+    field "@ID" {
+        display-type: "CLASS-BOLD.RED"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        no-header: true
+        operation: application-field-name "@ID"
+    }
+
+    field "ZERORECS" {
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        no-header: true
+        operation: constant "\"Choose Statement>>\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Statement Request"
+        }
+
+        label-field: "ZERORECS" parameters {
+            function:  Input
+            field: "ACCOUNT.STATEMENT"
+        }
+
+        screen: "ENQUIRY.REPORT,PRIVATE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Statement Request - Anonymised"
+        }
+
+        label-field: "ZERORECS" parameters {
+            function:  Input
+            field: "ACCT.STMT.ANONYMISED"
+        }
+
+        screen: "ENQUIRY.REPORT,PVT.REQ"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View/Print Statement"
+        }
+
+        label-field: "ZERORECS"
+        criteria: "ACCOUNT.NO" Equals "!CURRENT.ACC"
+        enquiry: "ACCOUNT.STATEMENT.ONLINE"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View/Print Anonymised Statement"
+        }
+
+        label-field: "ZERORECS"
+        criteria: "ACCOUNT.NO" Equals "!CURRENT.ACC"
+        enquiry: "ACCOUNT.STATEMENT.ANONYMISED"
+    }
+
+    drilldown "5" {
+        description {
+            en = "View/Print Statement(PDF)"
+        }
+
+        label-field: "ZERORECS"
+        criteria: "ACCOUNT.NUMBER" Equals "!CURRENT.ACC"
+        enquiry: "VIEW.ACCT.FORM"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.COLUMN.HEADER"
+}

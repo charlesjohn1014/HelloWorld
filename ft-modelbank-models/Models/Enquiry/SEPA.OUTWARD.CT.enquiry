@@ -1,0 +1,126 @@
+Enquiry "SEPA.OUTWARD.CT" for "name:/EP_ModelBank:NOFILE.NEXT.SEPA.CONNEX#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Encoding of a transaction related DB"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    description {
+        en = "Next SEPA.FOLLOW.UP"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "DUMMY" {
+        NotEquals "\'\'"
+    }
+
+    field "VERSION.NAME" {
+        comma-separator: false
+        operation: constant "\"SEPA.FOLLOW.UP,SEPA.OUTWARD.CT\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SEE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\" S \""
+    }
+
+    field "INPUT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\" I \""
+    }
+
+    field "FILL.REC" {
+        format: User
+        length: 100
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "MESSAGE" {
+        label {
+            en = "Message"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "["
+    }
+
+    field "FUP" {
+        label {
+            en = "Follow Up ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 36
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "["
+    }
+
+    field "LIVE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "FUP"
+        conversion: getFrom "SEPA.FOLLOW.UP" "OPERATION.CODE" false
+    }
+
+    field "ACTION" {
+        comma-separator: false
+        operation: if "LIVE" Equals "NULL" process "INPUT" "SEE"
+    }
+
+    field "COMMAND" {
+        comma-separator: false
+        operation: calc "VERSION.NAME":"ACTION"
+    }
+
+    field "COMMAND.LINE" {
+        comma-separator: false
+        operation: calc "COMMAND":"FUP"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Display/Edit"
+        }
+
+        label-field: "FUP"
+        from-field: "COMMAND.LINE"
+    }
+
+    attributes: "ALLDATA"
+}

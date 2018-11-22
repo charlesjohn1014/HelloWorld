@@ -1,0 +1,630 @@
+Enquiry "CATEG.ENT.BOOK.STD" for "name:/AC_EntryCreation:CATEG.ENTRY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "P and L Categ Entries"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 19
+    build-routines {
+        jBC: "E.PLCATEGORY.VAL"
+    }
+
+    fixed-sort: "BOOKING.DATE" Null
+    custom-selection {
+
+        field "PL.CATEGORY" {
+            mandatory: true
+            label {
+                en = "PL Category"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BOOKING.DATE.SEL" {
+            mandatory: true
+            label {
+                en = "Booking Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 26
+            line: 0
+        }
+
+        operation: constant "\"P and L Entries\""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Category:\""
+    }
+
+    field "HDR.3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"CCY:\""
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "CCY:"
+        }
+
+        display-type: "CLASS-ENQ.H.ID"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: local-currency
+    }
+
+    field "OPENING.BAL" {
+        comments: "Determines the opening balance" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CATEG.ENQ.STD"
+    }
+
+    field "TODAY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: today
+    }
+
+    field "@ID" {
+        comments: "Updates R.RECORD with correct amt and closing balance for the year"
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.READ.CATEG.ENTRY"
+    }
+
+    field "VAL.DATE" {
+        comma-separator: false
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "YRMTH" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BOOKING.DATE"
+        conversion: extract from 1 to 6
+    }
+
+    field "BKMTH" {
+        comments: " and closing balance for the year"
+        comma-separator: false
+        operation: break-change "YRMTH"
+    }
+
+    field "MONTH.END.BAL" {
+        break-condition {
+            field: "BKMTH"
+        }
+
+        comma-separator: false
+        escapeSequence: BL
+        operation: field-extract "POST"
+    }
+
+    field "P.VAL.DATE" {
+        label {
+            en = "Value date"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "VAL.DATE"
+        conversion: julian
+        conversion: oconv "D2"
+        conversion: replace {
+            oldData: "--"
+        }
+
+    }
+
+    field "FOOTER" {
+        break-condition {
+            field: "BKMTH"
+        }
+
+        comma-separator: false
+        escapeSequence: BL
+        position {
+            column: 14
+            line: + 1
+        }
+
+        operation: constant "\"CLOSING BALANCE\""
+    }
+
+    field "FOOTER1" {
+        format: Currency "CCY" negative-pattern #- break-condition {
+            field: "BKMTH"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        escapeSequence: BL
+        position {
+            column: 60
+            line: + 1
+        }
+
+        operation: field-extract "YRMTH"
+        conversion: call
+        jBC: "@ E.CATEG.ENQ.BAL"
+    }
+
+    field "CAT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PL.CATEGORY"
+        conversion: oconv "D2"
+        conversion: replace {
+            oldData: "--"
+        }
+
+    }
+
+    field "HEADER.CAT" {
+        label {
+            en = "Category:"
+        }
+
+        comments: "Show category in the case of no selection"
+        display-type: "CLASS-ENQ.H.ID"
+        alignment: Right
+        comma-separator: false
+        fmtMask: "##-###"
+        display-section: Header
+        position {
+            column: 65
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PL.CATEGORY"
+    }
+
+    field "CCY" {
+        comments: " selection"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: local-currency
+    }
+
+    field "D.CCY" {
+        label {
+            en = "CCY:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 76
+            line: 1
+        }
+
+        operation: field-extract "CCY"
+    }
+
+    field "LANG" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: language
+    }
+
+    field "CATEG.D" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: field-extract "CAT"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "TCODE" {
+        comma-separator: false
+        operation: application-field-name "TRANSACTION.CODE"
+    }
+
+    field "DESC" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "PDESC" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: if "TCODE" NotEquals "NULL" process "DESC" "NOREC"
+    }
+
+    field "REFNO" {
+        label {
+            en = "Ref no"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.REFERENCE"
+    }
+
+    field "POST" {
+        label {
+            en = "Booking date"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BOOKING.DATE"
+        conversion: julian
+        conversion: oconv "D2"
+        conversion: replace {
+            oldData: "--"
+        }
+
+    }
+
+    field "PAMT" {
+        comma-separator: false
+        operation: if "TCODE" NotEquals "NULL" process "AMT" "NOREC2"
+        conversion: oconv "D2"
+        conversion: replace {
+            oldData: "--"
+        }
+
+    }
+
+    field "PAMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: field-extract "PAMT"
+    }
+
+    field "NOREC" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*** NO ENTRIES FOR PERIOD ENDING\""
+    }
+
+    field "NOTHING" {
+        format: Translate break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        escapeSequence: BL
+        operation: constant "\"*** NO ENTRIES FOR REQUESTED CRITERIA ***\""
+    }
+
+    field "NOBALANCE" {
+        format: Translate break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        escapeSequence: BL
+        position {
+            column: 14
+            line: + 3
+        }
+
+        operation: constant "\"*** OPENING AND CLOSING BALANCE ZERO ***\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "F" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"F\""
+    }
+
+    field "AMT" {
+        format: Currency "CCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.FCY"
+    }
+
+    field "NOREC2" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TOT.AMT" {
+        format: Translate break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+            line: + 2
+        }
+
+        operation: constant "\"Total Entries For Period\""
+    }
+
+    field "TOTAL" {
+        format: Currency "CCY" negative-pattern #- break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+            line: + 2
+        }
+
+        operation: total "AMT"
+    }
+
+    field "BFWD" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        escapeSequence: BL
+        display-section: Header
+        position {
+            column: 14
+            line: 4
+        }
+
+        operation: constant "\"Balances at Period Start\""
+    }
+
+    field "AMT.BFWD" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Currency "CCY" negative-pattern #- break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        escapeSequence: BL
+        display-section: Header
+        position {
+            column: 60
+            line: 4
+        }
+
+        operation: field-extract "OPENING.BAL"
+    }
+
+    field "CATEG.ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "SYSTEM.ID" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SYSTEM.ID"
+    }
+
+    field "APPLICATION" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SYSTEM.ID"
+        conversion: getFrom "EB.SYSTEM.ID" "APPLICATION" false
+    }
+
+    field "APPL.ID" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUR.REFERENCE"
+    }
+
+    field "FULL.APPL" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "NULL" process "CATEG.ENTRY" "APPLICATION"
+    }
+
+    field "NEXT.APPL" {
+        comma-separator: false
+        operation: if "APPL.DRILL" Equals "YES" process "FULL.APPL" "CATEG.ENTRY"
+    }
+
+    field "NEXT.ID" {
+        comma-separator: false
+        operation: if "NEXT.APPL" Equals "CATEG.ENTRY" process "CATEG.ID" "APPL.ID"
+    }
+
+    field "CATEG.ENTRY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"CATEG.ENTRY\""
+    }
+
+    field "YES" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "APPL.DRILL" {
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: selection "APPL.DRILLDOWN"
+    }
+
+    field "CATEG.ENTRY.02" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"CATEG.ENTRY\""
+    }
+
+    field "YES.02" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "APPL.DRILL.02" {
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: selection "APPL.DRILLDOWN"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Entry"
+        }
+
+        label-field: "PDESC"
+        image: "view.gif" parameters {
+            function:  See
+            field: "NEXT.ID"
+        }
+
+        from-field: "NEXT.APPL"
+    }
+
+}

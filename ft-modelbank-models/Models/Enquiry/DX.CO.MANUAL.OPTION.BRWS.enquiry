@@ -1,0 +1,244 @@
+Enquiry "DX.CO.MANUAL.OPTION.BRWS" for "name:/DX_Trade:DX.TRANSACTION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Manual Option Closeout"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "TRANS.NAME" {
+        Equals "\"OPTION\""
+    }
+
+    fixed-selection "TRA.PND.SETT" {
+        Equals "\"\""
+    }
+
+    fixed-selection "SOURCE.REF" {
+        Equals "\"DXTRA\""
+    }
+
+    fixed-selection "APP.STATUS" {
+        Equals "\"AUT\""
+    }
+
+    fixed-selection "REVERSAL.DATE" {
+        Equals "\"\""
+    }
+
+    fixed-selection "LOTS" {
+        Greater "0"
+    }
+
+    fixed-sort: "TRADE.DATE" Null
+    fixed-sort: "PRICE" Null
+    custom-selection {
+
+        field "PORT.CUST.ID" {
+            mandatory: true
+            label {
+                en = "Portfolio No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CONTRACT.CODE" {
+            mandatory: true
+            label {
+                en = "Contract Code"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            mandatory: true
+            label {
+                en = "Maturity"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "STRIKE" {
+            mandatory: true
+            label {
+                en = "Strike"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CALL.PUT" {
+            mandatory: true
+            label {
+                en = "Call / Put"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TRADE.CCY" {
+            label {
+                en = "Contract Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DELIVERY.CCY" {
+            label {
+                en = "Delivery Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "OPTION.STYLE" {
+            label {
+                en = "Option Style"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "DX.TRANSACTION" {
+        label {
+            en = "Transaction Number"
+        }
+
+        display-type: "NO-EDIT"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DX.TRANSACTION"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "BUY.SELL" {
+        label {
+            en = "Buy Sell"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BUY.SELL"
+    }
+
+    field "ORIGINAL.LOTS" {
+        label {
+            en = "Original Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.LOTS"
+    }
+
+    field "LOTS" {
+        label {
+            en = "Open Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LOTS"
+    }
+
+    field "PRICE" {
+        label {
+            en = "Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRICE"
+    }
+
+    field "CO.LOTS" {
+        label {
+            en = "Closeout Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    target-for-application "DX.CO.MANUAL.INPUT" {
+        screen: "SYSTEM"
+        map-field: "DX.TRANSACTION" to "TRANS.ID"
+        map-field: "CO.LOTS" to "CO.LOTS"
+    }
+
+    attributes: "APPLICATION.ENQUIRY"
+}

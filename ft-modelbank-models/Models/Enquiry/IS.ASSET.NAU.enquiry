@@ -1,0 +1,269 @@
+Enquiry "IS.ASSET.NAU" for "name:/IS_ModelBank:NOFILE.IS.ASSET.NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Assets"
+    }
+
+    description {
+        en = "Unauthorised Assets"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    no-mandatory-selection: 1 fixed-selection "IsAssetNau" {
+    }
+
+    custom-selection {
+
+        field "COMMODITY" {
+            label {
+                en = "Commodity"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Unauthorised Assets\""
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "COMMODITY" {
+        label {
+            en = "Commodity"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+        conversion: getFrom "IS.COMMODITY" "DESCRIPTION" false
+    }
+
+    field "@ID" {
+        label {
+            en = "Asset Reference"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ASSET.SHORT.TITLE" {
+        label {
+            en = "Asset Title"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "VENDOR" {
+        label {
+            en = "Vendor"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "VENDOR.NAME" {
+        label {
+            en = "Vendor Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+        conversion: getFrom "IS.VENDOR" "NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "UNIT.PRICE" {
+        label {
+            en = "Unit Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "TABLE.NAME" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "VERSION" {
+        comma-separator: false
+        operation: constant "\",INPUT\""
+    }
+
+    field "APPLICATION" {
+        comma-separator: false
+        operation: calc "TABLE.NAME":"VERSION"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauth records\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        from-field: "APPLICATION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "APPLICATION"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "APPLICATION"
+    }
+
+}

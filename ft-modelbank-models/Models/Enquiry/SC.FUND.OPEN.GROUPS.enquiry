@@ -1,0 +1,323 @@
+Enquiry "SC.FUND.OPEN.GROUPS" for "name:/SC_SctOrderCapture:SEC.OPEN.ORDER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of Open Groups of Fund"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5 fixed-selection "GROUP.ORDER" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "MUTUAL.FUND" {
+        Equals "Y"
+    }
+
+    fixed-sort: "SECURITY.NO" Null
+    fixed-sort: "ORDER.TYPE" Null
+    fixed-sort: "TRANSACTION.CODE" Null
+    fixed-sort: "TRADE.CCY" Null
+    custom-selection {
+
+        field "GROUP.ORDER" {
+            label {
+                en = "Group Id"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security Number"
+            }
+
+        }
+
+        AND
+
+        field "ORDER.TYPE" {
+            label {
+                en = "Order Type"
+            }
+
+        }
+
+        AND
+
+        field "TRANSACTION.CODE" {
+            label {
+                en = "Transaction code"
+            }
+
+        }
+
+        AND
+
+        field "CUST.NUMBER" {
+            label {
+                en = "Client"
+            }
+
+        }
+
+        None
+    }
+
+    field "GROUP.ORDER" {
+        label {
+            en = "Group ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GROUP.ORDER"
+    }
+
+    field "@ID" {
+        label {
+            en = "Order id"
+        }
+
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Closed Order Groups of Fund\""
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SM.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "ORDER.TYPE" {
+        label {
+            en = "Order Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.TYPE"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Txn"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "CUST.NUMBER" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.NUMBER"
+    }
+
+    field "CU.MNEM" {
+        label {
+            en = "Client Mnemonic"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CUST.NUMBER"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Order date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.DATE"
+    }
+
+    field "ORDER.TIME" {
+        label {
+            en = "Order time"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.TIME"
+    }
+
+    field "DEAL.STATUS" {
+        label {
+            en = "Deal Status"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.STATUS"
+    }
+
+    field "ERR.MSG" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Open Groups\""
+    }
+
+    tool ENQ.NEW {
+        label {
+            en = "New Group"
+        }
+
+        command: "docommand(\"SC.GROUP.ORDERS,INP\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit Group"
+        }
+
+        label-field: "GROUP.ORDER"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "GROUP.ORDER"
+        }
+
+        screen: "SC.GROUP.ORDERS,MAN"
+    }
+
+}

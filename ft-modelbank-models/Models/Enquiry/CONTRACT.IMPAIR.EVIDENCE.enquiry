@@ -1,0 +1,236 @@
+Enquiry "CONTRACT.IMPAIR.EVIDENCE" for "name:/IA_Config:EB.CASHFLOW#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Contracts with Impairment Evidence"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 30 fixed-selection "IMPAIRMENT.STATUS" {
+        Equals "\'IMPAIR.EVIDENCE\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Trans Reference"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Contracts with Impairment Evidence\""
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer ID"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+    }
+
+    field "CUSTOMER.NUMBER" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CONTRACT.ID" {
+        label {
+            en = "Contract Number"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 37
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CONTRACT.ID"
+        conversion: extract from 1 to 2
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "APP.LD" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: call
+        jBC: "@ E.MB.CHECK.IMPAIR"
+    }
+
+    field "APP.MM" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: call
+        jBC: "@ E.MB.CHECK.IMPAIR"
+    }
+
+    field "APP.SL" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: call
+        jBC: "@ E.MB.CHECK.IMPAIR"
+    }
+
+    field "APP.AA" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: getFrom "EB.CONTRACT.BALANCES" "WORKING.BALANCE" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DEC3" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "\"SL\"" process "APP.SL" "APP.AA"
+    }
+
+    field "DEC2" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "\"MM\"" process "APP.MM" "DEC3"
+    }
+
+    field "DEC1" {
+        label {
+            en = "Outstanding Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 76
+        }
+
+        operation: if "APPLICATION" Equals "\"LD\"" process "APP.LD" "DEC2"
+    }
+
+    field "IMP CODE" {
+        label {
+            en = "Impairment Code"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "IMPAIRMENT.CODE"
+    }
+
+    field "DATE.IMP.EVIDENCE" {
+        label {
+            en = "Impair Evidence Date"
+        }
+
+        format: Date
+        length: 55
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.IMP.EVIDENCE"
+    }
+
+    field "Account Officer" {
+        label {
+            en = "Account Officer"
+        }
+
+        comma-separator: false
+        position {
+            column: 125
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records to display\""
+    }
+
+}

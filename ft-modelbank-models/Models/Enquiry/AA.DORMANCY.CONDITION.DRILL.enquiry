@@ -1,0 +1,259 @@
+Enquiry "AA.DORMANCY.CONDITION.DRILL" for "name:/AA_ModelBank:NOFILE.DORMANCY.ACTIVITIES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Dormancy - Activity Configuration"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "INP.INITIATION.TYPE" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "PRD.CAT.ID" {
+            mandatory: true
+            label {
+                en = "Dormancy Condition"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "INP.ACTIVITY.CLASS" {
+            label {
+                en = "Activity Class"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "INP.ACTIVITY.NAME" {
+            label {
+                en = "Activity"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "INP.INITIATION.TYPE" {
+            label {
+                en = "Inititation"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        AND
+
+        field "INP.QUALIFIED" {
+            label {
+                en = "Qualified (0/1)"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Return Array"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.AA.ACT.LOG.REC"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Activity Details - Dormancy\""
+    }
+
+    field "CLASS.HEADER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Class Id\""
+    }
+
+    field "ACT.HEADER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        hidden: true
+        operation: constant "\"Activity\""
+    }
+
+    field "ACT.NAME.HEADER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Activity Name\""
+    }
+
+    field "INT.HEADER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Initiation\""
+    }
+
+    field "QUAL.HEADER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Qualified\""
+    }
+
+    field "ACTIVITY.CLASS" {
+        label {
+            en = "Class ID"
+        }
+
+        display-type: "STARTTREE"
+        format: User
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY.CLASS"
+        conversion: getFrom "AA.ACTIVITY.CLASS" "DESCRIPTION" false
+    }
+
+    field "ACT.BRK" {
+        comma-separator: false
+        operation: break-change "ACTIVITY.CLASS"
+    }
+
+    field "ACTIVITY.CLASS.DESC" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.CLASS"
+    }
+
+    field "ACTIVITY.NAME" {
+        label {
+            en = "Activity"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ACTIVITY.NAME"
+    }
+
+    field "ACTIVITY.DESC" {
+        label {
+            en = "Activity Name"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: field-extract "ACTIVITY.NAME"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "INITIATION.TYPE" {
+        label {
+            en = "Initiation"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INITIATION.TYPE"
+    }
+
+    field "QUALIFIED" {
+        label {
+            en = "Qualified"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Single
+        operation: application-field-name "QUALIFIED"
+        conversion: replace {
+            oldData: "0"
+            newData: "No"
+        }
+
+        conversion: replace {
+            oldData: "1"
+            newData: "Yes"
+        }
+
+    }
+
+    field "ACTIVITY.CLASS.2" {
+        display-type: "ENDTREE" break-condition {
+            field: "ACT.BRK"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "ACTIVITY.CLASS"
+    }
+
+    attributes: "NO.BREADCRUMBS"
+}

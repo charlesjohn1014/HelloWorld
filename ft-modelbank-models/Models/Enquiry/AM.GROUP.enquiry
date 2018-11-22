@@ -1,0 +1,205 @@
+Enquiry "AM.GROUP" for "name:/AM_Group:AM.GROUP.PORT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Active Portfolio Groups"
+    }
+
+    description {
+        en = "Active Portfolio Groups"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DEACTIVATED" {
+        Equals "\"NO\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Group ID"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account Officer"
+            }
+
+        }
+
+        AND
+
+        field "SEC.ACC.NO" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Active Groups\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Group ID"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "MNEMONIC" {
+        label {
+            en = "Mnemonic"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MNEMONIC"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Relationship Mgr"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "BENCHMK" {
+        label {
+            en = "Benchmark"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BENCHMARK"
+    }
+
+    field "SEC.ACC.NO" {
+        label {
+            en = "Grouped Portfolios"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SEC.ACC.NO"
+    }
+
+    field "VAL.CURRENCY" {
+        label {
+            en = "Valuation Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VAL.CURRENCY"
+    }
+
+    tool AM.DETS {
+        label {
+            en = "Create New Group"
+        }
+
+        command: "AM.GROUP.PORT,INPUT I"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Group Details"
+        }
+
+        label-field: "@ID"
+        image: "details.gif"
+        criteria: "CURRENT.GROUP" > "@ID"
+        criteria: "CURRENT.BM" > "BENCHMK" parameters {
+            field: "@ID"
+        }
+
+        composite-screen: "AM.GROUP.SCV"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Group"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "AM.GROUP.PORT,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Deactivate Group"
+        }
+
+        label-field: "@ID"
+        image: "txnreverse.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "AM.GROUP.PORT,INPUT"
+    }
+
+}

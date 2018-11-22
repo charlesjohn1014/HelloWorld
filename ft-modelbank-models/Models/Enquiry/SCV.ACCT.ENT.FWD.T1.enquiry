@@ -1,0 +1,192 @@
+Enquiry "SCV.ACCT.ENT.FWD.T1" for "name:/AC_CashFlow:ACCT.ENT.FWD#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Forward Entries"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.ENTRIES"
+    }
+
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "STMT.ENTRY" {
+            mandatory: true
+            label {
+                en = "Customer No"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.CONV.ENTRIES"
+    }
+
+    field "ACCOUNT.TITLE" {
+        label {
+            en = "Account name"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "STMT.ENTRY" {
+        label {
+            en = "Stmt Entry"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 200
+    }
+
+    field "SE.CUSTOMER.ID" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "STMT.ENTRY"
+        conversion: getFrom "STMT.ENTRY" "CUSTOMER.ID" false
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENTRY"
+        conversion: getFrom "STMT.ENTRY" "VALUE.DATE" false
+    }
+
+    field "LOCAL.CCY" {
+        label {
+            en = "Lcy"
+        }
+
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Multi
+        operation: local-currency
+    }
+
+    field "AMOUNT.LCY" {
+        label {
+            en = "Amt Lcy"
+        }
+
+        format: Currency "LOCAL.CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENTRY"
+        conversion: getFrom "STMT.ENTRY" "AMOUNT.LCY" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Fcy"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENTRY"
+        conversion: getFrom "STMT.ENTRY" "CURRENCY" false
+    }
+
+    field "AMOUNT.FCY" {
+        label {
+            en = "Amt Fcy"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENTRY"
+        conversion: getFrom "STMT.ENTRY" "AMOUNT.FCY" false
+    }
+
+    field "OUR.REFERENCE" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENTRY"
+        conversion: getFrom "STMT.ENTRY" "OUR.REFERENCE" false
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: constant "\"No forward entries for this customer\""
+    }
+
+    attributes: "NO.TOOLBAR"
+}

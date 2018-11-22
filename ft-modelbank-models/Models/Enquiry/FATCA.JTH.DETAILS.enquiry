@@ -1,0 +1,362 @@
+Enquiry "FATCA.JTH.DETAILS" for "name:/FA_CustomerIdentification:FATCA.CUSTOMER.SUPPLEMENTARY.INFO#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "FATCA Joint Owner Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ROLE.TYPE" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "ROLE.TYPE" {
+            label {
+                en = "Role"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "RM" {
+        label {
+            en = "RM Id"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "RM.NAME" {
+        label {
+            en = "RM Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "RM"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "RM.AREA" {
+        label {
+            en = "RM Market"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        hidden: true
+        operation: field-extract "RM"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 98
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "FATCA.STATUS" {
+        label {
+            en = "FATCA Classification"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 136
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FATCA.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Clients with Joint/Beneficial/Substantial Owners\""
+    }
+
+    field "HOLDER.REF" {
+        label {
+            en = "Unique ID"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 175
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "HOLDER.REF"
+    }
+
+    field "S.NAME" {
+        format: User
+        length: 65
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SUR.NAME"
+    }
+
+    field "F.NAME" {
+        format: User
+        length: 65
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "FIRST.NAME"
+    }
+
+    field "SP" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\" \""
+    }
+
+    field "OTHER.NAME" {
+        label {
+            en = "Other Owner Name"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "S.NAME":"SP":"F.NAME"
+    }
+
+    field "CONC.NAME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "OTHER.NAME"
+    }
+
+    field "HOLDER.NAME" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "HOLDER.NAME"
+    }
+
+    field "JO.NAME" {
+        label {
+            en = "Owner name"
+        }
+
+        length: 90
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 188
+        }
+
+        processing-mode: Multi
+        operation: if "CONC.NAME" Equals "SP" process "HOLDER.NAME" "CONC.NAME"
+    }
+
+    field "ROLE.TYPE" {
+        label {
+            en = "Role Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 288
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ROLE.TYPE"
+        conversion: oconv "MCT"
+    }
+
+    field "NATIONALITY" {
+        label {
+            en = "Nationality"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 325
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NATIONALITY"
+    }
+
+    field "RESIDENCE" {
+        label {
+            en = "Residence"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 335
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "RESIDENCE"
+    }
+
+    field "HOLDER.TIN" {
+        label {
+            en = "Owner TIN"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 345
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "HOLDER.TIN"
+    }
+
+    field "JO.BO.STATUS" {
+        label {
+            en = "JO/SO Classification"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 380
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "JO.BO.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available for current selection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "CUST.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Details"
+        }
+
+        label-field: "CUST.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+}

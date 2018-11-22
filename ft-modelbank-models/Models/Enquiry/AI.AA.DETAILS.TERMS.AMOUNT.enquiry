@@ -1,0 +1,565 @@
+Enquiry "AI.AA.DETAILS.TERMS.AMOUNT" for "name:/AA_PaymentSchedule:AA.ARR.PAYMENT.SCHEDULE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Deposit Overview"
+        }
+
+        column: 10
+        line: 1
+    }
+
+    description {
+        en = "Commitment Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    fixed-selection "ID.COMP.1" {
+        Equals "!EXT.SMS.DEPOSITS.SEE"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 113
+        processing-mode: Single
+        operation: constant "\"Deposit Overview\""
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "ACCOUNT.NUMBER" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 113
+        operation: constant "\"Deposit Account Number\""
+    }
+
+    field "ACCOUNT.NO" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 113
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+    }
+
+    field "ACC.NAME" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        column-width: 113
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PRO.TYPE" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 4
+        }
+
+        column-width: 113
+        operation: constant "\"Product\""
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 4
+        }
+
+        column-width: 113
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "PAY.TYPE" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 6
+        }
+
+        column-width: 113
+        operation: constant "\"Payment Type\""
+    }
+
+    field "PAYMENT.TYPE" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 6
+        }
+
+        column-width: 113
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.TYPE"
+        conversion: getFrom "AA.PAYMENT.TYPE" "DESCRIPTION" false
+    }
+
+    field "CCY" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 8
+        }
+
+        column-width: 113
+        operation: constant "\"Currency\""
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 8
+        }
+
+        column-width: 113
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "ACCOUNT.INTEREST" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 10
+        }
+
+        column-width: 113
+        operation: constant "\"Servicing Account Number\""
+    }
+
+    field "INTEREST.ACCOUNT" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AI.INTEREST.ACCOUNT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"Not Available\""
+    }
+
+    field "INT.ACCOUNT" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 10
+        }
+
+        column-width: 113
+        operation: if "INTEREST.ACCOUNT" NotEquals "NULL" process "INTEREST.ACCOUNT" "NUL"
+    }
+
+    field "INT.CUSTNAME" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 10
+        }
+
+        column-width: 113
+        operation: field-extract "INT.ACCOUNT"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "FILE.VERSION" {
+        comma-separator: false
+        operation: application-field-name "!FILE.VERSION"
+    }
+
+    field "D.FILE.VERSION" {
+        display-type: "CLASS-BOLD.ITALIC"
+        format: Translate
+        comma-separator: false
+        operation: field-extract "FILE.VERSION"
+        conversion: replace {
+            oldData: "LIV"
+        }
+
+        conversion: replace {
+            oldData: "NAU"
+        }
+
+        conversion: replace {
+            oldData: "SIM"
+            newData: "Simulated"
+        }
+
+    }
+
+    field "D.PROPERTY" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "L.AMOUNT" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Amount\""
+    }
+
+    field "D.CURRENCY" {
+        comma-separator: false
+        operation: field-extract "CURRENCY"
+    }
+
+    field "L.TERM" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Term\""
+    }
+
+    field "COOLING.DT" {
+        label {
+            en = "Cooling Date"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        comma-separator: false
+        operation: constant "\"Cooling Date\""
+    }
+
+    field "CANCEL.PRD" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        comma-separator: false
+        operation: constant "\"Cancel Date\""
+    }
+
+    field "BASE.DATE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "BASE.DATE" false
+    }
+
+    field "CONTRACT.DT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "CONTRACT.DATE" false
+    }
+
+    field "COOL.DT.FINAL" {
+        label {
+            en = "Cooling Period"
+        }
+
+        format: Date
+        comma-separator: false
+        operation: calc "BASE.DATE" + "COOL.PRD"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "CL.CHK" {
+        comma-separator: false
+        operation: field-extract "COOL.DT.FINAL"
+        conversion: call
+        jBC: "@ E.MB.GET.DATE"
+    }
+
+    field "CL.DAYS" {
+        comma-separator: false
+        operation: field-extract "CL.CHK"
+        conversion: extract from 1 to 0 delimited by " 1"
+    }
+
+    field "CL.MONTH" {
+        comma-separator: false
+        operation: field-extract "CL.CHK"
+        conversion: extract from 2 to 1 delimited by " "
+    }
+
+    field "CL.MONTH.CHK" {
+        comma-separator: false
+        operation: field-extract "CL.MONTH"
+        conversion: replace {
+            oldData: "1"
+            newData: "JAN"
+        }
+
+        conversion: replace {
+            oldData: "2"
+            newData: "FEB"
+        }
+
+        conversion: replace {
+            oldData: "3"
+            newData: "MAR"
+        }
+
+        conversion: replace {
+            oldData: "4"
+            newData: "APR"
+        }
+
+        conversion: replace {
+            oldData: "5"
+            newData: "MAY"
+        }
+
+        conversion: replace {
+            oldData: "6"
+            newData: "JUN"
+        }
+
+        conversion: replace {
+            oldData: "7"
+            newData: "JUL"
+        }
+
+        conversion: replace {
+            oldData: "8"
+            newData: "AUG"
+        }
+
+        conversion: replace {
+            oldData: "9"
+            newData: "SEP"
+        }
+
+        conversion: replace {
+            oldData: "10"
+            newData: "OCT"
+        }
+
+        conversion: replace {
+            oldData: "11"
+            newData: "NOV"
+        }
+
+        conversion: replace {
+            oldData: "12"
+            newData: "DEC"
+        }
+
+    }
+
+    field "CL.YEAR" {
+        comma-separator: false
+        operation: field-extract "CL.CHK"
+        conversion: extract from 3 to 1 delimited by " "
+    }
+
+    field "CL.CONCATE" {
+        comma-separator: false
+        operation: calc "CL.DAYS":"SP":"CL.MONTH.CHK":"SP":"CL.YEAR"
+    }
+
+    field "CANCEL.DT.FINAL" {
+        label {
+            en = "Cancel Period"
+        }
+
+        format: Date
+        comma-separator: false
+        operation: calc "CONTRACT.DT" + "CANCEL.DT"
+    }
+
+    field "CAN.CHK" {
+        comma-separator: false
+        operation: field-extract "CANCEL.DT.FINAL"
+        conversion: call
+        jBC: "@ E.MB.GET.DATE"
+    }
+
+    field "CAN.DAYS" {
+        comma-separator: false
+        operation: field-extract "CAN.CHK"
+        conversion: extract from 1 to 1 delimited by " "
+    }
+
+    field "CAN.MONTH" {
+        comma-separator: false
+        operation: field-extract "CAN.CHK"
+        conversion: extract from 2 to 1 delimited by " "
+    }
+
+    field "CAN.MONTH.CHK" {
+        comma-separator: false
+        operation: field-extract "CAN.MONTH"
+        conversion: replace {
+            oldData: "1"
+            newData: "JAN"
+        }
+
+        conversion: replace {
+            oldData: "2"
+            newData: "FEB"
+        }
+
+        conversion: replace {
+            oldData: "3"
+            newData: "MAR"
+        }
+
+        conversion: replace {
+            oldData: "4"
+            newData: "APR"
+        }
+
+        conversion: replace {
+            oldData: "5"
+            newData: "MAY"
+        }
+
+        conversion: replace {
+            oldData: "6"
+            newData: "JUN"
+        }
+
+        conversion: replace {
+            oldData: "7"
+            newData: "JUL"
+        }
+
+        conversion: replace {
+            oldData: "8"
+            newData: "AUG"
+        }
+
+        conversion: replace {
+            oldData: "9"
+            newData: "SEP"
+        }
+
+        conversion: replace {
+            oldData: "10"
+            newData: "OCT"
+        }
+
+        conversion: replace {
+            oldData: "11"
+            newData: "NOV"
+        }
+
+        conversion: replace {
+            oldData: "12"
+            newData: "DEC"
+        }
+
+    }
+
+    field "CAN.YEAR" {
+        comma-separator: false
+        operation: field-extract "CAN.CHK"
+        conversion: extract from 3 to 1 delimited by " "
+    }
+
+    field "CAN.CONCATE" {
+        comma-separator: false
+        operation: calc "CAN.DAYS":"SP":"CAN.MONTH.CHK":"SP":"CAN.YEAR"
+    }
+
+    field "ZERORECORD.DISPLAY" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 113
+        operation: constant "\"No record to display\""
+    }
+
+    fileVersion: Live, Exception, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "UNDERLINE.HEADER.ROW"
+}

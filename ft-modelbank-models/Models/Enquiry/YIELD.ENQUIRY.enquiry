@@ -1,0 +1,324 @@
+Enquiry "YIELD.ENQUIRY" for "name:/SC_ScoSecurityMasterMaintenance:SECURITY.SUPP#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Yield Enquiry"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "-------------"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Security"
+        }
+
+        column: 1
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Security Short"
+        }
+
+        column: 20
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Mid Market"
+        }
+
+        column: 50
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Yield"
+        }
+
+        column: 55
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Sedol"
+        }
+
+        column: 75
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Net Due"
+        }
+
+        column: 85
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Id"
+        }
+
+        column: 1
+        line: 5
+    }
+
+    header {
+        label {
+            en = "Name"
+        }
+
+        column: 20
+        line: 5
+    }
+
+    header {
+        label {
+            en = "Price"
+        }
+
+        column: 50
+        line: 5
+    }
+
+    header {
+        label {
+            en = "%"
+        }
+
+        column: 55
+        line: 5
+    }
+
+    header {
+        label {
+            en = "Number"
+        }
+
+        column: 75
+        line: 5
+    }
+
+    header {
+        label {
+            en = "Pay Date"
+        }
+
+        column: 85
+        line: 5
+    }
+
+    header {
+        label {
+            en = "---------------------------"
+        }
+
+        column: 1
+        line: 6
+    }
+
+    header {
+        label {
+            en = "--------------------------"
+        }
+
+        column: 28
+        line: 6
+    }
+
+    header {
+        label {
+            en = "-------------------------"
+        }
+
+        column: 54
+        line: 6
+    }
+
+    description {
+        en = "YIELD.ENQUIRY"
+    }
+
+    start-line: 7
+    end-line: 19
+    custom-selection {
+
+        field "SECURITY.CODE" {
+        }
+
+        None
+    }
+
+    field "SH" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Short Name"
+        }
+
+        format: User
+        length: 28
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "MID.MKT.PRICE" {
+        label {
+            en = "Price"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.PRICE"
+    }
+
+    field "PRICE.EARN.RATIO" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        decimals: 6
+        processing-mode: Single
+        operation: application-field-name "PRICE.EARN.RATIO"
+    }
+
+    field "PER" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        decimals: 6
+        processing-mode: Single
+        operation: field-extract "PRICE.EARN.RATIO"
+    }
+
+    field "YIELD.BOND" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.YIELD"
+    }
+
+    field "BOND.SH" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SECURITY.MASTER" "BOND.OR.SHARE" false
+    }
+
+    field "PRINT" {
+        label {
+            en = "Yield"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        decimals: 4
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: if "BOND.SH" Equals "SH" process "PER" "YIELD.BOND"
+    }
+
+    field "SEDOL.NO" {
+        label {
+            en = "Sedol No"
+        }
+
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "SECURITY.MASTER" "SEDOL.NO" false
+    }
+
+    field "PAY.DATE" {
+        label {
+            en = "Pay Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PAY.DATE"
+        conversion: call
+        jBC: "@ E.LAST.DATE"
+    }
+
+    drilldown "1" {
+        label-field: "SHORT.NAME" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "SECURITY.SUPP"
+    }
+
+}

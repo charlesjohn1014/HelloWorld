@@ -1,0 +1,108 @@
+Enquiry "EXT.PROCESS.DETAILS" for "name:/PW_Foundation:PW.ACTIVITY.TXN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Activity List"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "EXTERNAL.PROCESS" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "EXT.PROCESS.ID" Null
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "EXTERNAL.PROCESS" {
+            label {
+                en = "External Process"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Process Intances\""
+    }
+
+    field "EXT.PROCESS" {
+        label {
+            en = "Process"
+        }
+
+        display-type: "STARTTREE"
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXTERNAL.PROCESS"
+        conversion: extract from 1 to 0 delimited by "/"
+    }
+
+    field "BCBRK" {
+        comma-separator: false
+        operation: break-change "EXT.PROCESS"
+    }
+
+    field "EXT.PROCESS.02" {
+        display-type: "ENDTREE" break-condition {
+            field: "BCBRK"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "EXT.PROCESS"
+    }
+
+    field "EXT.PROCESS.ID" {
+        label {
+            en = "Instances"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXT.PROCESS.ID"
+        conversion: call
+        jBC: "@ E.MB.EXT.RECS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Execute"
+        }
+
+        label-field: "EXT.PROCESS.ID"
+        image: "reexecute.gif"
+        criteria: "CURRENT.EXT.ID" > "EXT.PROCESS.ID"
+        composite-screen: "EXT.PROCESS.STATUS"
+    }
+
+    attributes: "ALLDATA"
+}

@@ -1,0 +1,354 @@
+Enquiry "CL.PERFORM.VIEW" for "name:/CL_ModelBank:NOFILE.CL.PERFORM.VIEW#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Performance"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = " Enquiry Report"
+        }
+
+        column: 13
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Printed On :"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    full-description {
+        en = "Performance Enquiry Report"
+    }
+
+    description {
+        en = "Performance Enquiry Report"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+    }
+
+    custom-selection {
+
+        field "COLLECTOR" {
+            label {
+                en = "Collector ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DEST.QUEUE" {
+            label {
+                en = "Queue"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "OVERDUE.DAYS" {
+            label {
+                en = "Days in OD"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "FROM.DATE" {
+            label {
+                en = "From Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TO.DATE" {
+            label {
+                en = "To Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "PRINT.DATE" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 2
+        }
+
+        operation: today
+    }
+
+    field "COLL.ID" {
+        comma-separator: false
+        operation: selection "COLLECTOR"
+    }
+
+    field "COLL.LABEL" {
+        comma-separator: false
+        operation: constant "\"Collector ID:\""
+    }
+
+    field "COLLECTOR.ID" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: if "COLL.ID" NotEquals "\"\"" process "COLL.LABEL"
+    }
+
+    field "COLLECTOR.VAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 3
+        }
+
+        operation: if "COLL.ID" NotEquals "\"\"" process "COLL.ID"
+    }
+
+    field "QUE" {
+        comma-separator: false
+        operation: selection "DEST.QUEUE"
+    }
+
+    field "QUE.LABEL" {
+        comma-separator: false
+        operation: constant "\"Queue :\""
+    }
+
+    field "QUEUE.LABEL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 3
+        }
+
+        operation: if "QUE" NotEquals "\"\"" process "QUE.LABEL"
+    }
+
+    field "QUEUE.VAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 38
+            line: 3
+        }
+
+        operation: if "QUE" NotEquals "\"\"" process "QUE"
+    }
+
+    field "ORIG.OUTCOME" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "OUTCOME" {
+        label {
+            en = "Outcome"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ORIG.OUTCOME"
+        conversion: getFrom "CL.OUTCOME" "DESCRIPTION" false
+    }
+
+    field "PRODUCTIVITY.FLAG" {
+        label {
+            en = "Prod Flag"
+        }
+
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ORIG.OUTCOME"
+        conversion: getFrom "CL.OUTCOME" "PRODUCTIVITY.FLG" false
+    }
+
+    field "NO.OF.OUTCOMES" {
+        label {
+            en = "No of Outcomes"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Outcome Amount"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TIME.SPENT" {
+        label {
+            en = "Time Spent (HH:MM:SS)"
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "CONS.TOTAL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+            line: + 3
+        }
+
+        operation: constant "\"Total :\""
+    }
+
+    field "TOT.OUTCOME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+            line: + 3
+        }
+
+        operation: total "NO.OF.OUTCOMES"
+    }
+
+    field "TOT.AMOUNT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+            line: + 3
+        }
+
+        operation: total "AMOUNT"
+    }
+
+    field "TOT.TIME" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "TOT.TIME.SPENT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+            line: + 3
+        }
+
+        operation: field-extract "TOT.TIME"
+    }
+
+    field "NORECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records to Display\""
+    }
+
+    attributes: "PAGE" ; "DISABLE.NO.SORT.OPTIONS" ; "NO.ENQUIRY.FAVOURITES" ; "NO.MORE.OPTIONS"
+}

@@ -1,0 +1,152 @@
+Enquiry "AA.CAT.FUTURES" for "name:/DX_Configuration:DX.CONTRACT.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Futures"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "CONTRACT.TYPE" {
+        Equals "FUTURE"
+    }
+
+    field "@ID" {
+        label {
+            en = "Contract Code"
+        }
+
+        format: Date
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Exchange Traded Futures availabe for Trading\""
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Contract Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "CONTRACT.CLASS" {
+        label {
+            en = "Class"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "CONTRACT.CLASS"
+        conversion: getFrom "DX.CONTRACT.CLASS" "CLASS.NAME" false
+    }
+
+    field "EXCHANGE" {
+        label {
+            en = "Exchange"
+        }
+
+        format: Date
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXCHANGE"
+    }
+
+    field "EXCHANGE.NAME" {
+        label {
+            en = "Exchange Name"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "EXCHANGE"
+        conversion: getFrom "DX.EXCHANGE.MASTER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "DELIVERY.METHOD" {
+        label {
+            en = "Delivery Method"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DELIVERY.METHOD"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Trade"
+        }
+
+        label-field: "@ID"
+        criteria: "DX.CONTRACT.MASTER" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "DX.TRADE,EXCHOP"
+    }
+
+}

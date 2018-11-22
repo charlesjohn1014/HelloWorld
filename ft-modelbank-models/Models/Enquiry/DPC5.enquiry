@@ -1,0 +1,261 @@
+Enquiry "DPC5" for "name:/PM_Config:PM.DLY.POSN.CLASS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Contrat List for a particular type", fr = "Liste des contrats pour un type par"
+        }
+
+        column: 33
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Ccy :", fr = "ticulier      "
+        }
+
+        column: 70
+        line: 0
+    }
+
+    header {
+        label {
+            en = "------------------------------------", fr = "Ccy :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "-----------------------------------", fr = "------------------------------------"
+        }
+
+        column: 36
+        line: 1
+    }
+
+    header {
+        label {
+            en = "--------", fr = "-----------------------------------"
+        }
+
+        column: 71
+        line: 1
+    }
+
+    header {
+        label {
+            fr = "--------"
+        }
+
+        column: 71
+        line: 1
+    }
+
+    description {
+        en = "DPC5"
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "POSN.CLASS" Null
+    fixed-sort: "DATE" Null
+    custom-selection {
+
+        field "@ID" {
+        }
+
+        None
+    }
+
+    field "PCL" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "PCLASS" {
+        comma-separator: false
+        operation: break-change "PCL"
+    }
+
+    field "CUR" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 76
+            line: 0
+        }
+
+        operation: application-field-name "@ID"
+        conversion: extract from 5 to 1 delimited by "."
+    }
+
+    field "DATE" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 6 to 1 delimited by "."
+    }
+
+    field "PERD.DT" {
+        comma-separator: false
+        operation: field-extract "PCL"
+        conversion: getFrom "PM.POSN.CLASS" "SHORT.NAME" false
+    }
+
+    field "PERDPR" {
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "PERD.DT"
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZE" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "DATE.PR" {
+        format: Date
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        operation: field-extract "DATE"
+    }
+
+    field "TNRF" {
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TXN.REFERENCE"
+    }
+
+    field "TNRDC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TNRF"
+        conversion: extract from 3 to 10
+    }
+
+    field "SYSTEM" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TNRF"
+        conversion: extract from 1 to 2
+    }
+
+    field "DC" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"DC\""
+    }
+
+    field "TNR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SYSTEM" Equals "DC" process "TNRDC" "TNRF"
+    }
+
+    field "NEXT.ENQ2" {
+        comma-separator: false
+        operation: application-field-name "TXN.REFERENCE"
+        conversion: extract from 1 to 2
+        conversion: replace {
+            oldData: "DC"
+            newData: "DATA.CAPTURE"
+        }
+
+        conversion: replace {
+            oldData: "FR"
+            newData: "FRA.DEAL"
+        }
+
+        conversion: replace {
+            oldData: "FT"
+            newData: "FUNDS.TRANSFER"
+        }
+
+        conversion: replace {
+            oldData: "FX"
+            newData: "FOREX"
+        }
+
+        conversion: replace {
+            oldData: "LD"
+            newData: "LD.LOANS.AND.DEPOSITS"
+        }
+
+        conversion: replace {
+            oldData: "MG"
+            newData: "MG.MORTGAGE"
+        }
+
+        conversion: replace {
+            oldData: "MM"
+            newData: "MM.MONEY.MARKET"
+        }
+
+        conversion: replace {
+            oldData: "PC"
+            newData: "PM.POSITION.CAPTURE"
+        }
+
+        conversion: replace {
+            oldData: "SC"
+            newData: "SEC.TRADE"
+        }
+
+        conversion: replace {
+            oldData: "SE"
+            newData: "SECURITY.TRANSFER"
+        }
+
+        conversion: replace {
+            oldData: "99"
+            newData: "SC.TRADING.POSITION"
+        }
+
+        conversion: replace {
+            oldData: "TT"
+            newData: "TELLER"
+        }
+
+        conversion: replace {
+            oldData: "SW"
+            newData: "SWAP"
+        }
+
+    }
+
+    drilldown "1" {
+        label-field: "TNRF" parameters {
+            function:  See
+            field: "TNR"
+        }
+
+        from-field: "NEXT.ENQ2"
+    }
+
+}

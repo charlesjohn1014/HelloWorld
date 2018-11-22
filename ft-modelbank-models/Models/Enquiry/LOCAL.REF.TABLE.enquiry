@@ -1,0 +1,154 @@
+Enquiry "LOCAL.REF.TABLE" for "name:/EB_LocalReferences:LOCAL.REF.TABLE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Search T24 Table Extensions"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 6
+    custom-selection {
+
+        field "APPLICATION" {
+            label {
+                en = "Table"
+            }
+
+        }
+
+        AND
+
+        field "LOCAL.TABLE.NO" {
+            label {
+                en = "Field No."
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Local Reference Tables\""
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Table"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "LOCAL.TABLE.NO" {
+        label {
+            en = "Field No."
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LOCAL.TABLE.NO"
+    }
+
+    field "FIELD.NAME" {
+        label {
+            en = "Field Name"
+        }
+
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-extract "LOCAL.TABLE.NO"
+        conversion: getFrom "LOCAL.TABLE" "SHORT.NAME" false
+    }
+
+    field "SUB.ASSOC.CODE" {
+        label {
+            en = "Type"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SUB.ASSOC.CODE"
+        conversion: replace {
+            oldData: "XX."
+            newData: "Multi Value"
+        }
+
+        conversion: replace {
+            oldData: "XX<"
+            newData: "Group Start"
+        }
+
+        conversion: replace {
+            oldData: "XX-"
+            newData: "Group"
+        }
+
+        conversion: replace {
+            oldData: "XX>"
+            newData: "Group End"
+        }
+
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "APPLICATION"
+        image: "view.gif" parameters {
+            function:  See
+            field: "APPLICATION"
+        }
+
+        screen: "LOCAL.REF.TABLE,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "APPLICATION"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "APPLICATION"
+        }
+
+        screen: "LOCAL.REF.TABLE,INPUT"
+    }
+
+}

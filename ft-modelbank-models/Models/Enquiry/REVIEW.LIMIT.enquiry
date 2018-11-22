@@ -1,0 +1,208 @@
+Enquiry "REVIEW.LIMIT" for "name:/LI_Config:LIMIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Limits due for review"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 4 fixed-selection "REVIEW.FREQUENCY" {
+        GreaterOrEquals "!TODAY"
+    }
+
+    fixed-selection "REVIEW.FREQUENCY" {
+        LessOrEquals "!TODAY+7C"
+    }
+
+    fixed-selection "APPROVAL.DATE" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@Id"
+            }
+
+        }
+
+        AND
+
+        field "LIABILITY.NUMBER" {
+            label {
+                en = "Liability Number"
+            }
+
+        }
+
+        AND
+
+        field "LIMIT.CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "EXPIRY.DATE" {
+            label {
+                en = "Expiry Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Limit Ref"
+        }
+
+        length: 32
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LIABILITY.NUMBER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.NUMBER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "LIMIT.CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "CCY1" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "INTERNAL.AMOUNT" {
+        label {
+            en = "Limit Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INTERNAL.AMOUNT"
+    }
+
+    field "REVIEW.FREQUENCY" {
+        label {
+            en = "Review Date"
+        }
+
+        format: Date
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REVIEW.FREQUENCY"
+        conversion: extract from 1 to 8
+    }
+
+    field "OD.COND.ACCOUNT" {
+        label {
+            en = "OD Condition Account"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OD.COND.ACCOUNT"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Limits due for review in next 7 days\""
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No limit due for review in next 7 days\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "LIMIT,REVIEW"
+    }
+
+}

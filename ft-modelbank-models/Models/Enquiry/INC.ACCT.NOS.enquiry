@@ -1,0 +1,141 @@
+Enquiry "INC.ACCT.NOS" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NUMBER" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        None
+    }
+
+    field "INC.ACCOUNT.NO" {
+        label {
+            en = "Seg Acct No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INC.ACCOUNT.NO"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Account Details of \""
+    }
+
+    field "@ID" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 18
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PORT.NAME" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "ACCT.NAME" {
+        label {
+            en = "Account Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "INC.ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "INC.ACCOUNT.CCY" {
+        label {
+            en = "Account Ccy"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INC.ACCOUNT.CCY"
+    }
+
+    field "ACCT.BAL" {
+        label {
+            en = "Working Balance"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "INC.ACCOUNT.NO"
+        conversion: getFrom "EB.CONTRACT.BALANCES" "WORKING.BALANCE" false
+    }
+
+}

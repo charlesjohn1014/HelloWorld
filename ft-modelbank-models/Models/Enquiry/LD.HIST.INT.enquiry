@@ -1,0 +1,558 @@
+Enquiry "LD.HIST.INT" for "name:/LM_Contract:LMM.ACCOUNT.BALANCES.HIST#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "MATURED INTEREST HISTORY", fr = "HISTORIQUE INTERETS ECHUS"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "REF", fr = "REF"
+        }
+
+        column: 58
+        line: 0
+    }
+
+    header {
+        label {
+            en = "AMOUNT", fr = "MONTANT"
+        }
+
+        column: 13
+        line: 4
+    }
+
+    header {
+        label {
+            en = "FROM", fr = "DEPUIS"
+        }
+
+        column: 23
+        line: 4
+    }
+
+    header {
+        label {
+            en = "TO", fr = "JUSQU\'"
+        }
+
+        column: 36
+        line: 4
+    }
+
+    header {
+        label {
+            en = "DAYS", fr = "JOURS"
+        }
+
+        column: 45
+        line: 4
+    }
+
+    header {
+        label {
+            en = "RATE", fr = "TAUX"
+        }
+
+        column: 52
+        line: 4
+    }
+
+    header {
+        label {
+            en = "INTEREST AMOUNT", fr = "MONTANT INTERETS"
+        }
+
+        column: 64
+        line: 4
+    }
+
+    header {
+        label {
+            en = "------------------------------------", fr = "------------------------------------"
+        }
+
+        column: 1
+        line: 5
+    }
+
+    header {
+        label {
+            en = "-----------------------------------", fr = "-----------------------------------"
+        }
+
+        column: 35
+        line: 5
+    }
+
+    header {
+        label {
+            en = "---------", fr = "---------"
+        }
+
+        column: 70
+        line: 5
+    }
+
+    description {
+        en = "LD.HIST.INT"
+    }
+
+    start-line: 6
+    end-line: 18
+    build-routines {
+        jBC: "E.BUILD.LD.HIST.INT"
+    }
+
+    fixed-selection "@ID" {
+        Matches "...LD..."
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+        }
+
+        AND
+
+        field "CONTRACT.NO" {
+        }
+
+        None
+    }
+
+    field "INIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ LD.ENQ.INT.I.HIST"
+    }
+
+    field "REF" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "B.REF" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "REF"
+    }
+
+    field "D.REF" {
+        break-condition {
+            break: Page
+        }
+
+        alignment: Left
+        comma-separator: false
+        fmtMask: "##/#####/#####/##"
+        position {
+            column: 62
+            line: 0
+        }
+
+        operation: field-extract "REF"
+    }
+
+    field "PROCESS" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ LD.ENQ.INT.HIST"
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: application-field-name "DATE.FROM"
+    }
+
+    field "D.CCY" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: field-extract "CCY"
+    }
+
+    field "FAMT" {
+        comma-separator: false
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "D.FAMT" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            break: Page
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 1
+        }
+
+        operation: field-extract "FAMT"
+    }
+
+    field "C1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 24
+            line: 1
+        }
+
+        operation: constant "\"/\""
+    }
+
+    field "LAMT" {
+        comma-separator: false
+        operation: application-field-name "CUM.PRIN.REC"
+    }
+
+    field "D.LAMT" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            break: Page
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 26
+            line: 1
+        }
+
+        operation: field-extract "LAMT"
+    }
+
+    field "VAL.DATE" {
+        comma-separator: false
+        operation: application-field-name "TRANS.PRIN.AMT"
+    }
+
+    field "VDATE" {
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 46
+            line: 1
+        }
+
+        operation: field-extract "VAL.DATE"
+    }
+
+    field "MDT1" {
+        comma-separator: false
+        operation: application-field-name "OUTS.FWD.PRINC"
+    }
+
+    field "C2" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"999\""
+    }
+
+    field "C3" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 58
+            line: 1
+        }
+
+        operation: constant "\"-\""
+    }
+
+    field "MAT" {
+        break-condition {
+            break: Page
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 1
+        }
+
+        operation: field-extract "MDT1"
+        conversion: call
+        jBC: "@ LD.ENQ.MATDATE"
+    }
+
+    field "D.STAT" {
+        comma-separator: false
+        operation: application-field-name "OUTS.OD.PRINC"
+    }
+
+    field "STAT" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 76
+            line: 1
+        }
+
+        operation: field-extract "D.STAT"
+    }
+
+    field "D.CUST" {
+        comma-separator: false
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "CUST" {
+        break-condition {
+            break: Page
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: field-extract "D.CUST"
+    }
+
+    field "CNAME" {
+        break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 8
+            line: 2
+        }
+
+        operation: field-extract "D.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "D.CAT" {
+        comma-separator: false
+        operation: application-field-name "OUTS.CURR.PRINC"
+    }
+
+    field "CAT" {
+        format: User break-condition {
+            break: Page
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 43
+            line: 2
+        }
+
+        operation: field-extract "D.CAT"
+        conversion: getFrom "CATEGORY" "SHORT.NAME" false
+    }
+
+    field "D.INT" {
+        comma-separator: false
+        operation: application-field-name "OUTS.PRINC.NAB"
+    }
+
+    field "INT" {
+        break-condition {
+            break: Page
+        }
+
+        length: 21
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 58
+            line: 2
+        }
+
+        operation: field-extract "D.INT"
+    }
+
+    field "PAMT" {
+        format: Currency "CCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUTS.ACCRUED.INT"
+    }
+
+    field "FROM" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUTS.OVER.DUE.INT"
+    }
+
+    field "TO" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUTS.SUSP.INT"
+    }
+
+    field "IDAYS" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 44
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUTS.SUSP.COMM"
+    }
+
+    field "IRATE" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 49
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INT.REC.IN.ADV"
+    }
+
+    field "IAMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUTS.ACCRUED.COMM"
+    }
+
+    field "SDATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "COM.REC.IN.ADV"
+    }
+
+    field "B.SDATE" {
+        comma-separator: false
+        operation: break-change "SDATE"
+    }
+
+    field "C4" {
+        break-condition {
+            field: "B.SDATE"
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "T.IAMT" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "B.SDATE"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 61
+            line: + 1
+        }
+
+        operation: total "IAMT"
+    }
+
+    field "XX" {
+        break-condition {
+            field: "B.SDATE"
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+            line: + 2
+        }
+
+        operation: constant "\" \""
+    }
+
+}

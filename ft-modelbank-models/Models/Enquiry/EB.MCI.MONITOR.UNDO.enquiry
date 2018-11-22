@@ -1,0 +1,352 @@
+Enquiry "EB.MCI.MONITOR.UNDO" for "name:/EB_MCI:EB.MASS.CHANGE.INSTRUCTION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Monitor for Task - Undo"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "AUTOREFRESH" {
+        Equals "10"
+    }
+
+    fixed-selection "TASK" {
+        Equals "UNDO"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "EB.MCI.ID" {
+            label {
+                en = "MCI ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        column-width: 150
+        operation: constant "\"Mass Change Instruction\""
+    }
+
+    field "H.ID" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        column-width: 150
+        operation: field-extract "@ID"
+    }
+
+    field "H.STS" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        column-width: 150
+        processing-mode: Single
+        operation: constant "\"Status\""
+    }
+
+    field "DEF.STS" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Waiting to be Processed\""
+    }
+
+    field "SYS.STS" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "STS" {
+        display-type: "CLASS-BOLD.ITALIC"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: if "SYS.STS" Equals "NULL" process "DEF.STS" "SYS.STS"
+    }
+
+    field "H.BO" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        column-width: 150
+        operation: constant "\"Business Operation\""
+    }
+
+    field "BUSINESS.OPERATION" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BUSINESS.OPERATION"
+        conversion: getFrom "EB.MCI.BUSINESS.OPERATION" "DESCRIPTION" false
+    }
+
+    field "H.DES.TITLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 3
+        }
+
+        column-width: 150
+        operation: constant "\"Reason\""
+    }
+
+    field "DESCRIPTION" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 3
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "H.TASK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 4
+        }
+
+        column-width: 150
+        operation: constant "\"Task\""
+    }
+
+    field "TASK" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: Translate
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TASK"
+        conversion: replace {
+            oldData: "PREVIEW"
+            newData: "Preview"
+        }
+
+        conversion: replace {
+            oldData: "NEW"
+            newData: "New"
+        }
+
+        conversion: replace {
+            oldData: "CREATE.LIST"
+            newData: "Create List"
+        }
+
+        conversion: replace {
+            oldData: "EDIT.LIST"
+            newData: "Edit List"
+        }
+
+        conversion: replace {
+            oldData: "EXECUTE"
+            newData: "Execute"
+        }
+
+        conversion: replace {
+            oldData: "UNDO"
+            newData: "Undo"
+        }
+
+        conversion: replace {
+            oldData: "VERIFY"
+            newData: "Verify"
+        }
+
+    }
+
+    field "H.DATE.TITLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 5
+        }
+
+        column-width: 150
+        operation: constant "\"Effective Date\""
+    }
+
+    field "EFFECTIVE.DATE" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "MCI.ID" {
+        comma-separator: false
+        operation: field-extract "@ID"
+    }
+
+    field "VER.NAME" {
+        comma-separator: false
+        operation: constant "\"EB.MASS.CHANGE.INSTRUCTION,\""
+    }
+
+    field "V.EXE.TASK" {
+        comma-separator: false
+        operation: constant "\"EXECUTE\""
+    }
+
+    field "INPUTT" {
+        comma-separator: false
+        operation: constant "\"I\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "ENQ.DRILL" {
+        comma-separator: false
+        operation: constant "\"EB.MCI.EXEC.DETAILS.EXECUTE\""
+    }
+
+    field "EXE.DRILL.1" {
+        comma-separator: false
+        operation: calc "VER.NAME":"V.EXE.TASK":"SP":"INPUTT"
+    }
+
+    field "EXE.DRILL" {
+        comma-separator: false
+        operation: calc "EXE.DRILL.1":"SP":"MCI.ID"
+    }
+
+    field "STS.COMP.SUCC" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Completed Successfully\""
+    }
+
+    field "DISP.RTG" {
+        display-type: "CLASS-BOLD.ITALIC"
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        operation: if "STATUS" Equals "STS.COMP.SUCC" process "STS.COMP.SUCC" "NULL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View List"
+        }
+
+        label-field: "DISP.RTG"
+        image: "view.gif"
+        criteria: "TXN.REF" Equals "MCI.ID"
+        from-field: "ENQ.DRILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Execute"
+        }
+
+        image: "execute.gif"
+        criteria: "@ID" Equals "MCI.ID"
+        from-field: "EXE.DRILL"
+    }
+
+    attributes: "SINGLE.BACKGROUND.COLOUR" ; "NO.CLEAR.SELECTION" ; "NO.MORE.OPTIONS" ; "NO.BREADCRUMBS" ;
+    "NO.ENQUIRY.FAVOURITES"
+}

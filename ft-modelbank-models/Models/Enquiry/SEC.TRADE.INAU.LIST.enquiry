@@ -1,0 +1,464 @@
+Enquiry "SEC.TRADE.INAU.LIST" for "name:/SC_ModelBank:NOFILE.SEC.TRADE.UNAUTH#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised Security Trades"
+    }
+
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 10 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "TXN.ID" Null
+    custom-selection {
+
+        field "TXN.ID" {
+            label {
+                en = "Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Client "
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security No"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Unauthorised Sec Trades\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Reference"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SEC.NAME" {
+        label {
+            en = "Security"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Client "
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio Id"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "TRANS.TYPE" {
+        label {
+            en = "Txn"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "PRICE" {
+        label {
+            en = "Price"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.TRADE$NAU" "VALUE.DATE" false
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade date"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.TRADE$NAU" "TRADE.DATE" false
+    }
+
+    field "BROK" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "DEPO" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.TRADE$NAU" "DEPOSITORY" false
+    }
+
+    field "BROKER" {
+        label {
+            en = "Broker"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "BROK"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "DEPO"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "SEC.OPEN.ORDER" {
+        label {
+            en = "Order"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 17 to 1 delimited by "*"
+    }
+
+    field "THREAD.KEY" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "PARENT.REF" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 18 to 1 delimited by "*"
+    }
+
+    field "BULK.REF" {
+        comma-separator: false
+        operation: calc "THREAD.KEY":"PARENT.REF"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "BULK" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "BULK.ORD" {
+        label {
+            en = "From Bulk Order?"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        hidden: true
+        operation: if "BULK.REF" NotEquals "NULL" process "BULK" "NULL"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    field "DATE.TIME" {
+        label {
+            en = "Date Time"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Complete"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SEC.TRADE,COMPLETE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Comp Bulk Trade"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SEC.TRADE,INPUT.ONHOLD"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "SEC.TRADE,AUTH"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        screen: "SEC.TRADE,INPUT"
+    }
+
+    drilldown "5" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SEC.TRADE,INPUT"
+    }
+
+    security {
+        abort: false
+    }
+
+}

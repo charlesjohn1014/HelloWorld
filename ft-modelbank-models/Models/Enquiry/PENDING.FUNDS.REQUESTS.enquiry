@@ -1,0 +1,316 @@
+Enquiry "PENDING.FUNDS.REQUESTS" for "name:/AC_AccountOpening:AC.FUNDS.AUTHORISATION$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Manual Requests"
+    }
+
+    description {
+        en = "Unauthorised Manual Requests"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "AUTOREFRESH" {
+        Equals "60"
+    }
+
+    fixed-selection "FUNDS.DECISION" {
+        Equals "\'\'"
+    }
+
+    fixed-sort: "DEBIT.ACCOUNT" Null
+    custom-selection {
+
+        field "DEBIT.ACCOUNT" {
+            operands: Equals
+        }
+
+        AND
+
+        field "ACCOUNT.CCY" {
+            operands: Equals
+        }
+
+        AND
+
+        field "FUNDS.DECISION" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE.HEADER" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised Manual Requests\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DEBITACCOUNT" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCOUNT"
+    }
+
+    field "B.ACC" {
+        comma-separator: false
+        operation: break-change "DEBITACCOUNT"
+    }
+
+    field "ONE" {
+        comma-separator: false
+        operation: constant "\"1\""
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "Account Number"
+        }
+
+        break-condition {
+            field: "B.ACC"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "DEBITACCOUNT"
+    }
+
+    field "ACCOUNT.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        break-condition {
+            field: "B.ACC"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "DEBITACCOUNT"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "REQUESTED.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Single
+        operation: application-field-name "REQUESTED.AMT"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "ORIG.TRANS.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIG.TRANS.REF"
+    }
+
+    field "PRE.APP" {
+        comma-separator: false
+        operation: if "ORIG.TRANS.REF" Equals "NULL" process "ONE" "ZERO"
+    }
+
+    field "CALC.PENDING" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.CONV.DDA.PENDING.AMT"
+    }
+
+    field "TOT.BY.ACCT" {
+        label {
+            en = "Total pending Amount"
+        }
+
+        break-condition {
+            field: "B.ACC"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: total "CALC.PENDING"
+    }
+
+    field "NO.PEND.APP" {
+        label {
+            en = "Total pending Approval"
+        }
+
+        break-condition {
+            field: "B.ACC"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: total "ONE"
+    }
+
+    field "NO.PRE.APP" {
+        label {
+            en = "Total Pre-Approvals"
+        }
+
+        break-condition {
+            field: "B.ACC"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: total "PRE.APP"
+    }
+
+    field "CALC.AMTS" {
+        break-condition {
+            field: "B.ACC"
+        }
+
+        comma-separator: false
+        operation: field-extract "ACCOUNT.NO"
+        conversion: call
+        jBC: "@ E.CONV.DDA.CALC.AVAILAMT"
+    }
+
+    field "AVAIL.AMT" {
+        label {
+            en = "Available amount"
+        }
+
+        break-condition {
+            field: "B.ACC"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        operation: field-extract "CALC.AMTS"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "WORKING.BALANCE" {
+        label {
+            en = "Working balance"
+        }
+
+        break-condition {
+            field: "B.ACC"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "CALC.AMTS"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer ID"
+        }
+
+        break-condition {
+            field: "B.ACC"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "NAME.3" {
+        label {
+            en = "Customer Name"
+        }
+
+        break-condition {
+            field: "B.ACC"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "CALC.AMTS"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details per Account"
+        }
+
+        label-field: "ACCOUNT.NO"
+        image: "view.gif"
+        criteria: "DEBIT.ACCOUNT" Equals "ACCOUNT.NO"
+        enquiry: "PEND.APPROVAL.PER.ACCOUNT"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

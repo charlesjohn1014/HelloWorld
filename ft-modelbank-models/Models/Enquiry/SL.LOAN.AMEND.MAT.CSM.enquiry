@@ -1,0 +1,244 @@
+Enquiry "SL.LOAN.AMEND.MAT.CSM" for "name:/SL_Loans:SL.LOANS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Outstanding Syndicated Loans"
+    }
+
+    description {
+        en = "Syndicated Loans Outstanding"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "CUSTOMER" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "BS.SETTLE.ACCOUNT" {
+        Equals "\'\'"
+    }
+
+    fixed-selection "AMOUNT" {
+        Greater "0"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer id"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Outstanding Syndicate Loans\""
+    }
+
+    field "SL.LOAN.ID" {
+        label {
+            en = "Loan ID"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "CUSTOMER.02" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "SL.PURPOSE" {
+        label {
+            en = "Product"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SL.PURPOSE"
+        conversion: getFrom "SL.PURPOSE" "DESCRIPTION" false
+    }
+
+    field "LOAN.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.CURRENCY"
+    }
+
+    field "SL.AMT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "LOAN.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Syndicated Loans Outstanding\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "SL.LOAN.ID" parameters {
+            function:  Input
+            field: "SL.LOAN.ID"
+        }
+
+        screen: "SL.LOANS,AMEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Mature"
+        }
+
+        label-field: "SL.LOAN.ID" parameters {
+            function:  Input
+            field: "SL.LOAN.ID"
+        }
+
+        screen: "SL.LOANS,MATURE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Partial Repayment"
+        }
+
+        label-field: "SL.LOAN.ID" parameters {
+            function:  Input
+            field: "SL.LOAN.ID"
+        }
+
+        screen: "SL.LOANS,PARTIAL.REPAY"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

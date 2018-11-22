@@ -1,0 +1,199 @@
+Enquiry "PW.ACT.LIST" for "name:/PW_Foundation:PW.ACTIVITY.TXN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Pending Activities"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ACTIVITY" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "COMPLETION.DATE" {
+        Equals "\'\'"
+    }
+
+    fixed-sort: "START.DATE" Descending
+    custom-selection {
+
+        field "OWNER" {
+            label {
+                en = "Owner"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACTIVITIES.HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Pending Activities\""
+    }
+
+    field "PW" {
+        display-type: "PWACTIVITY"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PW.ACTIVITY.TXN.ID"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROCESS"
+        conversion: getFrom "PW.PROCESS" "CUSTOMER" false
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY"
+        conversion: getFrom "PW.ACTIVITY" "SHORT.DESC" false
+    }
+
+    field "TRANSACTION.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.REF"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "STATUS"
+        conversion: getFrom "PW.STATUS" "SHORT.DESC" false
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "TARGET" {
+        length: 99
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TARGET"
+    }
+
+    field "ACT.TXN.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Pending Activity\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Execute Activity"
+        }
+
+        label-field: "TRANSACTION.REF"
+        image: "execute.gif" parameters {
+            pw-activity: "PW"
+        }
+
+        from-field: "TARGET"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reassign Activity"
+        }
+
+        label-field: "ACTIVITY"
+        image: "assign.gif" parameters {
+            function:  Input
+            field: "ACT.TXN.ID"
+        }
+
+        screen: "PW.ACTIVITY.TXN,REASSIGN"
+    }
+
+}

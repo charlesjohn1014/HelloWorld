@@ -1,0 +1,159 @@
+Enquiry "%DRAWINGS" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "DRAWINGS Default List"
+    }
+
+    start-line: 4
+    end-line: 99
+    fixed-sort: "DRAWING.TYPE" Null
+
+    field "@ID" {
+        label {
+            en = "Id"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        operation: i-desc "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURR" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        operation: if "CURR" Matches "UNDER.SC" process "NUL" "CURR"
+    }
+
+    field "DRAWING.TYPE" {
+        label {
+            en = "Drawing Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "UNDER.SC" {
+        comma-separator: false
+        operation: constant "\"..._...\""
+    }
+
+    field "VAL.DATE" {
+        comma-separator: false
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "VAL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "VAL.DATE" Matches "UNDER.SC" process "NUL" "VAL.DATE"
+    }
+
+    field "MAT.REV" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATURITY.REVIEW"
+    }
+
+    field "MAT" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "MAT.REV" Matches "UNDER.SC" process "NUL" "MAT.REV"
+    }
+
+    field "NUL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "DTE" {
+        label {
+            en = "Value/Maturity Date"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        processing-mode: Single
+        operation: if "MAT.REV" NotEquals "NUL" process "MAT" "VAL"
+        conversion: extract from 1 to 8
+        conversion: call
+        jBC: "@ LD.ENQ.MATDATE"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Document Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    drilldown "1" {
+        label-field: "@ID"
+        quit-SEE: "@ID"
+    }
+
+}

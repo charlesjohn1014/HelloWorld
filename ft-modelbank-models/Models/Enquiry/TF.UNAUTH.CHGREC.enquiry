@@ -1,0 +1,176 @@
+Enquiry "TF.UNAUTH.CHGREC" for "name:/LC_Contract:LETTER.OF.CREDIT$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised LC Charge Recovery"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "OPERATION" {
+        Equals "\'C\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised LC Charge Recovery\""
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "4" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status."
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Records Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "LETTER.OF.CREDIT,CHGAUTH"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "LETTER.OF.CREDIT,CHGAUTH"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        screen: "LETTER.OF.CREDIT,CHGAUTH"
+    }
+
+}

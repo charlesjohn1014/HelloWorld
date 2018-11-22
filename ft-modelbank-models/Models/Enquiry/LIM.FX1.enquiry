@@ -1,0 +1,536 @@
+Enquiry "LIM.FX1" for "name:/LI_LimitTransaction:LIMIT.DAILY.OS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Limits FX Summary"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "LIAB.NO" {
+            label {
+                en = "Liability Number"
+            }
+
+        }
+
+        AND
+
+        field "REF.NO" {
+            label {
+                en = "Reference Number"
+            }
+
+        }
+
+        AND
+
+        field "SER.NO" {
+            label {
+                en = "Serial Number"
+            }
+
+        }
+
+        AND
+
+        field "CUST.NO" {
+            label {
+                en = "Customer Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Limits FX\""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\" Summary\""
+    }
+
+    field "HDR2.02" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 0
+        }
+
+        operation: constant "\" - Clean Risk\""
+    }
+
+    field "HDR2.03" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Customer:\""
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Ccy:\""
+    }
+
+    field "HDR4" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Limit :\""
+    }
+
+    field "HDR5" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Clean Risk:\""
+    }
+
+    field "L.NL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "L.NIL" {
+        comma-separator: false
+        operation: constant "\"Nil\""
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "ID.LIAB" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 0 delimited by "."
+    }
+
+    field "ID.REF" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 2 to 0 delimited by "."
+    }
+
+    field "ID.CS" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 4 to 0 delimited by "."
+    }
+
+    field "PREF" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 49
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID.REF"
+        conversion: call
+        jBC: "@ LIMIT.FIND.REF"
+        conversion: getFrom "LIMIT.REFERENCE" "SHORT.NAME" true
+    }
+
+    field "P.LIAB" {
+        label {
+            en = "Customer:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID.LIAB"
+    }
+
+    field "N.LIAB" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID.LIAB"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "N.CUST" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID.CS"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ID.3" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 3 delimited by "."
+    }
+
+    field "ID.4" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 4 delimited by "."
+    }
+
+    field "LINE.ID" {
+        comma-separator: false
+        operation: if "ID.CS" Equals "L.NL" process "ID.3" "ID.4"
+    }
+
+    field "CCY" {
+        label {
+            en = "Ccy:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "LINE.ID"
+        conversion: getFrom "LIMIT" "LIMIT.CURRENCY" false
+    }
+
+    field "LIM.DET" {
+        comma-separator: false
+        operation: field-extract "LINE.ID"
+        conversion: call
+        jBC: "@ E.LIM.ONLINE.CALC"
+    }
+
+    field "LIM.AMT" {
+        comma-separator: false
+        operation: field-extract "LIM.DET"
+        conversion: extract from 1 to 1 delimited by "\\"
+    }
+
+    field "CL.RISK" {
+        comma-separator: false
+        operation: field-extract "LIM.DET"
+        conversion: extract from 2 to 1 delimited by "\\"
+    }
+
+    field "P.LIM" {
+        label {
+            en = "Limit :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "LIM.AMT"
+        conversion: oconv "MD0,"
+    }
+
+    field "P.CLRISK" {
+        label {
+            en = "Clean Risk:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "CL.RISK"
+        conversion: oconv "MD0,"
+    }
+
+    field "B.LIAB" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ID.4"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "@ID"
+        conversion: extract from 5 to 0 delimited by "."
+    }
+
+    field "R.AMT" {
+        comma-separator: false
+        operation: application-field-name "CLEAN.RISK.USED"
+        conversion: oconv "MD03"
+    }
+
+    field "D.AMT" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 32
+        }
+
+        operation: field-extract "R.AMT"
+        conversion: oconv "MD0,"
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NL" {
+        comma-separator: false
+        operation: field-extract "ID.4"
+    }
+
+    field "X.OS" {
+        comma-separator: false
+        operation: if "NL" NotEquals "OL" process "R.AMT" "T.XOS"
+    }
+
+    field "T.XOS" {
+        break-condition {
+            field: "OL"
+        }
+
+        comma-separator: false
+        operation: calc "TOT.XOS" + "R.AMT"
+    }
+
+    field "TOT.XOS" {
+        break-condition {
+            field: "B.LIAB"
+        }
+
+        comma-separator: false
+        operation: total "R.AMT"
+    }
+
+    field "OL" {
+        comma-separator: false
+        operation: field-extract "ID.4"
+    }
+
+    field "P.TOT.OS" {
+        label {
+            en = "Total Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 39
+        }
+
+        operation: field-extract "X.OS"
+        conversion: oconv "MD0,"
+    }
+
+    field "L.EX" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Excess\""
+    }
+
+    field "W.T.O" {
+        comma-separator: false
+        operation: calc "ZERO" - "X.OS"
+    }
+
+    field "W.D.O" {
+        comma-separator: false
+        operation: calc "ZERO" - "R.AMT"
+    }
+
+    field "P.EXC1" {
+        label {
+            en = "Limit Excess/Nil"
+        }
+
+        comma-separator: false
+        position {
+            column: 59
+        }
+
+        operation: if "W.T.O" Greater "LIM.AMT" process "L.EX" "L.NIL"
+    }
+
+    field "P.EXC2" {
+        label {
+            en = "Risk Excess/Nil"
+        }
+
+        comma-separator: false
+        position {
+            column: 66
+        }
+
+        operation: if "W.D.O" Greater "CL.RISK" process "L.EX" "L.NIL"
+    }
+
+    field "CUST.NXT" {
+        comma-separator: false
+        operation: field-extract "ID.CS"
+        conversion: call
+        jBC: "@ E.LIM.CUST.NO"
+    }
+
+    field "NONE.DISP" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: constant "\"No outstanding amount available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Transaction Detail"
+        }
+
+        label-field: "DATE"
+        image: "view.gif"
+        criteria: "CREDIT.LINE.NO" Equals "ID"
+        enquiry: "LIM.FXTXN"
+    }
+
+}

@@ -1,0 +1,196 @@
+Enquiry "POR.TRANSACTION.RFD" for "name:/PP_PaymentWorkflowDASService:POR.TRANSACTION#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Payments Booked against Received Message List"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    description {
+        en = "FT Transaction Search"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "FTNumber" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "FTNumber" Null
+    custom-selection {
+
+        field "FileReferenceIncoming" {
+        }
+
+        AND
+
+        field "CompanyID" {
+        }
+
+        AND
+
+        field "FTNumber" {
+        }
+
+        AND
+
+        field "BatchIndicator" {
+        }
+
+        AND
+
+        field "SettlementTransactionIndicator" {
+        }
+
+        AND
+
+        field "StatusCode" {
+        }
+
+        None
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company ID"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "FTNumber" {
+        label {
+            en = "FT Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FTNumber"
+    }
+
+    field "FileReference" {
+        label {
+            en = "File Reference"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FileReferenceIncoming"
+    }
+
+    field "BatchIndicator" {
+        label {
+            en = "Batch Indicator"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BatchIndicator"
+    }
+
+    field "SettlementTransactionIndicator" {
+        label {
+            en = "Settlement Transaction Indicator"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SettlementTransactionIndicator"
+    }
+
+    field "StatusCode" {
+        label {
+            en = "Status Code"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StatusCode"
+    }
+
+    field "StatusDescription" {
+        label {
+            en = "Status Description"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "StatusCode"
+        conversion: getFrom "PP.STATUS.CODE" "StatusDescription" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Txn"
+        }
+
+        criteria: "FTNumber" Equals "FTNum" parameters {
+            function:  See
+            field: "FTNumber"
+        }
+
+        application: "POR.TRANSACTION"
+    }
+
+}

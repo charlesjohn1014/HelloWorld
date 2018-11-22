@@ -1,0 +1,231 @@
+Enquiry "DISPO.REJECTED" for "name:/EB_OverrideProcessing:DISPO.ITEMS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Rejections from Dispo Officer :"
+        }
+
+        column: 0
+        line: 0
+    }
+
+    description {
+        en = "Todays Dispo Items"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "DISPO.STATUS" {
+        Equals "REJECTED"
+    }
+
+    custom-selection {
+
+        field "CURR.OFFICER" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "CONTRACT.HIST.ID" {
+        label {
+            en = "Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.HIST.ID"
+    }
+
+    field "CUSOTMER.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NO"
+    }
+
+    field "PREV.DISPO" {
+        label {
+            en = "Prev Dispo Off"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PREV.DISPO"
+        conversion: getFrom "DISPO.OFFICER" "SHORT.TITLE" false
+    }
+
+    field "K.TIME" {
+        label {
+            en = "Time"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "K.TIME"
+        conversion: value 1 1
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "OVERRIDE.TEXT" {
+        label {
+            en = "Override"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OVERRIDE.TEXT"
+    }
+
+    field "COMMENTS" {
+        label {
+            en = "Comment"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COMMENTS"
+    }
+
+    field "APP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "REC.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CONTRACT.HIST.ID"
+    }
+
+    field "CURR.OFFICER" {
+        format: User
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "CURR.OFFICER"
+    }
+
+    field "CURR.OFFICER.DESC" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "CURR.OFFICER"
+        conversion: getFrom "DISPO.OFFICER" "SHORT.TITLE" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No rejections today\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Send Message to Manager"
+        }
+
+        label-field: "CONTRACT.HIST.ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.TICKLER,INPUT"
+    }
+
+    real-time-files {
+        "DISPO.ITEMS"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

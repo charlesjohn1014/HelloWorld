@@ -1,0 +1,438 @@
+Enquiry "AM.MODEL.PERF" for "name:/AM_ModelBank:NOFILE.PERF.DET.M#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Monthly Performance"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 40
+    build-routines {
+        jBC: "E.CTRL.PERF.M"
+    }
+
+    fixed-selection "E.CALC.PERF.M" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            mandatory: true
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "END.DATE" {
+            label {
+                en = "End Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CALC.METHOD" {
+            label {
+                en = "Calc Method"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DECIMAL.RANGE" {
+            label {
+                en = "Decimal Range"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BENCHMARK" {
+            label {
+                en = "Benchmark"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PERF.TYPE" {
+            label {
+                en = "Perf Type"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "L.PORTFOLIO" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Model:\""
+    }
+
+    field "L.BENCHMARK" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Benchmark:\""
+    }
+
+    field "L.BEGIN.MKT.VE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Begin Market Value:\""
+    }
+
+    field "L.END.MKT.VALUE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        operation: constant "\"End Market Value:\""
+    }
+
+    field "L.MTH.POR.PERF" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 0
+        }
+
+        operation: constant "\"Monthly Performance Report\""
+    }
+
+    field "PORT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Description:\""
+    }
+
+    field "L.CURRENT.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 5
+        }
+
+        operation: constant "\"Current Date:\""
+    }
+
+    field "L.CALC.METHOD" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 4
+        }
+
+        operation: constant "\"Calculation Method:\""
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "END.DEFAULT" {
+        format: Date
+        comma-separator: false
+        operation: today
+    }
+
+    field "DISP.CCY" {
+        comma-separator: false
+        operation: selection "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "GET.DETAIL" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ID"
+    }
+
+    field "DISP.PORTFOLIO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 13
+            line: 1
+        }
+
+        operation: selection "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "INVESTMENT.PROGRAM" false
+    }
+
+    field "DISP.PORT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 25
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 1
+        }
+
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "INVESTMENT.PROGRAM" "DESCRIPTION" false
+    }
+
+    field "DATE.TODAY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 113
+            line: 5
+        }
+
+        operation: today
+    }
+
+    field "DISP.BEGIN.VAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "DISP.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: Header
+        position {
+            column: 13
+            line: 4
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "DISP.END.VAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "DISP.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: Header
+        position {
+            column: 13
+            line: 5
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "DISP.METHOD" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 101
+            line: 4
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "MARKET.VALUE" {
+        label {
+            en = "End Market Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "DISP.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 35
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "MTH.RETURN" {
+        label {
+            en = "Monthly Return"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "DISP.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 70
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CUM.RETURN" {
+        label {
+            en = "Cum.Return"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "DISP.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 90
+        }
+
+        hidden: true
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "BENCH.RETURN" {
+        label {
+            en = "Bench Return"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "DISP.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 210
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "CUM.BENCH.RETURN" {
+        label {
+            en = "Cum.Bench Return"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "DISP.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 240
+        }
+
+        hidden: true
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "BENCH.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 13
+            line: 3
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "DISP.GROSS.OR.NET" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 113
+            line: 4
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

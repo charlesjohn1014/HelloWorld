@@ -1,0 +1,355 @@
+Enquiry "SC.PRE.DIARY.OPTION" for "name:/SC_SccEventNotification:SC.PRE.DIARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Diary list"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CASH.CCY" {
+        NotEquals "NULL"
+    }
+
+    fixed-selection "OPT.CCY.DIV.RATE" {
+        Equals "NULL"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+        }
+
+        AND
+
+        field "EVENT.TYPE" {
+        }
+
+        AND
+
+        field "EX.DATE" {
+        }
+
+        None
+    }
+
+    field "SC.PRE.DIARY.ID" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SC.PRE.DIARY.ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Diary with Multi Ccy Options awaiting Rates\""
+    }
+
+    field "DIARY.ID" {
+        label {
+            en = "Diary ID"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DIARY.ID"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "DESCRIPT" false
+    }
+
+    field "SEC.NO" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "EVENT.TYPE" {
+        label {
+            en = "Event"
+        }
+
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EVENT.TYPE"
+    }
+
+    field "OPTION.DESC" {
+        label {
+            en = "Option"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPTION.DESC"
+    }
+
+    field "OPTION.NUM" {
+        label {
+            en = "Option No."
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPTION.NUM"
+    }
+
+    field "OPTION.IND" {
+        label {
+            en = "Option Indicator"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 33
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPTION.IND"
+    }
+
+    field "RATE" {
+        label {
+            en = "Rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "RATE"
+    }
+
+    field "CASH.CCY" {
+        label {
+            en = "Opt Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CASH.CCY"
+    }
+
+    field "EX.DATE" {
+        label {
+            en = "Ex date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EX.DATE"
+    }
+
+    field "OPT.CCY.DIV.RATE" {
+        label {
+            en = "Opt Ccy Div rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPT.CCY.DIV.RATE"
+    }
+
+    field "OPT.CCY.EXCH.RATE" {
+        label {
+            en = "Opt Ccy Exch Rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPT.CCY.EXCH.RATE"
+    }
+
+    field "ZERORECORDDISPLAY" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No diaries awaiting rates to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Update Diary"
+        }
+
+        label-field: "DIARY.ID" parameters {
+            function:  Input
+            field: "DIARY.ID"
+        }
+
+        screen: "DIARY,INP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Unauth Ents"
+        }
+
+        label-field: "DIARY.ID"
+        criteria: "@ID" Contains "DIARY.ID"
+        enquiry: "ENT.NAU.BR"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Ents awaiting opt selection"
+        }
+
+        label-field: "DIARY.ID"
+        criteria: "@ID" Contains "DIARY.ID"
+        enquiry: "ENT.OPT.BR"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Auth Ents"
+        }
+
+        label-field: "DIARY.ID"
+        criteria: "@ID" Contains "DIARY.ID"
+        enquiry: "ENT.BR"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Bulk Auth Ents"
+        }
+
+        label-field: "DIARY.ID"
+        criteria: "DIARY" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SC.ENT.AUTHORISE,INP.BR"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Reverse Diary"
+        }
+
+        label-field: "DIARY.ID" parameters {
+            function:  Reverse
+            field: "DIARY.ID"
+        }
+
+        screen: "DIARY,INP"
+    }
+
+    drilldown "7" {
+        description {
+            en = "View Diary"
+        }
+
+        label-field: "DIARY.ID" parameters {
+            function:  See
+            field: "DIARY.ID"
+        }
+
+        screen: "DIARY,INP"
+    }
+
+    drilldown "8" {
+        description {
+            en = "Value Dated positions"
+        }
+
+        label-field: "DIARY.ID"
+        criteria: "SECURITY.NUMBER" Equals "SEC.NO"
+        criteria: "VALUE.DATE" LessThan "EX.DATE"
+        enquiry: "SC.VDATE.POS"
+    }
+
+}

@@ -1,0 +1,287 @@
+Enquiry "FATCA.EXPIRING.DOCS.60D" for "name:/FA_ModelBank:NOFILE.FATCA.EXP.DOCS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "FATCA Expiring Docs-60days"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "EXP.DOCS" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "EXPIRY.PERIOD" {
+        Equals "+60"
+    }
+
+    custom-selection {
+
+        field "FATCA.CUSTOMER" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "EXPIRY.PERIOD" {
+            label {
+                en = "Expiry"
+            }
+
+        }
+
+        None
+    }
+
+    field "ID" {
+        format: User
+        length: 100
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "FATCA.CUSTOMER" {
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SAMPLE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "RM.ID" {
+        label {
+            en = "RM ID"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "FATCA.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "RM.NAME" {
+        label {
+            en = "RM Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "RM.ID"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "RM.MARKET" {
+        label {
+            en = "RM Market"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        operation: field-extract "RM.ID"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        operation: field-extract "FATCA.CUSTOMER"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Documents Expiring in 60 Days\""
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CLIENT.TYPE" {
+        label {
+            en = "Client Type"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 132
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 0 delimited by "*"
+        conversion: getFrom "FATCA.CUSTOMER.TYPE" "DESCRIPTION" false
+    }
+
+    field "FORM.TYPE" {
+        label {
+            en = "Document Type"
+        }
+
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 170
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 9 to 0 delimited by "*"
+        conversion: getFrom "FATCA.FORM.TYPE" "DESCRIPTION" false
+    }
+
+    field "FORM.OWNER" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 8 to 0 delimited by "*"
+    }
+
+    field "INP.DATA" {
+        comma-separator: false
+        operation: calc "FATCA.CUSTOMER":"\"~\"":"FORM.OWNER"
+        conversion: repeat-when-null
+    }
+
+    field "HOLDER.NAME" {
+        label {
+            en = "Owner Name"
+        }
+
+        length: 70
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 223
+        }
+
+        operation: field-extract "INP.DATA"
+        conversion: call
+        jBC: "@ E.GET.FATCA.HOLDER.NAME"
+    }
+
+    field "EXP.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 300
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 14 to 0 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available for current selection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "CUST.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CUST.ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Details"
+        }
+
+        label-field: "CUST.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "CUST.ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+    attributes: "PAGE"
+}

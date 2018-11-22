@@ -1,0 +1,666 @@
+Enquiry "AA.DETAILS.LIMIT.DETAILS" for "name:/LI_Config:LIMIT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Summary of collateral vs. limits for a customer"
+    }
+
+    description {
+        en = "Limit Summary"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.LIMIT.DETAILS"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Arrangement ID"
+            }
+
+        }
+
+        AND
+
+        field "SEL.ARR.ID" {
+            label {
+                en = "Selection Arr ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "LIMIT.ID" {
+        label {
+            en = "Limit Ref"
+        }
+
+        length: 32
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ARR.ID" {
+        length: 32
+        alignment: Left
+        comma-separator: false
+        operation: selection "SEL.ARR.ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Limit Details \""
+    }
+
+    field "HEADER.JS" {
+        comma-separator: false
+        operation: constant "\" : - Joint & Severally Liable\""
+    }
+
+    field "JS.FLAG" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "JOINT.LIABILITY"
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADER.JT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 0
+        }
+
+        operation: if "JS.FLAG" Equals "YES" process "HEADER.JS" "NULL"
+    }
+
+    field "LIABILITY.NUMBER" {
+        label {
+            en = "Liability"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.NUMBER"
+    }
+
+    field "CUSTOMER.ID" {
+        comma-separator: false
+        operation: field-extract "LIMIT.ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "BK" {
+        comma-separator: false
+        operation: break-change "CUSTOMER.ID"
+    }
+
+    field "LIMIT.PRODUCT" {
+        length: 7
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.PRODUCT"
+    }
+
+    field "LIMIT.NO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "LIMIT.ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "CURR" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: constant "\"CCY\""
+    }
+
+    field "LIMIT.CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "ONLINE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: constant "\"Amount\""
+    }
+
+    field "ONLINE.LIMIT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 30
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ONLINE.LIMIT"
+        conversion: value 1
+    }
+
+    field "FIXED" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"Type\""
+    }
+
+    field "FV" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FIXED.VARIABLE"
+        conversion: replace {
+            oldData: "FIXED"
+            newData: " Fixed"
+        }
+
+        conversion: replace {
+            oldData: "VARIABLE"
+            newData: " Variable"
+        }
+
+    }
+
+    field "C.CUST" {
+        comma-separator: false
+        operation: field-extract "CUSTOMER.ID"
+        conversion: extract from 1 to 1
+    }
+
+    field "M.VAL" {
+        comma-separator: false
+        operation: constant "\"M\""
+    }
+
+    field "S.VAL" {
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "M.CHECK" {
+        comma-separator: false
+        operation: if "C.CUST" Equals "M.VAL" process "GROUP" "S.CHECK"
+    }
+
+    field "S.CHECK" {
+        comma-separator: false
+        operation: if "C.CUST" Equals "S.VAL" process "GROUP" "UNS"
+    }
+
+    field "UNS" {
+        comma-separator: false
+        operation: constant "\"Unsecured\""
+    }
+
+    field "GROUP" {
+        comma-separator: false
+        operation: constant "\"Group\""
+    }
+
+    field "TYPE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: if "FV" Equals "\"\"" process "M.CHECK" "FV"
+    }
+
+    field "SEC.AMT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: constant "\"Secured\""
+    }
+
+    field "SECURED.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 40
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURED.AMT"
+        conversion: call
+        jBC: "@ E.SUM"
+        conversion: call
+        jBC: "@ E.SUM"
+    }
+
+    field "ACCOUNT.OS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.LIMIT.ACCOUNT.OS"
+    }
+
+    field "TOTAL.OS" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOTAL.OS"
+        conversion: value 1
+    }
+
+    field "AVAIL.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AVAIL.AMT"
+        conversion: value 1
+    }
+
+    field "OS.AMT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: constant "\"Outstanding\""
+    }
+
+    field "OS" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 50
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: calc "TOTAL.OS" + "ACCOUNT.OS"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "AVAILABLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: constant "\"Available/Excess\""
+    }
+
+    field "C.AMT.AVAIL" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "COMMT.AMT.AVAIL"
+    }
+
+    field "NEG" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "F.C.AMT.AVL" {
+        comma-separator: false
+        operation: calc "NEG" * "C.AMT.AVAIL"
+    }
+
+    field "AVAIL.EXCESS" {
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: calc "AVAIL.AMT" + "ACCOUNT.OS"
+    }
+
+    field "F.AVL.EXC" {
+        comma-separator: false
+        operation: field-extract "AVAIL.EXCESS"
+    }
+
+    field "FIN.AVL.EXC" {
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+            line: + 1
+        }
+
+        operation: if "C.AMT.AVAIL" Equals "NULL" process "F.AVL.EXC" "F.C.AMT.AVL"
+    }
+
+    field "ACCOUNT" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT"
+    }
+
+    field "PLEDGE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 30
+        alignment: Right
+        comma-separator: false
+        operation: constant "\"Pledged Amt\""
+    }
+
+    field "PLEDGE.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: true
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT"
+        conversion: getFrom "ACCOUNT" "WORKING.BALANCE" false
+        conversion: abs
+    }
+
+    field "L.CUSTOMER" {
+        comma-separator: false
+        operation: constant "\"Pledge Cust\""
+    }
+
+    field "CUSTOMER" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.NUMBER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CUS.LIAB" {
+        comma-separator: false
+        operation: constant "\"Customers Liable\""
+    }
+
+    field "CUS.LIAB.CHK" {
+        display-type: "CLASS-ITALIC"
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: if "JS.FLAG" Equals "YES" process "CUS.LIAB" "NULL"
+    }
+
+    field "JT.CUST" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.NUMBER"
+    }
+
+    field "JT.CUST.NAME" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.NUMBER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CHK.COLON" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\" : \""
+    }
+
+    field "COLON" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CUSTOMER.NUMBER" NotEquals "NULL" process "CHK.COLON" "NULL"
+    }
+
+    field "C.JT.CUST.NAME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "JT.CUST":"COLON":"JT.CUST.NAME"
+    }
+
+    field "C.JT.CUST.NAME.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: if "JS.FLAG" Equals "YES" process "C.JT.CUST.NAME" "NULL"
+    }
+
+    field "DL" {
+        comma-separator: false
+        operation: constant "\"~\""
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PPT.NAME" {
+        comma-separator: false
+        operation: constant "\"LIMIT\""
+    }
+
+    field "MANAGE.DES" {
+        comma-separator: false
+        operation: constant "\"MANAGE.LIMIT\""
+    }
+
+    field "ACT.UPD.DES" {
+        comma-separator: false
+        operation: constant "\"-UPDATE-\""
+    }
+
+    field "PPT.DESC" {
+        comma-separator: false
+        operation: constant "\"ID.COMP.2\""
+    }
+
+    field "CONV.KEY" {
+        comma-separator: false
+        operation: calc "ARR.ID":"DL":"PPT.NAME":"DL":"NULL":"DL":"NULL"
+    }
+
+    field "CONV.KEY.FOR" {
+        comma-separator: false
+        operation: calc "CONV.KEY":"DL":"MANAGE.DES"
+    }
+
+    field "CONV.KEY.PPT" {
+        comma-separator: false
+        operation: calc "CONV.KEY":"DL":"PPT.DESC"
+    }
+
+    field "CONV.PPT.VAL" {
+        length: 46
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CONV.KEY.PPT"
+        conversion: call
+        jBC: "@ E.AA.CONV.GET.PROPERTY.RECORD"
+    }
+
+    field "LIMIT.MANAGE" {
+        length: 45
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CONV.KEY.FOR"
+        conversion: call
+        jBC: "@ E.AA.CONV.GET.PROPERTY.RECORD"
+    }
+
+    field "PDT.LINE" {
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PDT.LINE":"ACT.UPD.DES":"CONV.PPT.VAL"
+    }
+
+    field "AAA.LIMIT" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "LIMIT.VER1" {
+        comma-separator: false
+        operation: constant "\"LIMIT,DETAILS I \""
+    }
+
+    field "LIMIT.VER2" {
+        comma-separator: false
+        operation: calc "LIMIT.VER1":"LIMIT.ID"
+    }
+
+    field "LIMIT.UPD" {
+        length: 45
+        alignment: Left
+        comma-separator: false
+        operation: if "LIMIT.MANAGE" Equals "\"YES\"" process "AAA.LIMIT" "LIMIT.VER2"
+    }
+
+    field "REFRESH.LIMIT" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.LIMIT.DETAILS\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refresh"
+        }
+
+        label-field: "CURR"
+        image: "refresh.gif"
+        criteria: "@ID" Equals "ARR.ID"
+        criteria: "SEL.ARR.ID" Equals "\"\""
+        from-field: "REFRESH.LIMIT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "CURR"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARR.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "LIMIT.UPD"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CURR"
+        image: "view.gif" parameters {
+            function:  See
+            field: "LIMIT.ID"
+        }
+
+        application: "LIMIT"
+    }
+
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

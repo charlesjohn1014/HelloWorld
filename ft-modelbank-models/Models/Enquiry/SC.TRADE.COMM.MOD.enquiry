@@ -1,0 +1,303 @@
+Enquiry "SC.TRADE.COMM.MOD" for "name:/SC_SctTrading:SEC.TRADE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Security Trade Modified Comm"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CUSTOMER.NO" {
+        NotEquals "\'999999\'"
+    }
+
+    fixed-sort: "CUSTOMER.NO" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "ID"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "CUST.SEC.ACC" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        None
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.NO"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Details of Trade Level Commission Changes\""
+    }
+
+    field "CUST.SEC.ACC" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.SEC.ACC"
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CUST.SEC.ACC"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "RM ID"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUST.SEC.ACC"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.OFFICER" false
+    }
+
+    field "@ID" {
+        label {
+            en = "Trade ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "CUST.TRANS.CODE" {
+        label {
+            en = "Buy/Sell"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.TRANS.CODE"
+    }
+
+    field "CUST.NO.NOM" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.NO.NOM"
+    }
+
+    field "CUST.PRICE" {
+        label {
+            en = "Price"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.PRICE"
+    }
+
+    field "ACT.COMMISSION" {
+        label {
+            en = "Default Comm"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACT.COMMISSION"
+    }
+
+    field "CU.COMMISSION" {
+        label {
+            en = "Modified Comm"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CU.COMMISSION"
+    }
+
+    field "MODIFY" {
+        label {
+            en = "Modified Amt"
+        }
+
+        display-type: "CLASS-TAMNUM"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: calc "CU.COMMISSION" - "ACT.COMMISSION"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No trades with modified commission\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Trades"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SEC.TRADE,INPUT"
+    }
+
+}

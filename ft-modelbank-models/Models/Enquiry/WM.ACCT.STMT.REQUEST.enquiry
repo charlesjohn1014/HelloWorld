@@ -1,0 +1,237 @@
+Enquiry "WM.ACCT.STMT.REQUEST" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Client Accounts"
+    }
+
+    description {
+        en = "Enter Client Id"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5 fixed-selection "CUSTOMER" {
+        NotEquals "\"\""
+    }
+
+    fixed-sort: "MNEMONIC" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Client"
+            }
+
+        }
+
+        None
+    }
+
+    field "ID1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "@ID" {
+        label {
+            en = "Account No"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACC.NO" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Client Accounts\""
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "ACCOUNT.TITLE.1" {
+        label {
+            en = "Name"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.TITLE.1"
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Product"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+    }
+
+    field "CATEGORY.02" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Account Officer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "PAST" {
+        comma-separator: false
+        operation: constant "\"PAST\""
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Account not found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Statement Between Dates"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCT.ID" Equals "@ID"
+        criteria: "BOOKING.DATE" LessOrEquals "!TODAY"
+        enquiry: "STMT.ENT.BOOK.PVT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Account Statement - Current"
+        }
+
+        label-field: "@ID"
+        criteria: "CURRENT.ACC" > "@ID" parameters {
+            field: "@ID"
+        }
+
+        composite-screen: "PWM.ACCT.STMT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Account Statement - Past"
+        }
+
+        label-field: "@ID"
+        criteria: "CURRENT.ACC" > "@ID" parameters {
+            function:  Input
+            field: "PAST"
+        }
+
+        screen: "PRINT.STATEMENT,PRIVATE"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View/Print Acct Statement COB"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT.NO" Equals "@ID"
+        enquiry: "ACCOUNT.STATEMENT.COB"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS" ; "NO.MORE.OPTIONS" ; "NO.CLEAR.SELECTION" ; "NO.ENQUIRY.FAVOURITES"
+}

@@ -1,0 +1,338 @@
+Enquiry "SP.AGGREGATION.LIST" for "name:/SP_Foundation:SP.AGGREGATION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Aggregated Trades"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 3
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Trade Ref"
+            }
+
+        }
+
+        AND
+
+        field "BROKER.NO" {
+            label {
+                en = "Broker"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY" {
+            label {
+                en = "Security No"
+            }
+
+        }
+
+        AND
+
+        field "DEPOSITORY" {
+            label {
+                en = "Depository"
+            }
+
+        }
+
+        AND
+
+        field "RECON.KEY" {
+            label {
+                en = "Recon Key"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Trade Ref"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Aggregated Trades\""
+    }
+
+    field "ORDER.NO" {
+        label {
+            en = "Order Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: getFrom "SEC.TRADE" "CU.ORDER.NOS" false
+    }
+
+    field "BROKER.NO" {
+        label {
+            en = "Broker No"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BROKER.NO"
+    }
+
+    field "SECURITY" {
+        label {
+            en = "Security No"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "LOCAL1" {
+        label {
+            en = "Recon Value 1"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LOCAL1"
+    }
+
+    field "LOCAL2" {
+        label {
+            en = "Recon Value 2"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LOCAL2"
+    }
+
+    field "NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOMINAL"
+    }
+
+    field "RECON.KEY" {
+        label {
+            en = "Recon Key"
+        }
+
+        length: 90
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECON.KEY"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "RECON.KEY"
+        conversion: getFrom "SP.RECONCILIATION" "CONF.STATUS" false
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No trades aggregated\""
+    }
+
+    tool AM.ENQ.DETAIL {
+        label {
+            en = "New Aggregation"
+        }
+
+        command: "SP.AGGREGATION,INPUT I"
+    }
+
+    tool AM.DETS {
+        label {
+            en = "New Reconciliation"
+        }
+
+        command: "SP.RECONCILIATION,INPUT I"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Aggregation"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SP.AGGREGATION,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Aggregation"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SP.AGGREGATION,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Recon"
+        }
+
+        label-field: "RECON.KEY" parameters {
+            function:  See
+            field: "RECON.KEY"
+        }
+
+        screen: "SP.RECONCILIATION,INPUT"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Edit Recon"
+        }
+
+        label-field: "RECON.KEY" parameters {
+            function:  Input
+            field: "RECON.KEY"
+        }
+
+        screen: "SP.RECONCILIATION,INPUT"
+    }
+
+    drilldown "5" {
+        description {
+            en = "View Trade"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SEC.TRADE,INPUT"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Edit Trade"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SEC.TRADE,INPUT"
+    }
+
+}

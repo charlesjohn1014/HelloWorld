@@ -1,0 +1,355 @@
+Enquiry "PPT.FEETYPE.FUTURE" for "name:/:PPT.FEETYPE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Fee Type List - Future"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    description {
+        en = "Fee Type Search"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 99 fixed-selection "RACFeeType" {
+        Equals "\'F\'"
+    }
+
+    fixed-selection "RSCFeeType" {
+        Equals "\'L\'"
+    }
+
+    fixed-sort: "CompanyID" Null
+    fixed-sort: "FeeType" Null
+    custom-selection {
+
+        field "FeeTypeID" {
+            label {
+                en = "FeeType ID"
+            }
+
+        }
+
+        AND
+
+        field "CompanyID" {
+            label {
+                en = "Company"
+            }
+
+        }
+
+        AND
+
+        field "FeeType" {
+            label {
+                en = "Fee Type"
+            }
+
+        }
+
+        AND
+
+        field "ConditionalIndicator" {
+            label {
+                en = "Cond Indicator"
+            }
+
+        }
+
+        AND
+
+        field "BeneficiaryChargeAllowed" {
+            label {
+                en = "BNF CHG Allowed"
+            }
+
+        }
+
+        AND
+
+        field "PercentageVATOnCharge" {
+            label {
+                en = "VAT %"
+            }
+
+        }
+
+        AND
+
+        field "StartDateFeeType" {
+            label {
+                en = "Start Date"
+            }
+
+        }
+
+        AND
+
+        field "EndDateFeeType" {
+            label {
+                en = "End Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "FeeTypeID" {
+        label {
+            en = "FeeType ID"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "FeeTypeID"
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "FeeType" {
+        label {
+            en = "Fee Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FeeType"
+    }
+
+    field "ConditionalIndicator" {
+        label {
+            en = "Cond Indicator"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ConditionalIndicator"
+    }
+
+    field "BeneficiaryChargeAllowed" {
+        label {
+            en = "BNF CHG Allowed"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BeneficiaryChargeAllowed"
+    }
+
+    field "PercentageVATOnCharge" {
+        label {
+            en = "VAT %"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PercentageVATOnCharge"
+    }
+
+    field "StartDateFeeType" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StartDateFeeType"
+    }
+
+    field "EndDateFeeType" {
+        label {
+            en = "End Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EndDateFeeType"
+    }
+
+    field "ID" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "CaptureID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ PP.GET.CAPTURE.TABLE.ID"
+    }
+
+    field "AMENDVERSION" {
+        comma-separator: false
+        operation: constant "\"PP.FEETYPE,AMEND I \""
+    }
+
+    field "REVERSEVERSION" {
+        comma-separator: false
+        operation: constant "\"PP.FEETYPE,REVERSE I \""
+    }
+
+    field "NEWID" {
+        comma-separator: false
+        operation: constant "\"F3\""
+    }
+
+    field "CAPNEWID" {
+        comma-separator: false
+        operation: calc "AMENDVERSION":"NEWID"
+    }
+
+    field "CAPOLDID" {
+        comma-separator: false
+        operation: calc "AMENDVERSION":"CaptureID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CAPTUREAMEND" {
+        comma-separator: false
+        operation: if "CaptureID" Equals "NULL" process "CAPNEWID" "CAPOLDID"
+    }
+
+    field "CAPREVNEWID" {
+        comma-separator: false
+        operation: calc "REVERSEVERSION":"NEWID"
+    }
+
+    field "CAPREVOLDID" {
+        comma-separator: false
+        operation: calc "REVERSEVERSION":"CaptureID"
+    }
+
+    field "REVERSECAPTURE" {
+        comma-separator: false
+        operation: if "CaptureID" Equals "NULL" process "CAPREVNEWID" "CAPREVOLDID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    tool PP.ENQ.DETAIL {
+        label {
+            en = "Create New Record"
+        }
+
+        command: "docommand(\"PP.FEETYPE,CREATE I F3\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "CompanyID"
+        image: "edit.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "CAPTUREAMEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "CompanyID"
+        image: "txnreverse.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "REVERSECAPTURE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CompanyID"
+        image: "view.gif"
+        should-be-changed: "PPT.FEETYPE,VIEW S ID"
+    }
+
+    introspection-messages: "Error in drilldown 3: APP \'PPT.FEETYPE,VIEW\' does not exist, broken reference"
+}

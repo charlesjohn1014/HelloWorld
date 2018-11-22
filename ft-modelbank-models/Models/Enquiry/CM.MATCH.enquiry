@@ -1,0 +1,198 @@
+Enquiry "CM.MATCH" for "name:/CM_Contract:CM.MESSAGE#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "STATUS" {
+        Equals "MAT"
+    }
+
+    fixed-selection "@ID" {
+        Matches "D..."
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Matched Messages\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Delivery Reference"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "MESSAGE.TYPE" {
+        label {
+            en = "Message Type"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MESSAGE.TYPE"
+    }
+
+    field "SENDER" {
+        label {
+            en = "Originator"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SENDER"
+    }
+
+    field "RECEIVER" {
+        label {
+            en = "Receiver"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECEIVER"
+    }
+
+    field "TXN.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TXN.REF"
+    }
+
+    field "MATCH" {
+        label {
+            en = "Matching Ref"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 91
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATCH"
+    }
+
+    field "MATCH.DATE" {
+        label {
+            en = "Matching Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATCH.DATE"
+    }
+
+    field "APP.ABB" {
+        comma-separator: false
+        operation: field-extract "TXN.REF"
+        conversion: extract from 1 to 2
+    }
+
+    field "APPLICATION.VAL" {
+        comma-separator: false
+        operation: if "APP.ABB" Equals "\"FX\"" process "\"FOREX\"IF" "APP.ABB"
+    }
+
+    field "CONCAT.DELIVERY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "@ID":"MATCH"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Matched Messages Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Msg Tag Details"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "MESSAGE.KEY" Equals "@ID" parameters {
+            field: "CONCAT.DELIVERY"
+        }
+
+        composite-screen: "CM.VIEW.MSGS.SCREEN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Confirmed Deal"
+        }
+
+        label-field: "@ID"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "TXN.REF"
+        }
+
+        from-field: "APPLICATION.VAL"
+    }
+
+}

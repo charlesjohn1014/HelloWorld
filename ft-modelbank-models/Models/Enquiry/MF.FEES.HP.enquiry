@@ -1,0 +1,283 @@
+Enquiry "MF.FEES.HP" for "name:/MF_Contract:MF.TRADE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Mutual Fund Fees"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "FUND.ID" Null
+    custom-selection {
+
+        field "FUND.ID" {
+            label {
+                en = "Fund ID"
+            }
+
+        }
+
+        AND
+
+        field "ENTRY.LOAD" {
+            label {
+                en = "Entry Load"
+            }
+
+        }
+
+        AND
+
+        field "EXIT.LOAD" {
+            label {
+                en = "Exit Load"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Fees Earned\""
+    }
+
+    field "DUMMY.FUND.ID" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FUND.ID"
+    }
+
+    field "BREAK.FUND" {
+        comma-separator: false
+        processing-mode: Single
+        operation: break-change "DUMMY.FUND.ID"
+    }
+
+    field "FUND.ID1" {
+        label {
+            en = "Fund ID"
+        }
+
+        break-condition {
+            field: "BREAK.FUND"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "DUMMY.FUND.ID"
+    }
+
+    field "FUND.NAME" {
+        label {
+            en = "Fund Name"
+        }
+
+        break-condition {
+            field: "BREAK.FUND"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "DUMMY.FUND.ID"
+        conversion: getFrom "MF.FUND.MASTER" "FUND.NAME" false
+    }
+
+    field "FUND.BOOK" {
+        break-condition {
+            field: "BREAK.FUND"
+        }
+
+        comma-separator: false
+        operation: field-extract "DUMMY.FUND.ID"
+        conversion: getFrom "MF.FUND.MASTER" "FUND.BOOK" false
+    }
+
+    field "ENTRY.LOAD1" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ENTRY.LOAD"
+    }
+
+    field "TOT.ENTRY.LOAD" {
+        label {
+            en = "Entry Load"
+        }
+
+        break-condition {
+            field: "BREAK.FUND"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: total "ENTRY.LOAD1"
+    }
+
+    field "EXIT.LOAD1" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "EXIT.LOAD"
+    }
+
+    field "TOT.EXIT.LOAD" {
+        label {
+            en = "Exit Load"
+        }
+
+        break-condition {
+            field: "BREAK.FUND"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: total "EXIT.LOAD1"
+    }
+
+    field "SWITCH.FEES1" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SWITCH.FEES"
+    }
+
+    field "TOT.SWITCH.FEES" {
+        label {
+            en = "Switch Fees"
+        }
+
+        break-condition {
+            field: "BREAK.FUND"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Multi
+        operation: total "SWITCH.FEES1"
+    }
+
+    field "OTHER.FEE.AMT1" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "OTHER.FEE.AMT"
+    }
+
+    field "TOT.OTHER.FEE.AMT" {
+        label {
+            en = "Other Fee Amt"
+        }
+
+        break-condition {
+            field: "BREAK.FUND"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Multi
+        operation: total "OTHER.FEE.AMT1"
+    }
+
+    field "AGENT.FEE1" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AGENT.FEE"
+    }
+
+    field "TOT.AGENT.FEE" {
+        label {
+            en = "Agent Fee"
+        }
+
+        break-condition {
+            field: "BREAK.FUND"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Multi
+        operation: total "AGENT.FEE1"
+    }
+
+    field "ZERONORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Requested Fee Details not available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "FUND.ID1"
+        image: "view.gif"
+        criteria: "FUND.ID" Equals "FUND.ID1"
+        enquiry: "MF.FEES.DETS"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

@@ -1,0 +1,207 @@
+Enquiry "WM.MK.VALUES.DISPLAY" for "name:/AM_ModelBank:NOFILE.WM.MK.VALUES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Market Values"
+    }
+
+    zero-records-display: true
+    show-all-books: false
+    start-line: 5
+    end-line: 19 fixed-selection "@ID" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "VAL.CCY" {
+            label {
+                en = "Valuation Ccy"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "FROM.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TO.DATE" {
+            label {
+                en = "End Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Market Values\""
+    }
+
+    field "PF.TXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Portfolio No: \""
+    }
+
+    field "PF.ID" {
+        label {
+            en = "Portfolio No"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "PF.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: calc "PF.TXT":"PF.ID"
+    }
+
+    field "VCCY.TXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Valuation CCY: \""
+    }
+
+    field "VCCY" {
+        label {
+            en = "Val Ccy"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "VCCY.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: calc "VCCY.TXT":"VCCY"
+    }
+
+    field "TITLE1" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Value Date \""
+    }
+
+    field "CURRENCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "T" {
+        comma-separator: false
+        display-section: NoDisplay
+        operation: constant "\"Market Value in \""
+    }
+
+    field "VAL.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "MK.VALUE" {
+        label {
+            en = "Market Value"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: iconv "MD"
+        conversion: oconv "MD"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"The Market Value details are unavailable\""
+    }
+
+    security {
+        abort: false
+    }
+
+    attributes: "ALLDATA"
+}

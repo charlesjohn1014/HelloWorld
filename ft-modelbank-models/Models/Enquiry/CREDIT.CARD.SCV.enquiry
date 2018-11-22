@@ -1,0 +1,243 @@
+Enquiry "CREDIT.CARD.SCV" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Credit Card Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CATEGORY" {
+        Equals "1010"
+    }
+
+    fixed-sort: "MNEMONIC" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.DISPLAY" {
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: constant "\"Credit Card\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CARD.TYPE" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "CARD.ISSUE.ACCOUNT" "CARD.ISSUE.ID" false
+        conversion: extract from 1 to 4
+    }
+
+    field "MASTER.CARD" {
+        comma-separator: false
+        operation: constant "\"MAST\""
+    }
+
+    field "AMEX.CARD" {
+        comma-separator: false
+        operation: constant "\"AMEX\""
+    }
+
+    field "VISA.CARD" {
+        comma-separator: false
+        operation: constant "\"VISA\""
+    }
+
+    field "WESTERN.CARD" {
+        comma-separator: false
+        operation: constant "\"WEST\""
+    }
+
+    field "MASTER.GIF" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/master.gif\""
+    }
+
+    field "AMEX.GIF" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/amex.gif\""
+    }
+
+    field "VISA.GIF" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/visa.gif\""
+    }
+
+    field "WESTERN.GIF" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/western.gif\""
+    }
+
+    field "OTHER.GIF" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/other.gif\""
+    }
+
+    field "CARD1" {
+        comma-separator: false
+        operation: if "CARD.TYPE" Equals "NULL" process "NULL" "OTHER.GIF"
+    }
+
+    field "CARD2" {
+        comma-separator: false
+        operation: if "CARD.TYPE" Equals "VISA.CARD" process "VISA.GIF" "CARD1"
+    }
+
+    field "CARD3" {
+        comma-separator: false
+        operation: if "CARD.TYPE" Equals "MASTER.CARD" process "MASTER.GIF" "CARD2"
+    }
+
+    field "CARD4" {
+        comma-separator: false
+        operation: if "CARD.TYPE" Equals "AMEX.CARD" process "AMEX.GIF" "CARD3"
+    }
+
+    field "CARD.NUMBER" {
+        label {
+            en = "Card Number"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "CARD.ISSUE.ACCOUNT" "CARD.ISSUE.ID" false
+        conversion: call
+        jBC: "@ E.DISPLAY.CARD.NO"
+    }
+
+    field "CARD.DISPLAY" {
+        label {
+            en = ".."
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: if "CARD.TYPE" Equals "WESTERN.CARD" process "WESTERN.GIF" "CARD4"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ONLINE.ACTUAL.BAL" {
+        label {
+            en = "Current Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "ISSUE.DATE" {
+        label {
+            en = "Issue Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CARD.ISSUE.ACCOUNT" "CARD.ISSUE.ID" false
+        conversion: getFrom "CARD.ISSUE" "ISSUE.DATE" false
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CARD.ISSUE.ACCOUNT" "CARD.ISSUE.ID" false
+        conversion: getFrom "CARD.ISSUE" "EXPIRY.DATE" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Credit Card issued for this Customer\""
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.BREADCRUMBS"
+}

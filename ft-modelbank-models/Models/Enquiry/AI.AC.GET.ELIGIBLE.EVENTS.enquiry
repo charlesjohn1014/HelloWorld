@@ -1,0 +1,184 @@
+Enquiry "AI.AC.GET.ELIGIBLE.EVENTS" for "name:/BE_ModelBank:NOFILE.AC.GET.EVENTS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Events"
+    }
+
+    description {
+        en = "Events"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 10 fixed-selection "RESULT.SET" {
+    }
+
+    fixed-selection "ACCT.NUMBER" {
+        Equals "!EXT.SMS.ACCOUNTS"
+    }
+
+    custom-selection {
+
+        field "ACCT.NUMBER" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 16
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Available Alerts\""
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "EVENT.TYPE" false
+    }
+
+    field "ID.02" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ID"
+    }
+
+    field "EXT" {
+        comma-separator: false
+        operation: constant "\"EXTERNAL\""
+    }
+
+    field "BOTH" {
+        comma-separator: false
+        operation: constant "\"BOTH\""
+    }
+
+    field "TEC.EXT" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "SUBSCRIPTION.LEVEL" false
+    }
+
+    field "TEC.BOTH" {
+        comma-separator: false
+        operation: if "TEC.EXT" Equals "BOTH" process "ID" "NULL"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "EVENTS" {
+        label {
+            en = "Alert when"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "TEC.EXT" Equals "EXT" process "ID" "TEC.BOTH"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "ACCT" {
+        comma-separator: false
+        operation: selection "ACCT.NUMBER"
+    }
+
+    field "INHERIT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "INHERIT" false
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"...YES...\""
+    }
+
+    field "VERSION.1" {
+        comma-separator: false
+        operation: constant "\"EB.ALERT.REQUEST,AI\""
+    }
+
+    field "VERSION.2" {
+        comma-separator: false
+        operation: constant "\"EB.ALERT.REQUEST,AI.INHERIT\""
+    }
+
+    field "VERSION.FINAL" {
+        comma-separator: false
+        operation: if "INHERIT" Matches "YES" process "VERSION.2" "VERSION.1"
+    }
+
+    field "ZERORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No events for this Account/Product\""
+    }
+
+    field "ZERO.RECORD.HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Available Alerts\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Subscribe"
+        }
+
+        label-field: "EVENTS"
+        criteria: "TEC.ITEMS" > "ID"
+        criteria: "ACCOUNT" > "ACCT"
+        criteria: "CURRENT.TYPE" > "TYPE" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        from-field: "VERSION.FINAL"
+    }
+
+    security {
+        application: "TEC.ITEMS"
+        field: "TYPE"
+        abort: true
+    }
+
+    attributes: "UNDERLINE.HEADER.ROW" ; "DISABLE.NO.SORT.OPTIONS"
+}

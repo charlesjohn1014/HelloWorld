@@ -1,0 +1,402 @@
+Enquiry "STMT.ACCT.DR.SCV" for "name:/IC_InterestAndCapitalisation:STMT.ACCT.DR#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Account Debit Interest Posted"
+    }
+
+    description {
+        en = "Account Debit Interest Posted"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "TOTAL.INTEREST" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "ACCOUNT" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACCOUNT" {
+        label {
+            en = "Account"
+        }
+
+        format: User
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "ACCOUNT"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Account Debit Interest Posted\""
+    }
+
+    field "AC.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ACCOUNT"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "PERIOD.FIRST.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PERIOD.FIRST.DATE"
+    }
+
+    field "PERIOD.LAST.DATE" {
+        label {
+            en = "End Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PERIOD.LAST.DATE"
+    }
+
+    field "DR.INT.DATE" {
+        label {
+            en = "Int date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "DR.INT.DATE"
+    }
+
+    field "FLD" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+            line: + 2
+        }
+
+        operation: constant "\"Grand Total\""
+    }
+
+    field "DR.NO.OF.DAYS" {
+        label {
+            en = "Days"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DR.NO.OF.DAYS"
+    }
+
+    field "DISP.MINUS" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "DR.VAL.BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        format: Currency "AC.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DR.VAL.BALANCE"
+    }
+
+    field "D.DR.VAL.BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "AC.CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: calc "DISP.MINUS":"DR.VAL.BALANCE"
+    }
+
+    field "DR.INT.RATE" {
+        label {
+            en = "Int Rate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "DR.INT.RATE"
+    }
+
+    field "DR.INT.AMT" {
+        label {
+            en = "Int Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DR.INT.AMT"
+    }
+
+    field "DR.INT.TAX.RATE" {
+        label {
+            en = "Tax Rate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "DR.INT.TAX.RATE"
+    }
+
+    field "DR.INT.TAX.AMT" {
+        label {
+            en = "Tax Amount"
+        }
+
+        format: Currency "AC.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DR.INT.TAX.AMT"
+    }
+
+    field "TOTAL.INTEREST" {
+        label {
+            en = "Total int"
+        }
+
+        format: Currency "AC.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TOTAL.INTEREST"
+    }
+
+    field "D.TOTAL.INTEREST" {
+        label {
+            en = "Total Int"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "AC.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        hidden: true
+        operation: calc "DISP.MINUS":"TOTAL.INTEREST"
+    }
+
+    field "TOT.INT" {
+        break-condition {
+            break: End
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: total "TOTAL.INTEREST"
+    }
+
+    field "D.TOT.INT" {
+        display-type: "CLASS-POSNEG" break-condition {
+            break: End
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 120
+            line: + 2
+        }
+
+        operation: calc "DISP.MINUS":"TOT.INT"
+    }
+
+    field "K.GRAND.TOTAL" {
+        label {
+            en = "Total"
+        }
+
+        format: Currency "AC.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "K.GRAND.TOTAL"
+    }
+
+    field "D.GRAND.TOTAL" {
+        label {
+            en = "Total"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "AC.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        operation: calc "DISP.MINUS":"K.GRAND.TOTAL"
+    }
+
+    field "TOTAL.GRAND" {
+        break-condition {
+            break: End
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: total "K.GRAND.TOTAL"
+    }
+
+    field "D.TOTAL.GRAND" {
+        display-type: "CLASS-POSNEG" break-condition {
+            break: End
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 140
+            line: + 2
+        }
+
+        operation: calc "DISP.MINUS":"TOTAL.GRAND"
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 52
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Interest debited to the Account\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "STMT.ACCT.DR"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

@@ -1,0 +1,417 @@
+Enquiry "PBO.SAFE.ADV.FEES" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Safe Keep and Advisory Fees Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 6
+    end-line: 97
+    fixed-sort: "ACCOUNT.OFFICER" Null
+    custom-selection {
+
+        field "CUSTOMER.NUMBER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account Officer"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Safekeep and Advisory Fee Details in Local Ccy\""
+    }
+
+    field "ACT.OFF" {
+        label {
+            en = "Acct Officer"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "ACCT.NAME" {
+        label {
+            en = "Acct Off Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        hidden: true
+        operation: field-extract "ACT.OFF"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CUSTOMER.NUMBER"
+    }
+
+    field "SAM" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "PORT.TYPE" {
+        label {
+            en = "Port Type"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORT.CLASS.TYPE"
+    }
+
+    field "PRD.FROM" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "SAM"
+        conversion: getFrom "SAFEKEEP.HOLDING" "PERIOD.FROM" false
+    }
+
+    field "LAST.FEE" {
+        comma-separator: false
+        operation: calc "SAM":"\".\"":"PRD.FROM"
+    }
+
+    field "SAFECUSTDY.FEES" {
+        label {
+            en = "Safe Fees Accrued"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "SAFECUSTDY.FEES"
+    }
+
+    field "SAFE.LAST" {
+        label {
+            en = "Safe Fees(Last)"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        operation: field-extract "LAST.FEE"
+        conversion: getFrom "SAFEKEEP.HOLDING.POSTED" "CHARGES.LCY" false
+    }
+
+    field "SF.FEE" {
+        label {
+            en = "Safe Fees (Default)"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 9
+        }
+
+        operation: field-extract "SAM"
+        conversion: getFrom "SAFEKEEP.HOLDING" "ACT.CHARGES" false
+    }
+
+    field "NU" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "SAFE.DISC" {
+        label {
+            en = "Safe Fees Disc"
+        }
+
+        display-type: "CLASS-BOLD"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z"
+        operation: field-extract "SAM"
+        conversion: getFrom "SAFEKEEP.HOLDING" "DISC.AMOUNT.LCY" false
+    }
+
+    field "SAFE.FEES" {
+        label {
+            en = "Net Safe Fees"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 12
+        }
+
+        operation: field-extract "SAM"
+        conversion: getFrom "SAFEKEEP.HOLDING" "CHARGES.LCY" false
+    }
+
+    field "SAFE.TAX" {
+        label {
+            en = "VAT Safe Fees"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 13
+        }
+
+        hidden: true
+        operation: field-extract "SAM"
+        conversion: getFrom "SAFEKEEP.HOLDING" "CHARGES.TAX.LCY" false
+    }
+
+    field "ADVISORY.FEES" {
+        label {
+            en = "Adv Fees Accrued"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 14
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ADVISORY.FEES"
+    }
+
+    field "LAST.ADV" {
+        label {
+            en = "Adv Fees(Last)"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 15
+        }
+
+        operation: field-extract "LAST.FEE"
+        conversion: getFrom "SC.ADVISORY.CHG.POSTED" "CHARGES.LCY" false
+    }
+
+    field "ADV.AMT" {
+        label {
+            en = "Adv Fees(Default)"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 16
+        }
+
+        operation: field-extract "SAM"
+        conversion: getFrom "SC.ADVISORY.CHG" "ACT.CHARGES" false
+    }
+
+    field "AD.DISC" {
+        label {
+            en = "Adv Fees Disc"
+        }
+
+        display-type: "CLASS-BOLD"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z"
+        operation: field-extract "SAM"
+        conversion: getFrom "SC.ADVISORY.CHG" "DISC.AMOUNT.LCY" false
+    }
+
+    field "ADV.FEES" {
+        label {
+            en = "Net Adv Fees"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 19
+        }
+
+        operation: field-extract "SAM"
+        conversion: getFrom "SC.ADVISORY.CHG" "CHARGES.LCY" false
+    }
+
+    field "ADV.TAX" {
+        label {
+            en = "VAT Adv Fees"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 20
+        }
+
+        hidden: true
+        operation: field-extract "SAM"
+        conversion: getFrom "SC.ADVISORY.CHG" "CHARGES.TAX.LCY" false
+    }
+
+    field "NORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Safekeep and Advisory Fees Details NotAvailable\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Safekeep Fees"
+        }
+
+        label-field: "SAM"
+        image: "view.gif" parameters {
+            function:  See
+            field: "SAM"
+        }
+
+        screen: "SAFEKEEP.HOLDING,INP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Advisory Fees"
+        }
+
+        label-field: "SAM"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "SAM"
+        }
+
+        screen: "SC.ADVISORY.CHG,INP"
+    }
+
+}

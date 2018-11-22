@@ -1,0 +1,220 @@
+Enquiry "FOREIGN.CHQ.AUTH.NAU" for "name:/TT_Contract:TELLER$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Teller Foreign Chqs sent on Coll Unauth List"
+    }
+
+    description {
+        en = "Authorise/Delete Foriegn cheques"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "TRANSACTION.CODE" {
+        Equals "45"
+    }
+
+    field "ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Authorise/Delete Foreign Cheques \""
+    }
+
+    field "ACCOUNT2" {
+        label {
+            en = "Credit Account"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.2"
+    }
+
+    field "CURRENCY.2" {
+        label {
+            en = "Credit Acct Ccy"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "CURRENCY.2"
+    }
+
+    field "AMOUNTFCY" {
+        label {
+            en = "Chq Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 21
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT.FCY.1"
+    }
+
+    field "VALUEDATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE.2"
+    }
+
+    field "EXPOSUREDATE" {
+        label {
+            en = "Exposure Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPOSURE.DATE.2"
+    }
+
+    field "TXNCODE" {
+        label {
+            en = "Clearing Type"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: getFrom "TELLER.TRANSACTION" "SHORT.DESC" false
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Foreign Cheques\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "ID"
+        }
+
+        screen: "TELLER,FOREIGN.CHQS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "ID"
+        }
+
+        screen: "TELLER,FOREIGN.CHQS"
+    }
+
+}

@@ -1,0 +1,528 @@
+Enquiry "ALL.GROUP.COMPARE" for "name:/AM_ModelBank:NOFILE.GRP.GRID#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 5
+    end-line: 99 fixed-selection "E.AM.GET.GRP.GRID" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "GRP.GRID.ID" {
+            label {
+                en = "Grid Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SESSION.ID" {
+            label {
+                en = "Session Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "GET.DETAIL" {
+        label {
+            en = "id"
+        }
+
+        format: User
+        length: 500
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "GRP.GRID.ID"
+    }
+
+    field "GET.ID" {
+        format: User
+        length: 100
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "B.CHG" {
+        comma-separator: false
+        operation: break-change "GET.ID"
+    }
+
+    field "HDR.MAIN" {
+        display-type: "CLASS-HEADER"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Rebalancing Session Details\""
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Compare ID:\""
+    }
+
+    field "SESSION.ID" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 100
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "COMP.ID" {
+        comma-separator: false
+        operation: calc "SESSION.ID":"\"/\"":"GROUP"
+    }
+
+    field "IHDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: constant "\"Session Type:\""
+    }
+
+    field "SESSION.TYPE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 1
+        }
+
+        operation: field-extract "COMP.ID"
+        conversion: getFrom "AM.COMPARE.DETAIL" "SESSION.TYPE" false
+    }
+
+    field "IHDR3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Description\""
+    }
+
+    field "DESCRIPTION" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        operation: field-extract "SESSION.ID"
+        conversion: getFrom "AM.COMPARE" "DESCRIPTION" false
+    }
+
+    field "IHDR4" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 2
+        }
+
+        operation: constant "\"Started:\""
+    }
+
+    field "STARTED" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 2
+        }
+
+        operation: field-extract "SESSION.ID"
+        conversion: getFrom "AM.COMPARE" "SVC.TIME" false
+    }
+
+    field "IHDR5" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 2
+        }
+
+        operation: field-extract "SESSION.ID"
+        conversion: getFrom "AM.COMPARE" "ONLINE.COB" false
+    }
+
+    field "IHDR6" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"No.Items:\""
+    }
+
+    field "SAM.COUNTER" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 3
+        }
+
+        operation: field-extract "SESSION.ID"
+        conversion: getFrom "AM.COMPARE" "SAM.COUNTER" false
+    }
+
+    field "IHDR8" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 3
+        }
+
+        operation: constant "\"Requested By:\""
+    }
+
+    field "REQUESTED.BY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 3
+        }
+
+        operation: field-extract "SESSION.ID"
+        conversion: getFrom "AM.COMPARE" "SVC.WHO" false
+    }
+
+    field "ACT.OFFICER" {
+        label {
+            en = "Relationship Mgr"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 20 to 1 delimited by "*"
+    }
+
+    field "GROUP" {
+        label {
+            en = "Group"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "MODEL" {
+        label {
+            en = "Model"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "MATRIX" {
+        label {
+            en = "Model"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "MODEL"
+        conversion: getFrom "AM.MATRIX" "DESCRIPTION" false
+    }
+
+    field "B.MATRIX" {
+        comma-separator: false
+        operation: break-change "MATRIX"
+    }
+
+    field "X.AXIS" {
+        label {
+            en = "X Axis"
+        }
+
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "Y.AXIS" {
+        label {
+            en = "Y Axis"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "X.MEMBER" {
+        label {
+            en = "X Axis"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "Y.MEMBER" {
+        label {
+            en = "Y Axis"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "ABS.TGT" {
+        label {
+            en = "Target"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "ABS.WGT" {
+        label {
+            en = "Actual"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "EXP.VAL" {
+        label {
+            en = "Expected Value"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 17
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "GRP.PORT" {
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 17 to 1 delimited by "*"
+    }
+
+    field "B.GRP" {
+        comma-separator: false
+        operation: break-change "GRP.PORT"
+    }
+
+    field "ACT.VAL" {
+        label {
+            en = "Actual Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 19
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "TOT.ACT" {
+        display-type: "CLASS-TAMNUM" break-condition {
+            field: "B.GRP"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 19
+            line: + 1
+        }
+
+        operation: total "ACT.VAL"
+    }
+
+    field "DEVIATION" {
+        label {
+            en = "Deviation"
+        }
+
+        display-type: "CLASS-TAMNUM"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 21
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    field "DEVIATE" {
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 18 to 1 delimited by "*"
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "B.CHG.02" {
+        comma-separator: false
+        operation: break-change "GRP.PORT"
+    }
+
+    field "POS.CODE" {
+        comma-separator: false
+        operation: calc "GRP.PORT":"\"*\"":"TYPE"
+    }
+
+    field "HDR9" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Position Includes:\""
+    }
+
+    field "HDR9.02" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 4
+        }
+
+        operation: field-extract "POS.CODE"
+        conversion: call
+        jBC: "@ E.AM.GET.POS.TYPE"
+    }
+
+    field "TOT.TXT" {
+        break-condition {
+            field: "B.CHG"
+        }
+
+        comma-separator: false
+        operation: constant "\"Valuation\""
+    }
+
+}

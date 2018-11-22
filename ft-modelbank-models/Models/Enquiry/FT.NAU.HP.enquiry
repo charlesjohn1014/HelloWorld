@@ -1,0 +1,277 @@
+Enquiry "FT.NAU.HP" for "name:/FT_Contract:FUNDS.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Funds Transfer"
+    }
+
+    description {
+        en = "Unauthorised Funds Transfer"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RECORD.STATUS" {
+        NotEquals "IHLD"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        NotEquals "OC", "AC"
+    }
+
+    fixed-selection "INWARD.PAY.TYPE" {
+        Equals "\'\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.ACCT.NO" {
+            label {
+                en = "Credit Account No"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.CURRENCY" {
+            label {
+                en = "Credit Currency"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.AMOUNT" {
+            label {
+                en = "Credit Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised Funds Transfer\""
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Transaction Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "Debit A/c No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Debit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DEBIT.CURRENCY"
+    }
+
+    field "DEBIT.AMOUNT" {
+        label {
+            en = "Debit Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: application-field-name "DEBIT.AMOUNT"
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit A/c No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "CCY2" {
+        label {
+            en = "Credit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: application-field-name "CREDIT.CURRENCY"
+    }
+
+    field "CREDIT.AMOUNT" {
+        label {
+            en = "Credit Amount"
+        }
+
+        format: Currency "CCY2" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        operation: application-field-name "CREDIT.AMOUNT"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: application-field-name "INPUTTER"
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Pending Transactions\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "FUNDS.TRANSFER,AUTH.HP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        screen: "FUNDS.TRANSFER,AUTH.HP"
+    }
+
+}

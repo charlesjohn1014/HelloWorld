@@ -1,0 +1,227 @@
+Enquiry "TF.REIMBCLAIM" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Reimbursement Claim Payments"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.EXLCINAMD"
+    }
+
+    fixed-selection "LC.TYPE" {
+        Equals "REIM"
+    }
+
+    fixed-selection "ADVICE.EXPIRY.DATE" {
+        Greater "!TODAY"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "ISS.BANK.REF" {
+            label {
+                en = "LC Number"
+            }
+
+        }
+
+        AND
+
+        field "ISSUING.BANK.NO" {
+            label {
+                en = "Issuing Bank Number"
+            }
+
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "LC Currency"
+            }
+
+        }
+
+        AND
+
+        field "LC.AMOUNT" {
+            label {
+                en = "LC Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 0
+        }
+
+        operation: constant "\"Register Reimbursement Claims\""
+    }
+
+    field "ISS.BANK.REF" {
+        label {
+            en = "LC Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ISS.BANK.REF"
+    }
+
+    field "ISSUING.BANK.NO" {
+        label {
+            en = "Issuing Bank"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ISSUING.BANK.NO"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        label {
+            en = "LC Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "LIABILITY.AMT" {
+        label {
+            en = "Outsg.Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.AMT"
+    }
+
+    field "ADVICE.EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ADVICE.EXPIRY.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Reimbursement Authorities\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Register Claim"
+        }
+
+        label-field: "@ID"
+        image: "refresh.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,REIMB.CLAIMREGISTER"
+    }
+
+}

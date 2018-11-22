@@ -1,0 +1,650 @@
+Enquiry "ACCOUNT.DETAILS.SME" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 10 fixed-selection "PRODUCT.LINE" {
+        Equals "ACCOUNTS"
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "UNAUTH", "CANCELLED", "MATURED", "CLOSE"
+    }
+
+    fixed-sort: "PRODUCT.GROUP" Descending
+    fixed-sort: "PRODUCT" Descending
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "APPL.ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "ACCOUNT.DESC" {
+        label {
+            en = "Account Type"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "APPL.ID"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "NOT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"-\""
+    }
+
+    field "D.NO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"No\""
+    }
+
+    field "DL" {
+        comma-separator: false
+        operation: constant "\"~\""
+    }
+
+    field "CARD.TYPE" {
+        comma-separator: false
+        operation: field-extract "APPL.ID"
+        conversion: getFrom "CARD.ISSUE.ACCOUNT" "CARD.ISSUE.ID" false
+        conversion: extract from 1 to 4
+    }
+
+    field "MASTER.CARD" {
+        comma-separator: false
+        operation: constant "\"MAST\""
+    }
+
+    field "VISA.CARD" {
+        comma-separator: false
+        operation: constant "\"VISA\""
+    }
+
+    field "WESTERN.CARD" {
+        comma-separator: false
+        operation: constant "\"WEST\""
+    }
+
+    field "MASTER.GIF" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/master.gif\""
+    }
+
+    field "VISA.GIF" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/visa.gif\""
+    }
+
+    field "WESTERN.GIF" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/western.gif\""
+    }
+
+    field "OTHER.GIF" {
+        label {
+            en = "Card"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/other.gif\""
+    }
+
+    field "CARD1" {
+        comma-separator: false
+        operation: if "CARD.TYPE" Equals "NULL" process "NULL" "OTHER.GIF"
+    }
+
+    field "CARD2" {
+        comma-separator: false
+        operation: if "CARD.TYPE" Equals "VISA.CARD" process "VISA.GIF" "CARD1"
+    }
+
+    field "CARD3" {
+        comma-separator: false
+        operation: if "CARD.TYPE" Equals "MASTER.CARD" process "MASTER.GIF" "CARD2"
+    }
+
+    field "CARD.NUMBER" {
+        label {
+            en = "Card Number"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "APPL.ID"
+        conversion: getFrom "CARD.ISSUE.ACCOUNT" "CARD.ISSUE.ID" false
+        conversion: call
+        jBC: "@ E.DISPLAY.CARD.NO"
+    }
+
+    field "CARD.DISPLAY" {
+        label {
+            en = ".."
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "CARD.TYPE" Equals "WESTERN.CARD" process "WESTERN.GIF" "CARD3"
+    }
+
+    field "CHQ.ISS" {
+        comma-separator: false
+        operation: field-extract "APPL.ID"
+        conversion: getFrom "CHEQUE.ISSUE.ACCOUNT" "CHEQUE.ISSUE.ID" false
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/cheque.gif\""
+    }
+
+    field "CHEQUE.ISSUED" {
+        label {
+            en = ".."
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "CHQ.ISS" NotEquals "NULL" process "YES" "NULL"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ONLINE.ACTUAL.BAL" {
+        label {
+            en = "Ledger Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "APPL.ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "ONLINE.CLEARED.BAL" {
+        label {
+            en = "Cleared Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: field-extract "APPL.ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.CLEARED.BALANCE"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "LOCKED.AMOUNT" {
+        label {
+            en = "Locked Amount"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "APPL.ID"
+        conversion: call
+        jBC: "@ E.TOTAL.LOCK.AMT"
+    }
+
+    field "LCK.AMT" {
+        label {
+            en = "Locked Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: if "LOCKED.AMOUNT" Equals "ZERO" process "NULL" "LOCKED.AMOUNT"
+    }
+
+    field "AVAIL.LMT" {
+        label {
+            en = "Available Limit"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "APPL.ID"
+        conversion: call
+        jBC: "@ E.MB.AVAIL.LMT.UPD"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ROLE" {
+        label {
+            en = "Role"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.ROLE"
+        conversion: getFrom "AA.CUSTOMER.ROLE" "DESCRIPTION" false
+    }
+
+    field "CUS.PR" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER\""
+    }
+
+    field "JS.FLD" {
+        comma-separator: false
+        operation: constant "\"JS.LIABLE\""
+    }
+
+    field "R.INPUT" {
+        comma-separator: false
+        operation: calc "ARRANGEMENT":"DL":"CUS.PR":"DL":"NULL":"DL":"NULL":"DL":"JS.FLD"
+    }
+
+    field "JS.FLAG" {
+        label {
+            en = "JS Flag"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "R.INPUT"
+        conversion: call
+        jBC: "@ E.AA.CONV.GET.PROPERTY.RECORD"
+    }
+
+    field "FLAG.JS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "JS.FLAG"
+        conversion: repeat-when-null
+    }
+
+    field "LMT.CUS" {
+        label {
+            en = "Limit Cust"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.ROLE"
+        conversion: getFrom "AA.CUSTOMER.ROLE" "LIMIT.CUSTOMER" false
+    }
+
+    field "C.YES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"YES\""
+    }
+
+    field "D.YES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Yes\""
+    }
+
+    field "JS.CHK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LMT.CUS" Equals "C.YES" process "D.YES" "D.NO"
+    }
+
+    field "CHK.LMT.CUS" {
+        label {
+            en = "Jointly Liable"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: if "FLAG.JS" NotEquals "NULL" process "JS.CHK" "NOT"
+    }
+
+    field "STOP.PAYMENT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "APPL.ID"
+        conversion: getFrom "PAYMENT.STOP" "CURRENCY" false
+    }
+
+    field "RED.ALERT" {
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/failed.gif\""
+    }
+
+    field "ALERT.DISP" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        no-header: true
+        operation: if "STOP.PAYMENT" NotEquals "NULL" process "RED.ALERT" "NULL"
+    }
+
+    field "RED.R" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/restriction.gif\""
+    }
+
+    field "POSTING.RESTRICT" {
+        comma-separator: false
+        operation: field-extract "APPL.ID"
+        conversion: getFrom "ACCOUNT" "POSTING.RESTRICT" false
+    }
+
+    field "POST.REST" {
+        display-type: "IMAGE"
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        no-header: true
+        operation: if "POSTING.RESTRICT" NotEquals "NULL" process "RED.R" "NULL"
+    }
+
+    field "LOCK.AMT" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/hold.gif\""
+    }
+
+    field "LOCK.AMT.CHECK" {
+        display-type: "IMAGE"
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        no-header: true
+        operation: if "LOCKED.AMOUNT" Greater "ZERO" process "LOCK.AMT" "NULL"
+    }
+
+    field "DORM.IMAGE" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/download.gif\""
+    }
+
+    field "ARR.STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "ARR.DORMANCY.STATUS" false
+    }
+
+    field "DORMANCY.CHK" {
+        display-type: "IMAGE"
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        no-header: true
+        operation: if "ARR.STATUS" NotEquals "NULL" process "DORM.IMAGE" "NULL"
+    }
+
+    field "ARRANGEMENT.ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "F.ARR.VIEW" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.AR \""
+    }
+
+    field "AA.VIEW" {
+        comma-separator: false
+        operation: calc "F.ARR.VIEW":"ARRANGEMENT.ID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Accounts for this Customer\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Account Overview"
+        }
+
+        label-field: "APPL.ID"
+        criteria: "CURRENT.ACCOUNT" > "APPL.ID"
+        from-field: "AA.VIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Cash and Cheque"
+        }
+
+        label-field: "APPL.ID"
+        criteria: "CURRENT.ACCOUNT" > "APPL.ID"
+        composite-screen: "TFS.CASH"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Multi Till Operations - Lcy"
+        }
+
+        label-field: "APPL.ID"
+        criteria: "CURRENT.ACCOUNT" > "APPL.ID"
+        composite-screen: "TFS.INPUT.LCY"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Multi Till Operations"
+        }
+
+        label-field: "APPL.ID"
+        criteria: "CURRENT.ACCOUNT" > "APPL.ID"
+        composite-screen: "TFS.INPUT"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Issue Draft"
+        }
+
+        label-field: "APPL.ID"
+        criteria: "CURRENT.ACCOUNT" > "APPL.ID"
+        composite-screen: "CHOOSE.DRAFT.SCV"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Payments / Transfers"
+        }
+
+        label-field: "APPL.ID"
+        criteria: "CURRENT.ACCOUNT" > "APPL.ID"
+        enquiry: "OUTWARD.REMITTANCES.SCV"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Add Joint Holder"
+        }
+
+        label-field: "APPL.ID"
+        criteria: "CURRENT.ACCOUNT" > "APPL.ID"
+        pw-process: "ACCOUNT.ADD.JOINT"
+    }
+
+    drilldown "8" {
+        description {
+            en = "Reset Inactive Account"
+        }
+
+        label-field: "APPL.ID" parameters {
+            function:  Input
+            field: "APPL.ID"
+        }
+
+        screen: "ACCT.INACTIVE.RESET,INPUT.SCV"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.BREADCRUMBS"
+}

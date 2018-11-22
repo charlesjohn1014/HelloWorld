@@ -1,0 +1,420 @@
+Enquiry "LC.CRM.OUTSTANDING" for "name:/EB_ModelBank:NOFILE.PW.CRM.OUTSTANDING#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Work List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 6 fixed-selection "Y.DATA" {
+        NotEquals "\'\'"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Work List\""
+    }
+
+    field "DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "DDATE" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: julian
+    }
+
+    field "TYPE" {
+        label {
+            en = "Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "CLIENT" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PW.CONST" {
+        comma-separator: false
+        operation: constant "\"PA\""
+    }
+
+    field "CHK.PRE" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: extract from 1 to 2
+    }
+
+    field "TICKLER" {
+        comma-separator: false
+        operation: constant "\"TK\""
+    }
+
+    field "SENDER.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "EB.TICKLER" "SENDER.ID" false
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "PW.TEXT" {
+        comma-separator: false
+        operation: constant "\"Process Workflow\""
+    }
+
+    field "CHECK.PW" {
+        comma-separator: false
+        operation: if "CHK.PRE" Equals "PW.CONST" process "PW.TEXT" "CLIENT"
+    }
+
+    field "CLIENT.NAME" {
+        label {
+            en = "Client/Sender Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "CHK.PRE" Equals "TICKLER" process "SENDER.ID" "CHECK.PW"
+    }
+
+    field "PROCESS.PW" {
+        comma-separator: false
+        operation: field-extract "TYPE"
+        conversion: getFrom "PW.PROCESS" "PROCESS.DEFINITION" false
+        conversion: getFrom "PW.PROCESS.DEFINITION" "DESCRIPTION" false
+    }
+
+    field "PW.ACTIVITY" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "PW.ACT.DESC" {
+        comma-separator: false
+        operation: field-extract "PW.ACTIVITY"
+        conversion: getFrom "PW.ACTIVITY" "SHORT.DESC" false
+    }
+
+    field "PROCESS.CR" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "CR.CONTACT.LOG" "CONTACT.DESC" false
+    }
+
+    field "TICKLER.DESC" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "EB.TICKLER" "TICKLER.TXT" false
+    }
+
+    field "CHECK.CR" {
+        comma-separator: false
+        operation: if "CHK.PRE" Equals "TICKLER" process "TICKLER.DESC" "PROCESS.CR"
+    }
+
+    field "PROCESS" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "CHK.PRE" Equals "PW.CONST" process "PW.ACT.DESC" "CHECK.CR"
+    }
+
+    field "OWNER" {
+        label {
+            en = "Owner"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "DEPT" {
+        label {
+            en = "Department"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "REF.ID" {
+        label {
+            en = "Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TARGET" {
+        comma-separator: false
+        operation: field-extract "REF.ID"
+        conversion: getFrom "PW.ACTIVITY.TXN" "TARGET" false
+    }
+
+    field "TF.REF" {
+        comma-separator: false
+        operation: field-extract "TARGET"
+    }
+
+    field "TF.TXN" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comma-separator: false
+        operation: field-extract "TF.REF"
+        conversion: extract from 3 to 1 delimited by " "
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "F3" {
+        comma-separator: false
+        operation: constant "\"F3\""
+    }
+
+    field "TF.DIPLAY" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: if "TF.TXN" Equals "F3" process "NULL" "TF.TXN"
+    }
+
+    field "PW.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "PW.DRILL1" {
+        comma-separator: false
+        operation: constant "\"PW.ACTIVITY.TXN,REASSIGN\""
+    }
+
+    field "CR.DRILL1" {
+        comma-separator: false
+        operation: constant "\"CR.CONTACT.LOG,REASSIGN.CORP\""
+    }
+
+    field "PW.CONST.02" {
+        comma-separator: false
+        operation: constant "\"PA\""
+    }
+
+    field "PROCESS.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "PW.ACTIVITY.TXN" "PROCESS" false
+    }
+
+    field "CHK.APPL1" {
+        comma-separator: false
+        operation: if "CHK.PRE" Equals "PW.CONST" process "PW.DRILL1" "CR.DRILL1"
+    }
+
+    field "PW.DRILL3" {
+        comma-separator: false
+        operation: constant "\"COS PW.TODOTF\""
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "PW.DRILL4" {
+        comma-separator: false
+        operation: calc "PW.DRILL3":"SPACE"
+    }
+
+    field "PW.DRILL5" {
+        comma-separator: false
+        operation: calc "PW.DRILL4":"PROCESS.ID"
+    }
+
+    field "PW.DRILL2" {
+        comma-separator: false
+        operation: field-extract "PW.DRILL5"
+    }
+
+    field "CR.DRILL3" {
+        comma-separator: false
+        operation: constant "\"CR.CONTACT.LOG,UPDATE.CORP I \""
+    }
+
+    field "CR.DRILL4" {
+        comma-separator: false
+        operation: calc "CR.DRILL3":"SPACE"
+    }
+
+    field "CR.DRILL2" {
+        comma-separator: false
+        operation: calc "CR.DRILL4":"REF.ID"
+    }
+
+    field "CHK.APPL2" {
+        comma-separator: false
+        operation: if "CHK.PRE" Equals "PW.CONST" process "PW.DRILL2" "CR.DRILL2"
+    }
+
+    field "RED.FLAG" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/redlight.gif\""
+    }
+
+    field "GREEN.FLAG" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/greenlight.gif\""
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: today
+        conversion: julian
+    }
+
+    field "DAYS.OD" {
+        comma-separator: false
+        operation: calc "DATE" - "TODAY"
+    }
+
+    field "FLAG" {
+        label {
+            en = "."
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "DDATE" LessThan "TODAY" process "RED.FLAG" "GREEN.FLAG"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task Pending\""
+    }
+
+    tool AM.ENQ.DETAIL {
+        label {
+            en = "New Task"
+        }
+
+        command: "docommand(\"CR.CONTACT.LOG,NEW\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Action"
+        }
+
+        label-field: "REF.ID"
+        image: "edit.gif"
+        from-field: "CHK.APPL2"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reassign"
+        }
+
+        label-field: "REF.ID"
+        image: "assign.gif" parameters {
+            function:  Input
+            field: "REF.ID"
+        }
+
+        from-field: "CHK.APPL1"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES" ; "ALLDATA"
+}

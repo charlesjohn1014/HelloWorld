@@ -1,0 +1,127 @@
+Enquiry "TO.DO.SUMMARY" for "name:/EB_ModelBank:NOFILE.PW.CRM.OUTSTANDING#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Work List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 1
+    end-line: 19 fixed-selection "Y.DATA" {
+        NotEquals "\'\'"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"To-Do Summary:\""
+    }
+
+    field "Y.DATA" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "REF.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TARGET" {
+        comma-separator: false
+        operation: field-extract "REF.ID"
+        conversion: getFrom "PW.ACTIVITY.TXN" "TARGET" false
+    }
+
+    field "TF.REF" {
+        comma-separator: false
+        operation: field-extract "TARGET"
+    }
+
+    field "TF.TXN" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comma-separator: false
+        operation: field-extract "TF.REF"
+        conversion: extract from 3 to 1 delimited by " "
+    }
+
+    field "TEXT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 0
+        }
+
+        operation: constant "\"Diary Events :\""
+    }
+
+    field "F6" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 0
+        }
+
+        operation: field-extract "Y.DATA"
+        conversion: extract from 3 to 1 delimited by "~"
+    }
+
+    field "TEXT2" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 0
+        }
+
+        operation: constant "\"; Queue Items:\""
+    }
+
+    field "F7" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        operation: field-extract "Y.DATA"
+        conversion: extract from 2 to 1 delimited by "~"
+    }
+
+    field "ZERO.RECS" {
+        label {
+            en = "Zero Recs display"
+        }
+
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"To-Do Summary: Diary Events : 0; Queue Items: 0\""
+    }
+
+    attributes: "NO.TOOLBAR"
+}

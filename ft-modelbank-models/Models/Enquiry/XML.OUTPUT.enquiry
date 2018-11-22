@@ -1,0 +1,142 @@
+Enquiry "XML.OUTPUT" for "name:/IX_XmlStmtPrinting:NOFILE.XML.OUTPUT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "XML Output Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "ACCOUNT.NO" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "STATEMENT.DATE" {
+            mandatory: true
+            operands: Equals, LessThan, Greater, GreaterOrEquals, LessOrEquals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 45
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "DRILL.ID" {
+        label {
+            en = "XML Id"
+        }
+
+        format: User
+        length: 45
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "ACNO" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Account No:\""
+    }
+
+    field "ACCT" {
+        label {
+            en = "Account No"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 2
+        }
+
+        operation: selection "ACCOUNT.NO"
+    }
+
+    field "DATE" {
+        label {
+            en = "Statement Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"XML Output Details\""
+    }
+
+    field "DRILL.APPL" {
+        comma-separator: false
+        operation: constant "\"XML.OUTPUT.MSG\""
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Statement records to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View XML"
+        }
+
+        label-field: "DRILL.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "DRILL.ID"
+        }
+
+        from-field: "DRILL.APPL"
+    }
+
+}

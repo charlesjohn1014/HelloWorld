@@ -1,0 +1,529 @@
+Enquiry "SC.PARENT.CHILD.TXN" for "name:/SC_ModelBank:NOFILE.SC.PARENT.CHILD#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Parent Child Transactions"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    full-description {
+        en = "Parent Child Transactions"
+    }
+
+    description {
+        en = "Parent Child Transactions"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "Y.ARR" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "PARENT.REF" {
+            label {
+                en = "Parent Reference"
+            }
+
+            operands: Contains, Equals
+        }
+
+        None
+    }
+
+    field "Y.TRADE" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "Y.TRADE"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Type"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "SECURITY.NUM" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SECURITY.NOM" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "SECURITY.NUM"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    field "PARENT" {
+        label {
+            en = "Parent Order"
+        }
+
+        display-type: "CLASS-BOLD"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "PARENT.REFERENCE" {
+        label {
+            en = "Common Ref"
+        }
+
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "BC" {
+        comma-separator: false
+        operation: break-change "PARENT.REFERENCE"
+    }
+
+    field "ORDER.NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 190
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "MINUS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"-1\""
+    }
+
+    field "CHILD.NOMINAL" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "MINUS" * "ORDER.NOMINAL"
+    }
+
+    field "CALC.NOMINAL" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PARENT" Equals "\"YES\"" process "ORDER.NOMINAL" "CHILD.NOMINAL"
+    }
+
+    field "SECURITY.ACCNT" {
+        label {
+            en = "Cust Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 211
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "SECURITY.ACC" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 225
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "SECURITY.ACCNT"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "CUST.PRICE" {
+        label {
+            en = "Cust Price"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 240
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "DEPO" {
+        label {
+            en = "Depository"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 260
+        }
+
+        operation: field-number 0
+        conversion: extract from 17 to 1 delimited by "*"
+    }
+
+    field "CU.DEPO" {
+        label {
+            en = "Cu Depository"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 280
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 18 to 1 delimited by "*"
+    }
+
+    field "BROKER" {
+        label {
+            en = "Broker"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 300
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "BROKER.PRICE" {
+        label {
+            en = "Broker Price"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 320
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "APP" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "VERSION" {
+        comma-separator: false
+        operation: constant "\"INPUT\""
+    }
+
+    field "COMMA" {
+        comma-separator: false
+        operation: constant "\",\""
+    }
+
+    field "Y.APP" {
+        comma-separator: false
+        operation: calc "APP":"COMMA":"VERSION"
+    }
+
+    field "TOT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User break-condition {
+            field: "BC"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 90
+            line: + 1
+        }
+
+        operation: constant "\"Net Balance\""
+    }
+
+    field "TOT1" {
+        display-type: "CLASS-BOLD.RED" break-condition {
+            field: "BC"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 190
+            line: + 1
+        }
+
+        operation: total "CALC.NOMINAL"
+    }
+
+    field "TOT2" {
+        comma-separator: false
+        operation: constant "\"Not Balanced\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TOT3" {
+        display-type: "CLASS-BOLD.RED" break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        position {
+            column: 211
+            line: + 1
+        }
+
+        operation: if "TOT1" NotEquals "\"0\"" process "TOT2" "NULL"
+    }
+
+    field "R.STAT" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 340
+        }
+
+        operation: field-number 0
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "STATUS1" {
+        comma-separator: false
+        operation: constant "\"IHLD\""
+    }
+
+    field "STATUS2" {
+        comma-separator: false
+        operation: constant "\"INAU\""
+    }
+
+    field "F.VAL.1" {
+        comma-separator: false
+        operation: constant "\" D \""
+    }
+
+    field "F.VAL.2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\" R \""
+    }
+
+    field "DDOWN1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "R.STAT" Equals "STATUS2" process "F.VAL.1" "F.VAL.2"
+    }
+
+    field "DDOWN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "R.STAT" Equals "STATUS1" process "F.VAL.1" "DDOWN1"
+    }
+
+    field "Y.APP2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "Y.APP":"DDOWN":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "Y.APP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse\\Delete"
+        }
+
+        label-field: "@ID"
+        image: "txnreverse.gif"
+        from-field: "Y.APP2"
+    }
+
+    drilldown "3" {
+        description {
+            en = "New"
+        }
+
+        label-field: "@ID"
+        image: "new.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        from-field: "Y.APP"
+    }
+
+    attributes: "ALLDATA"
+}

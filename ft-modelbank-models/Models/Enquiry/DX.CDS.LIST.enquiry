@@ -1,0 +1,358 @@
+Enquiry "DX.CDS.LIST" for "name:/DX_Trade:DX.TRADE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Active CDS Trades"
+    }
+
+    description {
+        en = "Active CDS Trades"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "UNDERLYING.SECURITY" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "TRADE.STATUS" {
+        Equals "ACTIVE"
+    }
+
+    fixed-sort: "PRI.SEC.ACC" Null
+    fixed-sort: "UNDERLYING.SECURITY" Null
+    fixed-sort: "OPTION.TYPE" Null
+    fixed-sort: "MATURITY.DATE" Null
+    fixed-sort: "PRI.BUY.SELL" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.CODE" {
+            label {
+                en = "Contract Code"
+            }
+
+        }
+
+        AND
+
+        field "PRI.CUST.NO" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        AND
+
+        field "UNDERLYING.SECURITY" {
+            label {
+                en = "Security No"
+            }
+
+        }
+
+        None
+    }
+
+    field "TRA.ID" {
+        label {
+            en = "Txn Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Active CDS Trades\""
+    }
+
+    field "PRI.CUST" {
+        label {
+            en = "Customer"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.CUST.NO"
+    }
+
+    field "PRI.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: field-extract "PRI.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CONTRACT.CODE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CODE"
+    }
+
+    field "CUR" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.CODE"
+        conversion: getFrom "DX.CONTRACT.MASTER" "CURRENCY" false
+    }
+
+    field "PRI.BUY.SELL" {
+        label {
+            en = "Buy/Sell"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRI.BUY.SELL"
+    }
+
+    field "SEC.SEC.NO" {
+        label {
+            en = "Bank Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SEC.SEC.ACC"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Bond Id"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "UNDERLYING.SECURITY"
+    }
+
+    field "BOND.NAME" {
+        label {
+            en = "Bond Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "AS.CURRENCY" {
+        label {
+            en = "Bond Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AS.CURRENCY"
+    }
+
+    field "AS.PRINCIPAL" {
+        label {
+            en = "Bond Value"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AS.PRINCIPAL"
+    }
+
+    field "INT.RATE" {
+        label {
+            en = "Bond Interest"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 12
+        }
+
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "INTEREST.RATE" false
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Bond Maturity"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "MATURITY.DATE" false
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        hidden: true
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 0 delimited by "_"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No CDS Trades available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "TRA.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "TRA.ID"
+        }
+
+        screen: "DX.TRADE,INPUT.CDS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Bond Details"
+        }
+
+        label-field: "SEC.NO"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "SEC.NO"
+        }
+
+        screen: "SECURITY.MASTER,BD"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Messages"
+        }
+
+        label-field: "SEC.NO"
+        image: "details.gif"
+        criteria: "@ID" Contains "TRA.ID"
+        enquiry: "DX.MESSAGES"
+    }
+
+}

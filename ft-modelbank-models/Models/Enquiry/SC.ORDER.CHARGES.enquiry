@@ -1,0 +1,334 @@
+Enquiry "SC.ORDER.CHARGES" for "name:/SC_SctOrderCapture:SEC.OPEN.ORDER#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "List of Fund Orders"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    description {
+        en = "List of Fund Orders"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "MUTUAL.FUND" {
+        Equals "Y"
+    }
+
+    custom-selection {
+
+        field "ORDER.NUMBER" {
+            label {
+                en = "Order Number"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security Number"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Fund Orders\""
+    }
+
+    field "TRANS.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Transaction Code"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "3" false
+    }
+
+    field "CUST.NUMBER" {
+        label {
+            en = "Customer No"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.NUMBER"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "CUST.NUMBER"
+        conversion: getFrom "CUSTOMER" "2" false
+    }
+
+    field "SECURITY.ACCNT" {
+        label {
+            en = "Portfolio No"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.ACCNT"
+    }
+
+    field "CU.ORDER.AMOUNT" {
+        label {
+            en = "Order Amount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CU.ORDER.AMOUNT"
+    }
+
+    field "CU.CHARGE.DET" {
+        label {
+            en = "Charge Detail"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TRANS.REF"
+        conversion: call
+        jBC: "@ E.MB.SC.GET.MULTI.CHARGE.DATA"
+    }
+
+    field "CU.CHARGE.DET.BRKUP" {
+        label {
+            en = "Charge Detail Brkup"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CU.CHARGE.DET"
+        conversion: call
+        jBC: "@ E.MB.SC.SPLIT.MULTI.CHARGE.DATA"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "CU.CHARGE.TAX.TYPE" {
+        label {
+            en = "Charge/Tax Type"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CU.CHARGE.DET.BRKUP"
+        conversion: extract from 1 to 1 delimited by "|"
+    }
+
+    field "CU.CHARGE.TAX.DESC" {
+        label {
+            en = "Charge/Tax Desc"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CU.CHARGE.DET.BRKUP"
+        conversion: extract from 2 to 1 delimited by "|"
+    }
+
+    field "CU.CHARGE.TAX.AMT" {
+        label {
+            en = "Charge/Tax Amount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CU.CHARGE.DET.BRKUP"
+        conversion: extract from 3 to 1 delimited by "|"
+    }
+
+    field "DRILL.VERSION" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CU.CHARGE.DET.BRKUP"
+        conversion: extract from 4 to 1 delimited by "|"
+    }
+
+    field "DRILL.FIELD" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CU.CHARGE.DET.BRKUP"
+        conversion: extract from 5 to 1 delimited by "|"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No results found for the selected criteria\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Charge/Tax Detail"
+        }
+
+        label-field: "CU.CHARGE.TAX.DESC"
+        image: "view.gif" parameters {
+            function:  See
+            field: "DRILL.FIELD"
+        }
+
+        from-field: "DRILL.VERSION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Order"
+        }
+
+        label-field: "TRANS.REF"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "TRANS.REF"
+        }
+
+        screen: "SEC.OPEN.ORDER,VIEW"
+    }
+
+}

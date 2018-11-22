@@ -1,0 +1,337 @@
+Enquiry "SC.EXECUTED.ORDERS" for "name:/SC_SctOrderExecution:SC.EXE.SEC.ORDERS$HIS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Executed Orders"
+    }
+
+    description {
+        en = "Executed Orders"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 10 fixed-selection "CU.INCOME.ACC" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security No"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.ACCT" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        AND
+
+        field "DEPOSITORY" {
+            label {
+                en = "Depository"
+            }
+
+        }
+
+        None
+    }
+
+    field "ORDER.NUMBER" {
+        label {
+            en = "Order Id"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.NUMBER"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Executed Orders\""
+    }
+
+    field "PORT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Portfolio No:\""
+    }
+
+    field "SECURITY.ACCT" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.ACCT"
+    }
+
+    field "PORT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: field-extract "SECURITY.ACCT"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "ORDER.TYPE" {
+        label {
+            en = "Order Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.TYPE"
+        conversion: oconv "MCT"
+    }
+
+    field "CU.DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CU.DEPOSITORY"
+    }
+
+    field "DEPO.NAME" {
+        label {
+            en = "Depo Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "CU.DEPOSITORY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CUST.NOMINAL" {
+        label {
+            en = "No Nominal"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.NOMINAL"
+    }
+
+    field "REF.NO" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SEC.TRADE.ID"
+    }
+
+    field "CUST.ACC.NO" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.ACC.NO"
+    }
+
+    field "B" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "NOEXE" {
+        comma-separator: false
+        operation: constant "\"Not Executed\""
+    }
+
+    field "REF" {
+        label {
+            en = "Trade Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: if "REF.NO" Equals "B" process "NOEXE" "REF.NO"
+    }
+
+    field "CU.INCOME.ACC" {
+        label {
+            en = "Segre Acct"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CU.INCOME.ACC"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Executed Transactions not found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Order"
+        }
+
+        label-field: "CUST.ACC.NO" parameters {
+            function:  See
+            field: "ORDER.NUMBER"
+        }
+
+        screen: "SEC.OPEN.ORDER,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Trade"
+        }
+
+        label-field: "CUST.ACC.NO" parameters {
+            function:  See
+            field: "REF.NO"
+        }
+
+        screen: "SEC.TRADE,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Capital Acct Fwd Entries"
+        }
+
+        label-field: "CUST.ACC.NO"
+        criteria: "ACCOUNT.ID" Equals "CUST.ACC.NO"
+        enquiry: "NOSTRO.FWD.BAL"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Income Acct Fwd Entries"
+        }
+
+        label-field: "CUST.ACC.NO"
+        criteria: "ACCOUNT.ID" Equals "CU.INCOME.ACC"
+        enquiry: "NOSTRO.FWD.BAL"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

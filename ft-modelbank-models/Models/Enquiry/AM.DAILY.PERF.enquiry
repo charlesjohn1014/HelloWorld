@@ -1,0 +1,455 @@
+Enquiry "AM.DAILY.PERF" for "name:/AM_ModelBank:NOFILE.AM.PERF.METHOD#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Perform under daily valuation group", fr = "according to reference currency of", de =
+        "group of portfolios or according to", es = "currency entered"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 50
+    build-routines {
+        jBC: "E.AM.CHECK.ENQ.PERF"
+    }
+
+    custom-selection {
+
+        field "GRP.NO" {
+            label {
+                en = "Grp Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+            operands: GreaterOrEquals
+        }
+
+        AND
+
+        field "END.DATE" {
+            mandatory: true
+            label {
+                en = "End Date"
+            }
+
+            operands: LessOrEquals
+        }
+
+        AND
+
+        field "REF.CCY" {
+            label {
+                en = "Ccy to Report in"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Performance \""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 0
+        }
+
+        operation: constant "\" of Group Under Daily Valuation\""
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Valuation Ccy:\""
+    }
+
+    field "HDR4" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Group:\""
+    }
+
+    field "HDR4A" {
+        label {
+            en = "Group:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 2
+        }
+
+        operation: selection "GRP.NO"
+    }
+
+    field "HDR5" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Period From:\""
+    }
+
+    field "HDR11" {
+        label {
+            en = "Period From:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 19
+            line: 4
+        }
+
+        operation: selection "START.DATE"
+    }
+
+    field "HDR10" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 24
+            line: 4
+        }
+
+        operation: constant "\"Period To:\""
+    }
+
+    field "HDR11.02" {
+        label {
+            en = "Period To:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 90
+            line: 4
+        }
+
+        operation: selection "END.DATE"
+    }
+
+    field "SPACE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "@ID" {
+        format: User
+        length: 3
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCNO" {
+        display-type: "CLASS-ENQ.H.ID"
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "RECCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: field-extract "ACCNO"
+        conversion: getFrom "AM.GROUP.PORT" "VAL.CURRENCY" false
+    }
+
+    field "REF" {
+        comma-separator: false
+        operation: selection "REF.CCY"
+    }
+
+    field "CONV.CCY" {
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "RECCY"
+    }
+
+    field "P.CCY" {
+        comma-separator: false
+        operation: field-extract "REF"
+    }
+
+    field "P.CCY2" {
+        comma-separator: false
+        operation: field-extract "CONV.CCY"
+    }
+
+    field "P.CCY3" {
+        label {
+            en = "Valuation Ccy:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 3
+        }
+
+        operation: if "P.CCY" NotEquals "NULL" process "P.CCY" "P.CCY2"
+    }
+
+    field "ACC.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 19
+            line: 1
+        }
+
+        operation: field-extract "ACCNO"
+        conversion: extract from 1 to 1
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "DAT" {
+        label {
+            en = "Date"
+        }
+
+        format: User
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "INFLOW" {
+        label {
+            en = "Contribution"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "OUTFLOW" {
+        label {
+            en = "Withdrawals"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "NETFLOW" {
+        label {
+            en = "Netflow"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "COMPVAL" {
+        label {
+            en = "Compval"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 74
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "MHLY" {
+        label {
+            en = "Monthly"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 94
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "QTLY" {
+        label {
+            en = "Quarterly"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 107
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "YRLY" {
+        label {
+            en = "Yearly"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "FT.LN1" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "FT.LN2" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    attributes: "PAGE"
+}

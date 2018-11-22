@@ -1,0 +1,265 @@
+Enquiry "CARD.ISSUES" for "name:/ST_Cards:CARD.ISSUE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Card Issued"
+    }
+
+    description {
+        en = "Cards Issued"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "ACCOUNT" Null
+    custom-selection {
+
+        field "ACCOUNT" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "ISSUE.DATE" {
+            label {
+                en = "Issue Date"
+            }
+
+        }
+
+        AND
+
+        field "EXPIRY.DATE" {
+            label {
+                en = "Expiry Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 21
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CARD.TYPE" {
+        label {
+            en = "Card Type"
+        }
+
+        format: User
+        length: 27
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "@ID.02" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        format: User
+        length: 27
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.DISPLAY.CARD.NO"
+    }
+
+    field "CARD.ISSUE" {
+        length: 21
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"List of Cards Issued\""
+    }
+
+    field "ACCOUNT" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT"
+    }
+
+    field "NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NAME"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Card Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CARD.TYPE"
+        conversion: getFrom "CARD.TYPE" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 102
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ISSUE.DATE" {
+        label {
+            en = "Issue Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ISSUE.DATE"
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 116
+        }
+
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "CANCELLATION.DT" {
+        label {
+            en = "Cancellation Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 117
+        }
+
+        hidden: true
+        operation: application-field-name "CANCELLATION.DATE"
+    }
+
+    field "CANCEL.REASON" {
+        label {
+            en = "Cancellation Reason"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 128
+        }
+
+        hidden: true
+        operation: application-field-name "CAN.REASON"
+        conversion: getFrom "PAYMENT.STOP.TYPE" "DESCRIPTION" false
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Card has been issued\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CARD.TYPE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CARD.ISSUE"
+        }
+
+        screen: "CARD.ISSUE,INPUT"
+    }
+
+}

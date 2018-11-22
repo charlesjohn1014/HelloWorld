@@ -1,0 +1,367 @@
+Enquiry "LIM.CUST.USD" for "name:/LI_Config:LIMIT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "LIMITS - CUSTOMER DETAILS", fr = "LIMITES - DETAILS CLIENTS"
+        }
+
+        column: 30
+        line: 0
+    }
+
+    header {
+        label {
+            en = "LIABILITY", fr = "GARANTIE"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "000\'S OF USD", fr = "EN MILLIERS DE USD"
+        }
+
+        column: 63
+        line: 1
+    }
+
+    header {
+        label {
+            en = "LIMIT.REF/CUSTOMER", fr = " REF LIMITE/CLIENT"
+        }
+
+        column: 4
+        line: 2
+    }
+
+    header {
+        label {
+            en = "LIMIT.AMT.", fr = "MONT LIMITE"
+        }
+
+        column: 38
+        line: 2
+    }
+
+    header {
+        label {
+            en = "OUTST.AMT.", fr = "MONT DU"
+        }
+
+        column: 51
+        line: 2
+    }
+
+    header {
+        label {
+            en = "AVAIL.<EXC>", fr = "DISPO.<EXC>"
+        }
+
+        column: 63
+        line: 2
+    }
+
+    header {
+        label {
+            en = "F.", fr = "F."
+        }
+
+        column: 78
+        line: 2
+    }
+
+    description {
+        en = "LIM.CUST.USD"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "LINE.ID" {
+            label {
+                en = "Line ID"
+            }
+
+        }
+
+        AND
+
+        field "REF.NO" {
+            label {
+                en = "Reference No."
+            }
+
+        }
+
+        AND
+
+        field "CUST.NO" {
+            label {
+                en = "Customer Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "L.NL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ID" {
+        length: 32
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LIAB" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "REF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "ID.SER" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 3 to 0 delimited by "."
+    }
+
+    field "PREF" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "REF"
+        conversion: call
+        jBC: "@ LIMIT.FIND.REF"
+        conversion: getFrom "LIMIT.REFERENCE" "SHORT.NAME" true
+    }
+
+    field "B.REF" {
+        comma-separator: false
+        operation: break-change "REF"
+    }
+
+    field "CUST" {
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "."
+    }
+
+    field "P.CUST" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "P.NAME" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "CUST" Equals "L.NL" process "PREF" "P.CUST"
+    }
+
+    field "COMM.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ONLINE.LIMIT"
+        conversion: call
+        jBC: "@ LIM.COMM.USD"
+    }
+
+    field "OS.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TOTAL.OS"
+        conversion: call
+        jBC: "@ LIM.CALC.OS.USD"
+    }
+
+    field "AVAIL" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AVAIL.AMT"
+        conversion: call
+        jBC: "@ LIMIT.CALC.AVAIL"
+    }
+
+    field "P.COMM" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 37
+        }
+
+        processing-mode: Multi
+        operation: field-extract "COMM.AMT"
+        conversion: oconv "MD0,"
+    }
+
+    field "POS.AMT" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: field-extract "OS.AMT"
+        conversion: oconv "MD0,"
+    }
+
+    field "P.AVAIL" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 63
+        }
+
+        processing-mode: Multi
+        operation: field-extract "AVAIL"
+        conversion: oconv "MD0,<"
+    }
+
+    field "OD.COND.ACCOUNT" {
+        label {
+            en = "OD Condition Account"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OD.COND.ACCOUNT"
+    }
+
+    field "P.LIAB" {
+        break-condition {
+            break: Page
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 1
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 0 delimited by "."
+    }
+
+    field "N.LIAB" {
+        break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 1
+        }
+
+        operation: field-extract "P.LIAB"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "B.LIAB" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "LIAB"
+    }
+
+    field "L.TYP" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FX.OR.TIME.BAND"
+    }
+
+    field "FX.TY" {
+        comma-separator: false
+        operation: constant "\"FX\""
+    }
+
+    field "FX.EN" {
+        comma-separator: false
+        operation: constant "\"LIM.FX1\""
+    }
+
+    field "OT.EN" {
+        comma-separator: false
+        operation: constant "\"LIM.TXN\""
+    }
+
+    field "N.ENQ" {
+        comma-separator: false
+        operation: if "L.TYP" Equals "FX.TY" process "FX.EN" "OT.EN"
+    }
+
+    field "C.ALL" {
+        comma-separator: false
+        operation: constant "\"ALL\""
+    }
+
+    field "N.CUST" {
+        comma-separator: false
+        operation: if "CUST" Equals "L.NL" process "C.ALL" "CUST"
+    }
+
+    drilldown "1" {
+        label-field: "CUST"
+        image: "view.gif"
+        criteria: "LIAB.NO" Equals "LIAB"
+        criteria: "REF.NO" Equals "REF"
+        criteria: "SER.NO" Equals "ID.SER"
+        criteria: "CUST.NO" Equals "N.CUST"
+        from-field: "N.ENQ"
+    }
+
+}

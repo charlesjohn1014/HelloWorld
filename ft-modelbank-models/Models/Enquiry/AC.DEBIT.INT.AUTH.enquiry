@@ -1,0 +1,214 @@
+Enquiry "AC.DEBIT.INT.AUTH" for "name:/IC_Config:ACCOUNT.DEBIT.INT$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Debit Account Interest"
+    }
+
+    description {
+        en = "Unauthorised Debit Account Interest"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RECORD.STATUS" {
+        Equals "INAU"
+    }
+
+    field "@ID" {
+        label {
+            en = "Id"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised Account Debit \""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 48
+            line: 0
+        }
+
+        operation: constant "\" Interest\""
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ACCT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "EFF.DATE" {
+        label {
+            en = "Effective Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "DR.BALANCE.TYPE" {
+        label {
+            en = "Debit Bal Type"
+        }
+
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DR.BALANCE.TYPE"
+    }
+
+    field "DR.LIMIT.AMT" {
+        label {
+            en = "Debit Limit Amount"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DR.LIMIT.AMT"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No Unauthorised Debit Interest records\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "ACCOUNT.NO"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.DEBIT.INT,DR.MAIN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "ACCOUNT.NO"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.DEBIT.INT,DR.MAIN"
+    }
+
+}

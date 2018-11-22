@@ -1,0 +1,363 @@
+Enquiry "ONE.STOP.ITEMS.FOR.CUSTOMER" for "name:/PW_Foundation:PW.ACTIVITY.TXN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of Customer Accounts/Services"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.MB.BUILD.ONESTOP.CUSTOMER"
+    }
+
+    fixed-selection "PW.ACTIVITY.STATUS" {
+        NotEquals "\'PENDING\'"
+    }
+
+    fixed-selection "TRANSACTION.REF" {
+        NotMatches "OSA..."
+    }
+
+    fixed-selection "ACTIVITY" {
+        NotMatches "CAPTURE..."
+    }
+
+    custom-selection {
+
+        field "PROCESS" {
+            mandatory: true
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Accounts,\""
+    }
+
+    field "HEADER.2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: constant "\" Deposits & Services opened\""
+    }
+
+    field "HEADER.2.02" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 45
+            line: 1
+        }
+
+        operation: constant "\"for a Customer \""
+    }
+
+    field "HEADER.3" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"One Stop Account Opening Process\""
+    }
+
+    field "HEADER.4" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Customer Name: \""
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PROCESS" {
+        label {
+            en = "Process ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PROCESS"
+    }
+
+    field "PROCESS.NAME" {
+        comma-separator: false
+        operation: field-extract "PROCESS"
+        conversion: getFrom "PW.PROCESS" "PROCESS.DEFINITION" false
+    }
+
+    field "PROCESS.DESC" {
+        label {
+            en = "Process Name"
+        }
+
+        comma-separator: false
+        operation: field-extract "PROCESS.NAME"
+        conversion: getFrom "PW.PROCESS.DEFINITION" "DESCRIPTION" false
+    }
+
+    field "ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY"
+    }
+
+    field "ACTIVITY.NAME" {
+        label {
+            en = "Account/Service"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "ACTIVITY"
+        conversion: getFrom "PW.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "USER" {
+        label {
+            en = "Created By"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "USER"
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "DUE.DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DUE.DATE"
+    }
+
+    field "COMPLETION.DATE" {
+        label {
+            en = "Completion Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COMPLETION.DATE"
+    }
+
+    field "TARGET" {
+        label {
+            en = "Target"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TARGET"
+    }
+
+    field "NULL.FIELD" {
+        comma-separator: false
+        operation: constant "\" S \""
+    }
+
+    field "CONCAT.FIELDS" {
+        comma-separator: false
+        operation: field-extract "TARGET"
+        conversion: convert {
+            oldData: "\' \'"
+            newData: "\'*\'"
+        }
+
+    }
+
+    field "APP.FIELD" {
+        comma-separator: false
+        operation: field-extract "CONCAT.FIELDS"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "APP" {
+        label {
+            en = "Application"
+        }
+
+        comma-separator: false
+        position {
+            column: 111
+        }
+
+        operation: field-extract "TARGET"
+        conversion: oconv "MCC;,;*"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUST" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER\""
+    }
+
+    field "TXN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.REF"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CUST.DISP" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 2
+        }
+
+        operation: if "APP" Equals "CUST" process "TXN" "NULL"
+    }
+
+    field "CUST.TITLE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 2
+        }
+
+        operation: field-extract "CUST.DISP"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "REC.FIELD" {
+        label {
+            en = "Record"
+        }
+
+        comma-separator: false
+        operation: field-extract "CONCAT.FIELDS"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TRANSACTION.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.REF"
+    }
+
+    field "DRILL.FIELD1" {
+        comma-separator: false
+        operation: calc "APP.FIELD":"NULL.FIELD"
+    }
+
+    field "DRILL.FIELD" {
+        comma-separator: false
+        operation: calc "DRILL.FIELD1":"TRANSACTION.REF"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-POSNEG" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Customer Accounts/Services available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "ACTIVITY.NAME"
+        image: "view.gif"
+        from-field: "DRILL.FIELD"
+    }
+
+}

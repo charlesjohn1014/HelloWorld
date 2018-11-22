@@ -1,0 +1,231 @@
+Enquiry "ACCOUNT.CHARGES.PVT" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Interest Charges for the Private Customers"
+    }
+
+    description {
+        en = "Interest Charges"
+    }
+
+    start-line: 4
+    end-line: 99 fixed-selection "PORTFOLIO.NO" {
+        NotEquals "NULL"
+    }
+
+    fixed-sort: "PORTFOLIO.NO" Null
+    custom-selection {
+
+        field "PORTFOLIO.NO" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account Officer"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Interest Charges for the Private Customers\""
+    }
+
+    field "PORTFOLIO.NO" {
+        label {
+            en = "Portfolio No"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PORTFOLIO.NO"
+    }
+
+    field "@ID" {
+        label {
+            en = "Account No"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCOUNT.TITLE.1" {
+        label {
+            en = "Account Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.TITLE.1"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer No"
+        }
+
+        format: User
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: i-desc "CUSTOMER.NO"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Acct Officer"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "CAP.DATE.DR.INT" {
+        format: Date
+        comma-separator: false
+        operation: application-field-name "CAP.DATE.DR.INT"
+    }
+
+    field "CAP.DATE.CR.INT" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CAP.DATE.CR.INT"
+    }
+
+    field "CHAR" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "DEBIT.INTEREST" {
+        label {
+            en = "Dr Interest"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: calc "@ID":"CHAR":"CAP.DATE.DR.INT"
+        conversion: getFrom "STMT.ACCT.DR" "TOTAL.INTEREST" false
+    }
+
+    field "CREDIT.INTEREST" {
+        label {
+            en = "Cr Interest"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: calc "@ID":"CHAR":"CAP.DATE.CR.INT"
+        conversion: getFrom "STMT.ACCT.CR" "TOTAL.INTEREST" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Input new charges"
+        }
+
+        label-field: "@ID"
+        image: "new.gif"
+        criteria: "CUSTOMER" > "CUSTOMER.NO" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "AC.CHARGE.REQUEST,ADHOC"
+    }
+
+}

@@ -1,0 +1,388 @@
+Enquiry "CASH.AVAIL" for "name:/SC_ScoPortfolioMaintenance:SC.REF.ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "ACCOUNT OFFICER :"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "AVAILABLE CASH - IN \'000"
+        }
+
+        column: 30
+        line: 0
+    }
+
+    header {
+        label {
+            en = "CCY"
+        }
+
+        column: 3
+        line: 4
+    }
+
+    header {
+        label {
+            en = "------------------------------------"
+        }
+
+        column: 1
+        line: 5
+    }
+
+    header {
+        label {
+            en = "-----------------------------------"
+        }
+
+        column: 37
+        line: 5
+    }
+
+    header {
+        label {
+            en = "--------"
+        }
+
+        column: 72
+        line: 5
+    }
+
+    description {
+        en = "CASH.AVAIL"
+    }
+
+    start-line: 6
+    end-line: 19
+    fixed-sort: "ACCT.OFF" Null
+    fixed-sort: "ACC.CCY" Null
+    custom-selection {
+
+        field "ACCT.OFF" {
+        }
+
+        AND
+
+        field "ACC.CCY" {
+        }
+
+        None
+    }
+
+    field "VDBAL" {
+        comma-separator: false
+        operation: application-field-name "KEY"
+        conversion: call
+        jBC: "@ E.CASH.BAL"
+    }
+
+    field "DT1" {
+        break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+            line: 4
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 1 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "DT2" {
+        break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: 4
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 2 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "DT3" {
+        break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 43
+            line: 4
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 3 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "DT4" {
+        break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 56
+            line: 4
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 4 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "DT5" {
+        break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 69
+            line: 4
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 5 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "BAL1" {
+        comma-separator: false
+        operation: field-extract "VDBAL"
+        conversion: extract from 6 to 1 delimited by " "
+    }
+
+    field "BAL2" {
+        comma-separator: false
+        operation: field-extract "VDBAL"
+        conversion: extract from 7 to 1 delimited by " "
+    }
+
+    field "BAL3" {
+        comma-separator: false
+        operation: field-extract "VDBAL"
+        conversion: extract from 8 to 1 delimited by " "
+    }
+
+    field "BAL4" {
+        comma-separator: false
+        operation: field-extract "VDBAL"
+        conversion: extract from 9 to 1 delimited by " "
+    }
+
+    field "BAL5" {
+        comma-separator: false
+        operation: field-extract "VDBAL"
+        conversion: extract from 10 to 1 delimited by " "
+    }
+
+    field "ACCOUNT" {
+        comma-separator: false
+        operation: application-field-name "KEY"
+    }
+
+    field "SAM" {
+        comma-separator: false
+        operation: application-field-name "SEC.ACC.NO"
+    }
+
+    field "OFFICER" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: 2
+        }
+
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.OFFICER" false
+    }
+
+    field "B.OFFICER" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "OFFICER"
+    }
+
+    field "NAME.OFFICER" {
+        break-condition {
+            field: "B.OFFICER"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+            line: 2
+        }
+
+        operation: field-extract "OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "CCY2" {
+        comma-separator: false
+        operation: calc "OFFICER":"CCY"
+    }
+
+    field "B.CCY" {
+        comma-separator: false
+        operation: break-change "CCY2"
+    }
+
+    field "PRINT.CCY" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "CCY"
+    }
+
+    field "ESSAI" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT"
+        conversion: getFrom "ACCOUNT" "ONLINE.ACTUAL.BAL" false
+    }
+
+    field "TBAL1" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        decimals: 0
+        fmtMask: "M"
+        position {
+            column: 13
+        }
+
+        operation: total "BAL1"
+    }
+
+    field "TBAL2" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        decimals: 0
+        fmtMask: "M"
+        position {
+            column: 26
+        }
+
+        operation: total "BAL2"
+    }
+
+    field "TBAL3" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        decimals: 0
+        fmtMask: "M"
+        position {
+            column: 39
+        }
+
+        operation: total "BAL3"
+    }
+
+    field "TBAL4" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        decimals: 0
+        fmtMask: "M"
+        position {
+            column: 52
+        }
+
+        operation: total "BAL4"
+    }
+
+    field "TBAL5" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        decimals: 0
+        fmtMask: "M"
+        position {
+            column: 65
+        }
+
+        operation: total "BAL5"
+    }
+
+    drilldown "1" {
+        label-field: "PRINT.CCY"
+        criteria: "ACCT.OFF" Equals "OFFICER"
+        criteria: "ACC.CCY" Equals "PRINT.CCY"
+        enquiry: "PGM2"
+    }
+
+}

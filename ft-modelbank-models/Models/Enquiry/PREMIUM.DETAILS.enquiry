@@ -1,0 +1,275 @@
+Enquiry "PREMIUM.DETAILS" for "name:/IC_OtherInterest:INFO.ACCT.PREMIUM#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "PREMIUM PROCESSING ENQUIRY", fr = "-------------------------"
+        }
+
+        column: 20
+        line: 0
+    }
+
+    header {
+        label {
+            en = "ACCOUNT"
+        }
+
+        column: 5
+        line: 1
+    }
+
+    header {
+        label {
+            en = "NO"
+        }
+
+        column: 5
+        line: 2
+    }
+
+    header {
+        label {
+            en = "PREMIUM"
+        }
+
+        column: 17
+        line: 1
+    }
+
+    header {
+        label {
+            en = "TYPE"
+        }
+
+        column: 17
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CURRENCY"
+        }
+
+        column: 26
+        line: 2
+    }
+
+    header {
+        label {
+            en = "TOTAL"
+        }
+
+        column: 44
+        line: 1
+    }
+
+    header {
+        label {
+            en = "PREMIUM AMT"
+        }
+
+        column: 38
+        line: 2
+    }
+
+    header {
+        label {
+            en = "TAX AMT"
+        }
+
+        column: 56
+        line: 2
+    }
+
+    header {
+        label {
+            en = "NET"
+        }
+
+        column: 76
+        line: 1
+    }
+
+    header {
+        label {
+            en = "PREMIUM AMT"
+        }
+
+        column: 68
+        line: 2
+    }
+
+    description {
+        en = "PREMIUM.DETAILS"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Account No"
+            }
+
+            operands: Contains
+        }
+
+        None
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PREMIUM.CURRENCY"
+    }
+
+    field "TOT.PREM.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOTAL.PREMIUM.AMT"
+    }
+
+    field "TAX.AMT" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOTAL.TAX.AMT"
+    }
+
+    field "NET.PREM.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NET.PREMIUM.AMT"
+    }
+
+    field "ACC.NO.CURR" {
+        length: 42
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "KEY"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ACC.NO.1" {
+        comma-separator: false
+        operation: if "ACC.NO.CURR" NotEquals "ACC.NO.PREV" process "ACC.NO.CURR" "NULL"
+    }
+
+    field "ACC.NO.DISP" {
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "TOT.PREM.AMT" Greater "ZERO" process "ACC.NO.1" "NULL"
+    }
+
+    field "ACC.NO.PREV" {
+        comma-separator: false
+        operation: if "TOT.PREM.AMT" Greater "ZERO" process "ACC.NO.CURR" "NULL"
+    }
+
+    field "PREM.TYPE.TO.DISP" {
+        length: 42
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "KEY"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "DISP.PREMIUM.TYPE" {
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: if "TOT.PREM.AMT" Greater "ZERO" process "PREM.TYPE.TO.DISP" "NULL"
+    }
+
+    field "DISP.CURRENCY" {
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        operation: if "TOT.PREM.AMT" Greater "ZERO" process "CURRENCY" "NULL"
+    }
+
+    field "DISP.TOT.PREMIUM" {
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Single
+        operation: if "TOT.PREM.AMT" Greater "ZERO" process "TOT.PREM.AMT" "NULL"
+    }
+
+    field "DISP.TAX.AMT" {
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        operation: if "TOT.PREM.AMT" Greater "ZERO" process "TAX.AMT" "NULL"
+    }
+
+    field "DISP.NET.PREMIUM" {
+        comma-separator: false
+        position {
+            column: 64
+        }
+
+        processing-mode: Single
+        operation: if "TOT.PREM.AMT" Greater "ZERO" process "NET.PREM.AMT" "NULL"
+    }
+
+    field "NEXT.ID" {
+        length: 42
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    drilldown "1" {
+        label-field: "DISP.PREMIUM.TYPE" parameters {
+            function:  See
+            field: "NEXT.ID"
+        }
+
+        application: "INFO.ACCT.PREMIUM"
+    }
+
+}

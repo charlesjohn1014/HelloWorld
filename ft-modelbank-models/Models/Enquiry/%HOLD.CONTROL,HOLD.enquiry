@@ -1,0 +1,299 @@
+Enquiry "%HOLD.CONTROL,HOLD" for "name:/EB_Reports:HOLD.CONTROL#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Hold Control List"
+        }
+
+        column: 35
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Held Output For Customer"
+        }
+
+        column: 3
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Company/Report Name"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Date/Time"
+        }
+
+        column: 24
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Account"
+        }
+
+        column: 38
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Carrier No."
+        }
+
+        column: 69
+        line: 2
+    }
+
+    description {
+        en = "HOLD.CONTROL Default List"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "HOLD.REPORT" {
+        Equals "\'Y\'"
+    }
+
+    fixed-sort: "ACCOUNT.NO" Null
+    fixed-sort: "BANK.DATE" Null
+    custom-selection {
+
+        field "CUSTOMER.NO" {
+        }
+
+        AND
+
+        field "ACCOUNT.NO" {
+        }
+
+        AND
+
+        field "BANK.DATE" {
+        }
+
+        AND
+
+        field "COMPANY.ID" {
+        }
+
+        AND
+
+        field "CARRIER.ADDR.NO" {
+        }
+
+        AND
+
+        field "REPORT.NAME" {
+        }
+
+        None
+    }
+
+    field "INIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.HOLD.INIT"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SPACE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "X" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"X\""
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "CO" {
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "COMPANY.ID"
+        conversion: getFrom "COMPANY" "MNEMONIC" false
+    }
+
+    field "NAME" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: application-field-name "REPORT.NAME"
+    }
+
+    field "BDATE" {
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        operation: application-field-name "BANK.DATE"
+        conversion: iconv "D"
+        conversion: oconv "D2E."
+    }
+
+    field "CTIME" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        fmtMask: "##:##"
+        position {
+            column: 31
+        }
+
+        operation: application-field-name "TIME.CREATED"
+    }
+
+    field "CUSTOMER" {
+        comma-separator: false
+        operation: application-field-name "CUSTOMER.NO"
+    }
+
+    field "ACCOUNT.NO" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NO"
+    }
+
+    field "ACC1" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "ACC2" {
+        comma-separator: false
+        operation: calc "ACCOUNT.NO":"SPACE"
+    }
+
+    field "ACC.DISP" {
+        length: 38
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 38
+        }
+
+        operation: calc "ACC2":"ACC1"
+    }
+
+    field "ACC.CUST" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "CUST1" {
+        comma-separator: false
+        operation: if "CUSTOMER" Equals "NULL" process "ACC.CUST" "CUSTOMER"
+    }
+
+    field "CUSTX" {
+        comma-separator: false
+        operation: if "CUST1" Equals "NULL" process "X" "CUST1"
+    }
+
+    field "CUST2" {
+        comma-separator: false
+        operation: field-extract "CUST1"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CUST3" {
+        comma-separator: false
+        operation: calc "CUST1":"SPACE"
+    }
+
+    field "DISP.CUST" {
+        break-condition {
+            break: Page
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 28
+            line: 1
+        }
+
+        operation: calc "CUST3":"CUST2"
+    }
+
+    field "B.CUST" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "CUSTX"
+    }
+
+    field "CARRIER.ADDR.NO" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 77
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CARRIER.ADDR.NO"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "@ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    drilldown "1" {
+        label-field: "NAME"
+        quit-SEE: "@ID"
+    }
+
+}

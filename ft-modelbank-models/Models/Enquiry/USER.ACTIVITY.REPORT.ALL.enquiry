@@ -1,0 +1,670 @@
+Enquiry "USER.ACTIVITY.REPORT.ALL" for "name:/EB_Logging:PROTOCOL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "User Activity Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 6
+    end-line: 20 fixed-selection "@ID" {
+        NotMatches "...-..."
+    }
+
+    fixed-sort: "TIME" Null
+    custom-selection {
+
+        field "USER" {
+            label {
+                en = "User Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        AND
+
+        field "LEVEL.FUNCTION" {
+            label {
+                en = "Function"
+            }
+
+        }
+
+        AND
+
+        field "REMARK" {
+            label {
+                en = "Remark"
+            }
+
+        }
+
+        AND
+
+        field "ID" {
+            label {
+                en = "Record Id"
+            }
+
+        }
+
+        AND
+
+        field "CHANNEL" {
+            label {
+                en = "Channel"
+            }
+
+        }
+
+        AND
+
+        field "PROCESS.DATE" {
+            label {
+                en = "Process Date"
+            }
+
+        }
+
+        AND
+
+        field "TIME" {
+            label {
+                en = "Time"
+            }
+
+        }
+
+        AND
+
+        field "COMPANY.ID" {
+            label {
+                en = "Company ID"
+            }
+
+        }
+
+        AND
+
+        field "PW.ACTIVITY.TXN.ID" {
+            label {
+                en = "PW Activity Txn ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.LINE1.1" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"User Activity Report\""
+    }
+
+    field "HDR.LINE3.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Date :\""
+    }
+
+    field "VAL.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PROCESS.DATE"
+    }
+
+    field "VALID.DRILLDOWN" {
+        comma-separator: false
+        operation: constant "\" * Enquiry snapshot available for max 3 sele\""
+    }
+
+    field "VALID2" {
+        comma-separator: false
+        operation: constant "\"ction criteria \""
+    }
+
+    field "VALID.3" {
+        display-type: "CLASS-ITALIC"
+        comma-separator: false
+        display-section: Header
+        operation: calc "VALID.DRILLDOWN":"VALID2"
+    }
+
+    field "USER" {
+        label {
+            en = "User"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "USER"
+    }
+
+    field "COMPANY" {
+        label {
+            en = "Company"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COMPANY.ID"
+    }
+
+    field "ID" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "APPLICATION" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ID.VAL" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "ENQ.SEL" {
+        comma-separator: false
+        operation: constant "\"ENQUIRY.SELECT\""
+    }
+
+    field "TXN.ID" {
+        comma-separator: false
+        operation: if "APPLICATION" NotEquals "ENQ.SEL" process "ID.VAL" "NULL"
+    }
+
+    field "ENQUIRY.ID" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "ENQ.SEL" process "ID.VAL" "NULL"
+    }
+
+    field "ENQ.DES" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ENQUIRY.ID"
+        conversion: getFrom "ENQUIRY" "SHORT.DESC" false
+    }
+
+    field "CHK.ENQ.DES" {
+        length: 39
+        alignment: Left
+        comma-separator: false
+        operation: if "ENQ.DES" NotEquals "NULL" process "ENQ.DES" "ENQUIRY.ID"
+    }
+
+    field "APPL.VER" {
+        length: 39
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "APPLICATION"
+    }
+
+    field "VER.DES" {
+        length: 39
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "APPL.VER"
+        conversion: getFrom "VERSION" "DESCRIPTION" false
+    }
+
+    field "VER.CHK.DES" {
+        length: 39
+        alignment: Left
+        comma-separator: false
+        operation: if "VER.DES" NotEquals "NULL" process "VER.DES" "APPL.VER"
+    }
+
+    field "VALID.DES" {
+        label {
+            en = "Description"
+        }
+
+        length: 39
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "APPLICATION" Equals "ENQ.SEL" process "CHK.ENQ.DES" "VER.CHK.DES"
+    }
+
+    field "APPL.CHECK" {
+        comma-separator: false
+        hidden: true
+        operation: if "APPLICATION" Equals "ENQ.SEL" process "ENQUIRY.ID" "APPLICATION"
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\" \""
+    }
+
+    field "FUN.SEE" {
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "LEVEL.FUNCTION" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LEVEL.FUNCTION"
+        conversion: extract from 3 to 1
+    }
+
+    field "FUN" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "LEVEL.FUNCTION"
+        conversion: replace {
+            oldData: "I"
+            newData: "INPUT"
+        }
+
+        conversion: replace {
+            oldData: "A"
+            newData: "AUTHORISE"
+        }
+
+        conversion: replace {
+            oldData: "V"
+            newData: "VERIFY"
+        }
+
+        conversion: replace {
+            oldData: "D"
+            newData: "DELETE"
+        }
+
+        conversion: replace {
+            oldData: "R"
+            newData: "REVERSE"
+        }
+
+        conversion: replace {
+            oldData: "H"
+            newData: "RESTORE"
+        }
+
+    }
+
+    field "FUNCTION1" {
+        label {
+            en = "Action"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: if "APPLICATION" NotEquals "ENQ.SEL" process "FUN" "FUN.SEE"
+        conversion: replace {
+            oldData: "S"
+            newData: "SEE"
+        }
+
+    }
+
+    field "TRANS.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TXN.ID"
+    }
+
+    field "ENQUIRY.NAME" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ENQUIRY.ID"
+        conversion: getFrom "ENQUIRY" "SHORT.DESC" false
+    }
+
+    field "FIELD1" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECTION.FIELD"
+        conversion: value 1
+    }
+
+    field "FIELD2" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECTION.FIELD"
+        conversion: value 2
+    }
+
+    field "FIELD3" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECTION.FIELD"
+        conversion: value 3
+    }
+
+    field "OPERAND1" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECTION.OPERAND"
+        conversion: value 1
+    }
+
+    field "OPERAND2" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECTION.OPERAND"
+        conversion: value 2
+    }
+
+    field "OPERAND3" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECTION.OPERAND"
+        conversion: value 3
+    }
+
+    field "VALUE1" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECTION.VALUE"
+        conversion: value 1
+    }
+
+    field "VALUE2" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECTION.VALUE"
+        conversion: value 2
+    }
+
+    field "VALUE3" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELECTION.VALUE"
+        conversion: value 3
+    }
+
+    field "CON.ACT1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "FIELD1":"SP":"OPERAND1":"SP":"VALUE1"
+    }
+
+    field "CON.ACT2" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "FIELD2":"SP":"OPERAND2":"SP":"VALUE2"
+    }
+
+    field "CON.ACT3" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "FIELD3":"SP":"OPERAND3":"SP":"VALUE3"
+    }
+
+    field "CON.FINAL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "CON.ACT1":"SP":"CON.ACT2":"CON.ACT3"
+    }
+
+    field "FIELD" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SELECTION.FIELD"
+    }
+
+    field "OPERAND" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SELECTION.OPERAND"
+    }
+
+    field "VALUE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SELECTION.VALUE"
+    }
+
+    field "CON.ACT4" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CON.ACT3":"VALUE"
+    }
+
+    field "REF.VALUE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "FIELD":"SP":"OPERAND":"SP":"VALUE"
+    }
+
+    field "CON.REF" {
+        label {
+            en = "Reference Activity"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: if "TRANS.REF" NotEquals "NULL" process "TRANS.REF" "REF.VALUE"
+    }
+
+    field "TIME" {
+        label {
+            en = "Time"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TIME"
+    }
+
+    field "Remark" {
+        label {
+            en = "Remark"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REMARK"
+    }
+
+    field "ENQ" {
+        comma-separator: false
+        operation: constant "\"ENQ\""
+    }
+
+    field "ENQ.SP" {
+        comma-separator: false
+        operation: calc "ENQ":"SP"
+    }
+
+    field "ENQ.ID" {
+        comma-separator: false
+        operation: calc "ENQ.SP":"ENQUIRY.ID"
+    }
+
+    field "SEL.APPL.DRILL2" {
+        comma-separator: false
+        operation: calc "APPLICATION":"SP"
+    }
+
+    field "SEL.APPL.DRILL3" {
+        comma-separator: false
+        operation: calc "SEL.APPL.DRILL2":"FUN.SEE"
+    }
+
+    field "SEL.APPL.DRILL4" {
+        comma-separator: false
+        operation: calc "SEL.APPL.DRILL3":"SP"
+    }
+
+    field "SEL.APPL.DRILL5" {
+        comma-separator: false
+        operation: calc "SEL.APPL.DRILL4":"TRANS.REF"
+    }
+
+    field "COND.DRILL1" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "ENQ.SEL" process "ENQ.ID" "SEL.APPL.DRILL5"
+    }
+
+    field "CHANNEL" {
+        label {
+            en = "Channel"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHANNEL"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Activity to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View User Activity"
+        }
+
+        label-field: "COMPANY"
+        image: "view.gif"
+        criteria: "CON.ACT1"
+        criteria: "CON.ACT2"
+        criteria: "CON.ACT3"
+        from-field: "COND.DRILL1"
+    }
+
+}

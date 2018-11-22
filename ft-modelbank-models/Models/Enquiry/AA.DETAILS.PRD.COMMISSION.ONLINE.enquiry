@@ -1,0 +1,355 @@
+Enquiry "AA.DETAILS.PRD.COMMISSION.ONLINE" for "name:/AA_ProductCommission:AA.ARR.PRODUCT.COMMISSION#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Product Commision - Online"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    description {
+        en = "Product Commision - Online"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        column-width: 200
+        processing-mode: Single
+        operation: constant "\"Product Commision - Online\""
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "ARR.PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "FILE.VERSION" {
+        comma-separator: false
+        operation: application-field-name "!FILE.VERSION"
+    }
+
+    field "D.FILE.VERSION" {
+        display-type: "CLASS-BOLD.ITALIC"
+        comma-separator: false
+        operation: field-extract "FILE.VERSION"
+        conversion: replace {
+            oldData: "LIV"
+        }
+
+        conversion: replace {
+            oldData: "NAU"
+        }
+
+        conversion: replace {
+            oldData: "SIM"
+            newData: "Simulated"
+        }
+
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADER.COL1" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 200
+        operation: constant "\"Line/Group/Product\""
+    }
+
+    field "HEADER.COL2" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 60
+        operation: constant "\"Level\""
+    }
+
+    field "HEADER.COL3" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 225
+        operation: constant "\"Commission Activity\""
+    }
+
+    field "HEADER.COL4" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 4
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 130
+        operation: constant "\"Commission Event\""
+    }
+
+    field "PRD.LINE" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT.LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "PRD.GRP" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT.GROUP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "DESCRIPTION" false
+    }
+
+    field "F.PRD.DISP" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PRD.LINE" NotEquals "NULL" process "PRD.LINE" "PRD.GRP"
+    }
+
+    field "PRD.DSP" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "F.PRD.DISP2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PRD.DSP" NotEquals "NULL" process "PRD.DSP" "F.PRD.DISP"
+    }
+
+    field "F.FINAL.DISP" {
+        label {
+            en = "Line/Group/Product"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+            multiLine: true
+        }
+
+        column-width: 200
+        processing-mode: Multi
+        operation: if "F.PRD.DISP2" NotEquals "NULL" process "F.PRD.DISP2" "NULL"
+    }
+
+    field "PG.LBL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Group\""
+    }
+
+    field "PL.LBL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Line\""
+    }
+
+    field "PP.LBL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Product\""
+    }
+
+    field "LEVEL.1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PRD.LINE" NotEquals "NULL" process "PL.LBL" "LEVEL.2"
+    }
+
+    field "LEVEL.2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PRD.GRP" NotEquals "NULL" process "PG.LBL"
+    }
+
+    field "LEVEL.3" {
+        label {
+            en = "Level"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+            line: + 2
+            multiLine: true
+        }
+
+        column-width: 60
+        processing-mode: Multi
+        operation: if "PRD.DSP" NotEquals "NULL" process "PP.LBL" "LEVEL.1"
+    }
+
+    field "ONLINE.ACT" {
+        label {
+            en = "Commission Activity"
+        }
+
+        format: User
+        length: 80
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+            line: + 2
+            multiLine: true
+        }
+
+        column-width: 225
+        processing-mode: Multi
+        operation: application-field-name "ONLINE.ACT"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "ONLINE.CHG" {
+        label {
+            en = "Commission Event"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+            line: + 2
+            multiLine: true
+        }
+
+        column-width: 130
+        processing-mode: Multi
+        operation: application-field-name "ONLINE.CHG"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "ZERORECORD" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        column-width: 200
+        operation: constant "\"No Online product Commission Defined\""
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ACT.VALUE" {
+        comma-separator: false
+        operation: constant "\"-UPDATE-\""
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"ACT.VALUE":"ARR.PROPERTY"
+    }
+
+    field "ARRANGEMENT.ID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+    }
+
+    field "REFRESH.PRD.COMM.ONLINE" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.PRD.COMMISSION.ONLINE\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refresh"
+        }
+
+        label-field: "HEADER.COL4"
+        image: "refresh.gif"
+        criteria: "ID.COMP.1" Equals "ARRANGEMENT.ID"
+        from-field: "REFRESH.PRD.COMM.ONLINE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "HEADER.COL4"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "DRILL.VER"
+    }
+
+    fileVersion: Exception, Live, History
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS"
+}

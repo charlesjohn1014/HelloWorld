@@ -1,0 +1,188 @@
+Enquiry "AA.OVERVIEW-SUBHEADING.TRANSACTIONS.AR" for "name:/AA_PaymentSchedule:AA.ACCOUNT.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Further Arrangement Details"
+    }
+
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "TRANSACTIONS" {
+        display-type: "CLASS-COS.SUBHEADING"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 150
+        processing-mode: Single
+        operation: constant "\"Additional Details\""
+    }
+
+    field "ARR" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "C.NULL" {
+        comma-separator: false
+        operation: constant "\"\'\'\""
+    }
+
+    field "C.COS.ACT.LOG" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.ACTIVITY.LOG.FIN.AR \""
+    }
+
+    field "COS.ACT.LOG" {
+        comma-separator: false
+        operation: calc "C.COS.ACT.LOG":"ARR":"SP":"C.NULL":"SP":"C.NULL"
+    }
+
+    field "COS.CON.TRAN" {
+        comma-separator: false
+        operation: constant "\"COS AA.TRANSACTION.LOG \""
+    }
+
+    field "COS.TRANSACTIONS" {
+        comma-separator: false
+        operation: calc "COS.CON.TRAN":"SP":"ARR"
+    }
+
+    field "ACCOUNT.NO" {
+        comma-separator: false
+        operation: field-extract "ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+    }
+
+    field "C.COS.AA.DETAILS.BILLS" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.BILLS \""
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "COS.AA.DETAILS.BILLS" {
+        comma-separator: false
+        operation: calc "C.COS.AA.DETAILS.BILLS":"ARR":"SP":"C.NULL":"SP":"C.NULL":"SP":"TODAY"
+    }
+
+    field "C.COS.AA.DETAILS.CHARGES" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.CHARGES \""
+    }
+
+    field "COS.AA.DETAILS.CHARGES" {
+        comma-separator: false
+        operation: calc "C.COS.AA.DETAILS.CHARGES":"ARR":"SP":"C.NULL":"SP":"C.NULL"
+    }
+
+    field "C.COS.PAY.ORDER" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.PAY.ORDER \""
+    }
+
+    field "COS.PAY.ORDER" {
+        comma-separator: false
+        operation: calc "C.COS.PAY.ORDER":"ARR"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transaction"
+        }
+
+        label-field: "TRANSACTIONS"
+        criteria: "ACCT.ID" Equals "ACCOUNT.NO"
+        from-field: "COS.TRANSACTIONS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Statement"
+        }
+
+        label-field: "TRANSACTIONS"
+        criteria: "STATEMENT.ID" Equals "ACCOUNT.NO"
+        enquiry: "ACCOUNT.STATEMENT.AR"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Charges"
+        }
+
+        label-field: "TRANSACTIONS"
+        from-field: "COS.AA.DETAILS.CHARGES"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Bills"
+        }
+
+        label-field: "TRANSACTIONS"
+        from-field: "COS.AA.DETAILS.BILLS"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Correspondence"
+        }
+
+        label-field: "TRANSACTIONS" parameters {
+            field: "ARR"
+        }
+
+        composite-screen: "AA.DETAILS.DOCUMENTS"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Activity"
+        }
+
+        label-field: "TRANSACTIONS"
+        from-field: "COS.ACT.LOG"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Sims"
+        }
+
+        label-field: "TRANSACTIONS" parameters {
+            field: "ARR"
+        }
+
+        composite-screen: "AA.DETAILS.SIMULATIONS.AR"
+    }
+
+    drilldown "8" {
+        description {
+            en = "Payment Orders"
+        }
+
+        label-field: "TRANSACTIONS"
+        from-field: "COS.PAY.ORDER"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "HORIZONTAL.DRILLDOWNS" ; "SINGLE.BACKGROUND.COLOUR"
+}

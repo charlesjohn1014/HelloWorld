@@ -1,0 +1,174 @@
+Enquiry "MANDATE.VALIDATION" for "name:/PP_PaymentWorkflowGUI:NOFILE.STAL.EXP.PEND.RESP#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Mandate Validation"
+    }
+
+    description {
+        en = "Expired Mandate Validation"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99 fixed-selection "OUT.ARRAY" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            mandatory: true
+            label {
+                en = "CompanyID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "Company" {
+        label {
+            en = "Company"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TransactionReference" {
+        label {
+            en = "Transaction Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "Duplicate Flag" {
+        label {
+            en = "Duplicate Flag"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "Request Time" {
+        label {
+            en = "Request Time"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "Duplicate Request Expiry Time" {
+        label {
+            en = "Duplicate Request Expiry Time"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "Final Expiry Time" {
+        label {
+            en = "Final Expiry Time"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "Request" {
+        comma-separator: false
+        operation: constant "\"MandateValidation\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Resend"
+        }
+
+        label-field: "TransactionReference"
+        criteria: "CURRENT.Req" > "Request" parameters {
+            function:  Input
+            field: "TransactionReference"
+        }
+
+        screen: "PP.EXTERNAL.REQUESTS,RESEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Cancel"
+        }
+
+        label-field: "TransactionReference"
+        criteria: "CURRENT.Req" > "Request" parameters {
+            function:  Input
+            field: "TransactionReference"
+        }
+
+        screen: "PP.EXTERNAL.REQUESTS,CANCEL"
+    }
+
+}

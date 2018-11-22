@@ -1,0 +1,194 @@
+Enquiry "AA.ACTIVITY.SCHEMA.SUMMARY" for "name:/AA_Accounting:NOFILE.AA.ACT.SCHEMA#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "AA Activity Schema"
+    }
+
+    start-line: 4
+    end-line: 16
+    custom-selection {
+
+        field "PRODUCT" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "ACTIVITY.NAME" {
+            label {
+                en = "Activity ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PROPERTY.NAME" {
+            label {
+                en = "Property ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ACTIVITY.TYPE" {
+            label {
+                en = "Activity Type"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Activity Schema\""
+    }
+
+    field "PRODUCT" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: selection "PRODUCT"
+    }
+
+    field "RECORD" {
+        format: User
+        comma-separator: false
+        display-section: Header
+        operation: application-field-name "RECORD"
+    }
+
+    field "ID" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "RECORD"
+        conversion: call
+        jBC: "@ E.AA.ACT.SCHEMA.REC"
+    }
+
+    field "ACTIVITY" {
+        label {
+            en = "Activity ID"
+        }
+
+        display-type: "STARTTREE"
+        format: User
+        length: 29
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: application-field-name "ACTIVITY.TYPE"
+    }
+
+    field "B.ACTIVITY" {
+        format: User
+        comma-separator: false
+        operation: break-change "ACTIVITY"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "ACTIVITY"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "ACTIONS" {
+        label {
+            en = "Action"
+        }
+
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACTIONS"
+    }
+
+    field "PROPERTIES" {
+        label {
+            en = "Property"
+        }
+
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PROPERTIES"
+    }
+
+    field "D.ACTIVITY" {
+        label {
+            en = "Activity ID"
+        }
+
+        display-type: "ENDTREE"
+        format: User break-condition {
+            field: "B.ACTIVITY"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "ACTIVITY"
+    }
+
+    field "D.DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User break-condition {
+            field: "B.ACTIVITY"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "DESCRIPTION"
+    }
+
+    attributes: "ALLDATA"
+}

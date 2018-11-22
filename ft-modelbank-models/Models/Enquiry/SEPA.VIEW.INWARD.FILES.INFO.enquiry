@@ -1,0 +1,286 @@
+Enquiry "SEPA.VIEW.INWARD.FILES.INFO" for "name:/EP_InwardProcess:SEPA.INWARD.FILES#" {
+    metamodelVersion: "1.30.6"
+    start-line: 5
+    end-line: 30
+    fixed-sort: "CREATION.DATE" Descending
+    fixed-sort: "CREATION.TIME" Descending
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Inward SEPA Files\""
+    }
+
+    field "@ID" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "FILE.NAME" {
+        label {
+            en = "File Name"
+        }
+
+        display-type: "STARTTREE"
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FILE.NAME"
+    }
+
+    field "B.FILE.NAME" {
+        comma-separator: false
+        operation: break-change "FILE.NAME"
+    }
+
+    field "G.FILE.NAME" {
+        display-type: "ENDTREE" break-condition {
+            field: "B.FILE.NAME"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "FILE.NAME"
+    }
+
+    field "PROCESS.DATE" {
+        label {
+            en = "Process Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PROCESS.DATE"
+    }
+
+    field "PROCESS.TIME" {
+        label {
+            en = "Time"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PROCESS.TIME"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "PEACH.ID" {
+        label {
+            en = "Peach ID", fr = "SEPA Clearer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PEACH.ID"
+    }
+
+    field "TRANS.CODE" {
+        label {
+            en = "Code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANS.CODE"
+    }
+
+    field "TRANS.NUMBER" {
+        label {
+            en = "No Txn"
+        }
+
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.NUMBER"
+        conversion: call
+        jBC: "@ CONV.NO.OF.TXN"
+    }
+
+    field "MESSAGE.TYPE" {
+        label {
+            en = "Message Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MESSAGE.TYPE"
+    }
+
+    field "MESSAGE.ID" {
+        label {
+            en = "Message ID"
+        }
+
+        length: 76
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MESSAGE.ID"
+        conversion: extract from 3 to 1 delimited by "\\"
+    }
+
+    field "DMYFIELD1" {
+        label {
+            en = "Message ID(complete)"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: calc "\"...\"":"MESSAGE.ID"
+    }
+
+    field "IN1" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "FILE.HEADER"
+    }
+
+    field "IN2" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "GROUP.HEADER"
+    }
+
+    field "MSG.TYPE" {
+        comma-separator: false
+        operation: constant "\"Cstmr...\""
+    }
+
+    field "PAIN.ENQ" {
+        comma-separator: false
+        operation: constant "\"SEPA.INWARD.PAIN.MSG\""
+    }
+
+    field "PACS.ENQ" {
+        comma-separator: false
+        operation: constant "\"SEPA.VIEW.INWARD.MSG\""
+    }
+
+    field "NEXT.ENQ.MAIN" {
+        comma-separator: false
+        operation: if "MESSAGE.TYPE" Matches "MSG.TYPE" process "PAIN.ENQ" "PACS.ENQ"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "MESSAGE.ID"
+        criteria: "EQ" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SEPA.INWARD.FILES,OVERVIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Transactions"
+        }
+
+        label-field: "MESSAGE.ID"
+        criteria: "HIST.MSG.ID" Matches "DMYFIELD1"
+        criteria: "OPERATION.CODE" Equals "TRANS.CODE"
+        from-field: "NEXT.ENQ.MAIN"
+    }
+
+    drilldown "3" {
+        description {
+            en = "XML: File Header"
+        }
+
+        label-field: "MESSAGE.ID"
+        criteria: "MSG.CONTENT" Equals "IN1"
+        enquiry: "SEPA.VIEW.XML.MESSAGE"
+    }
+
+    drilldown "4" {
+        description {
+            en = "XML: Group Header"
+        }
+
+        label-field: "MESSAGE.ID"
+        criteria: "MSG.CONTENT" Equals "IN2"
+        enquiry: "SEPA.VIEW.XML.MESSAGE"
+    }
+
+    attributes: "PAGE"
+}

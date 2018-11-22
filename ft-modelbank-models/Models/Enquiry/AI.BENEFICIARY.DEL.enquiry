@@ -1,0 +1,283 @@
+Enquiry "AI.BENEFICIARY.DEL" for "name:/ST_Payments:BENEFICIARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of Beneficiaries"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: true
+    start-line: 4
+    end-line: 5 fixed-selection "BEN.ACCT.NO" {
+        NotEquals "NULL"
+    }
+
+    fixed-selection "OWNING.CUSTOMER" {
+        Equals "!EXT.SMS.CUSTOMERS"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Existing Beneficiary List\""
+    }
+
+    field "NICKNAME" {
+        label {
+            en = "Nick Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "NICKNAME"
+    }
+
+    field "@ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.REF" {
+        label {
+            en = "Reference"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.REF"
+    }
+
+    field "BEN.ACCT.NO" {
+        label {
+            en = "Acct Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BEN.ACCT.NO"
+    }
+
+    field "TRANSACTION.TYPE" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "Y.REFERENCE" {
+        comma-separator: false
+        operation: field-extract "TRANSACTION.TYPE"
+        conversion: replace {
+            oldData: "AC"
+            newData: "Own Bank"
+        }
+
+        conversion: replace {
+            oldData: "BC"
+            newData: "Another Bank"
+        }
+
+        conversion: replace {
+            oldData: "OT03"
+            newData: "Cross Border Bank"
+        }
+
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "Y.REF" {
+        label {
+            en = "Type of Beneficiary"
+        }
+
+        length: 22
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: calc "Y.REFERENCE":"NULL"
+    }
+
+    field "Y.VERSION" {
+        comma-separator: false
+        operation: field-extract "TRANSACTION.TYPE"
+        conversion: replace {
+            oldData: "AC"
+            newData: "AI.BENEFICIARY.NEW"
+        }
+
+        conversion: replace {
+            oldData: "BC"
+            newData: "AI.BENEFICIARY.OTHERBANK.NEW"
+        }
+
+        conversion: replace {
+            oldData: "OT03"
+            newData: "AI.BENEFICIARY.INTERNATIONAL.NEW"
+        }
+
+    }
+
+    field "Y.APPLICATION" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,\""
+    }
+
+    field "Y.VER" {
+        comma-separator: false
+        operation: field-extract "TRANSACTION.TYPE"
+        conversion: replace {
+            oldData: "BC"
+            newData: "AI.NEW.LOCAL.OB.AMEND"
+        }
+
+        conversion: replace {
+            oldData: "AC"
+            newData: "AI.NEW.LOCAL.AMEND"
+        }
+
+        conversion: replace {
+            oldData: "OT03"
+            newData: "AI.NEW.INTERNATIONAL.AMEND"
+        }
+
+    }
+
+    field "Y.APPL" {
+        comma-separator: false
+        operation: constant "\"BENEFICIARY,\""
+    }
+
+    field "Y.VAL" {
+        comma-separator: false
+        operation: calc "Y.APPL":"Y.VER"
+    }
+
+    field "Y.FT" {
+        comma-separator: false
+        operation: calc "Y.APPLICATION":"Y.VERSION"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No beneficiaries created yet\""
+    }
+
+    field "ZERO.RECORD.HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Existing Beneficiary List\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend Beneficiary"
+        }
+
+        label-field: "NICKNAME"
+        image: "amend.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "Y.VAL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete Beneficiary"
+        }
+
+        label-field: "NICKNAME"
+        image: "delete.gif" parameters {
+            function:  Reverse
+            field: "@ID"
+        }
+
+        screen: "BENEFICIARY,AI.DEL.NEW"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Make payment"
+        }
+
+        label-field: "NICKNAME"
+        image: "next.gif"
+        criteria: "BENEFICIARY" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        from-field: "Y.FT"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "UNDERLINE.HEADER.ROW" ; "DISABLE.NO.SORT.OPTIONS"
+}

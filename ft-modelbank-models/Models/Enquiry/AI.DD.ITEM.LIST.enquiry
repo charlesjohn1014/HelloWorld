@@ -1,0 +1,176 @@
+Enquiry "AI.DD.ITEM.LIST" for "name:/DD_Contract:DD.ITEM#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Direct Debit Items List"
+    }
+
+    description {
+        en = "Direct Debit Items List"
+    }
+
+    zero-records-display: true
+    show-all-books: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.MB.DD.ITEM.BUILD.RTN"
+    }
+
+    custom-selection {
+
+        field "DD.PARAM.ID" {
+            operands: Equals
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "STATUS" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "DD.PARAM.ID" {
+        format: User
+        comma-separator: false
+        operation: i-desc "DD.PARAM.ID"
+    }
+
+    field "DD.ITEM.ID" {
+        label {
+            en = "Item no"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 0
+        }
+
+        operation: constant "\"Details Of DD Claim\""
+    }
+
+    field "MANDATE.REF" {
+        label {
+            en = "Mandate ref"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MANDATE.REF"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "DEST.SORT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "DD.ITEM.ID"
+        conversion: call
+        jBC: "@ E.ITEM.ID"
+    }
+
+    field "BACS.SORT.CODE" {
+        label {
+            en = "Bc sort code"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        operation: field-extract "DEST.SORT"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BEN ACCOUNT" {
+        label {
+            en = "Ben Account"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: field-extract "DEST.SORT"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"You have no Direct Debits for display\""
+    }
+
+}

@@ -1,0 +1,389 @@
+Enquiry "AA.DETAILS.ARRANGEMENT.BUNDLE" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Bundle Info"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "LINK.TYPE.FULL" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK.TYPE"
+    }
+
+    field "LINK.DATE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK.DATE"
+    }
+
+    field "L.BUNDLE" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Links to other Arrangements\""
+    }
+
+    field "LINK.ARRANGEMENT" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINK.ARRANGEMENT"
+    }
+
+    field "CHK.LINK.ARR1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "LINK.DATE":"\"*\"":"LINK.ARRANGEMENT"
+    }
+
+    field "CHK.LINK.ARR" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "CHK.LINK.ARR1":"\"*\"":"LINK.TYPE.FULL"
+    }
+
+    field "LINK.DETS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CHK.LINK.ARR"
+        conversion: call
+        jBC: "@ E.CONV.SETTLEMENT.ACCT.LINK.TYPE"
+    }
+
+    field "LINK.ARR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "LINK.DETS"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: call
+        jBC: "@ E.CONV.DISPLAY.MULTI.LINE"
+    }
+
+    field "LINK.TYPE.LIST" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "LINK.DETS"
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: call
+        jBC: "@ E.CONV.DISPLAY.MULTI.LINE"
+    }
+
+    field "LINK.AC.NO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "LINK.ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+        conversion: value 1
+    }
+
+    field "LINK.AC.NAME" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "LINK.AC.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "LINK.PRODUCT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "LINK.ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+        conversion: value 1
+    }
+
+    field "LINK.ARR.NAME" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "LINK.PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "LINK.ARR.DESC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINK.AC.NAME" NotEquals "NULL" process "LINK.AC.NAME" "LINK.ARR.NAME"
+    }
+
+    field "L.LINK.ARR" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: if "LINK.ARR" NotEquals "NULL" process "L.BUNDLE" "NULL"
+    }
+
+    field "D.LINK.ARR" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 240
+        processing-mode: Multi
+        operation: if "LINK.ARR" NotEquals "NULL" process "LINK.ARR" "NULL"
+    }
+
+    field "DISP.LINK.ARR.NAME" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 180
+        processing-mode: Multi
+        operation: if "LINK.ARR" NotEquals "NULL" process "LINK.ARR.NAME" "NULL"
+    }
+
+    field "D.LINK.TYPE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 40
+        processing-mode: Multi
+        operation: field-extract "LINK.TYPE.LIST"
+        conversion: replace {
+            oldData: "BUNDLE"
+            newData: "Bundle"
+        }
+
+        conversion: replace {
+            oldData: "PAYOUT.ACCOUNT"
+            newData: "Pay-Out Account"
+        }
+
+        conversion: replace {
+            oldData: "PAYIN.ACCOUNT"
+            newData: "Pay-In Account"
+        }
+
+        conversion: replace {
+            oldData: "SETTLEMENT.ACCOUNT"
+            newData: "for Settlement"
+        }
+
+        conversion: replace {
+            oldData: "LINK.RATE.PARENT"
+            newData: "Tracked for Interest Rate"
+        }
+
+        conversion: replace {
+            oldData: "LINK.RATE.CHILD"
+            newData: "Tracks this Interest Rate"
+        }
+
+    }
+
+    field "LINK.PL" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "LINK.ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+        conversion: replace {
+            oldData: "LENDING"
+            newData: "AL"
+        }
+
+        conversion: replace {
+            oldData: "ACCOUNTS"
+            newData: "AR"
+        }
+
+        conversion: replace {
+            oldData: "DEPOSITS"
+            newData: "AD"
+        }
+
+        conversion: replace {
+            oldData: "BUNDLE"
+            newData: "AB"
+        }
+
+        conversion: replace {
+            oldData: "RELATIONSHIP.PRICING"
+            newData: "PR"
+        }
+
+        conversion: replace {
+            oldData: "AGENT"
+            newData: "AG"
+        }
+
+        conversion: replace {
+            oldData: "REWARDS"
+            newData: "RW"
+        }
+
+    }
+
+    field "AL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"AL\""
+    }
+
+    field "AD" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"AD\""
+    }
+
+    field "AR" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"AR\""
+    }
+
+    field "BX" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"BX\""
+    }
+
+    field "COS.STEM" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"COS AA.OVERVIEW.\""
+    }
+
+    field "COS.PL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "COS.STEM":"LINK.PL":"SP"
+    }
+
+    field "COS.P.AR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "LINK.ARR":"SP":"LINK.AC.NO"
+    }
+
+    field "COS.AR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "COS.PL":"COS.P.AR"
+    }
+
+    field "COS.ADL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "COS.PL":"LINK.ARR"
+    }
+
+    field "COS.P.OTH" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "LINK.ARR":"SP":"LINK.PRODUCT"
+    }
+
+    field "COS.OTH" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "COS.PL":"COS.P.OTH"
+    }
+
+    field "COS.NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "COS.DD.FINAL" {
+        comma-separator: false
+        operation: field-extract "COS.OTH"
+    }
+
+    field "COS.DD.1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINK.PL" Equals "NULL" process "COS.NULL" "COS.DD.FINAL"
+    }
+
+    field "COS.DD.2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINK.PL" Equals "AL" process "COS.ADL" "COS.DD.1"
+    }
+
+    field "COS.DD.3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINK.PL" Equals "AD" process "COS.ADL" "COS.DD.2"
+    }
+
+    field "COS.DD.4" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINK.PL" Equals "BX" process "COS.ADL" "COS.DD.3"
+    }
+
+    field "COS.DD" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINK.PL" Equals "AR" process "COS.AR" "COS.DD.4"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Bundle Details"
+        }
+
+        label-field: "D.LINK.ARR"
+        image: "view.gif"
+        from-field: "COS.DD"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

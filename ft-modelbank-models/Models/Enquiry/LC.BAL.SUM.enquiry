@@ -1,0 +1,387 @@
+Enquiry "LC.BAL.SUM" for "name:/LC_ModelBank:NOFILE.LC.BAL.SUM#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "LC Commission Summary"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DATA.ARR" {
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TIT.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"LC Commission Summary\""
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Transaction Ref :\""
+    }
+
+    field "TRANS.REF" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 1
+        }
+
+        operation: selection "@ID"
+    }
+
+    field "CUST.NO" {
+        comma-separator: false
+        operation: field-extract "TRANS.REF"
+        conversion: getFrom "LETTER.OF.CREDIT" "APPLICANT.CUSTNO" false
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "CUSTOMER" {
+        comma-separator: false
+        operation: calc "CUST.NO":"SPACE"
+    }
+
+    field "CUST.NAME" {
+        comma-separator: false
+        operation: field-extract "CUST.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 1
+        }
+
+        operation: constant "\"Customer :\""
+    }
+
+    field "H.CUST.INFO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 43
+            line: 1
+        }
+
+        operation: calc "CUSTOMER":"CUST.NAME"
+    }
+
+    field "HDR.3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Issue Date :\""
+    }
+
+    field "HDR.4" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 2
+        }
+
+        operation: constant "\"Expiry Date :\""
+    }
+
+    field "HDR.5" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Currency :\""
+    }
+
+    field "VAL.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 2
+        }
+
+        operation: field-extract "TRANS.REF"
+        conversion: getFrom "LETTER.OF.CREDIT" "ISSUE.DATE" false
+    }
+
+    field "MAT.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 43
+            line: 2
+        }
+
+        operation: field-extract "TRANS.REF"
+        conversion: getFrom "LETTER.OF.CREDIT" "ADVICE.EXPIRY.DATE" false
+    }
+
+    field "CCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 3
+        }
+
+        operation: field-extract "TRANS.REF"
+        conversion: getFrom "LETTER.OF.CREDIT" "LC.CURRENCY" false
+    }
+
+    field "HDR.6" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 3
+        }
+
+        operation: constant "\"Commission Status :\""
+    }
+
+    field "COMM.STATUS" {
+        comma-separator: false
+        operation: field-extract "TRANS.REF"
+        conversion: getFrom "LETTER.OF.CREDIT" "COMM.CLAIMED" false
+        conversion: replace {
+            oldData: "YES"
+            newData: "Claimed"
+        }
+
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CHECK.STATUS" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 43
+            line: 3
+        }
+
+        operation: if "COMM.STATUS" Equals "NULL" process "\"Collected\"" "COMM.STATUS"
+    }
+
+    field "PREV" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SCHED.DATE"
+    }
+
+    field "SCHED.DATE" {
+        label {
+            en = "Sched Date"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DISP" {
+        label {
+            en = "Sched Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "PREV" Equals "SCHED.DATE" process "NULL" "SCHED.DATE"
+    }
+
+    field "MVMT.DATE" {
+        label {
+            en = "Movement Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "APP.USED" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "LC.APP" {
+        comma-separator: false
+        operation: constant "\"Amendment\""
+    }
+
+    field "DR.APP" {
+        comma-separator: false
+        operation: constant "\"Drawings\""
+    }
+
+    field "GET.APP" {
+        comma-separator: false
+        operation: if "APP.USED" Equals "LC" process "LC.APP" "DR.APP"
+    }
+
+    field "APPL" {
+        label {
+            en = "Application"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "APP.USED" NotEquals "NULL" process "GET.APP" "NULL"
+    }
+
+    field "MVMT.AMT" {
+        label {
+            en = "Movement"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TOT.AMT" {
+        label {
+            en = "LC Amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "INT.AMT" {
+        label {
+            en = "Commission Amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+}

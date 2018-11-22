@@ -1,0 +1,382 @@
+Enquiry "SC.VDATE.POS1" for "name:/SC_ScoSecurityPositionUpdate:SECURITY.TRANS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "SECURITIES POSITIONS - VALUE"
+        }
+
+        column: 29
+        line: 0
+    }
+
+    header {
+        label {
+            en = "DATE ENQUIRY"
+        }
+
+        column: 58
+        line: 0
+    }
+
+    header {
+        label {
+            en = "DEPOT ID"
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "DEPOSITORY NAME"
+        }
+
+        column: 14
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CORP ACTS"
+        }
+
+        column: 48
+        line: 2
+    }
+
+    header {
+        label {
+            en = "QUANTITY"
+        }
+
+        column: 69
+        line: 2
+    }
+
+    description {
+        en = "SC.VDATE.POS1"
+    }
+
+    start-line: 6
+    end-line: 17 fixed-selection "SECURITY.ACCOUNT" {
+        Matches "...-999"
+    }
+
+    fixed-selection "REVERSAL.DATE" {
+        Equals "\"\""
+    }
+
+    fixed-sort: "SECURITY.NUMBER" Null
+    fixed-sort: "DEPOSITORY" Null
+    custom-selection {
+
+        field "DEPOSITORY" {
+        }
+
+        AND
+
+        field "SECURITY.NUMBER" {
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            mandatory: true
+        }
+
+        None
+    }
+
+    field "REV.LIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"R\""
+    }
+
+    field "YES" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Y\""
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CREDIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"CREDIT\""
+    }
+
+    field "MINUS.ONE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "TRANS" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "SEDOL" {
+        comments: "TO GET THE SEDOL NUMBER" break-condition {
+            break: Page
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 4
+        }
+
+        operation: application-field-name "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "SEDOL.NO" false
+    }
+
+    field "SEC.NO" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "SEC.DESC" {
+        break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 31
+            line: 4
+        }
+
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" true
+    }
+
+    field "TRADE.DT" {
+        comments: "GETS THE V A L U E DATE"
+        length: 11
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "VALUE.DATE"
+        conversion: julian
+        conversion: oconv "D"
+    }
+
+    field "VAL.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "TEST.VALUE.DATE" {
+        comma-separator: false
+        operation: if "VAL.DATE" Greater "V.DATE" process "VAL.DATE" "V.DATE"
+    }
+
+    field "V.DATE" {
+        comma-separator: false
+        operation: field-extract "TEST.VALUE.DATE"
+    }
+
+    field "DEPOT" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "SEC.DEPOT" {
+        comma-separator: false
+        operation: calc "SEC.NO":"DEPOT"
+    }
+
+    field "B.DEPOT" {
+        comma-separator: false
+        operation: break-change "SEC.DEPOT"
+    }
+
+    field "DISPLAY.DEPOT" {
+        break-condition {
+            field: "B.DEPOT"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "DEPOT"
+    }
+
+    field "DISPLAY.DEPOT.NAME" {
+        break-condition {
+            field: "B.DEPOT"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "DEPOT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CORP.ACT" {
+        break-condition {
+            field: "B.DEPOT"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        operation: field-extract "DEPOT"
+        conversion: getFrom "CUSTOMER.SECURITY" "CORPORATE.ACTIONS" false
+    }
+
+    field "TRAN.NME" {
+        comma-separator: false
+        operation: application-field-name "TRANS.TYPE"
+    }
+
+    field "TRAN.SIGN" {
+        comma-separator: false
+        operation: field-extract "TRAN.NME"
+        conversion: call
+        jBC: "@ E.CHECK.TRANS.TYPE"
+    }
+
+    field "NOM" {
+        comma-separator: false
+        operation: application-field-name "NO.NOMINAL.TOTAL"
+    }
+
+    field "NEG.NOM" {
+        comma-separator: false
+        operation: calc "NOM" * "MINUS.ONE"
+    }
+
+    field "SIGN.NOMINAL" {
+        comma-separator: false
+        operation: if "TRAN.SIGN" Equals "CREDIT" process "NOM" "NEG.NOM"
+    }
+
+    field "NOMINAL" {
+        comma-separator: false
+        operation: field-extract "SIGN.NOMINAL"
+    }
+
+    field "DEPOT.NOMINAL" {
+        break-condition {
+            field: "B.DEPOT"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 61
+        }
+
+        operation: total "NOMINAL"
+    }
+
+    field "TOTAL.LIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"TOTAL HELD :\""
+    }
+
+    field "TOT.DISP" {
+        break-condition {
+            field: "BREAK.SEC"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+            line: + 2
+        }
+
+        operation: field-extract "TOTAL.LIT"
+    }
+
+    field "TOTAL" {
+        break-condition {
+            field: "BREAK.SEC"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 61
+            line: + 2
+        }
+
+        operation: total "NOMINAL"
+    }
+
+    field "BREAK.SEC" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "SEC.NO"
+    }
+
+    drilldown "1" {
+        label-field: "DISPLAY.DEPOT"
+        criteria: "DEPOSITORY" Equals "DEPOT"
+        criteria: "SECURITY.NUMBER" Equals "SEC.NO"
+        criteria: "VALUE.DATE" LessOrEquals "V.DATE"
+        enquiry: "SC.VDATE.POS"
+    }
+
+}

@@ -1,0 +1,144 @@
+Enquiry "FUNDS.TRANSFER.MANDATE" for "name:/FT_Contract:FUNDS.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Funds Transfer for approval"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "DEBIT.ACCT.NO" {
+        Equals "!EXT.SMS.ACCOUNTS"
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "\'INAO\'"
+    }
+
+    fixed-sort: "PROCESSING.DATE" Null
+
+    field "REF.NO" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REF.NO"
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Transaction Type"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+        conversion: getFrom "FT.TXN.TYPE.CONDITION" "1" false
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "From Account"
+        }
+
+        length: 36
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 44
+        }
+
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "AMOUNT.DEBITED" {
+        label {
+            en = "Amount Debited"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.DEBITED"
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "To Account"
+        }
+
+        format: Date
+        length: 36
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 104
+        }
+
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "AMOUNT.CREDITED" {
+        label {
+            en = "Amount Credited"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 141
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.CREDITED"
+    }
+
+    field "DEBIT.VALUE.DATE" {
+        label {
+            en = "Debit Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 164
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.VALUE.DATE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Approve"
+        }
+
+        label-field: "REF.NO" parameters {
+            function:  Authorise
+            field: "REF.NO"
+        }
+
+        screen: "FUNDS.TRANSFER,ARC.AUTH"
+    }
+
+}

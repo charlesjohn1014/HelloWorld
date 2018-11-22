@@ -1,0 +1,280 @@
+Enquiry "MF.DIARY.BR" for "name:/SC_SccEventCapture:DIARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Diary list"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "@ID" {
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            mandatory: true
+            label {
+                en = "Scheme Id"
+            }
+
+        }
+
+        AND
+
+        field "EVENT.TYPE" {
+            label {
+                en = "Event Type"
+            }
+
+        }
+
+        AND
+
+        field "EX.DATE" {
+            label {
+                en = "Ex Date"
+            }
+
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Id"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Diary Events\""
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "DESCRIPT" false
+    }
+
+    field "SEC.NO" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "EVENT.TYPE" {
+        label {
+            en = "Event"
+        }
+
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EVENT.TYPE"
+    }
+
+    field "EX.DATE" {
+        label {
+            en = "Ex date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EX.DATE"
+    }
+
+    field "VALUE.DATE.1" {
+        label {
+            en = "Value date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "EVENT.STATUS" {
+        label {
+            en = "Event status"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EVENT.STATUS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Update Diary"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DIARY,INP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Unauth Ents"
+        }
+
+        label-field: "@ID"
+        criteria: "DIARY.ID" Equals "@ID"
+        enquiry: "ENT.NAU.BR"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Ents awaiting opt selection"
+        }
+
+        label-field: "@ID"
+        criteria: "DIARY.ID" Equals "@ID"
+        enquiry: "ENT.OPT.BR"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Auth Ents"
+        }
+
+        label-field: "@ID"
+        criteria: "DIARY.ID" Equals "@ID"
+        enquiry: "ENT.BR"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Bulk Auth Ents"
+        }
+
+        label-field: "@ID"
+        criteria: "DIARY" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SC.ENT.AUTHORISE,INP.BR"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Reverse Diary"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Reverse
+            field: "@ID"
+        }
+
+        screen: "DIARY,INP"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Corp Actions Monitor"
+        }
+
+        label-field: "@ID"
+        criteria: "REFERENCE.NUMBER" Equals "@ID"
+        enquiry: "SC.EX.DATE.MTR"
+    }
+
+    drilldown "8" {
+        description {
+            en = "View Diary"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "DIARY,INP"
+    }
+
+    drilldown "9" {
+        description {
+            en = "Value Dated positions"
+        }
+
+        label-field: "@ID"
+        criteria: "SECURITY.NUMBER" Equals "SEC.NO"
+        criteria: "VALUE.DATE" LessThan "EX.DATE"
+        enquiry: "SC.VDATE.POS"
+    }
+
+    attributes: "ALLDATA"
+}

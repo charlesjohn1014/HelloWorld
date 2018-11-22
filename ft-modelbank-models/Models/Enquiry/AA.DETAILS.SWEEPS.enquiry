@@ -1,0 +1,339 @@
+Enquiry "AA.DETAILS.SWEEPS" for "name:/RS_Sweeping:AC.ACCOUNT.LINK.CONCAT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Account Sweep List"
+    }
+
+    description {
+        en = "Account Sweep List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Account Sweeps\""
+    }
+
+    field "SWEEP.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCT.LINK"
+    }
+
+    field "SWEEP.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "SWEEP.ID"
+        conversion: getFrom "AC.ACCOUNT.LINK" "SWEEP.TYPE" false
+    }
+
+    field "SWEEP.DESC" {
+        label {
+            en = "Sweep Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 133
+        processing-mode: Single
+        operation: field-extract "SWEEP.TYPE"
+        conversion: getFrom "AC.SWEEP.TYPE" "SHORT.DESCRIPTION" false
+    }
+
+    field "AC.ONE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SWEEP.ID"
+        conversion: getFrom "AC.ACCOUNT.LINK" "ACCOUNT.TO" false
+    }
+
+    field "AC.TWO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SWEEP.ID"
+        conversion: getFrom "AC.ACCOUNT.LINK" "ACCOUNT.FROM" false
+    }
+
+    field "AC.ONE.CCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SWEEP.ID"
+        conversion: getFrom "AC.ACCOUNT.LINK" "ACCT.TO.CCY" false
+    }
+
+    field "AC.TWO.CCY" {
+        comma-separator: false
+        operation: field-extract "SWEEP.ID"
+        conversion: getFrom "AC.ACCOUNT.LINK" "ACCT.FROM.CCY" false
+    }
+
+    field "FROM.AC.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "SWEEP.TYPE" Equals "SURP" process "AC.ONE.CCY" "AC.TWO.CCY"
+    }
+
+    field "FROM.AC" {
+        label {
+            en = "From"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 60
+        processing-mode: Single
+        operation: if "SWEEP.TYPE" Equals "SURP" process "AC.ONE" "AC.TWO"
+    }
+
+    field "AC.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "FROM.AC"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "TO.AC.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "SWEEP.TYPE" Equals "SURP" process "AC.TWO.CCY" "AC.ONE.CCY"
+    }
+
+    field "TO.AC" {
+        label {
+            en = "To"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 60
+        operation: if "SWEEP.TYPE" Equals "SURP" process "AC.TWO" "AC.ONE"
+    }
+
+    field "AC.NAME.02" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "TO.AC"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "MIN.AMT" {
+        label {
+            en = "Min Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "FROM.AC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 60
+        }
+
+        column-width: 60
+        processing-mode: Single
+        operation: field-extract "SWEEP.ID"
+        conversion: getFrom "AC.ACCOUNT.LINK" "MINIMUM.AMT" false
+    }
+
+    field "MAX.AMT" {
+        label {
+            en = "Max Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "FROM.AC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 70
+        }
+
+        column-width: 60
+        operation: field-extract "SWEEP.ID"
+        conversion: getFrom "AC.ACCOUNT.LINK" "MAXIMUM.AMT" false
+    }
+
+    field "FREQUENCY" {
+        label {
+            en = "Frequency"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: field-extract "SWEEP.ID"
+        conversion: getFrom "AC.ACCOUNT.LINK" "FREQUENCY" false
+        conversion: call
+        jBC: "@ E.MB.FREQ.TEXT"
+    }
+
+    field "COMMA" {
+        comma-separator: false
+        operation: constant "\",\""
+    }
+
+    field "C.VER1" {
+        comma-separator: false
+        display-section: NoDisplay
+        operation: calc "\"AC.ACCOUNT.LINK\"":"COMMA"
+    }
+
+    field "SWEEP.CONV" {
+        comma-separator: false
+        operation: field-extract "SWEEP.TYPE"
+        conversion: replace {
+            oldData: "AR.MAINTAIN"
+            newData: "MAIN.AR"
+        }
+
+        conversion: replace {
+            oldData: "AR.TWOWAY"
+            newData: "TWOWAY.AR"
+        }
+
+        conversion: replace {
+            oldData: "AR.SURPLUS"
+            newData: "SURP.AR"
+        }
+
+    }
+
+    field "DROP.VERSION" {
+        comma-separator: false
+        display-section: NoDisplay
+        operation: calc "C.VER1":"SWEEP.CONV"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 133
+        operation: constant "\"No Sweeps\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "SWEEP.DESC"
+        image: "view.gif" parameters {
+            function:  See
+            field: "SWEEP.ID"
+        }
+
+        from-field: "DROP.VERSION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "SWEEP.DESC"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "SWEEP.ID"
+        }
+
+        from-field: "DROP.VERSION"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "SWEEP.DESC"
+        image: "txnreverse.gif" parameters {
+            function:  Reverse
+            field: "SWEEP.ID"
+        }
+
+        from-field: "DROP.VERSION"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

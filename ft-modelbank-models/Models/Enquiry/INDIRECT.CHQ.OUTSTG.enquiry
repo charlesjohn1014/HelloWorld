@@ -1,0 +1,334 @@
+Enquiry "INDIRECT.CHQ.OUTSTG" for "name:/ST_ChqSubmit:CHEQUE.COLLECTION#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Realised Indirect Local Cheques"
+    }
+
+    description {
+        en = "Realised Indirect Local Cheques"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CHQ.STATUS" {
+        Equals "DEPOSITED"
+    }
+
+    fixed-selection "TXN.CODE" {
+        Equals "93"
+    }
+
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "CREDIT.ACC.NO" {
+            label {
+                en = "Credit Acc No"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT" {
+            label {
+                en = "Amount"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "CHQ.STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        AND
+
+        field "BANK.SORT.CODE" {
+            label {
+                en = "Bank Sort Code"
+            }
+
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "CHQ.COLL.ID" {
+        label {
+            en = "Cheque Colln ID"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Outstanding Indirect Collection Cheques\""
+    }
+
+    field "TT.TXN.ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TXN.ID"
+    }
+
+    field "AC.CCY" {
+        label {
+            en = "Acct Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "BC.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: break-change "AC.CCY"
+    }
+
+    field "CHQ.AMT" {
+        label {
+            en = "Cheque Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "AC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "LINE1" {
+        break-condition {
+            field: "BC.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"===============\""
+    }
+
+    field "AC.CCY.DISP" {
+        break-condition {
+            field: "BC.CCY"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "AC.CCY"
+    }
+
+    field "TOT.CHQ.AMT" {
+        format: Currency "AC.CCY" negative-pattern -# break-condition {
+            field: "BC.CCY"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: total "CHQ.AMT"
+    }
+
+    field "LINE2" {
+        break-condition {
+            field: "BC.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: constant "\"===============\""
+    }
+
+    field "SPACE" {
+        break-condition {
+            field: "BC.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 4
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "CR.AC.NO" {
+        label {
+            en = "Credit Account"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: application-field-name "CREDIT.ACC.NO"
+    }
+
+    field "CHQ.STATUS" {
+        label {
+            en = "Cheque status"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHQ.STATUS"
+    }
+
+    field "ORIG.VALUE.DATE" {
+        label {
+            en = "Orig Value Date"
+        }
+
+        format: Date
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORIG.VALUE.DATE"
+    }
+
+    field "EXPOSURE.DATE" {
+        label {
+            en = "Exposure Date"
+        }
+
+        format: Date
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPOSURE.DATE"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records available for your selection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Cheque Realisation"
+        }
+
+        label-field: "CHQ.COLL.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CHQ.COLL.ID"
+        }
+
+        screen: "CHEQUE.COLLECTION,VIEW"
+    }
+
+}

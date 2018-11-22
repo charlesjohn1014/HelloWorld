@@ -1,0 +1,336 @@
+Enquiry "SY.FX.FORWARDS.UNWIND" for "name:/PT_Contract:SY.FX.FORWARDS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "List of Unwind FX Forwards/TARKO Trades"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    description {
+        en = "List of Unwind Trades"
+    }
+
+    start-line: 4
+    end-line: 99 fixed-selection "UNWIND" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Client"
+            }
+
+        }
+
+        AND
+
+        field "COUNTERPARTY" {
+            label {
+                en = "Counterparty"
+            }
+
+        }
+
+        AND
+
+        field "TRADE.DATE" {
+            label {
+                en = "Trade Date"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PRODUCT" {
+        comma-separator: false
+        operation: field-extract "TRANSACTION.REF"
+        conversion: getFrom "SY.TRANSACTION" "PRODUCT.CATEGORY" false
+    }
+
+    field "PRODUCT.TYPE" {
+        label {
+            en = "Product Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "DX.CONTRACT.CODE" {
+        label {
+            en = "Dx contract Code"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DX.CONTRACT.CODE"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "COUNTERPARTY" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COUNTERPARTY"
+    }
+
+    field "UNWIND.CHG.CCY" {
+        label {
+            en = "Unwind Charge Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "UNWIND.CHG.CCY"
+    }
+
+    field "UNWIND.CHG.AMT" {
+        label {
+            en = "Unwind Charge Amt"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "UNWIND.CHG.AMT"
+    }
+
+    field "UNWIND.EFF.DATE" {
+        label {
+            en = "Effective Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "UNWIND.EFF.DATE"
+    }
+
+    field "TRANSACTION.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.REF"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no unwinding trades\""
+    }
+
+    field "B.DX.REFERENCE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "B.DX.REFERENCE"
+    }
+
+    field "S.DX.REFERENCE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "S.DX.REFERENCE"
+    }
+
+    field "VB.DX.REFERENCE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "VB.DX.REFERENCE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend Trade Details"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SY.FX.FORWARDS,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Buy Option"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "B.DX.REFERENCE"
+        }
+
+        screen: "DX.TRADE,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Sell Option"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "S.DX.REFERENCE"
+        }
+
+        screen: "DX.TRADE,INPUT"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View Vanilla Option"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "VB.DX.REFERENCE"
+        }
+
+        screen: "DX.TRADE,INPUT"
+    }
+
+}

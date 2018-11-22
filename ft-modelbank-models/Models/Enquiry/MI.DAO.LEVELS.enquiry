@@ -1,0 +1,283 @@
+Enquiry "MI.DAO.LEVELS" for "name:/ST_Config:DEPT.ACCT.OFFICER#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Temenos Bank Reporting Hierarchy"
+        }
+
+        column: 35
+        line: 0
+    }
+
+    header {
+        label {
+            en = "ID"
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Personnel"
+        }
+
+        column: 13
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Area / Position"
+        }
+
+        column: 41
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Dept"
+        }
+
+        column: 63
+        line: 1
+    }
+
+    header {
+        label {
+            en = "level"
+        }
+
+        column: 62
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Level"
+        }
+
+        column: 70
+        line: 1
+    }
+
+    header {
+        label {
+            en = "description"
+        }
+
+        column: 68
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Parent"
+        }
+
+        column: 80
+        line: 1
+    }
+
+    header {
+        label {
+            en = "DAO"
+        }
+
+        column: 81
+        line: 2
+    }
+
+    header {
+        label {
+            en = "DAO Parent Desc."
+        }
+
+        column: 90
+        line: 2
+    }
+
+    header {
+        label {
+            en = "DAO Parent Dept. Level"
+        }
+
+        column: 120
+        line: 2
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "DEPT.LEVEL" Null
+    fixed-sort: "AREA" Null
+    fixed-sort: "NAME" Null
+    custom-selection {
+
+        field "@ID" {
+        }
+
+        AND
+
+        field "NAME" {
+        }
+
+        AND
+
+        field "AREA" {
+        }
+
+        AND
+
+        field "DEPT.LEVEL" {
+        }
+
+        AND
+
+        field "DEPT.PARENT" {
+        }
+
+        None
+    }
+
+    field "DAO" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NAME" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NAME"
+    }
+
+    field "AREA" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AREA"
+    }
+
+    field "DEPT.LEVEL" {
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPT.LEVEL"
+    }
+
+    field "DEPT.LEVEL.02" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPT.LEVEL"
+        conversion: getFrom "DEPT.LEVEL" "1" false
+    }
+
+    field "DEPT.PARENT" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPT.PARENT"
+    }
+
+    field "DP.DESC" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 86
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPT.PARENT"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "DP.LEVEL" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEPT.PARENT"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "DEPT.LEVEL" false
+    }
+
+    field "DP.LEVEL.DESC" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        operation: field-extract "DP.LEVEL"
+        conversion: getFrom "DEPT.LEVEL" "1" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "DAO parent details"
+        }
+
+        label-field: "DEPT.PARENT" parameters {
+            function:  See
+            field: "DEPT.PARENT"
+        }
+
+        application: "DEPT.ACCT.OFFICER"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Account Officer details"
+        }
+
+        label-field: "DAO" parameters {
+            function:  See
+            field: "DAO"
+        }
+
+        application: "DEPT.ACCT.OFFICER"
+    }
+
+    security {
+        application: "DEPT.ACCT.OFFICER"
+        field: "DAO"
+    }
+
+    attributes: "PAGE"
+}

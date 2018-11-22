@@ -1,0 +1,249 @@
+Enquiry "PP.SCREENING.REQUESTS.AMEND.NAU" for "name:/PP_FilteringGUI:NOFILE.SCREENING.REQUESTS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Manual Filter Payments List Level1"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "ID.LIST" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "FTNumber" {
+            label {
+                en = "FT Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SEND.DATE" {
+            label {
+                en = "Send Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SEND.TIMESTAMP" {
+            label {
+                en = "Send Timestamp"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "POSS.STAT.RECEIVED.TIME" {
+            label {
+                en = "PossibStatus RecTime"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PAYMENT.STATUS" {
+            label {
+                en = "PaymentStatus"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "|"
+    }
+
+    field "FTNumber" {
+        label {
+            en = "FT Number"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "|"
+    }
+
+    field "PAYMENT.STATUS" {
+        label {
+            en = "Payment Status"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "|"
+    }
+
+    field "SEND.DATE" {
+        label {
+            en = "Send Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "|"
+    }
+
+    field "SEND.TIMESTAMP" {
+        label {
+            en = "Send Timestamp"
+        }
+
+        length: 23
+        alignment: Left
+        comma-separator: false
+        fmtMask: "#### ## ## ##:##:##.###"
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "|"
+    }
+
+    field "POSS.STAT.RECEIVED.TIME" {
+        label {
+            en = "Possible Timestamp"
+        }
+
+        length: 23
+        alignment: Left
+        comma-separator: false
+        fmtMask: "#### ## ## ##:##:##.###"
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "|"
+    }
+
+    field "ENTRY.USER.ID" {
+        label {
+            en = "Entry UserID"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "|"
+    }
+
+    field "ENTRY.TIMESTAMP" {
+        label {
+            en = "Entry TimeStamp"
+        }
+
+        length: 23
+        alignment: Left
+        comma-separator: false
+        fmtMask: "#### ## ## ##:##:##.###"
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "|"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"No Records Found in Manual Payments\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "FTNumber"
+        image: "txnauthorise.gif"
+        criteria: "CURRENT.IDVALUE" > "ID" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "PP.SCREENING.REQUESTS,APPROVE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View"
+        }
+
+        label-field: "FTNumber"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "POR.INTERFACE.REQUEST.RESPONSE,SCREENINGREQUESTS"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

@@ -1,0 +1,201 @@
+Enquiry "EB.FREE.MESSAGE.NAU" for "name:/EB_Delivery:EB.FREE.MESSAGE$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Forex Deals"
+    }
+
+    description {
+        en = "Unauthorised Forex Deals"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "APPLICATION.NAME" {
+        Contains "FOREX", "MM", "SWAP", "FRA", "DX"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "TXN.REFERENCE" {
+            label {
+                en = "Txn Reference"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised SWIFT Message\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "OUR.REFERENCE" {
+        label {
+            en = "Our Reference"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUR.REFERENCE"
+    }
+
+    field "THEIR.REFERENCE" {
+        label {
+            en = "Counterparty Reference"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "THEIR.REFERENCE"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CUSTOMER.NO"
+    }
+
+    field "COUNTER PARTY NAME" {
+        label {
+            en = "Counterparty Name"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "EB.ADVICE.NO" {
+        label {
+            en = "Msg Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EB.ADVICE.NO"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        application: "EB.FREE.MESSAGE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        application: "EB.FREE.MESSAGE"
+    }
+
+}

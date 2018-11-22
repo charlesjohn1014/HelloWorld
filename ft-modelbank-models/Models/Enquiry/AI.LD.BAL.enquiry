@@ -1,0 +1,924 @@
+Enquiry "AI.LD.BAL" for "name:/LM_Contract:LMM.ACCOUNT.BALANCES#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "LD Balance Details"
+        }
+
+        column: 20
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Contract No :"
+        }
+
+        column: 43
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Customer :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Type"
+        }
+
+        column: 50
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Value Date :"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Maturity :"
+        }
+
+        column: 26
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Current Rate :"
+        }
+
+        column: 50
+        line: 2
+    }
+
+    header {
+        label {
+            en = "%"
+        }
+
+        column: 74
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Status :"
+        }
+
+        column: 76
+        line: 2
+    }
+
+    header {
+        label {
+            en = "O/D Status :"
+        }
+
+        column: 90
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Date"
+        }
+
+        column: 3
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Total Payment"
+        }
+
+        column: 12
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Principal"
+        }
+
+        column: 32
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Interest"
+        }
+
+        column: 46
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Commission"
+        }
+
+        column: 57
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Fees"
+        }
+
+        column: 76
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Charges"
+        }
+
+        column: 86
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Outstanding"
+        }
+
+        column: 97
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Diary Details"
+        }
+
+        column: 111
+        line: 3
+    }
+
+    full-description {
+        en =
+        "This enquiry shows all the contract movementsfrom the start date, and the future events upto the maturity date, or a supplied END.DATE.The enquiry selects LMM.ACCOUNT.BALANCES whichis updated at NAU stage by LD.Once selected this utilises 2 routines:LD.ENQ.INT.I - initialises common variablesE.LD.SCHED.LIST- routine to build schedulesThis builds up R.RECORD for each contract witha m/v assocaited list of details based on theSCHEDULES.PAST file, and projected futureschedules. The layout of R.RECORD at this pointis (useful fields only):<6> Customer Id<7> Currency<8> Current Principal<9> Category<10> Ld status AND PD status value 2<11> Curent rate<12> Value Date<13> Fin Mat Date<15,x> Schedule Date yyyymmdd<16,x> Interest Amount<17,x> Principal Amount<18,x> Total payment (Prin + Int + Comm + Fee)<19> Opening Balance<20,X> Capitalised Charges<21,x> Fee / Charge Amount<22,x><23,x> Running Balance on schedule date<24> Closing Balance<25> Final Date<26,x> Diary Details<27,x> Payable Fees<28,x> Receivable charges<29,x><30,x><31,x><32,x><33,x> New interest Rate<34,x> Overdue marker"
+    }
+
+    description {
+        en = "LD Details for the ARC IB User"
+    }
+
+    no-selection: true
+    show-all-books: true
+    start-line: 5
+    end-line: 18
+    build-routines {
+        jBC: "BUILD.ACCBAL.ID"
+    }
+
+    fixed-selection "@ID" {
+        Matches "...LD..."
+    }
+
+    fixed-sort: "CUSTOMER.NO" Null
+    custom-selection {
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CONTRACT.NUMBER" {
+            label {
+                en = "Contract Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CONTRACT.ID" {
+            label {
+                en = "Contract ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "END.DATE" {
+            label {
+                en = "End Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Category"
+            }
+
+        }
+
+        AND
+
+        field "SHOW.PD.INFO" {
+            label {
+                en = "Show PD info"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NULL.02" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FWD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"FWD\""
+    }
+
+    field "SCHED.NARR" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 1
+        }
+
+        operation: constant "\"SCHEDULE TYPES:\""
+    }
+
+    field "SCHEDULE.TYPES" {
+        comments: "Use this field to denote the schedule types to be shown" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 96
+            line: 1
+        }
+
+        operation: constant "\"PINDCF\""
+    }
+
+    field "S.DT.ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "ID" {
+        comments: "Key of the LD file"
+        length: 12
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "DMMY.OPF" {
+        comments: "Open files and store in common" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ LD.ENQ.INT.I"
+    }
+
+    field "START.DATE.SEL" {
+        comments: "Optional Start Date" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "START.DATE"
+    }
+
+    field "END.DATE.SEL" {
+        comments: "OPtional end date supplied" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "END.DATE"
+    }
+
+    field "BK.LD.ID" {
+        comments: "Throw new page when id changes"
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ID"
+    }
+
+    field "DMMY.FLD" {
+        comments: "Build the record used for display o of info For each loan"
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.LD.SCHED.LIST"
+    }
+
+    field "D.ID" {
+        break-condition {
+            break: NewPage
+        }
+
+        alignment: Left
+        comma-separator: false
+        fmtMask: "##/#####/#####"
+        position {
+            column: 57
+            line: 0
+        }
+
+        operation: field-extract "ID"
+    }
+
+    field "CUSTOMER" {
+        comments: "Customer Number. FIELD 6"
+        comma-separator: false
+        operation: field-number 6
+    }
+
+    field "D.CUST" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 1
+        }
+
+        operation: field-extract "CUSTOMER"
+    }
+
+    field "CU.NAME" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY" {
+        comments: "Currency FIELD 7"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-number 7
+    }
+
+    field "STATUS" {
+        comments: "LD status FIELD 10"
+        comma-separator: false
+        operation: field-number 10
+    }
+
+    field "LD.STAT" {
+        comments: "NAU status from LD" break-condition {
+            break: NewPage
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 75
+            line: 0
+        }
+
+        operation: field-extract "ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS$NAU" "RECORD.STATUS" false
+    }
+
+    field "OPEN.BALANCE" {
+        comments: "FIELD 19"
+        format: Currency "CCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        escapeSequence: HI
+        position {
+            column: 94
+        }
+
+        operation: field-number 19
+    }
+
+    field "OPEN.LIT" {
+        format: Translate
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: constant "\"Opening Balance\""
+    }
+
+    field "ST.DATE" {
+        comments: "field 12"
+        comma-separator: false
+        operation: field-number 12
+    }
+
+    field "D.DATE" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "ST.DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "D.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        escapeSequence: HI
+        position {
+            column: 111
+        }
+
+        operation: field-extract "CCY"
+    }
+
+    field "O.LD.AMT" {
+        comments: "Field 14"
+        comma-separator: false
+        operation: field-number 14
+    }
+
+    field "PROD.CAT" {
+        comments: "Field 9" break-condition {
+            break: NewPage
+        }
+
+        alignment: Right
+        comma-separator: false
+        fmtMask: "##-###"
+        display-section: Header
+        position {
+            column: 55
+            line: 1
+        }
+
+        operation: field-number 9
+    }
+
+    field "PROD.DESC" {
+        format: User break-condition {
+            break: NewPage
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 62
+            line: 1
+        }
+
+        operation: field-extract "PROD.CAT"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "VALUE.DATE" {
+        format: Date break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 12
+    }
+
+    field "MATURITY" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 37
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 13
+        conversion: call
+        jBC: "@ LD.ENQ.MATDATE"
+    }
+
+    field "CURRENT.RATE" {
+        format: Rate break-condition {
+            break: NewPage
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 65
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 11
+    }
+
+    field "LD.STATUS" {
+        comments: "LD status" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 85
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: field-number 10
+        conversion: value 1
+    }
+
+    field "OD.STATUS" {
+        comments: "Overdue Status" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 112
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: field-number 10
+        conversion: value 2
+    }
+
+    field "DATE" {
+        comments: "Field 15"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 15
+    }
+
+    field "DISP.DATE" {
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "OD.IND" {
+        comments: "Overdue included"
+        comma-separator: false
+        escapeSequence: BL
+        position {
+            column: 9
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-number 34
+        conversion: replace {
+            oldData: "1"
+            newData: "*"
+        }
+
+    }
+
+    field "AMT.DUE" {
+        comments: "Field 18 Total Payment amount"
+        format: Currency "CCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-number 18
+    }
+
+    field "PRINCIPAL" {
+        comments: "Principal Paid / Received"
+        format: Currency "CCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 26
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-number 17
+    }
+
+    field "CAP.CHG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 20
+    }
+
+    field "INT" {
+        comments: "Field 16"
+        format: Currency "CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 42
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-number 16
+    }
+
+    field "COMMISSION" {
+        comments: "Commission paid received"
+        format: Currency "CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-number 29
+    }
+
+    field "FEE" {
+        comments: "Fees payable"
+        format: Currency "CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 68
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-number 27
+    }
+
+    field "CHG" {
+        comments: "Charges receivable"
+        format: Currency "CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 81
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-number 28
+    }
+
+    field "RUNNING.BAL" {
+        comments: "Running Balances"
+        format: Currency "CCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 94
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-number 23
+    }
+
+    field "DIARY.ACTION" {
+        comments: "Field 16 diary notes"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 111
+            line: + 2
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-number 26
+    }
+
+    field "MATURITY.DATE" {
+        comma-separator: false
+        operation: field-number 13
+    }
+
+    field "END.LIT" {
+        break-condition {
+            field: "BK.LD.ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+            line: + 1
+        }
+
+        operation: constant "\"Closing Balance\""
+    }
+
+    field "LAST.DATE" {
+        comments: "The last schedule date shown or the maturity date"
+        comma-separator: false
+        operation: field-number 25
+    }
+
+    field "DISP.END.DATE" {
+        comma-separator: false
+        operation: if "END.DATE.SEL" Equals "NULL" process "LAST.DATE" "END.DATE.SEL"
+    }
+
+    field "DF.DT.2" {
+        format: Date break-condition {
+            field: "BK.LD.ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: field-extract "DISP.END.DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "END.CCY" {
+        break-condition {
+            field: "BK.LD.ID"
+        }
+
+        comma-separator: false
+        escapeSequence: HI
+        position {
+            column: 111
+            line: + 1
+        }
+
+        operation: field-extract "CCY"
+    }
+
+    field "END.OUT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 24
+    }
+
+    field "DISP.END.OUT" {
+        format: Currency "CCY" negative-pattern #- break-condition {
+            field: "BK.LD.ID"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        escapeSequence: HI
+        position {
+            column: 94
+            line: + 1
+        }
+
+        operation: field-extract "END.OUT"
+    }
+
+    field "I.TYPE" {
+        comma-separator: false
+        operation: field-number 11
+    }
+
+}

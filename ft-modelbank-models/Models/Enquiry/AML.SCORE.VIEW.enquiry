@@ -1,0 +1,233 @@
+Enquiry "AML.SCORE.VIEW" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Risk Analysis of Client"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "KYC.RELATIONSHIP" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.CODE" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Discrepancies in AML Score\""
+    }
+
+    field "CUST" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.CODE"
+    }
+
+    field "REL.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "KYC.RELATIONSHIP"
+    }
+
+    field "MARKET.INDI" {
+        length: 21
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "REL.ID"
+        conversion: getFrom "CR.RELATIONSHIP" "MARKET.INDICATOR" false
+    }
+
+    field "CALC" {
+        length: 7
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "REL.ID"
+        conversion: getFrom "CR.RELATIONSHIP" "CALC.AML.EVALUATION" false
+    }
+
+    field "MANUAL" {
+        length: 7
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "REL.ID"
+        conversion: getFrom "CR.RELATIONSHIP" "MANUAL.AML.EVALUATION" false
+    }
+
+    field "S1" {
+        comma-separator: false
+        operation: constant "\"MISMATCH\""
+    }
+
+    field "S2" {
+        comma-separator: false
+        operation: constant "\"RISKY\""
+    }
+
+    field "S3" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SHORT.NAME" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "S4" {
+        comma-separator: false
+        operation: constant "\"HIGH\""
+    }
+
+    field "C1" {
+        comma-separator: false
+        operation: field-extract "CALC"
+    }
+
+    field "M1" {
+        comma-separator: false
+        operation: field-extract "MANUAL"
+    }
+
+    field "R1" {
+        length: 27
+        alignment: Left
+        comma-separator: false
+        operation: if "C1" NotEquals "M1" process "S1" "S3"
+    }
+
+    field "R2" {
+        comma-separator: false
+        operation: if "C1" Equals "S4" process "R3" "S3"
+    }
+
+    field "R3" {
+        comma-separator: false
+        operation: if "M1" Equals "S4" process "S2" "S3"
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "R4" {
+        comma-separator: false
+        operation: calc "R1":"DOT":"R3"
+    }
+
+    field "R5" {
+        comma-separator: false
+        operation: field-extract "R4"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "CUST.NO" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "R5" Equals "\"MISMATCH\"" process "CUST" "S3"
+    }
+
+    field "SNAME" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "R5" Equals "\"MISMATCH\"" process "SHORT.NAME" "S3"
+    }
+
+    field "CALC.AML" {
+        label {
+            en = "Calc AML"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "R5" Equals "\"MISMATCH\"" process "CALC" "S3"
+        conversion: oconv "MCT"
+    }
+
+    field "MANUAL.AML" {
+        label {
+            en = "Manual AML"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "R5" Equals "\"MISMATCH\"" process "MANUAL" "S3"
+        conversion: oconv "MCT"
+    }
+
+    field "Score" {
+        comma-separator: false
+        operation: if "R5" Equals "\"MISMATCH\"" process "R5" "S3"
+    }
+
+    field "ZERONORECORDS" {
+        label {
+            en = "CLASS-ENQ.NORECS"
+        }
+
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        operation: constant "\"None of the customers have mismatched AML scores\""
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES" ; "NO.TOOLBAR"
+}

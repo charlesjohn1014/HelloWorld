@@ -1,0 +1,265 @@
+Enquiry "ALERTS.LOG" for "name:/EB_AlertProcessing:EVENT.LOG#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Alerts Monitor"
+    }
+
+    description {
+        en = "Alerts Monitor"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "TEC.ITEM" {
+            label {
+                en = "Event"
+            }
+
+        }
+
+        AND
+
+        field "REQUEST.REF" {
+            label {
+                en = "Account/DAO"
+            }
+
+        }
+
+        AND
+
+        field "APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        AND
+
+        field "TOUCH.POINT.REF" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Event Status"
+            }
+
+        }
+
+        AND
+
+        field "DATE.TIME" {
+            label {
+                en = "Date time"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Alerts Monitor\""
+    }
+
+    field "ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "APP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "TXN.REF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOUCH.POINT.REF"
+    }
+
+    field "APP.TXN" {
+        label {
+            en = "Txn.Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: calc "APP":"\"/\"":"TXN.REF"
+    }
+
+    field "ACT.DAO" {
+        label {
+            en = "Account/DAO"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REQUEST.REF"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "REQ.CUS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "REQUEST.REF"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "CUS.AC" {
+        comma-separator: false
+        operation: field-extract "ACT.DAO"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CUST" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: if "CUS.AC" NotEquals "NULL" process "CUS.AC" "REQ.CUS"
+    }
+
+    field "STAT" {
+        label {
+            en = "Event Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "STATUS"
+    }
+
+    field "EVENT" {
+        label {
+            en = "Event"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TEC.ITEM"
+    }
+
+    field "DEL" {
+        label {
+            en = "Delivery Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DELIVERY.REF"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "DEL.STATUS" {
+        comma-separator: false
+        operation: field-extract "DEL"
+        conversion: getFrom "DE.O.HEADER" "MSG.DISPOSITION" false
+    }
+
+    field "SUCCESS" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        operation: constant "\"Success\""
+    }
+
+    field "FAILURE" {
+        comma-separator: false
+        operation: constant "\"Failure\""
+    }
+
+    field "REPAIR" {
+        comma-separator: false
+        operation: constant "\"...REPAIR...\""
+    }
+
+    field "FINAL.STATUS" {
+        label {
+            en = "Delivery Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: if "DEL.STATUS" Matches "REPAIR" process "FAILURE" "SUCCESS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Delivery"
+        }
+
+        label-field: "DEL"
+        image: "view.gif" parameters {
+            function:  Input
+            field: "DEL"
+        }
+
+        application: "DE.O.HEADER"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Event Log"
+        }
+
+        label-field: "EVENT"
+        image: "details.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        application: "EVENT.LOG"
+    }
+
+}

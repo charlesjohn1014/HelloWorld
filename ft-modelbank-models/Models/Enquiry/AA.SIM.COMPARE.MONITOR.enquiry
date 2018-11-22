@@ -1,0 +1,186 @@
+Enquiry "AA.SIM.COMPARE.MONITOR" for "name:/AA_ModelBank:NOFILE.SIM.COMP.POPUP#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "AA Simulation comparison monitor"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "XID" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "DESC" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        operation: constant "\"Simulation Comparison\""
+    }
+
+    field "ARR.ID" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        operation: constant "\"Arrangement\""
+    }
+
+    field "ARRANGEMENT.ID" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "R.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        operation: constant "\"Run Date\""
+    }
+
+    field "DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ACTIVITY" {
+        comma-separator: false
+        operation: constant "\"Activity\""
+    }
+
+    field "L.ACTIVITY" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "STATUS" {
+        comma-separator: false
+        operation: constant "\"Status\""
+    }
+
+    field "L.STATUS" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "SIM.REF1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "SIM.REF2" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "SIM.REF3.TMP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "SIM.REF3" {
+        comma-separator: false
+        operation: if "SIM.REF3.TMP" Equals "NULL" process "\"NO.SIM.REF\"" "SIM.REF3.TMP"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "L.COMPARE" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.SIMULATION.COMPARE \""
+    }
+
+    field "COMPARE" {
+        comma-separator: false
+        operation: calc "L.COMPARE":"SP":"ARRANGEMENT.ID"
+    }
+
+    field "D.COMPARE" {
+        comma-separator: false
+        operation: calc "COMPARE":"SP":"SIM.REF1":"SP":"SIM.REF2":"SP":"SIM.REF3"
+    }
+
+    field "VIEW" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.SIMULATION.COMPARISON \""
+    }
+
+    field "VIEW1" {
+        comma-separator: false
+        operation: calc "VIEW":"SP":"ARRANGEMENT.ID"
+    }
+
+    field "D.COMP.2" {
+        comma-separator: false
+        operation: calc "VIEW1":"SP":"SIM.REF1":"SP":"SIM.REF2"
+    }
+
+    field "SIM.CHK" {
+        comma-separator: false
+        operation: if "SIM.REF3" Equals "\"\"" process "D.COMP.2" "D.COMPARE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Show Details"
+        }
+
+        label-field: "ARR.ID"
+        image: "showdet.gif" parameters {
+            run-immediately: true
+        }
+
+        from-field: "SIM.CHK"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

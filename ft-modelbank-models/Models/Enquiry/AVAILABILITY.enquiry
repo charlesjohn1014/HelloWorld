@@ -1,0 +1,71 @@
+Enquiry "AVAILABILITY" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 19
+
+    field "ENQUIRYHEAD" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 114
+        no-header: true
+        operation: constant "\"Availability\""
+    }
+
+    field "@ID" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "F.ACC.NO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "F.OVERVIEW" {
+        comma-separator: false
+        operation: constant "\"COS AC.LOCKED.AMT.REST \""
+    }
+
+    field "F.OVER" {
+        comma-separator: false
+        operation: calc "F.OVERVIEW":"F.ACC.NO"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Locked Amount"
+        }
+
+        label-field: "ENQUIRYHEAD"
+        criteria: "CURRENT.ACCOUNT" > "F.ACC.NO"
+        from-field: "F.OVER"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Available Ladder"
+        }
+
+        label-field: "ENQUIRYHEAD"
+        criteria: "CURRENT.ACCOUNT" > "F.ACC.NO"
+        enquiry: "AVAILABLE.BAL.LADDER"
+    }
+
+    security {
+        abort: false
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.ENQUIRY.FAVOURITES" ; "NO.TOOLBAR" ; "HORIZONTAL.DRILLDOWNS"
+}

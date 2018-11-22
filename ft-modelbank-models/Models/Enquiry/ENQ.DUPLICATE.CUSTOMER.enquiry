@@ -1,0 +1,140 @@
+Enquiry "ENQ.DUPLICATE.CUSTOMER" for "name:/EB_ModelBank:NOFILE.MB.DUPLICATE.CUS#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 99 fixed-selection "DUP.CUSTOMER" {
+        NotEquals "NULL"
+    }
+
+    custom-selection {
+
+        field "DUP.CUSTOMER" {
+            label {
+                en = "Duplicate Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "RET.VALUES" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "DUP.CUSTOMER" {
+        label {
+            en = "Duplicate Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "RET.VALUES"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "DUP.CUS.NAME" {
+        label {
+            en = "Duplicate Customer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "DUP.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "NATIONA" {
+        label {
+            en = "Nationality"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "DUP.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NATIONALITY" false
+    }
+
+    field "CUS.SINCE" {
+        label {
+            en = "Customer Since"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "DUP.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "CUSTOMER.SINCE" false
+    }
+
+    field "ORG.CUS" {
+        label {
+            en = "Original Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "RET.VALUES"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ORD.CUS.NAME" {
+        label {
+            en = "Original Customer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "ORG.CUS"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Duplicate Customer"
+        }
+
+        label-field: "DUP.CUSTOMER"
+        image: "custscv.gif" parameters {
+            function:  See
+            field: "DUP.CUSTOMER"
+        }
+
+        screen: "CUSTOMER,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Original Customer"
+        }
+
+        label-field: "ORG.CUS"
+        image: "custscv.gif" parameters {
+            function:  See
+            field: "ORG.CUS"
+        }
+
+        screen: "CUSTOMER,INPUT"
+    }
+
+}

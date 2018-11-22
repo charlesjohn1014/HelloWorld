@@ -1,0 +1,132 @@
+Enquiry "MO.AA.LOANS" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 20 fixed-selection "PRODUCT.LINE" {
+        Equals "\'LENDING\'"
+    }
+
+    fixed-selection "ARR.STATUS" {
+        Equals "CURRENT", "AUTH-FWD", "AUTH"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "CUSTOMER"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Loan Reference"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: field-extract "@ID"
+    }
+
+    field "H.DUMMY" {
+        format: User
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.MB.AA.LOAN.DETAILS.HEADER"
+    }
+
+    field "D.INT.RATE" {
+        label {
+            en = "Interest Rate"
+        }
+
+        comma-separator: false
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "AMT.SANC" {
+        label {
+            en = "Amount Sanctioned"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 2
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: constant "\"No outstanding Loans\""
+    }
+
+}

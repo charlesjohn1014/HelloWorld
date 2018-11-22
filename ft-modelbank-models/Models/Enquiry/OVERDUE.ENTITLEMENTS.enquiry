@@ -1,0 +1,240 @@
+Enquiry "OVERDUE.ENTITLEMENTS" for "name:/SC_SccEntitlements:ENTITLEMENT$NAU#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "OVERDUE ENTITLEMENTS ENQUIRY/REPORT"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "PORTFOLIO"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "NAME"
+        }
+
+        column: 12
+        line: 2
+    }
+
+    header {
+        label {
+            en = "EVENT DESC"
+        }
+
+        column: 43
+        line: 2
+    }
+
+    header {
+        label {
+            en = "SECURITY"
+        }
+
+        column: 74
+        line: 2
+    }
+
+    header {
+        label {
+            en = "DESCRIPTION"
+        }
+
+        column: 85
+        line: 2
+    }
+
+    header {
+        label {
+            en = "VALUE DATE"
+        }
+
+        column: 116
+        line: 2
+    }
+
+    header {
+        label {
+            en = "DIARY ID"
+        }
+
+        column: 5
+        line: 3
+    }
+
+    header {
+        label {
+            en = "ACCOUNT OFFICER"
+        }
+
+        column: 26
+        line: 3
+    }
+
+    description {
+        en = "OVERDUE ENTITLEMENTS"
+    }
+
+    start-line: 5
+    end-line: 19
+    build-routines {
+        jBC: "E.SC.ENT.OVERDUE.DEL"
+    }
+
+    fixed-sort: "MANAGER" Null
+    custom-selection {
+
+        field "MANAGER" {
+        }
+
+        None
+    }
+
+    field "PORTFOLIO.NO" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO.NO"
+    }
+
+    field "DIARY.ID" {
+        comma-separator: false
+        operation: i-desc "DIARY.ID"
+    }
+
+    field "PORTFOLIO.NAME" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "EVENT.DESC" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        processing-mode: Single
+        operation: field-extract "DIARY.ID"
+        conversion: getFrom "DIARY" "EVENT.TYPE" false
+        conversion: getFrom "DIARY.TYPE" "EVENT.DESC" false
+    }
+
+    field "SECURITY.NO" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 74
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SECURITY.DESC" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "DUE.DATE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 116
+        }
+
+        processing-mode: Single
+        operation: field-extract "DIARY.ID"
+        conversion: getFrom "DIARY" "VALUE.DATE" false
+    }
+
+    field "DIARY.ID.02" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "DIARY.ID"
+    }
+
+    field "MANAGER" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 26
+            line: + 1
+        }
+
+        spool-break: true
+        processing-mode: Single
+        operation: i-desc "MANAGER"
+    }
+
+    field "B.MANAGER" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "MANAGER"
+    }
+
+    field "END.OF.REPORT" {
+        break-condition {
+            field: "FIELD MANAGER"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"*** END OF REPORT ***\""
+    }
+
+}

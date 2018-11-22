@@ -1,0 +1,165 @@
+Enquiry "ACCT.DETAILS.ACCOUNT" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Static Details"
+    }
+
+    companies:
+    all: true
+    no-selection: true
+    show-all-books: true
+    start-line: 4
+    end-line: 19
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 155
+        operation: constant "\"Account Static\""
+    }
+
+    field "C.TITLE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Title\""
+    }
+
+    field "C.TITLE.SHORT" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Title and Short Title\""
+    }
+
+    field "TITLE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.TITLE.1"
+    }
+
+    field "SHORT.TITLE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SHORT.TITLE"
+    }
+
+    field "L.TITLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 155
+        operation: if "TITLE" Equals "SHORT.TITLE" process "C.TITLE" "C.TITLE.SHORT"
+    }
+
+    field "D.TITLE" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 150
+        operation: field-extract "TITLE"
+    }
+
+    field "D.SHORT.TITLE" {
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 110
+        operation: if "TITLE" NotEquals "SHORT.TITLE" process "SHORT.TITLE" "\"\""
+    }
+
+    field "C.MNEMONIC" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Mnemonic\""
+    }
+
+    field "MNEMONIC" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MNEMONIC"
+    }
+
+    field "L.MNEMONIC" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 3
+        }
+
+        column-width: 155
+        operation: if "MNEMONIC" NotEquals "\"\"" process "C.MNEMONIC" "\"\""
+    }
+
+    field "D.MNEMONIC" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 3
+        }
+
+        column-width: 150
+        operation: if "MNEMONIC" NotEquals "\"\"" process "MNEMONIC" "\"\""
+    }
+
+    field "L.PRIMARY.OFFICER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 3
+        }
+
+        column-width: 110
+        operation: constant "\"Primary Officer\""
+    }
+
+    field "F.ACC.OFF" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "F.ACC.OFF.NAME" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 3
+        }
+
+        column-width: 115
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    fileVersion: Live, Exception
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

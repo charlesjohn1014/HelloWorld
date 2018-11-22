@@ -1,0 +1,224 @@
+Enquiry "CUSTMANDATE.SME.MGR" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Customer Mandate"
+    }
+
+    description {
+        en = "Customer Mandate"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "@ID" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "MANDATE.RECORD" {
+        NotEquals "NULL"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        AND
+
+        field "MANDATE.APPL" {
+            label {
+                en = "Mandate Application"
+            }
+
+        }
+
+        AND
+
+        field "MANDATE.REG" {
+            label {
+                en = "Mandate Reg"
+            }
+
+        }
+
+        AND
+
+        field "MANDATE.RECORD" {
+            label {
+                en = "Mandate Record"
+            }
+
+        }
+
+        None
+    }
+
+    field "CUSTOMERID" {
+        label {
+            en = "Customer No"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Customer Mandate\""
+    }
+
+    field "NAME.1" {
+        label {
+            en = "Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "NAME.1"
+    }
+
+    field "ACCT.OFFICER" {
+        label {
+            en = "Acct Officer"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "ACCT.OFF.NAME" {
+        label {
+            en = "Relationship Officer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "ACCT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "MANDATE.APPL" {
+        label {
+            en = "Mandate Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MANDATE.APPL"
+    }
+
+    field "MANDATE.REG" {
+        label {
+            en = "Mandate Reg"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "MANDATE.REG"
+    }
+
+    field "MANDATE.RECORD" {
+        label {
+            en = "Mandate Record"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MANDATE.RECORD"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Mandate Record Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Mandate"
+        }
+
+        label-field: "CUSTOMERID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "MANDATE.RECORD"
+        }
+
+        screen: "EB.MANDATE,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Customer"
+        }
+
+        label-field: "CUSTOMERID"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "CUSTOMERID"
+        }
+
+        screen: "CUSTOMER,CORPMANDATE"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

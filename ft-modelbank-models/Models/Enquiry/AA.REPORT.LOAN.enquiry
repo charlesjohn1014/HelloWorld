@@ -1,0 +1,1178 @@
+Enquiry "AA.REPORT.LOAN" for "name:/AL_ModelBank:NOFILE.AA.LOAN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Model Bank Arrangement Report"
+    }
+
+    no-selection: true
+    start-line: 11
+    end-line: 99
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            label {
+                en = "Arrangement Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "FROM.DATE" {
+            label {
+                en = "From Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "USER" {
+        label {
+            en = "\"Printed By :\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 90
+            line: 0
+        }
+
+        operation: user
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Arrangement Details\""
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 75
+            line: 0
+        }
+
+        operation: constant "\"Printed By :\""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 160
+            line: 0
+        }
+
+        operation: constant "\"Time and Date :\""
+    }
+
+    field "ARR.ID" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "T.ARR.ID" {
+        label {
+            en = "Time and Date :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 180
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.MB.TIME"
+    }
+
+    field "ONE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"1\""
+    }
+
+    field "H.DUMMY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.MB.AA.REPORT.HEADER"
+    }
+
+    field "CUST" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 2
+        }
+
+        operation: constant "\"Customer :\""
+    }
+
+    field "D.CUSTOMER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 90
+            line: 2
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUS.DES" {
+        label {
+            en = "Customer :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 105
+            line: 2
+        }
+
+        operation: field-extract "D.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "L.ARR.ID" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Arrangement Id :\""
+    }
+
+    field "DISP.ARR.ID" {
+        label {
+            en = "Arrangement Id :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 2
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "L.LEGACY.ID" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Legacy/IBAN Id:\""
+    }
+
+    field "LEGACY.ID" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-extract "DISP.ARR.ID"
+        conversion: extract from 1 to 1 delimited by ")"
+        conversion: extract from 2 to 1 delimited by "("
+        conversion: getFrom "ACCOUNT" "ALT.ACCT.ID" false
+        conversion: replace {
+            newData: "-"
+        }
+
+    }
+
+    field "LEGACY.ID2" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 3
+        }
+
+        operation: field-extract "LEGACY.ID"
+        conversion: convert {
+            oldData: " "
+            newData: "/"
+        }
+
+    }
+
+    field "L.PRODUCT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Product :\""
+    }
+
+    field "D.PRODUCT" {
+        label {
+            en = "Product :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 4
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 12 to 1 delimited by "*"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "L.CURR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 3
+        }
+
+        operation: constant "\"Currency :\""
+    }
+
+    field "D.CURR" {
+        label {
+            en = "Currency :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 3
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "L.INT.RATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 4
+        }
+
+        operation: constant "\"Interest Rate :\""
+    }
+
+    field "D.INT.RATE" {
+        label {
+            en = "Interest Rate :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 4
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "L.TCOM" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        operation: constant "\"Commitment Amount :\""
+    }
+
+    field "D.TCOM" {
+        label {
+            en = "Commitment Amount :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "D.CURR" negative-pattern -# break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: true
+        display-section: Header
+        position {
+            column: 42
+            line: 5
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "L.CCOM" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 120
+            line: 5
+        }
+
+        operation: constant "\"Available Commitment :\""
+    }
+
+    field "D.CCOM" {
+        label {
+            en = "Available Commitment :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "D.CURR" negative-pattern -# break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: true
+        display-section: Header
+        position {
+            column: 140
+            line: 5
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "L.PRIN.DIS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 6
+        }
+
+        operation: constant "\"Principal Disbursed :\""
+    }
+
+    field "D.PRIN.DIS" {
+        label {
+            en = "Principal Disbursed :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "D.CURR" negative-pattern -# break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: true
+        display-section: Header
+        position {
+            column: 42
+            line: 6
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "L.PRIN.BAL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 120
+            line: 6
+        }
+
+        operation: constant "\"Current principal :\""
+    }
+
+    field "D.PRIN.BAL" {
+        label {
+            en = "Current principal :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "D.CURR" negative-pattern -# break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: true
+        display-section: Header
+        position {
+            column: 140
+            line: 6
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "L.VAL.DT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 7
+        }
+
+        operation: constant "\"Start Date :\""
+    }
+
+    field "D.VAL.DT" {
+        label {
+            en = "Start Date :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 7
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "L.MAT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 7
+        }
+
+        operation: constant "\"Maturity Date:\""
+    }
+
+    field "D.MAT" {
+        label {
+            en = "Maturity Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 7
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "L.STATUS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 8
+        }
+
+        operation: constant "\"Loan Status :\""
+    }
+
+    field "D.STATUS" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "AA.STATUS" {
+        comma-separator: false
+        operation: selection "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "ARR.STATUS" false
+    }
+
+    field "AA.STATUS.DISP" {
+        format: Translate
+        comma-separator: false
+        operation: field-extract "AA.STATUS"
+        conversion: replace {
+            oldData: "CURRENT"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "MATURED"
+            newData: "Matured"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Unauthorised"
+        }
+
+        conversion: replace {
+            oldData: "AUTH"
+            newData: "Not Disbursed"
+        }
+
+        conversion: replace {
+            oldData: "AUTH-FWD"
+            newData: "Future Dated"
+        }
+
+        conversion: replace {
+            oldData: "EXPIRED"
+            newData: "Expired"
+        }
+
+        conversion: replace {
+            oldData: "REVERESED"
+            newData: "Reversed"
+        }
+
+    }
+
+    field "DIS.STATUS" {
+        label {
+            en = "Loan Status :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 8
+        }
+
+        operation: if "D.STATUS" Equals "NULL" process "AA.STATUS.DISP" "D.STATUS"
+    }
+
+    field "L.SCH.TYPE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 9
+        }
+
+        operation: constant "\"Payment Type :\""
+    }
+
+    field "D.SCH.TYPE" {
+        label {
+            en = "Payment Type :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 9
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "L.PRIN.SCH" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 10
+        }
+
+        operation: constant "\"Payment Frequency :\""
+    }
+
+    field "D.PRIN.SCH" {
+        label {
+            en = "Payment Frequency :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 10
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "EFFECTIVE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: oconv "MCT"
+    }
+
+    field "TOT.TXN.AMT" {
+        label {
+            en = "Tot Repay Amt"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "PRIN.AMT" {
+        label {
+            en = "Principal"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "INT.AMT" {
+        label {
+            en = "Interest"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "TAX" {
+        label {
+            en = "Tax"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "ACT.ID" {
+        label {
+            en = "Charge"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "UN.CREDITS" {
+        label {
+            en = "Unall Credit"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 120
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "UN.DEBITS" {
+        label {
+            en = "Unall Debit"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 140
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "MOV.PRIN" {
+        label {
+            en = "Loan Outstanding"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 160
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "F.DUMMY" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: selection "ARRANGEMENT.ID"
+        conversion: call
+        jBC: "@ E.MB.AA.REPORT.FOOTER"
+    }
+
+    field "L.SUMM" {
+        display-type: "CLASS-FDCT" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\"Summary Of Overdue :-\""
+    }
+
+    field "L.SUM.UN" {
+        display-type: "CLASS-FDCT" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 2
+        }
+
+        operation: constant "\"---------------------------\""
+    }
+
+    field "F1.L" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 3
+        }
+
+        operation: constant "\"Principal :\""
+    }
+
+    field "F1.D" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: Footer
+        position {
+            column: 10
+            line: + 3
+        }
+
+        operation: field-extract "F.DUMMY"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "F2.L" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 4
+        }
+
+        operation: constant "\"Interest :\""
+    }
+
+    field "F2.D" {
+        label {
+            en = "Interest :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: Footer
+        position {
+            column: 20
+            line: + 4
+        }
+
+        operation: field-extract "F.DUMMY"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "F3.L" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 5
+        }
+
+        operation: constant "\"Charges :\""
+    }
+
+    field "F3.D" {
+        label {
+            en = "Charges :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: Footer
+        position {
+            column: 20
+            line: + 5
+        }
+
+        operation: field-extract "F.DUMMY"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "F4.L" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 6
+        }
+
+        operation: constant "\"Penalty Interest :\""
+    }
+
+    field "F4.D" {
+        label {
+            en = "Penalty Interest :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: Footer
+        position {
+            column: 20
+            line: + 6
+        }
+
+        operation: field-extract "F.DUMMY"
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "F5.L" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 7
+        }
+
+        processing-mode: Single
+        operation: constant "\"Total :\""
+    }
+
+    field "F5.D" {
+        label {
+            en = "Total :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: Footer
+        position {
+            column: 20
+            line: + 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "F.DUMMY"
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

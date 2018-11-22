@@ -1,0 +1,195 @@
+Enquiry "AI.AA.PRODUCT.CATALOG.PRODUCTS.WS" for "name:/AA_ProductManagement:AA.PRODUCT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Products"
+    }
+
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.AA.CATALOG"
+    }
+
+    fixed-selection "PRODUCT.GROUP" {
+        Equals "DEPOSITS", "BONDS", "DEPOSITS.SAVINGS.PLAN"
+    }
+
+    fixed-selection "ACTIVE.PRODUCTS" {
+        Equals "1"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "GROUP" {
+        format: User
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: selection "PRODUCT.GROUP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "DESCRIPTION" false
+    }
+
+    field "ID" {
+        label {
+            en = "Product"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "LINE" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "PRODUCT.LINE"
+    }
+
+    field "LINE.ATTRIBUTES" {
+        comma-separator: false
+        operation: field-extract "LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "LINE.ATTRIBUTE" false
+    }
+
+    field "NONAA" {
+        comma-separator: false
+        operation: selection "PRODUCT.GROUP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "SYSTEM.GROUP" false
+    }
+
+    field "Interest Details" {
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: constant "\"DEPOSITINT\""
+    }
+
+    field "Category date" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CAT.AVAILABLE.DATE"
+    }
+
+    field "PRODUCT.KEY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "PRODUCT.KEY"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CCY.SPECIFIC" {
+        comma-separator: false
+        operation: field-extract "LINE.ATTRIBUTES"
+        conversion: matchField "0X\'CCY\'0X" "2"
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "V.OTHER.NON" {
+        comma-separator: false
+        operation: field-extract "PRODUCT.KEY"
+        conversion: getFrom "AA.PRODUCT.LINK" "DRILL.DOWN.1" false
+    }
+
+    field "V.AAA.CCY" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.NEW I F3\""
+    }
+
+    field "V.AAA.NOCCY" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.NEW.NOCCY I F3\""
+    }
+
+    field "V.AAA.PART" {
+        comma-separator: false
+        operation: if "CCY.SPECIFIC" Equals "\"CCY\"" process "V.AAA.CCY" "V.AAA.NOCCY"
+    }
+
+    field "EFF.DATE.PART" {
+        comma-separator: false
+        operation: constant "\" EFFECTIVE.DATE=\""
+    }
+
+    field "EFF.DATE" {
+        comma-separator: false
+        operation: calc "EFF.DATE.PART":"TODAY"
+    }
+
+    field "V.AAA" {
+        comma-separator: false
+        operation: calc "V.AAA.PART":"EFF.DATE"
+    }
+
+    field "ACTIVITY.PART" {
+        comma-separator: false
+        operation: constant "\"-NEW-ARRANGEMENT\""
+    }
+
+    field "ACTIVITY" {
+        comma-separator: false
+        operation: calc "LINE":"ACTIVITY.PART"
+    }
+
+    field "V.OTHER" {
+        comma-separator: false
+        operation: if "LINE" Equals "\"OTHER\"" process "V.OTHER.NON" "V.AAA"
+    }
+
+    field "V.ARRANGEMENT" {
+        comma-separator: false
+        operation: if "NONAA" Equals "\"YES\"" process "V.OTHER.NON" "V.OTHER"
+    }
+
+    field "PKEY" {
+        comma-separator: false
+        operation: field-extract "PRODUCT.KEY"
+    }
+
+}

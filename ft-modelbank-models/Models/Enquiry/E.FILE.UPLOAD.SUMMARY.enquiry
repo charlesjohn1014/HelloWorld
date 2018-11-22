@@ -1,0 +1,159 @@
+Enquiry "E.FILE.UPLOAD.SUMMARY" for "name:/BL_ModelBank:NOFILE.PRODUCT.UPDATE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Invoice Upload - Summary"
+        }
+
+        column: 1
+        line: 0
+    }
+
+    start-line: 1
+    end-line: 99 fixed-selection "RET.ARR" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "UPLOAD.REF" {
+            mandatory: true
+            label {
+                en = "Upload Reference"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "STATUS" {
+        label {
+            en = "Record Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "RECORDS" {
+        label {
+            en = "No. of Records"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "BRK.STATUS" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "APPLY.BREAK" {
+        comma-separator: false
+        operation: break-change "BRK.STATUS"
+    }
+
+    field "BRK.TEXT" {
+        display-type: "CLASS-FDLB" break-condition {
+            field: "APPLY.BREAK"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Sub Total \""
+    }
+
+    field "TOT.STATUS" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "APPLY.BREAK"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: total "RECORDS"
+    }
+
+    field "END.TEXT" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Total \""
+    }
+
+    field "TOTAL.ALL" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: total "RECORDS"
+    }
+
+}

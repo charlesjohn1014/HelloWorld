@@ -1,0 +1,345 @@
+Enquiry "DX.OPTSTRUCT.B2B.TRADES" for "name:/DX_OptStructContract:DX.OPTSTRUCT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Packaged Option B2B Contracts"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    description {
+        en = "Packaged Option B2B contracts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "B2B.REFERENCE" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Contract ID"
+            }
+
+        }
+
+        AND
+
+        field "B2B.REFERENCE" {
+            label {
+                en = "B2B Reference"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "COUNTERPARTY" {
+            label {
+                en = "Counterparty"
+            }
+
+        }
+
+        AND
+
+        field "TRADE.DATE" {
+            label {
+                en = "Trade Date"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "COUNTERPARTY" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COUNTERPARTY"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "DX.TRADE.ID" {
+        label {
+            en = "Underlying Trade"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DX.TRADE.ID"
+    }
+
+    field "OPT.BUY.SELL" {
+        label {
+            en = "Buy/Sell"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPT.BUY.SELL"
+    }
+
+    field "OPT.CALL.PUT" {
+        label {
+            en = "Call/Put"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPT.CALL.PUT"
+    }
+
+    field "OPT.LOT.SIZE" {
+        label {
+            en = "Lot Size"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPT.LOT.SIZE"
+    }
+
+    field "BC" {
+        comma-separator: false
+        operation: break-change "B2B.REFERENCE"
+    }
+
+    field "B2B.REFERENCE" {
+        label {
+            en = "B2B Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "B2B.REFERENCE"
+    }
+
+    field "NOTIONAL.AMT" {
+        label {
+            en = "Notional Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOTIONAL.AMT"
+    }
+
+    field "A" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "NOTIONAL" {
+        comma-separator: false
+        operation: calc "NOTIONAL.AMT" * "A"
+    }
+
+    field "CUST" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER\""
+    }
+
+    field "DEALER" {
+        comma-separator: false
+        operation: constant "\"DEALER\""
+    }
+
+    field "CUSTOMER.TYPE" {
+        comma-separator: false
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "DX.CUSTOMER" "CUSTOMER.TYPE" false
+    }
+
+    field "CD" {
+        comma-separator: false
+        operation: if "CUSTOMER.TYPE" Equals "CUST" process "NOTIONAL" "NOTIONAL.AMT"
+    }
+
+    field "CPARTY.TRADE" {
+        label {
+            en = "Cparty Trade"
+        }
+
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: if "CUSTOMER.TYPE" Equals "DEALER" process "YES" "\"\""
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: constant "\"There are no Back to back contracts\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Contract"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        should-be-changed: "S @ID"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Contract"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DX.OPTSTRUCT,INPUT"
+    }
+
+    introspection-messages: "Error in drilldown 1: APP \'S\' does not exist, broken reference"
+}

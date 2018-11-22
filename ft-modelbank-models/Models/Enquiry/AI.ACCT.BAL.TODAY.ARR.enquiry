@@ -1,0 +1,254 @@
+Enquiry "AI.ACCT.BAL.TODAY.ARR" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "PRODUCT.LINE" {
+        Equals "ACCOUNTS"
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "UNAUTH", "CANCELLED", "MATURED", "CLOSE"
+    }
+
+    fixed-selection "LINKED.APPL.ID" {
+        Equals "!EXT.SMS.ACCOUNTS.SEE"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Your Account Summary\""
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "NAME" {
+        label {
+            en = "Nickname"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "ACC" {
+        label {
+            en = "Acct Number"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "ACCT.NAME" {
+        label {
+            en = "Account Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "LOCKED.AMOUNT" {
+        label {
+            en = "Locked Amount"
+        }
+
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.TOTAL.LOCK.AMT"
+    }
+
+    field "WORKING.BALANCE" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "ONLINE.ACTUAL.BAL" {
+        label {
+            en = "Current Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "REAL.BALANCE" {
+        label {
+            en = "Available Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        operation: calc "WORKING.BALANCE" - "LOCKED.AMOUNT"
+    }
+
+    field "FILE.EXTN" {
+        comma-separator: false
+        operation: constant "\".pdf\""
+    }
+
+    field "PDF" {
+        comma-separator: false
+        operation: calc "ACC":"FILE.EXTN"
+    }
+
+    field "CURRENT.DATE" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "PAST.DATE" {
+        comma-separator: false
+        operation: last-working-day
+    }
+
+    field "ZERO.RECORD.HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Your Account Summary\""
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No accounts available for display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Today\'s Transactions"
+        }
+
+        label-field: "ACCT.NAME"
+        criteria: "CURRENT.ACC" > "ACC"
+        criteria: "BOOKING.DATE" Equals "CURRENT.DATE" parameters {
+            field: "ACC"
+        }
+
+        composite-screen: "AI.TXNS.LIST"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Transaction History"
+        }
+
+        label-field: "ACCT.NAME"
+        criteria: "CURRENT.ACC" > "ACC"
+        criteria: "IN.START.DATE" Equals "PAST.DATE"
+        criteria: "IN.END.DATE" Equals "CURRENT.DATE"
+        enquiry: "AI.LAST.N.TXNS.LIST"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Download"
+        }
+
+        label-field: "ACCT.NAME"
+        download: "PDF"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "UNDERLINE.HEADER.ROW"
+}

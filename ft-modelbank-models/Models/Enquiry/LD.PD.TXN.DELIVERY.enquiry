@@ -1,0 +1,197 @@
+Enquiry "LD.PD.TXN.DELIVERY" for "name:/DE_Config:DE.O.HEADER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "View LD/PD Delivery Messages"
+    }
+
+    description {
+        en = "View LD/PD Delivery Messages"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 18 fixed-selection "TRANSACTION.REF" {
+        Matches "LD...", "PD..."
+    }
+
+    custom-selection {
+
+        field "TRANSACTION.REF" {
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Reference"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"LD/PD Delivery Messages\""
+    }
+
+    field "MESSAGE.TYPE" {
+        label {
+            en = "Message"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MESSAGE.TYPE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "CCY"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "TRANSACTION.REF" {
+        label {
+            en = "Transaction"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.REF"
+    }
+
+    field "CUSTOMER.NUMBER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.NUMBER"
+    }
+
+    field "UNF" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"UNFORMATTED\""
+    }
+
+    field "APPFMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION.FORMAT"
+    }
+
+    field "CAR.ADD" {
+        length: 8
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CARRIER.ADDR.NO"
+    }
+
+    field "DCAR" {
+        label {
+            en = "Carrier"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: if "CAR.ADD" Equals "NL" process "UNF" "CAR.ADD"
+    }
+
+    field "MSGD" {
+        label {
+            en = "Msg disposition"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MSG.DISPOSITION"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Delivery Message"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "DELIVERY.REF" Equals "@ID"
+        enquiry: "DE.MSG.SUM"
+    }
+
+}

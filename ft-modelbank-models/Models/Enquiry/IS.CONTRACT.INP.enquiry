@@ -1,0 +1,235 @@
+Enquiry "IS.CONTRACT.INP" for "name:/IS_ModelBank:NOFILE.IS.ASSET.LIST#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Input Contract"
+    }
+
+    description {
+        en = "Input Contract"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    no-mandatory-selection: 1 fixed-selection "IsAssetDetails" {
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "COMMODITY" {
+            label {
+                en = "Commodity"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Input Contract\""
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "COMMODITY" {
+        label {
+            en = "Commodity"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+        conversion: getFrom "IS.COMMODITY" "DESCRIPTION" false
+    }
+
+    field "ASSET" {
+        label {
+            en = "Asset Reference"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ASSET.TITLE" {
+        label {
+            en = "Asset Title"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "VENDOR" {
+        label {
+            en = "Vendor"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "VENDOR.NAME" {
+        label {
+            en = "Vendor Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+        conversion: getFrom "IS.VENDOR" "NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "UNIT.PRICE" {
+        label {
+            en = "Unit Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "COMM.CODE" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records \""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Create Contract"
+        }
+
+        label-field: "ASSET"
+        image: "new.gif"
+        criteria: "CURRENT.COMM" > "COMM.CODE"
+        criteria: "CURRENT.ASSET.REF" > "ASSET"
+        criteria: "CURRENT.CURRENCY" > "CURRENCY"
+        criteria: "CURRENT.DESC" > "ASSET.TITLE"
+        criteria: "CURRENT.CUSTOMER" > "CUSTOMER" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "IS.CONTRACT,TXN.INPUT"
+    }
+
+}

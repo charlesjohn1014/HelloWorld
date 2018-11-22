@@ -1,0 +1,191 @@
+Enquiry "LD.COMMITMENT" for "name:/LD_Contract:LD.LOANS.AND.DEPOSITS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of Commitment Contracts"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CATEGORY" {
+        Between "21095", "21099"
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "\'LIQ\'"
+    }
+
+    fixed-sort: "FIN.MAT.DATE" Null
+    custom-selection {
+
+        field "CUSTOMER.ID" {
+            label {
+                en = "Customer id"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        operation: constant "\"Commitment Contracts\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Commitment Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 32
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "COMMT.AVAIL.AMT" {
+        label {
+            en = "Available Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COMMT.AVAIL.AMT"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "FIN.MAT.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 78
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FIN.MAT.DATE"
+        conversion: call
+        jBC: "@ LD.ENQ.MATDATE"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 91
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "LD.LOANS.AND.DEPOSITS,COMMIT"
+    }
+
+}

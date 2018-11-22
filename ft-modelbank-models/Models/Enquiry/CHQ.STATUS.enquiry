@@ -1,0 +1,312 @@
+Enquiry "CHQ.STATUS" for "name:/ST_ChqSubmit:CHEQUE.REGISTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Cheque Status"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "CHQ.TYPE.ACCOUNT" {
+            label {
+                en = "Account No"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Cheque Type"
+            }
+
+            operands: BeginsWith
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Cheque Status \""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 0
+        }
+
+        operation: constant "\" Information\""
+    }
+
+    field "HDR2.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Account Number :\""
+    }
+
+    field "@ID" {
+        length: 22
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCT.NUM" {
+        length: 22
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 0 delimited by "."
+    }
+
+    field "ACC.NO" {
+        comma-separator: false
+        operation: field-extract "ACCT.NUM"
+    }
+
+    field "CRSID" {
+        comma-separator: false
+        operation: constant "\"...:ACC.NO:...\""
+    }
+
+    field "ACC.NO.BRK" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACC.NO"
+    }
+
+    field "ACC.NO.DISP" {
+        label {
+            en = "Account Number :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            field: "ACC.NO.BRK"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 1
+        }
+
+        operation: field-extract "ACC.NO"
+    }
+
+    field "ACC.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: field-extract "ACC.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CHQ.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        format: User
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHQ.TYPE"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "CHEQUE.NOS" {
+        label {
+            en = "Issued"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHEQUE.NOS"
+    }
+
+    field "SEP" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "FSEP" {
+        comma-separator: false
+        operation: field-extract "SEP"
+    }
+
+    field "IDSEP" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "@ID":"FSEP"
+    }
+
+    field "CHQ.ID.NOS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "IDSEP":"CHEQUE.NOS"
+    }
+
+    field "CHQ.PRESENT" {
+        length: 22
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CHQ.ID.NOS"
+        conversion: call
+        jBC: "@ E.CHQ.PRE.NOS"
+    }
+
+    field "PRESENTED.CHQ" {
+        label {
+            en = "Presented"
+        }
+
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CHQ.PRESENT"
+    }
+
+    field "STOP.CHQS" {
+        length: 22
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CHQ.ID.NOS"
+        conversion: call
+        jBC: "@ E.CHQ.STOP.NOS"
+    }
+
+    field "STOPPED.CHQS" {
+        label {
+            en = "Stopped"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 44
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STOP.CHQS"
+    }
+
+    field "RET.CHQS" {
+        length: 22
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CHQ.ID.NOS"
+        conversion: call
+        jBC: "@ E.CHQ.RET.NOS"
+    }
+
+    field "RETURNED.CHQS" {
+        label {
+            en = "Returned"
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Multi
+        operation: field-extract "RET.CHQS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Presented Cheques Details"
+        }
+
+        label-field: "PRESENTED.CHQ"
+        criteria: "CHEQ.REG.SUPP.ID" Contains "ACC.NO"
+        enquiry: "CHQ.PRESENTED"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Cheque Register"
+        }
+
+        label-field: "CHQ.TYPE" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "CHEQUE.REGISTER"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Stopped Cheques Details"
+        }
+
+        label-field: "STOPPED.CHQS"
+        criteria: "CHEQ.REG.SUPP.ID" Contains "ACC.NO"
+        enquiry: "CHQ.STOPPED"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Returned Cheques Details"
+        }
+
+        label-field: "RETURNED.CHQS"
+        criteria: "ACCOUNT.NO" Contains "ACC.NO"
+        enquiry: "CHQ.RETURNED"
+    }
+
+}

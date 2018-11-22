@@ -1,0 +1,191 @@
+Enquiry "AA.DETAILS.CHQ.REVOKE.AR" for "name:/ST_ChqPaymentStop:PAYMENT.STOP.HIST#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cheques Revoked"
+    }
+
+    description {
+        en = "Cheques Revoked"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "ACCOUNT.NUMBER" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "FIRST.CHEQUE.NO" {
+            label {
+                en = "Cheque No"
+            }
+
+        }
+
+        AND
+
+        field "CHEQUE.TYPE" {
+            label {
+                en = "Cheque Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACCT.NO" {
+        comma-separator: false
+        operation: application-field-name "ACCOUNT.NUMBER"
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 170
+        operation: constant "\"Cheques Revoked\""
+    }
+
+    field "PAYM.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "CHQ.TYP" {
+        label {
+            en = "Cheque Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 170
+        processing-mode: Multi
+        operation: field-extract "PAYM.ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.VALUES"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "CHEQUE.TYPE" "DESCRIPTION" false
+    }
+
+    field "CHQ.NO" {
+        label {
+            en = "Number"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 60
+        processing-mode: Multi
+        operation: field-extract "PAYM.ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.VALUES"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "STOP.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 70
+        processing-mode: Multi
+        operation: field-extract "PAYM.ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.VALUES"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "REASONS" {
+        label {
+            en = "Reason"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 206
+        processing-mode: Multi
+        operation: field-extract "PAYM.ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.VALUES"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ID" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 170
+        operation: constant "\"No Revoked Cheques to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CHQ.NO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "PAYM.ID"
+        }
+
+        application: "PAYMENT.STOP.HIST"
+    }
+
+    attributes: "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

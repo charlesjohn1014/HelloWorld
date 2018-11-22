@@ -1,0 +1,435 @@
+Enquiry "DX.MATURING.LIST" for "name:/DX_Trade:DX.TRADE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "DX Trades Maturing Shortly"
+    }
+
+    description {
+        en = "DX Trades Maturing Shortly"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "TRADE.STATUS" {
+        NotEquals "\"CLOSED\""
+    }
+
+    fixed-selection "EXCHANGE.CODE" {
+        NotEquals "600"
+    }
+
+    fixed-selection "MATURITY.DATE" {
+        Between "!TODAY", "!TODAY+29C"
+    }
+
+    fixed-sort: "TRADE.TYPE" Null
+    fixed-sort: "MATURITY.DATE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Trade ID"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.CODE" {
+            label {
+                en = "Contract Code"
+            }
+
+        }
+
+        AND
+
+        field "PRI.SEC.ACC" {
+            label {
+                en = "Prim Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity"
+            }
+
+        }
+
+        AND
+
+        field "SEC.CUST.NO" {
+            label {
+                en = "Secondary Cust"
+            }
+
+        }
+
+        None
+    }
+
+    field "TRADE.TYPE" {
+        length: 6
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRADE.TYPE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FUT" {
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        operation: constant "\"ETD Futures\""
+    }
+
+    field "OPT" {
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        operation: constant "\"ETD Options\""
+    }
+
+    field "FUT1" {
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        operation: if "TRADE.TYPE" Equals "FUTURE" process "FUT" "NULL"
+    }
+
+    field "OPT1" {
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        operation: if "TRADE.TYPE" Equals "OPTION" process "OPT" "NULL"
+    }
+
+    field "DESC" {
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        operation: calc "FUT1":"OPT1"
+    }
+
+    field "TRADE" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "STARTTREE"
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "DESC"
+    }
+
+    field "B.TRADE" {
+        comma-separator: false
+        operation: break-change "TRADE"
+    }
+
+    field "@ID" {
+        label {
+            en = "Trade ID"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TRADE.ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"DX Trades Maturing Shortly\""
+    }
+
+    field "CONTRACT.CODE" {
+        label {
+            en = "Contract Code"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CODE"
+    }
+
+    field "CONT" {
+        label {
+            en = "Contract Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CONTRACT.CODE"
+        conversion: getFrom "DX.CONTRACT.MASTER" "SHORT.NAME" false
+    }
+
+    field "CONTRR" {
+        comma-separator: false
+        operation: calc "CONT":"HY":"OPTION.TYPE":"HY":"STRIKE.PRICE"
+    }
+
+    field "CONTRR.1" {
+        label {
+            en = "Contract Name"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        hidden: true
+        operation: calc "CONTRR":"HY":"MATURITY.DATE"
+    }
+
+    field "HY" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DDOWN1" {
+        comma-separator: false
+        operation: constant "\"DX.CO.MATURITY.FUTURE.BRWS\""
+    }
+
+    field "DDOWN2" {
+        comma-separator: false
+        operation: constant "\"DX.OPTION.MONEY.MODEL\""
+    }
+
+    field "DXF" {
+        comma-separator: false
+        operation: if "TRADE.TYPE" Equals "\"FUTURE\"" process "DDOWN1" "NULL"
+    }
+
+    field "DXO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "TRADE.TYPE" Equals "\"OPTION\"" process "DDOWN2" "NULL"
+    }
+
+    field "DDOWN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "DXO" Equals "NULL" process "DXF" "DXO"
+    }
+
+    field "PRI.SEC.ACC" {
+        label {
+            en = "Pri Portfolio"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.SEC.ACC"
+    }
+
+    field "PRI.PORT" {
+        label {
+            en = "Pri Customer"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "PRI.SEC.ACC"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "T.MAT.DATE" {
+        label {
+            en = "Maturity"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "COLON" {
+        comma-separator: false
+        operation: constant "\":\""
+    }
+
+    field "ODATA" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        hidden: true
+        operation: calc "MATURITY.DATE":"COLON":"CONTRACT.CODE"
+        conversion: call
+        jBC: "@ E.MB.DX.MAT.DATES.RTN"
+    }
+
+    field "TR.END" {
+        display-type: "ENDTREE" break-condition {
+            field: "B.TRADE"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "TRADE"
+    }
+
+    field "SEL.CMD.1" {
+        comma-separator: false
+        operation: constant "\"@ID EQ \""
+    }
+
+    field "SEL.OPT" {
+        comma-separator: false
+        operation: calc "SEL.CMD.1":"@ID"
+    }
+
+    field "PORT.CUST" {
+        comma-separator: false
+        operation: constant "\" PORT.CUST.ID EQ \""
+    }
+
+    field "SEL.FUT.1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "PORT.CUST":"PRI.SEC.ACC"
+    }
+
+    field "CONT.ID" {
+        comma-separator: false
+        operation: constant "\" CONTRACT.CODE EQ \""
+    }
+
+    field "SEL.FUT.2" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "CONT.ID":"CONTRACT.CODE"
+    }
+
+    field "MAT.DATE" {
+        comma-separator: false
+        operation: constant "\" MATURITY.DATE EQ \""
+    }
+
+    field "SEL.FUT.3" {
+        comma-separator: false
+        operation: calc "MAT.DATE":"T.MAT.DATE"
+    }
+
+    field "SELECTION.CMD.1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "TRADE.TYPE" Equals "\"OPTION\"" process "SEL.OPT" "SEL.FUT.1"
+    }
+
+    field "SELECTION.CMD.2" {
+        comma-separator: false
+        operation: if "TRADE.TYPE" Equals "\"OPTION\"" process "NULL" "SEL.FUT.2"
+    }
+
+    field "SELECTION.CMD.3" {
+        comma-separator: false
+        operation: if "TRADE.TYPE" Equals "\"OPTION\"" process "NULL" "SEL.FUT.3"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no deals maturing shortly\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CONTRACT.CODE"
+        image: "view.gif"
+        criteria: "SELECTION.CMD.1"
+        criteria: "SELECTION.CMD.2"
+        criteria: "SELECTION.CMD.3"
+        from-field: "DDOWN"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

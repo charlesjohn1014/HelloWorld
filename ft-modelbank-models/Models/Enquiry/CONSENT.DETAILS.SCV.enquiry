@@ -1,0 +1,273 @@
+Enquiry "CONSENT.DETAILS.SCV" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Find Bundle Arrangements"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "ARR.STATUS" {
+        NotEquals "UNAUTH"
+    }
+
+    fixed-selection "PRODUCT.LINE" {
+        Equals "\"CONSENT\""
+    }
+
+    fixed-selection "CUSTOMER" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-sort: "PRODUCT.LINE" Null
+    fixed-sort: "ARR.STATUS" Null
+    fixed-sort: "PRODUCT.GROUP" Null
+    fixed-sort: "LINKED.APPL.ID" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement"
+            }
+
+        }
+
+        AND
+
+        field "PRODUCT.GROUP" {
+            label {
+                en = "Product Group"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        AND
+
+        field "PRODUCT" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        None
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "HEADER" {
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Customer Consent\""
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "ACCOUNT" {
+        label {
+            en = "Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: value 1
+    }
+
+    field "PRODUCT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT"
+        conversion: value 1 1
+    }
+
+    field "PRODUCT.DESC" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer #"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "OWNER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "PRODUCT.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "PRODUCT.CODE" {
+        comma-separator: false
+        operation: field-extract "PRODUCT.LINE"
+        conversion: replace {
+            oldData: "CONSENT"
+            newData: "CK"
+        }
+
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 25
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.GET.BUNDLE.BALANCE.SCV"
+    }
+
+    field "C.COS" {
+        comma-separator: false
+        operation: constant "\"COS\""
+    }
+
+    field "C.GEN.OVER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.OVERVIEW\""
+    }
+
+    field "C.PL.OVER1" {
+        comma-separator: false
+        operation: constant "\"AA.OVERVIEW.\""
+    }
+
+    field "C.PL.OVER" {
+        comma-separator: false
+        operation: calc "C.PL.OVER1":"PRODUCT.CODE"
+    }
+
+    field "COS.NAME" {
+        comma-separator: false
+        operation: if "PRODUCT.CODE" Equals "GEN" process "C.GEN.OVER" "C.PL.OVER"
+    }
+
+    field "DRILL.COS1" {
+        comma-separator: false
+        operation: calc "C.COS":"SP":"COS.NAME":"SP":"ARRANGEMENT"
+    }
+
+    field "DRILL.COS" {
+        comma-separator: false
+        operation: calc "DRILL.COS1":"SP":"PRODUCT"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS"
+        format: Translate break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Customer Consent record to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Overview"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "view.gif"
+        from-field: "DRILL.COS"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "DISABLE.NO.SORT.OPTIONS"
+}

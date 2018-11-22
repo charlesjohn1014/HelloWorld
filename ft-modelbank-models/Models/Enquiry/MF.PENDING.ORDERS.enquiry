@@ -1,0 +1,256 @@
+Enquiry "MF.PENDING.ORDERS" for "name:/MF_Orders:MF.ORDER$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "MF Pending Orders"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DEAL.STATUS" {
+        Equals "\'\'"
+    }
+
+    fixed-sort: "FUND.ID" Null
+    fixed-sort: "CUSTOMER.ID" Null
+    fixed-sort: "PARTICIPATION.ACC" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "FUND.ID" {
+            label {
+                en = "Fund Id"
+            }
+
+        }
+
+        AND
+
+        field "PARTICIPATION.ACC" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "TRANS.TYPE" {
+            label {
+                en = "Transaction Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"List of MF pending orders\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Order Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.DATE"
+    }
+
+    field "FUND.ID" {
+        label {
+            en = "Fund Id"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FUND.ID"
+    }
+
+    field "FUND.NAME" {
+        label {
+            en = "Fund Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        operation: field-extract "FUND.ID"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "PARTICIPATION.ACC" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PARTICIPATION.ACC"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Acc Officer"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "TRANS.TYPE" {
+        label {
+            en = "Trans Type"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.TYPE"
+    }
+
+    field "ORDER.CCY" {
+        label {
+            en = "Order Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 77
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.CCY"
+    }
+
+    field "ORDER.AMOUNT" {
+        label {
+            en = "Order Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "ORDER.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.AMOUNT"
+    }
+
+    field "UNIT.AMOUNT" {
+        label {
+            en = "Unit Amt"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 98
+        }
+
+        processing-mode: Single
+        operation: application-field-name "UNIT.AMOUNT"
+    }
+
+    field "ORDER.EXP.DATE" {
+        label {
+            en = "Order Exp Date"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "ORDER.EXP.DATE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "MF.ORDER,COMPLETE"
+    }
+
+    attributes: "PAGE"
+}

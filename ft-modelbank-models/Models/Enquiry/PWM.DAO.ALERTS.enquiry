@@ -1,0 +1,182 @@
+Enquiry "PWM.DAO.ALERTS" for "name:/EB_Logging:TEC.ITEMS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Alerts"
+    }
+
+    description {
+        en = "Alerts for a Account Officer"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "ITEM.CLASSIFICATION" {
+        Equals "BUSINESS"
+    }
+
+    fixed-selection "SUBSCRIPTION.LEVEL" {
+        Equals "INTERNAL", "BOTH"
+    }
+
+    fixed-sort: "EVENT.TYPE" Descending
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Event Id"
+            }
+
+        }
+
+        AND
+
+        field "EVENT.TYPE" {
+            label {
+                en = "Event Type"
+            }
+
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Available Alerts for Subscription\""
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "EVENT.TYPE" {
+        label {
+            en = "Event Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EVENT.TYPE"
+    }
+
+    field "RM.USER" {
+        comma-separator: false
+        operation: user
+    }
+
+    field "USER.DAO" {
+        comma-separator: false
+        operation: field-extract "RM.USER"
+        conversion: getFrom "USER" "DEPARTMENT.CODE" false
+    }
+
+    field "EVENT" {
+        comma-separator: false
+        operation: field-extract "USER.DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "EVENT" false
+    }
+
+    field "DAO.DETAIL" {
+        comma-separator: false
+        operation: calc "EVENT":"NULL"
+    }
+
+    field "STAR" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/drilldown/auth1.gif\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "NU" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "RRR" {
+        comma-separator: false
+        operation: calc "\"...\"":"@ID":"NULL":"\"...\""
+    }
+
+    field "SHOW.STAR" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "DAO.DETAIL" Matches "RRR" process "STAR" "\"\""
+    }
+
+    field "HIDE.ID" {
+        label {
+            en = "Event Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: if "SHOW.STAR" Equals "\"\"" process "@ID" "NU"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Subscribe"
+        }
+
+        label-field: "HIDE.ID"
+        image: "action.gif"
+        criteria: "TEC.ITEMS" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.ALERT.REQUEST,PWM.INPUT.DAO"
+    }
+
+}

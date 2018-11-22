@@ -1,0 +1,370 @@
+Enquiry "DEP.BY.SEC" for "name:/SC_ModelBank:NOFILE.E.NOF.GET.DETAILS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Positions for a Location"
+    }
+
+    description {
+        en = "Positions for a Location"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DEP.POSITIONS" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "SECURITY.NUMBER" {
+            label {
+                en = "Security Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DEPOSITORY" {
+            mandatory: true
+            label {
+                en = "Depository"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TRADE.DATE" {
+            label {
+                en = "Trade Date"
+            }
+
+            operands: Equals, NotEquals, LessThan, Greater, LessOrEquals, GreaterOrEquals, Between
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+            operands: Equals, NotEquals, LessThan, Greater, LessOrEquals, GreaterOrEquals, Between
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Securities in a Depository\""
+    }
+
+    field "DEPO.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Depository:\""
+    }
+
+    field "DEP.NUM" {
+        label {
+            en = "Depository:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 2
+        }
+
+        operation: field-extract "DEPO.NO"
+    }
+
+    field "DNAME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Depository Name:\""
+    }
+
+    field "DEPO.NAME" {
+        label {
+            en = "Depository Name:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 3
+        }
+
+        operation: field-extract "DEPO.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "TD.HEADER1" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Details \""
+    }
+
+    field "S.TRADE.DATE" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 80
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: selection "TRADE.DATE"
+        conversion: call
+        jBC: "@ E.MB.CNV.SEL.OPER.HDR"
+    }
+
+    field "SEC.ID" {
+        label {
+            en = "Security No"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DEPO.NO" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SEC.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ISIN.NO" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "CLOSING.BAL" {
+        label {
+            en = "Total Nominals"
+        }
+
+        display-type: "ALPHANUMERIC"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "UNSETT.CR" {
+        label {
+            en = "Unsettled In"
+        }
+
+        display-type: "AMOUNT"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "UNSETTLED.DR" {
+        label {
+            en = "Unsettled Out"
+        }
+
+        display-type: "AMOUNT"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "TOT.NET" {
+        label {
+            en = "Net Nominal"
+        }
+
+        display-type: "AMOUNT"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "PRICE.CCY" {
+        label {
+            en = "Price Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "PRICE" {
+        label {
+            en = "Latest Price"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "SEL1" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "SEL2" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "ALL.PORT" {
+        comma-separator: false
+        operation: constant "\"ALL\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "SEC.ID"
+        criteria: "DEPOSITORY" Equals "DEPO.NO"
+        criteria: "SECURITY.NUMBER" Equals "SEC.ID"
+        criteria: "SEL1"
+        criteria: "SEL2"
+        enquiry: "SEC.SECNO"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Position by Portfolio"
+        }
+
+        label-field: "SEC.ID"
+        criteria: "SECURITY.ACCOUNT" Equals "ALL.PORT"
+        criteria: "DEPOSITORY" Equals "DEPO.NO"
+        criteria: "SECURITY.NUMBER" Equals "SEC.ID"
+        criteria: "SEL1"
+        criteria: "SEL2"
+        enquiry: "DEPSEC.BY.PF"
+    }
+
+}

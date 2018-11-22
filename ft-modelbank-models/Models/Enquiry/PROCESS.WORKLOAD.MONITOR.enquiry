@@ -1,0 +1,121 @@
+Enquiry "PROCESS.WORKLOAD.MONITOR" for "name:/PW_ModelBank:NOFILE.PW.WORKLOAD.MONITOR#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "ID" {
+    }
+
+    custom-selection {
+
+        field "Process Id" {
+        }
+
+        None
+    }
+
+    field "USER" {
+        label {
+            en = "User"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ACT" {
+        label {
+            en = "Act."
+        }
+
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "OB" {
+        comma-separator: false
+        operation: constant "\" (\""
+    }
+
+    field "CB" {
+        comma-separator: false
+        operation: constant "\")\""
+    }
+
+    field "USER.CON" {
+        length: 68
+        alignment: Right
+        comma-separator: false
+        operation: calc "USER":"OB":"ACT":"CB"
+    }
+
+    field "BRK" {
+        comma-separator: false
+        operation: break-change "USER"
+    }
+
+    field "MONITOR" {
+        label {
+            en = "Workload Monitor"
+        }
+
+        display-type: "PIELABEL" break-condition {
+            field: "BRK"
+        }
+
+        length: 68
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "USER.CON"
+    }
+
+    field "ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        display-type: "PIE" break-condition {
+            field: "BRK"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACT"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"Process Id entered is incorrect\""
+    }
+
+    enquiry-graph-id {
+        "PROCESS.WORKLOAD.MONITOR"
+    }
+
+    attributes: "ALLDATA"
+}

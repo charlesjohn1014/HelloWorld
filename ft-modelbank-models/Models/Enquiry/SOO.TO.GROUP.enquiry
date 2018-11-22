@@ -1,0 +1,281 @@
+Enquiry "SOO.TO.GROUP" for "name:/SC_SctOrderCapture:SEC.OPEN.ORDER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Orders for grouping"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "DEAL.STATUS" {
+        Equals "\"\""
+    }
+
+    fixed-selection "DEAL.STATUS" {
+        NotEquals "GROUPED"
+    }
+
+    fixed-sort: "SECURITY.NO" Null
+    fixed-sort: "ORDER.TYPE" Null
+    fixed-sort: "TRANSACTION.CODE" Null
+    fixed-sort: "TRADE.CCY" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security Number"
+            }
+
+        }
+
+        AND
+
+        field "ORDER.TYPE" {
+            label {
+                en = "Order Type"
+            }
+
+        }
+
+        AND
+
+        field "TRANSACTION.CODE" {
+            label {
+                en = "Transaction code"
+            }
+
+        }
+
+        AND
+
+        field "CUST.NUMBER" {
+            label {
+                en = "Client "
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Order id"
+        }
+
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Orders to Group\""
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SM.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "ORDER.TYPE" {
+        label {
+            en = "Order Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.TYPE"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Txn"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "CUST.NUMBER" {
+        label {
+            en = "Client "
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.NUMBER"
+    }
+
+    field "CU.MNEM" {
+        label {
+            en = "Client Mnemonic"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CUST.NUMBER"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Order date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        operation: application-field-name "ORDER.DATE"
+    }
+
+    field "ORDER.TIME" {
+        label {
+            en = "Order time"
+        }
+
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        operation: application-field-name "ORDER.TIME"
+    }
+
+    field "NARRATIVE" {
+        label {
+            en = "Narrative"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "NARRATIVE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Order"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        quit-SEE: "@ID"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SEC.OPEN.ORDER,VIEW"
+    }
+
+    attributes: "REMOVE"
+}

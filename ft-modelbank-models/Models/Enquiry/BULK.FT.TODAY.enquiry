@@ -1,0 +1,286 @@
+Enquiry "BULK.FT.TODAY" for "name:/FT_Contract:FUNDS.TRANSFER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Funds Transfer - Bulk Payments"
+    }
+
+    description {
+        en = "Bulk Payments Funds Transfer"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "INWARD.PAY.TYPE" {
+        Matches "FTBULK-BKM..."
+    }
+
+    custom-selection {
+
+        field "DEBIT.ACCT.NO" {
+            label {
+                en = "Debit Acct No"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.ACCT.NO" {
+            label {
+                en = "Credit Acct No"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "FT Reference"
+            }
+
+        }
+
+        AND
+
+        field "DEBIT.CUSTOMER" {
+            label {
+                en = "Debit Customer"
+            }
+
+        }
+
+        AND
+
+        field "INWARD.PAY.TYPE" {
+            label {
+                en = "Bulk Master Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "BULK.MASTER.ID" {
+        label {
+            en = "Bulk Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INWARD.PAY.TYPE"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        operation: constant "\"Bulk Payment FTs Executed Today\""
+    }
+
+    field "@ID" {
+        label {
+            en = "FT Reference"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "1" {
+        label {
+            en = "Txn Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "2" {
+        label {
+            en = "Debit Account"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "DEBIT.ACCT.NO1" {
+        label {
+            en = "Debit Account Name"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Debit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.CURRENCY"
+    }
+
+    field "DEBIT.AMOUNT" {
+        label {
+            en = "Debit Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.AMOUNT"
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit Account"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "CREDIT.ACCT.NO1" {
+        label {
+            en = "Credit Account Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CREDIT.CCY" {
+        label {
+            en = "Credit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.CREDITED"
+        conversion: extract from 1 to 3
+    }
+
+    field "CREDIT.AMT" {
+        label {
+            en = "Amount Credited"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.CREDITED"
+        conversion: extract from 4 to 20
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transactions Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "FUNDS.TRANSFER,STO"
+    }
+
+}

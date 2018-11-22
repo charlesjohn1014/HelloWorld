@@ -1,0 +1,880 @@
+Enquiry "RE.TRIAL.BALANCE" for "name:/RE_ReportGeneration:RE.STAT.LINE.BAL#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Trial Balance For Period"
+        }
+
+        column: 41
+        line: 0
+    }
+
+    header {
+        label {
+            en = "to"
+        }
+
+        column: 75
+        line: 0
+    }
+
+    header {
+        label {
+            en = "PCB"
+        }
+
+        column: 4
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Account"
+        }
+
+        column: 4
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Opening"
+        }
+
+        column: 23
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Balance"
+        }
+
+        column: 23
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Total Debit"
+        }
+
+        column: 42
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Movement"
+        }
+
+        column: 43
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Total Credit"
+        }
+
+        column: 62
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Movement"
+        }
+
+        column: 64
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Net"
+        }
+
+        column: 89
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Movement"
+        }
+
+        column: 87
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Closing"
+        }
+
+        column: 107
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Balance"
+        }
+
+        column: 107
+        line: 2
+    }
+
+    header {
+        label {
+            en = "----------------------------------"
+        }
+
+        column: 1
+        line: 3
+    }
+
+    header {
+        label {
+            en = "-----------------------------------"
+        }
+
+        column: 36
+        line: 3
+    }
+
+    header {
+        label {
+            en = "-----------------------------------"
+        }
+
+        column: 72
+        line: 3
+    }
+
+    header {
+        label {
+            en = "-------------"
+        }
+
+        column: 107
+        line: 3
+    }
+
+    description {
+        en = "RE.TRIAL.BALANCE"
+    }
+
+    start-line: 4
+    end-line: 55
+    fixed-sort: "REPORT.LINE" Null
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Report Name"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "REPORT.LINE" {
+            label {
+                en = "Report Line"
+            }
+
+            operands: Between
+        }
+
+        AND
+
+        field "LINE.CCY.DATE" {
+            mandatory: true
+            label {
+                en = "System Date"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        length: 27
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "REPORT.NAME" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "REPORT.NAME"
+    }
+
+    field "REPORT.LINE" {
+        format: User
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "REPORT.LINE"
+    }
+
+    field "BREAK.REPORT.NAME" {
+        comma-separator: false
+        operation: break-change "REPORT.NAME"
+    }
+
+    field "BREAK.REPORT.LINE" {
+        comma-separator: false
+        operation: break-change "REPORT.LINE"
+    }
+
+    field "CURRENCY" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: selection "CURRENCY"
+    }
+
+    field "PERIOD.END.DATE" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: i-desc "PERIOD.END.DATE"
+    }
+
+    field "PERIOD" {
+        comments: "Requested period for report" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "SYSTEM.DATE"
+    }
+
+    field "PERIOD1" {
+        format: Date break-condition {
+            break: NewPage
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        escapeSequence: HI
+        position {
+            column: 66
+            line: 0
+        }
+
+        operation: field-extract "PERIOD"
+        conversion: extract from 1 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "PERIOD2" {
+        format: Date break-condition {
+            break: NewPage
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        escapeSequence: HI
+        position {
+            column: 78
+            line: 0
+        }
+
+        operation: field-extract "PERIOD"
+        conversion: extract from 2 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "SYS.DTE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "SYSTEM.DATE"
+    }
+
+    field "START.DATE" {
+        comma-separator: false
+        operation: field-extract "SYS.DTE"
+        conversion: extract from 1 to 1 delimited by " "
+    }
+
+    field "REPORT.NAME1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FLD REPORT.NAME"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "RE.STAT.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "REPORT.NAME1":"DOT"
+    }
+
+    field "RE.STAT.ID1" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "RE.STAT.ID":"REPORT.LINE"
+        conversion: getFrom "RE.STAT.REP.LINE" "MNEMONIC" false
+        conversion: extract from 2 to 14
+    }
+
+    field "RE.STAT.ID2" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "RE.STAT.ID":"REPORT.LINE"
+    }
+
+    field "RE.STAT.ID3" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "RE.STAT.ID1" Equals "NULL" process "RE.STAT.ID2" "RE.STAT.ID1"
+    }
+
+    field "DISP.RE.STAT.ID" {
+        break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD RE.STAT.ID3"
+    }
+
+    field "STAT.ID.DESC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FLD RE.STAT.ID2"
+        conversion: getFrom "RE.STAT.REP.LINE" "K.DESC" false
+    }
+
+    field "DISP.STAT.ID.DESC" {
+        break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD STAT.ID.DESC"
+    }
+
+    field "OPEN.BAL.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OPEN.BAL"
+    }
+
+    field "OPEN.BAL.LCL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OPEN.BAL.LCL"
+    }
+
+    field "OPEN.BALANCE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "CURRENCY" Equals "NULL" process "OPEN.BAL.LCL" "OPEN.BAL.CCY"
+    }
+
+    field "OPEN.BALANCE1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "PERIOD.END.DATE" Equals "START.DATE" process "OPEN.BALANCE" "ZERO"
+    }
+
+    field "TOT.OPEN.BAL" {
+        break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: total "OPEN.BALANCE1"
+    }
+
+    field "DISP.TOT.OPEN.BAL" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD TOT.OPEN.BAL"
+    }
+
+    field "DB.MVMT.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DB.MOVEMENT"
+    }
+
+    field "DB.MVMT.LCL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DB.MVMT.LCL"
+    }
+
+    field "DB.MVMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "CURRENCY" Equals "NULL" process "DB.MVMT.LCL" "DB.MVMT.CCY"
+    }
+
+    field "TOT.DB.MVMT" {
+        break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: total "DB.MVMT"
+    }
+
+    field "DISP.TOT.DB.MVMT" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 37
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD TOT.DB.MVMT"
+    }
+
+    field "CR.MVMT.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CR.MOVEMENT"
+    }
+
+    field "CR.MVMT.LCL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CR.MVMT.LCL"
+    }
+
+    field "CR.MVMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "CURRENCY" Equals "NULL" process "CR.MVMT.LCL" "CR.MVMT.CCY"
+    }
+
+    field "TOT.CR.MVMT" {
+        break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: total "CR.MVMT"
+    }
+
+    field "DISP.TOT.CR.MVMT" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 58
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD TOT.CR.MVMT"
+    }
+
+    field "NET.MVMT" {
+        break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "TOT.CR.MVMT" + "TOT.DB.MVMT"
+    }
+
+    field "DISP.NET.MVMT" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 79
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD NET.MVMT"
+    }
+
+    field "CLOSING.BALANCE1" {
+        break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "TOT.OPEN.BAL" + "NET.MVMT"
+    }
+
+    field "DISP.CLOSING.BAL" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 102
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD CLOSING.BALANCE1"
+    }
+
+    field "TOT.TOT.OPEN.BAL" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: total "OPEN.BALANCE1"
+    }
+
+    field "DISP.TOT.TOT.OB" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD TOT.TOT.OPEN.BAL"
+    }
+
+    field "TOT.TOT.DB.MVMT" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: total "DB.MVMT"
+    }
+
+    field "DISP.TOT.TOT.DBM" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 37
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD TOT.TOT.DB.MVMT"
+    }
+
+    field "TOT.TOT.CR.MVMT" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: total "CR.MVMT"
+    }
+
+    field "DISP.TOT.TOT.CRM" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 58
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD TOT.TOT.CR.MVMT"
+    }
+
+    field "TOT.NET.MVMT" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "TOT.TOT.CR.MVMT" + "TOT.TOT.DB.MVMT"
+    }
+
+    field "DISP.TOT.NET.MVMT" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 79
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD TOT.NET.MVMT"
+    }
+
+    field "TOT.CLOSING.BAL" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "TOT.TOT.OPEN.BAL" + "TOT.NET.MVMT"
+    }
+
+    field "DISP.TOT.CL.BAL" {
+        format: Currency "DCCY" negative-pattern #- break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 102
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD TOT.CLOSING.BAL"
+    }
+
+    field "DASHES1" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        comma-separator: false
+        position {
+            column: 16
+            line: + 3
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "DASHES2" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        comma-separator: false
+        position {
+            column: 37
+            line: + 3
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "DASHES3" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        comma-separator: false
+        position {
+            column: 58
+            line: + 3
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "DASHES4" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        comma-separator: false
+        position {
+            column: 79
+            line: + 3
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "DASHES5" {
+        break-condition {
+            field: "BREAK.REPORT.NAME"
+        }
+
+        comma-separator: false
+        position {
+            column: 102
+            line: + 3
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "DASHES" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"==================\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "DOT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "DCCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: if "CURRENCY" Equals "NULL" process "LCY" "CURRENCY"
+    }
+
+    field "LCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+}

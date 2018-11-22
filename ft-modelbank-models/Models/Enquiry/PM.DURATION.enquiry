@@ -1,0 +1,405 @@
+Enquiry "PM.DURATION" for "name:/PM_Reports:NOFILE.PM.DURATION#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Duration analysis"
+    }
+
+    description {
+        en = "Duration analysis"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "PM.ENQ.PARAM" {
+        Equals "CAS"
+    }
+
+    custom-selection {
+
+        field "CCY" {
+            mandatory: true
+            label {
+                en = "Ccy"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "INIT.COMMON" {
+        comments: "Initialise the PM.ENQ.COMMON common area and read the PM.ENQ.PARAM fil e using the ID passed."
+        break-condition {
+            break: Once
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Duration Analysis\""
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency\""
+    }
+
+    field "BUILD.DATA" {
+        comments:
+        "Selects the correct POSN.CLASS file based on the contects of the PM.EN Q.PARAM record and builds R.RECORD ."
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.DURATION"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        format: User
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "PM.CCY" {
+        display-type: "CLASS-ENQ.H.ID"
+        length: 3
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "B.PM.CCY" {
+        comma-separator: false
+        operation: break-change "PM.CCY"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE"
+    }
+
+    field "DAYS" {
+        label {
+            en = "No of Days"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DAYS"
+    }
+
+    field "NET.MOVEMENT" {
+        label {
+            en = "Net Movement"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        processing-mode: Multi
+        operation: application-field-name "NET.MOVEMENT"
+        conversion: call
+        jBC: "@ E.PM.FMT.DIFF.UNIT"
+    }
+
+    field "DISP.NET.MOVEMENT" {
+        label {
+            en = "Net Movement"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 17
+        }
+
+        processing-mode: Multi
+        operation: field-extract "NET.MOVEMENT"
+    }
+
+    field "DISCOUNT.FACTOR" {
+        label {
+            en = "Discount Factor"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DISCOUNT.FACTOR"
+        conversion: iconv "MD4"
+        conversion: oconv "MD4"
+    }
+
+    field "ASSET.DURATION" {
+        label {
+            en = "Asset Duration"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 58
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ASSET.DURATION"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "LIAB.DURATION" {
+        label {
+            en = "Liability Duration"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LIAB.DURATION"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "NET.DURATION" {
+        label {
+            en = "Net Duration"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 82
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NET.DURATION"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "TXN.IDS" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.IDS"
+    }
+
+    field "TOTAL.LABEL" {
+        break-condition {
+            break: End
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Total\""
+    }
+
+    field "TOT.PV.MVMT" {
+        break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 17
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.MVMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.DIFF.UNIT"
+    }
+
+    field "DISP.TOT.PV.MVMT1" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 17
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOT.PV.MVMT"
+    }
+
+    field "TOT.ASSET.DURATION" {
+        break-condition {
+            break: End
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 58
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.ASSET.DURATION"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "TOT.LIAB.DURATION" {
+        display-type: "CLASS-AMNUM" break-condition {
+            break: End
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.LIAB.DURATION"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "TOT.NET.DURATION" {
+        display-type: "CLASS-AMNUM" break-condition {
+            break: End
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 82
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.NET.DURATION"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Duration Found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transactions"
+        }
+
+        label-field: "DAYS"
+        image: "view.gif"
+        criteria: "ID2" Equals "TXN.IDS"
+        enquiry: "DPC.TXNS"
+    }
+
+}

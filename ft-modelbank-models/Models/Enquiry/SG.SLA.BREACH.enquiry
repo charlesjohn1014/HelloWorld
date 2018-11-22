@@ -1,0 +1,217 @@
+Enquiry "SG.SLA.BREACH" for "name:/SG_Framework:SG.SLA.COMMITMENT#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    start-line: 2
+    end-line: 4 fixed-selection "STATUS" {
+        Equals "BREACHED"
+    }
+
+    fixed-selection "DAO.ID" {
+        NotEquals "74", "75", "77", "79"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"SLA Breached\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACTIVITY.STATUS" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "PW.ACTIVITY.TXN" "PW.ACTIVITY.STATUS" false
+    }
+
+    field "C.FLAG" {
+        comma-separator: false
+        operation: constant "\"../im.images/misc/flag.green.jpg\""
+    }
+
+    field "P.FLAG" {
+        comma-separator: false
+        operation: constant "\"../im.images/misc/flag.red.jpg\""
+    }
+
+    field "PEND.STAT" {
+        comma-separator: false
+        operation: constant "\"PENDING\""
+    }
+
+    field "ACTIVITY.NAME" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "PW.ACTIVITY.TXN" "ACTIVITY" false
+    }
+
+    field "ACTIVITY.DESC" {
+        label {
+            en = "Activity"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ACTIVITY.NAME"
+        conversion: getFrom "PW.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "ACTIVITY.DESC.CHK" {
+        label {
+            en = "Activity"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "ACTIVITY.DESC" Equals "NULL" process "NULL" "ACTIVITY.DESC"
+    }
+
+    field "DAO.ID" {
+        label {
+            en = "Dept. Acct. Officer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DAO.ID"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "START.TIME" {
+        label {
+            en = "Start Time"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "START.TIME"
+    }
+
+    field "DUE.DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DUE.DATE"
+    }
+
+    field "DUE.TIME" {
+        label {
+            en = "Due Time"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DUE.TIME"
+    }
+
+    field "STATUS.INDICATOR" {
+        label {
+            en = "Flag"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: if "ACTIVITY.STATUS" Equals "PEND.STAT" process "P.FLAG" "C.FLAG"
+    }
+
+    field "NORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\" No data to display \""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Reassign"
+        }
+
+        label-field: "ACTIVITY.DESC.CHK"
+        image: "assign.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "PW.ACTIVITY.TXN,REASSIGN"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.TOOLBAR"
+}

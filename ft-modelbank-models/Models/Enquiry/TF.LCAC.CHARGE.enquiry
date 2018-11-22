@@ -1,0 +1,210 @@
+Enquiry "TF.LCAC.CHARGE" for "name:/LC_Foundation:LC.ACCOUNT.BALANCES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "LC Charges"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 1
+    end-line: 99 fixed-selection "CHRG.AMT.DUE" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "LC Currency"
+            }
+
+        }
+
+        AND
+
+        field "LC.AMOUNT" {
+            label {
+                en = "LC Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 17
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TF.REFERENCE" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TF.REFERENCE"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"LC Charges\""
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.CCY"
+    }
+
+    field "CHRG.AMT.DUE" {
+        label {
+            en = "Amt Due"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.AMT.DUE"
+    }
+
+    field "AMT.REC" {
+        label {
+            en = "Amt Received"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMT.REC"
+    }
+
+    field "CHRG.CODE" {
+        label {
+            en = "Charge Code"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.CODE"
+        conversion: getFrom "FT.COMMISSION.TYPE" "2" false
+    }
+
+    field "CHRG.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.STATUS"
+        conversion: getFrom "LC.ENRICHMENT" "CHRG.STATUS" false
+    }
+
+    field "AMT.RETURNED" {
+        label {
+            en = "Refunded"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: calc "REAL.RF.AMT" + "UNREAL.RF.AMT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Charges Collected\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "TF.REFERENCE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "LC.ACCOUNT.BALANCES,FULL.DETAILS"
+    }
+
+}

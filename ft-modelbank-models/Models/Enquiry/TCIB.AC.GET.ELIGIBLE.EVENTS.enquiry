@@ -1,0 +1,180 @@
+Enquiry "TCIB.AC.GET.ELIGIBLE.EVENTS" for "name:/T2_ModelBank:NOFILE.AC.GET.ELIGIBLE.EVENTS#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 10 fixed-selection "RESULT.SET" {
+    }
+
+    fixed-selection "ACCT.NUMBER" {
+        Equals "!EXT.SMS.ACCOUNTS"
+    }
+
+    custom-selection {
+
+        field "ACCT.NUMBER" {
+            label {
+                en = "Acct Number"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        label {
+            en = "ID for Alerts"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+    }
+
+    field "TYPE" {
+        label {
+            en = "Type Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "EVENT.TYPE" false
+    }
+
+    field "ID1" {
+        label {
+            en = "IDs"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "ID"
+    }
+
+    field "EXT" {
+        comma-separator: false
+        operation: constant "\"EXTERNAL\""
+    }
+
+    field "BOTH" {
+        comma-separator: false
+        operation: constant "\"BOTH\""
+    }
+
+    field "TEC.EXT" {
+        label {
+            en = "Sub Level"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "SUBSCRIPTION.LEVEL" false
+    }
+
+    field "TEC.BOTH" {
+        label {
+            en = "Sub Final"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "TEC.EXT" Equals "BOTH" process "ID" "NULL"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "EVENTS" {
+        label {
+            en = "Alert when"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: if "TEC.EXT" Equals "EXT" process "ID" "TEC.BOTH"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "ACCT" {
+        label {
+            en = "Sel Acct Number"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: selection "ACCT.NUMBER"
+    }
+
+    field "INHERIT" {
+        label {
+            en = "Inherit"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "INHERIT" false
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"...YES...\""
+    }
+
+    field "VERSION.1" {
+        comma-separator: false
+        operation: constant "\"EB.ALERT.REQUEST,AI\""
+    }
+
+    field "VERSION.2" {
+        comma-separator: false
+        operation: constant "\"EB.ALERT.REQUEST,AI.INHERIT\""
+    }
+
+    field "VERSION.FINAL" {
+        label {
+            en = "VersionName"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: if "INHERIT" Matches "YES" process "VERSION.2" "VERSION.1"
+    }
+
+    security {
+        application: "TEC.ITEMS"
+        field: "TYPE"
+        abort: true
+    }
+
+}

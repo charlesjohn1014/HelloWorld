@@ -1,0 +1,252 @@
+Enquiry "TEC.PANEL" for "name:/EB_Logging:TEC.DISPLAY#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Total Critical Items"
+        }
+
+        column: 0
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Other Exception Items"
+        }
+
+        column: 0
+        line: 1
+    }
+
+    description {
+        en = "TEC Information Panel"
+    }
+
+    start-line: 4
+    end-line: 29
+    build-routines {
+        jBC: "TEC.PRODUCE.DISPLAY"
+    }
+
+    fixed-selection "METRIC.COUNT" {
+        Equals "\'\'"
+    }
+
+    fixed-selection "THRESHOLD" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "ITEM.TYPE" Null
+    custom-selection {
+
+        field "ITEM.TYPE" {
+        }
+
+        None
+    }
+
+    field "MY.TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "THRESHOLD"
+    }
+
+    field "@ID" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "BLANK" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "INFO" {
+        comma-separator: false
+        operation: constant "\"info\""
+    }
+
+    field "CRIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"critical\""
+    }
+
+    field "THRESH" {
+        comma-separator: false
+        operation: if "MY.TYPE" Equals "BLANK" process "INFO" "MY.TYPE"
+    }
+
+    field "BASE.PATH" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "IMG.PATH":"THRESH"
+    }
+
+    field "TYPE" {
+        label {
+            en = "Info"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: calc "BASE.PATH":"GIF.TXT"
+    }
+
+    field "MY.ITEM.TYPE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ITEM.TYPE"
+    }
+
+    field "AN.ITEM.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ITEM.TYPE"
+    }
+
+    field "ITEM.DETAIL" {
+        label {
+            en = "Item Detail"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ITEM.DETAIL"
+    }
+
+    field "IMG.PATH" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"../components/tec/images/\""
+    }
+
+    field "GIF.TXT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\".gif\""
+    }
+
+    field "TCOUNT" {
+        label {
+            en = "Count"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "THRESH.COUNT"
+    }
+
+    field "THRESH.COUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "THRESH.COUNT"
+    }
+
+    field "CRIT.COUNT" {
+        comma-separator: false
+        operation: if "MY.TYPE" Equals "CRIT" process "THRESH.COUNT" "BLANK"
+    }
+
+    field "OTHER.COUNT" {
+        comma-separator: false
+        operation: if "MY.TYPE" NotEquals "CRIT" process "THRESH.COUNT" "BLANK"
+    }
+
+    field "CRIT.TOTAL" {
+        comma-separator: false
+        operation: total "CRIT.COUNT"
+    }
+
+    field "OTHER.TOTAL" {
+        comma-separator: false
+        display-section: Header
+        operation: total "OTHER.COUNT"
+    }
+
+    field "DISP.C.TOTAL" {
+        comma-separator: false
+        position {
+            column: 50
+            line: 0
+        }
+
+        operation: field-extract "CRIT.TOTAL"
+    }
+
+    field "DISP.O.TOTAL" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: field-extract "OTHER.TOTAL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View TEC.DISPLAY record"
+        }
+
+        label-field: "TYPE"
+        quit-SEE: "@ID"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "TYPE"
+        criteria: "ITEM.TYPE" Equals "MY.ITEM.TYPE"
+        enquiry: "TEC.DETAIL"
+    }
+
+}

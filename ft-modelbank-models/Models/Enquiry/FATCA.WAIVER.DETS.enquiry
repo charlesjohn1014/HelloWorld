@@ -1,0 +1,322 @@
+Enquiry "FATCA.WAIVER.DETS" for "name:/FA_CustomerIdentification:FATCA.CUSTOMER.SUPPLEMENTARY.INFO#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "FATCA Waiver Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "FORM.TYPE" {
+        Equals "\"W9\""
+    }
+
+    fixed-selection "FORM.TYPE" {
+        Equals "\"WAIVER\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "FATCA.STATUS" {
+            label {
+                en = "FATCA Classification"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "RM.ID" {
+        label {
+            en = "RM Id"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "RM.NAME" {
+        label {
+            en = "RM Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "RM.ID"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "RM.AREA" {
+        label {
+            en = "RM Market"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        operation: field-extract "RM.ID"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 86
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"FATCA-Waiver Details of US Accounts\""
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 99
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CITIZENSHIP" {
+        label {
+            en = "Nationality"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 137
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CITIZENSHIP"
+    }
+
+    field "TAX.RESIDENCE" {
+        label {
+            en = "Residence"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 149
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TAX.RESIDENCE"
+    }
+
+    field "CLIENT.TYPE" {
+        label {
+            en = "Client Type"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 162
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CLIENT.TYPE"
+        conversion: getFrom "FATCA.CUSTOMER.TYPE" "DESCRIPTION" false
+    }
+
+    field "FATCA.STATUS" {
+        label {
+            en = "Classification"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 200
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FATCA.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "FORM.OWNER" {
+        label {
+            en = "Form Owner"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 238
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "FORM.OWNER"
+    }
+
+    field "FORM.TYPE" {
+        label {
+            en = "Form Type"
+        }
+
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 276
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FORM.TYPE"
+        conversion: getFrom "FATCA.FORM.TYPE" "DESCRIPTION" false
+    }
+
+    field "REQ.DATE" {
+        label {
+            en = "Req Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 329
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "REQ.DATE"
+    }
+
+    field "RECV.DATE" {
+        label {
+            en = "Recd Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 343
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "RECV.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available for current selection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "CITIZENSHIP"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Details"
+        }
+
+        label-field: "CITIZENSHIP"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+}

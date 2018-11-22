@@ -1,0 +1,206 @@
+Enquiry "AA.OVERDUE.STATS" for "name:/AA_Overdue:AA.OVERDUE.STATS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Overdue Statistics"
+    }
+
+    description {
+        en = "Overdue Statistics"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Overdue Statistics\""
+    }
+
+    field "OD.STATUS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "OD.STATUS"
+    }
+
+    field "C.AGEING.TABLE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"AA.OVERDUE.STATUS*\""
+    }
+
+    field "AGEING.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "C.AGEING.TABLE":"OD.STATUS"
+    }
+
+    field "@ID" {
+        label {
+            en = "Id"
+        }
+
+        length: 47
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "D.OD.STATUS" {
+        label {
+            en = "OD Status"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "AGEING.ID"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "START.DATE"
+    }
+
+    field "END.DATE" {
+        label {
+            en = "End Date"
+        }
+
+        format: Date
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "END.DATE"
+    }
+
+    field "PRD.AVG.AMT" {
+        label {
+            en = "Period Avg Amt"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRD.AVG.AMT"
+    }
+
+    field "STATUS.COUNT" {
+        label {
+            en = "Status Count"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "STATUS.COUNT"
+    }
+
+    field "TOT.DAYS" {
+        label {
+            en = "Total OD Days"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TOT.DAYS"
+    }
+
+    field "AVG.AMT" {
+        label {
+            en = "Average Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AVG.AMT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No Overdue for this Arrangement\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "AA.OVERDUE.STATS,DETAILS"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.TOOLBAR"
+}

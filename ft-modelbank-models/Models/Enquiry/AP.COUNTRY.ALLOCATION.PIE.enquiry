@@ -1,0 +1,165 @@
+Enquiry "AP.COUNTRY.ALLOCATION.PIE" for "name:/AM_ModelBank:NOFILE.AP.COUNTRY.ALLOCATION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Country Allocation"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+    }
+
+    fixed-selection "SAM.NO" {
+        Equals "!CURRENT.SELECTED.PORTFOLIOS"
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "SAM.NO" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: selection "SAM.NO"
+    }
+
+    field "B.SAM.NO" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "SAM.NO"
+    }
+
+    field "T.SAM.NO" {
+        break-condition {
+            field: "B.SAM.NO"
+        }
+
+        comma-separator: false
+        operation: field-extract "SAM.NO"
+    }
+
+    field "COUNTRY" {
+        label {
+            en = "Country Allocation"
+        }
+
+        display-type: "PIELABEL"
+        format: User
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "COUNTRY" "COUNTRY.NAME" false
+    }
+
+    field "MK.VAL" {
+        label {
+            en = "Market Value"
+        }
+
+        display-type: "PIE"
+        comma-separator: false
+        display-section: NoDisplay
+        position {
+            column: 20
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: iconv "MD"
+        conversion: oconv "MD"
+    }
+
+    field "LEGEND" {
+        comma-separator: false
+        operation: field-extract "COUNTRY"
+    }
+
+    field "PERC" {
+        label {
+            en = "Total"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TOTAL.TXT" {
+        display-type: "CLASS-TAMNUM" break-condition {
+            field: "B.SAM.NO"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        operation: constant "\"Total\""
+    }
+
+    field "TOTAL.SAM" {
+        display-type: "CLASS-TAMNUM" break-condition {
+            field: "B.SAM.NO"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        operation: total "MK.VAL"
+    }
+
+    field "TOT.PERC" {
+        display-type: "CLASS-TAMNUM" break-condition {
+            field: "B.SAM.NO"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TOT.DIS" {
+        display-type: "CLASS-TAMNUM" break-condition {
+            field: "B.SAM.NO"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        operation: total "TOT.PERC"
+    }
+
+    security {
+        application: "COUNTRY"
+        field: "COUNTRY"
+        abort: true
+    }
+
+    attributes: "ALLDATA"
+}

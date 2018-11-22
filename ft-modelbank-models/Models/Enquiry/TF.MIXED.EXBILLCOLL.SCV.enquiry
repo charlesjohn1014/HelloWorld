@@ -1,0 +1,291 @@
+Enquiry "TF.MIXED.EXBILLCOLL.SCV" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Outstg.Export Bills Sent on Colln"
+    }
+
+    description {
+        en = "Outstg.Export Bills Sent on Colln"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.EXPDR"
+    }
+
+    fixed-selection "DRAWING.TYPE" {
+        Equals "CO"
+    }
+
+    custom-selection {
+
+        field "PRESENTOR.CUST" {
+            label {
+                en = "Presentor Id"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 8
+            line: 0
+        }
+
+        operation: constant "\" Outstanding Export Bills sent on Collection\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 116
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LC.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "LC.OLD.NO" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "LC.NO"
+        conversion: getFrom "LETTER.OF.CREDIT" "ISS.BANK.REF" false
+    }
+
+    field "PRESENTOR" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRESENTOR"
+    }
+
+    field "PRESENTOR.CUST" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "PRESENTOR.DISP" {
+        label {
+            en = "Presentor"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 70
+        operation: if "PRESENTOR.CUST" NotEquals "NULL" process "PRESENTOR.CUST" "PRESENTOR"
+    }
+
+    field "DRAWING.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        column-width: 20
+        processing-mode: Single
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        column-width: 20
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        column-width: 60
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Doc Sent on"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        column-width: 75
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "DR.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NEW.DRAW.SET"
+        conversion: replace {
+            oldData: "SP"
+            newData: "EXPSP"
+        }
+
+        conversion: replace {
+            oldData: "AC"
+            newData: "EXPAC"
+        }
+
+        conversion: replace {
+            oldData: "DP"
+            newData: "EXPAC"
+        }
+
+    }
+
+    field "DRAWINGS" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS,\""
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: calc "DRAWINGS":"DR.TYPE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        column-width: 116
+        operation: constant "\"No LC Bill sent for Collection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Payment"
+        }
+
+        label-field: "@ID"
+        image: "accept.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,EXPSP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Accept"
+        }
+
+        label-field: "@ID"
+        image: "accept.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,EXPAC"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reject"
+        }
+
+        label-field: "@ID"
+        image: "LCreject.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,EXREJ"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

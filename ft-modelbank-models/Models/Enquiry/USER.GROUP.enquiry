@@ -1,0 +1,165 @@
+Enquiry "USER.GROUP" for "name:/EB_Security:USER.SMS.GROUP#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "User Group - Listing"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "SMS.GROUP.ID" {
+            label {
+                en = "Group ID"
+            }
+
+        }
+
+        AND
+
+        field "APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        AND
+
+        field "DESCRIPTION" {
+            label {
+                en = "Group Name"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of User Groups\""
+    }
+
+    field "USER.SMS.ID" {
+        label {
+            en = "SMS Group ID"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "GROUP.NAME" {
+        label {
+            en = "Group Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Application Allowed"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "VERSION" {
+        label {
+            en = "Version Allowed"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "VERSION"
+        conversion: convert {
+        }
+
+    }
+
+    field "FUNCTION" {
+        label {
+            en = "Function Allowed"
+        }
+
+        length: 31
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FUNCTION"
+    }
+
+    field "ACTUAL.SMS.ID" {
+        comma-separator: false
+        operation: calc "@":"USER.SMS.ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit Group"
+        }
+
+        label-field: "USER.SMS.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "USER.SMS.ID"
+        }
+
+        screen: "USER.SMS.GROUP,SETUP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "List Group Users"
+        }
+
+        label-field: "USER.SMS.ID"
+        image: "view.gif"
+        criteria: "SMS.GROUP.ID" Equals "ACTUAL.SMS.ID"
+        enquiry: "USER"
+    }
+
+}

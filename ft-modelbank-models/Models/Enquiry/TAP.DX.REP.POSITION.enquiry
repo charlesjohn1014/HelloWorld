@@ -1,0 +1,322 @@
+Enquiry "TAP.DX.REP.POSITION" for "name:/DX_Position:DX.REP.POSITION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Tap Dx Rep Position"
+    }
+
+    start-line: 4
+    end-line: 19
+
+    field "TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: constant "\"TYPE3\""
+        conversion: repeat-when-null
+    }
+
+    field "COMPANY" {
+        label {
+            en = "Company"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "OWN.COMP.ID" false
+        conversion: repeat-when-null
+    }
+
+    field "COMP.MNEMO" {
+        label {
+            en = "Company Mnemo"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Multi
+        operation: field-extract "COMPANY"
+        conversion: getFrom "COMPANY" "MNEMONIC" false
+        conversion: repeat-when-null
+    }
+
+    field "COB.PRICE.ID" {
+        label {
+            en = "Cob Price Id"
+        }
+
+        length: 120
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "COB.PRICE.ID"
+        conversion: extract from 10 to 50
+        conversion: convert {
+            oldData: ":"
+        }
+
+        conversion: repeat-when-null
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PORTFOLIO"
+        conversion: repeat-when-null
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CURRENCY"
+        conversion: repeat-when-null
+    }
+
+    field "NET.LOTS" {
+        label {
+            en = "Net Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NET.LOTS"
+        conversion: repeat-when-null
+    }
+
+    field "AVG.PRICE" {
+        label {
+            en = "Avg Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AVG.PRICE"
+        conversion: repeat-when-null
+    }
+
+    field "SUB.ASSET.TYPE" {
+        label {
+            en = "Sub Asset Type"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 108
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CONTRACT"
+        conversion: getFrom "DX.CONTRACT.MASTER" "SUB.ASSET.TYPE" false
+        conversion: repeat-when-null
+    }
+
+    field "OPTION.TYPE" {
+        label {
+            en = "Option Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPTION.TYPE"
+        conversion: repeat-when-null
+    }
+
+    field "TRANSACTION.IDS.TRUNC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: extract from 1 to 15
+    }
+
+    field "FILE.COMPANY" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "CO.CODE" false
+        conversion: repeat-when-null
+    }
+
+    field "FILE.COMP.MNEMO" {
+        comma-separator: false
+        operation: field-extract "FILE.COMPANY"
+        conversion: getFrom "COMPANY" "MNEMONIC" false
+        conversion: repeat-when-null
+    }
+
+    field "TRANSACTION.IDS.COMP" {
+        label {
+            en = "Transaction IDs"
+        }
+
+        length: 38
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        processing-mode: Multi
+        operation: calc "TRANSACTION.IDS.TRUNC":"\"_\"":"FILE.COMP.MNEMO"
+    }
+
+    field "TX.LOTS" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TX.LOTS"
+    }
+
+    field "TX.LOTS.NEGATIVE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "\"-\"":"TX.LOTS"
+    }
+
+    field "TX.BUY.SELL" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TX.BUY.SELL"
+    }
+
+    field "TX.LOTS.WITH.SIGN" {
+        label {
+            en = "Tx Lots With Sign"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 190
+        }
+
+        processing-mode: Multi
+        operation: if "TX.BUY.SELL" Equals "\"SELL\"" process "TX.LOTS.NEGATIVE" "TX.LOTS"
+    }
+
+    field "SEC.CUST.NO" {
+        label {
+            en = "Sec Cust No"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 203
+        }
+
+        processing-mode: Multi
+        operation: field-extract "TRANSACTION.IDS.TRUNC"
+        conversion: getFrom "DX.TRADE" "SEC.CUST.NO" false
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 213
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MATURITY.DATE"
+        conversion: repeat-when-null
+    }
+
+    field "CUSTOMER.TYPE" {
+        label {
+            en = "Customer Type"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 233
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "CUSTOMER.NUMBER" false
+        conversion: repeat-when-null
+        conversion: getFrom "CUSTOMER.SECURITY" "CUSTOMER.TYPE" false
+        conversion: repeat-when-null
+    }
+
+}

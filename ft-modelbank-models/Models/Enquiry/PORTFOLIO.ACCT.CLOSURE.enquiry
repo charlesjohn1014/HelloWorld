@@ -1,0 +1,153 @@
+Enquiry "PORTFOLIO.ACCT.CLOSURE" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Closure"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACCT.NO.1" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT.NOS"
+        conversion: value 1
+    }
+
+    field "ACCT.NO" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT.NOS"
+    }
+
+    field "ACCT.NO.2" {
+        label {
+            en = "Ac No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT.NOS"
+        conversion: value 2
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Account Closure\""
+    }
+
+    field "SHORT.TITLE" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT.CCY"
+    }
+
+    field "WORKING.BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ACCT.NO"
+        conversion: getFrom "EB.CONTRACT.BALANCES" "WORKING.BALANCE" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Account Transfer"
+        }
+
+        label-field: "ACCT.NO"
+        image: "card.gif"
+        criteria: "CURRENT.ACCOUNT1" > "ACCT.NO.1"
+        criteria: "CURRENT.ACCOUNT2" > "ACCT.NO.2" parameters {
+            function:  Input
+            field: "ACCT.NO"
+        }
+
+        screen: "ACCOUNT.CLOSURE,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Cash Payout"
+        }
+
+        label-field: "ACCT.NO"
+        image: "bundle.gif" parameters {
+            function:  Input
+            field: "ACCT.NO"
+        }
+
+        screen: "ACCOUNT.CLOSURE,TELLER.AC.CLOSURE"
+    }
+
+}

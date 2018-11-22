@@ -1,0 +1,209 @@
+Enquiry "ENQ.COMP.PAYMENT.OVERRIDE" for "name:/EB_ModelBank:NOFILE.MB.GET.FT.OVERRIDE#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 99 fixed-selection "OVERRIDE.ID" {
+        NotEquals "NULL"
+    }
+
+    custom-selection {
+
+        field "BRANCH" {
+            label {
+                en = "Branch Code"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TRAN.TYPE" {
+            label {
+                en = "Transaction Type"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "OVERRIDE" {
+            label {
+                en = "Override"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "INPUTTER" {
+            label {
+                en = "Inputter"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "FT.ID" {
+        label {
+            en = "Payments Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TRAN.TYPE" {
+        label {
+            en = "Transaction Type"
+        }
+
+        format: User
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "FT.ID"
+        conversion: getFrom "FUNDS.TRANSFER" "TRANSACTION.TYPE" false
+        conversion: getFrom "FT.TXN.TYPE.CONDITION" "DESCRIPTION" false
+    }
+
+    field "DB.ACC" {
+        label {
+            en = "Debit Account Number"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "FT.ID"
+        conversion: getFrom "FUNDS.TRANSFER" "DEBIT.ACCT.NO" false
+    }
+
+    field "CR.ACC" {
+        label {
+            en = "Credit Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "FT.ID"
+        conversion: getFrom "FUNDS.TRANSFER" "CREDIT.ACCT.NO" false
+    }
+
+    field "AMT.DR" {
+        label {
+            en = "Debit Ccy/ Amout"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "FT.ID"
+        conversion: getFrom "FUNDS.TRANSFER" "AMOUNT.DEBITED" false
+    }
+
+    field "OVER" {
+        comma-separator: false
+        operation: field-extract "FT.ID"
+        conversion: call
+        jBC: "@ E.GET.TRAN.OVERRIDE"
+    }
+
+    field "OVERRIDE.ID" {
+        label {
+            en = "Override"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: field-number 300
+    }
+
+    field "BRAN.NAME" {
+        label {
+            en = "Branch Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "FT.ID"
+        conversion: getFrom "FUNDS.TRANSFER" "CO.CODE" false
+    }
+
+    field "INP.NAME" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "FT.ID"
+        conversion: getFrom "FUNDS.TRANSFER" "INPUTTER" false
+        conversion: extract from 2 to 1 delimited by "_"
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "DAT.TIME" {
+        label {
+            en = "Date/TIme"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: field-extract "FT.ID"
+        conversion: getFrom "FUNDS.TRANSFER" "DATE.TIME" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "FT.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "FT.ID"
+        }
+
+        screen: "FUNDS.TRANSFER,COMP.VIEW"
+    }
+
+}

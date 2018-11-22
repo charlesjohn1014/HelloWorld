@@ -1,0 +1,278 @@
+Enquiry "AP.COUNTRY.ALLOCATION" for "name:/AM_ModelBank:NOFILE.AP.COUNTRY.ALLOCATION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Country Allocation"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+    }
+
+    fixed-selection "SAM.NO" {
+        Equals "!CURRENT.SELECTED.PORTFOLIOS"
+    }
+
+    fixed-selection "VAL.CCY" {
+        Equals "!CURRENT.SELECTED.CCY"
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            operands: Equals
+        }
+
+        AND
+
+        field "VAL.CCY" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Country Allocation\""
+    }
+
+    field "PF.TXT" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: constant "\"Portfolio No: \""
+    }
+
+    field "PF.ID" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "PF.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: calc "PF.TXT":"PF.ID"
+    }
+
+    field "VCCY.TXT" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: constant "\"Valuation CCY: \""
+    }
+
+    field "VCCY" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "VCCY.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: calc "VCCY.TXT":"VCCY"
+    }
+
+    field "SAM.NO" {
+        break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        operation: field-number 0
+    }
+
+    field "B.SAM.NO" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "TITLE"
+    }
+
+    field "COUNTRY" {
+        label {
+            en = "Country"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "COUNTRY" "COUNTRY.NAME" false
+    }
+
+    field "MK.VAL" {
+        label {
+            en = "Market Value"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 0
+        position {
+            column: 20
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PERC" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: NoDisplay
+        operation: constant "\"%\""
+    }
+
+    field "TOT.PER" {
+        length: 20
+        alignment: Right
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TOTAL.P" {
+        label {
+            en = "Total"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: calc "TOT.PER":"PERC"
+    }
+
+    field "TOT.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "B.SAM.NO"
+        }
+
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        operation: constant "\"Total\""
+    }
+
+    field "TOT.MK.VALUE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "B.SAM.NO"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 0
+        position {
+            column: 20
+            line: + 1
+        }
+
+        operation: total "MK.VAL"
+    }
+
+    field "TOT.PERC" {
+        display-type: "CLASS-TAMNUM" break-condition {
+            field: "B.SAM.NO"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: total "TOT.PER"
+    }
+
+    field "TOT.PERR" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "PER.DISP" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "B.SAM.NO"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        operation: calc "TOT.PERR":"PERC"
+    }
+
+    security {
+        application: "COUNTRY"
+        field: "COUNTRY"
+        abort: true
+    }
+
+    attributes: "ALLDATA"
+}

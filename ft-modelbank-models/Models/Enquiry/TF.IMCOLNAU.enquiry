@@ -1,0 +1,423 @@
+Enquiry "TF.IMCOLNAU" for "name:/LC_Contract:LETTER.OF.CREDIT$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised Inward Collection"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.LC.NAU"
+    }
+
+    fixed-selection "LC.TYPE" {
+        Equals "CCIS", "CCIT", "CDIS", "CDIT", "CAIT"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "APPLICANT.CUSTNO" {
+            label {
+                en = "Drawee"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised Inward Collections\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "REMITTING BANK REF" {
+        label {
+            en = "Remitting Bank Ref"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXTERNAL.REFERENCE"
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "Collection Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.TYPE"
+        conversion: getFrom "LC.TYPES" "1" false
+    }
+
+    field "LC.TYPES" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.TYPE"
+    }
+
+    field "DRAWEE" {
+        label {
+            en = "Drawee"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICANT.CUSTNO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "OPERATION" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OPERATION"
+    }
+
+    field "DATE.ACCEPTED" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.ACCEPTED"
+    }
+
+    field "FULLY.UTILISED" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FULLY.UTILISED"
+    }
+
+    field "PROV" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROVISION"
+    }
+
+    field "AMEND.DEL" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMENDMENT.DEL"
+    }
+
+    field "REL" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REL.PROVIS"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"Y\""
+    }
+
+    field "NO" {
+        comma-separator: false
+        operation: constant "\"NO\""
+    }
+
+    field "AMD" {
+        comma-separator: false
+        operation: constant "\"A\""
+    }
+
+    field "TXN.DRILLDOWN" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "LC.TYPES"
+        conversion: replace {
+            oldData: "CDIS"
+            newData: "CDIS"
+        }
+
+        conversion: replace {
+            oldData: "CDIT"
+            newData: "CDIT"
+        }
+
+        conversion: replace {
+            oldData: "CCIS"
+            newData: "CLINCOLL"
+        }
+
+        conversion: replace {
+            oldData: "CCIT"
+            newData: "CLINCOLL"
+        }
+
+        conversion: replace {
+            oldData: "CAIT"
+            newData: "CDIT"
+        }
+
+    }
+
+    field "SEND.COLL.MSG" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SEND.COLL.MSG"
+    }
+
+    field "MT416" {
+        comma-separator: false
+        operation: constant "\"MT416\""
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,\""
+    }
+
+    field "TXN.DRILL" {
+        comma-separator: false
+        operation: calc "APPL":"TXN.DRILLDOWN"
+    }
+
+    field "VER.DEC1" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,INAMD\""
+    }
+
+    field "VER.DEC2" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,INACPT\""
+    }
+
+    field "VER.DEC3" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,INRET\""
+    }
+
+    field "VER.DEC4" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,IMPMGN\""
+    }
+
+    field "VER.DEC5" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,INCOL.IBPEN\""
+    }
+
+    field "TXN" {
+        comma-separator: false
+        operation: if "DATE.ACCEPTED" NotEquals "NULL" process "VER.DEC2" "VER.DEC1"
+    }
+
+    field "TXN1" {
+        comma-separator: false
+        operation: if "SEND.COLL.MSG" Equals "MT416" process "VER.DEC1" "TXN"
+    }
+
+    field "TXN2" {
+        comma-separator: false
+        operation: if "FULLY.UTILISED" Equals "YES" process "VER.DEC3" "TXN1"
+    }
+
+    field "TXN3" {
+        comma-separator: false
+        operation: if "REL" Equals "NO" process "VER.DEC4" "TXN2"
+    }
+
+    field "TXN4" {
+        comma-separator: false
+        operation: if "AMEND.DEL" Equals "NO" process "TXN3" "TXN2"
+    }
+
+    field "TXN5" {
+        comma-separator: false
+        operation: if "PROV" Equals "YES" process "TXN4" "TXN2"
+    }
+
+    field "TXN6" {
+        comma-separator: false
+        operation: if "OPERATION" Equals "AMD" process "TXN5" "TXN.DRILL"
+    }
+
+    field "TXN7" {
+        comma-separator: false
+        operation: if "IB.STATUS" NotEquals "NULL" process "VER.DEC5" "TXN6"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Records Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        from-field: "TXN7"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "TXN7"
+    }
+
+}

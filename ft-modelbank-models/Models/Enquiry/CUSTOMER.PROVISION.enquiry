@@ -1,0 +1,436 @@
+Enquiry "CUSTOMER.PROVISION" for "name:/ST_AssetProcessing:LN.PROV.BALANCES#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Customer Provision Summary"
+    }
+
+    description {
+        en = "Customer Provision Summary"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+
+    field "@ID" {
+        label {
+            en = "Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Customer Provision Summary\""
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Short Name"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CURRENCY"
+        conversion: repeat-sub
+    }
+
+    field "DISPLAY.CURR" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "DEAL.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DEAL.REF"
+    }
+
+    field "ASSET.CLASS" {
+        label {
+            en = "Asset Class"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ASSET.CLASS"
+    }
+
+    field "DUMMY0" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DEAL.REF"
+        conversion: extract from 1 to 2
+    }
+
+    field "DUMMYLD" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"LD\""
+    }
+
+    field "DUMMYPD" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"PD\""
+    }
+
+    field "DUMMY1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DEAL.REF"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "AMOUNT" false
+    }
+
+    field "DUMMY2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "DUMMY0" Equals "DUMMYPD" process "DUMMY3" "DUMMY4"
+    }
+
+    field "DUMMY3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DEAL.REF"
+        conversion: call
+        jBC: "@ E.GET.PRIN.AMT"
+    }
+
+    field "DUMMY4" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DEAL.REF"
+    }
+
+    field "PRIN.OUT" {
+        label {
+            en = "Principal"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 56
+        }
+
+        processing-mode: Multi
+        operation: if "DUMMY0" Equals "DUMMYLD" process "DUMMY1" "DUMMY2"
+    }
+
+    field "CUS.CURR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "@ID":"CURRENCY"
+    }
+
+    field "SUBTOTAL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: break-change "CUS.CURR"
+    }
+
+    field "STOTAL" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "SUBTOTAL"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 56
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: total "PRIN.OUT"
+    }
+
+    field "SUBTOTAL.HEADING" {
+        break-condition {
+            field: "SUBTOTAL"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+            line: + 1
+        }
+
+        operation: constant "\" SUB TOTAL : \""
+    }
+
+    field "STOTAL.SPACE" {
+        break-condition {
+            field: "SUBTOTAL"
+        }
+
+        comma-separator: false
+        position {
+            column: 56
+            line: + 2
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "FNULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\" \""
+    }
+
+    field "CALC.NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURRENCY":"FNULL"
+    }
+
+    field "LCCY.PRIN" {
+        label {
+            en = "Principal Lcy"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: calc "CALC.NULL":"PRIN.OUT"
+        conversion: call
+        jBC: "@ E.GET.LOCAL.AMT"
+    }
+
+    field "SUBTOTAL.LCCY.PRIN" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "SUBTOTAL"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 70
+            line: + 1
+        }
+
+        operation: total "LCCY.PRIN"
+    }
+
+    field "TOTAL" {
+        comma-separator: false
+        operation: break-change "@ID"
+    }
+
+    field "CUS.TOTAL" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "TOTAL"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 70
+            line: + 3
+        }
+
+        processing-mode: Multi
+        operation: total "LCCY.PRIN"
+    }
+
+    field "TOTAL.HEADING" {
+        break-condition {
+            field: "TOTAL"
+        }
+
+        comma-separator: false
+        position {
+            column: 35
+            line: + 3
+        }
+
+        operation: constant "\"CUSTOMER TOTAL : \""
+    }
+
+    field "TOTAL.SPACE" {
+        break-condition {
+            field: "TOTAL"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+            line: + 5
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "PROV.PERC" {
+        label {
+            en = "Provision Perc"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 89
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DEAL.REF"
+        conversion: call
+        jBC: "@ LN.PROV.PERC"
+    }
+
+    field "PROV.AMT" {
+        label {
+            en = "Provision Amt"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 95
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PROV.AMT"
+    }
+
+    field "SUBTOTAL.PROV.AMT" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "SUBTOTAL"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 95
+            line: + 1
+        }
+
+        operation: total "PROV.AMT"
+    }
+
+    field "LCCY.PROV.AMT" {
+        label {
+            en = "Provision Amt Lcy"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 110
+        }
+
+        processing-mode: Multi
+        operation: calc "CALC.NULL":"PROV.AMT"
+        conversion: call
+        jBC: "@ E.GET.LOCAL.AMT"
+    }
+
+    field "SUBTOTAL.LCCY.PROV" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "SUBTOTAL"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 110
+            line: + 1
+        }
+
+        operation: total "LCCY.PROV.AMT"
+    }
+
+    field "TOTAL.LCCY.PROV" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "TOTAL"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 110
+            line: + 3
+        }
+
+        operation: total "LCCY.PROV.AMT"
+    }
+
+}

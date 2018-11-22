@@ -1,0 +1,148 @@
+Enquiry "SC.DEPO.SUM" for "name:/SC_ModelBank:NOFILE.SC.DEPO.SUM#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "DEPOSITORY HOLDING -SUMMARY"
+        }
+
+        column: 29
+        line: 0
+    }
+
+    header {
+        label {
+            en = "SECURITY:"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "MARKET.PR:"
+        }
+
+        column: 50
+        line: 1
+    }
+
+    description {
+        en = "SC.DEPO.SUM - FROM CUSTOMER POSNS"
+    }
+
+    start-line: 4
+    end-line: 18 fixed-selection "SECURITY.ACCOUNT" {
+    }
+
+    fixed-sort: "SECURITY.NUMBER" Null
+    custom-selection {
+
+        field "SECURITY.NUMBER" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "SEC" {
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "SECURITY.NUMBER"
+    }
+
+    field "SEC.DESC" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 21
+            line: 1
+        }
+
+        operation: application-field-name "ID.LIST"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "MARKET.PRICE" {
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 61
+            line: 1
+        }
+
+        operation: application-field-name "ID.LIST"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "DEP.ID" {
+        format: User
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "ID.LIST"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DEPOSITORY.NAME" {
+        format: User
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        operation: application-field-name "ID.LIST"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "COST.PRICE" {
+        format: User
+        comma-separator: true
+        position {
+            column: 45
+        }
+
+        operation: application-field-name "ID.LIST"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "BALANCE" {
+        format: User
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: application-field-name "ID.LIST"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "SEC.ID" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "ID.LIST"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        label-field: "DEP.ID"
+        criteria: "SECURITY.ACCOUNT" Equals "DEP.ID"
+        criteria: "SECURITY.NUMBER" Equals "SEC.ID"
+        enquiry: "SC.POS.DET2"
+    }
+
+}

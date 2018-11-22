@@ -1,0 +1,220 @@
+Enquiry "AA.PRODUCT.DESIGNER-PRODUCT.GROUPS.OTHER" for "name:/AA_ProductFramework:AA.PRODUCT.GROUP#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Other Product Groups"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "PRODUCT.LINE" {
+        Equals "OTHER"
+    }
+
+    fixed-sort: "ATTRIBUTE" Descending
+
+    field "LINE" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "PRODUCT.LINE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ATTRIBUTE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ATTRIBUTE"
+        conversion: value 1
+    }
+
+    field "ATTR.TABLE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.GROUP.ATTRIBUTE*\""
+    }
+
+    field "ATTR.ID" {
+        comma-separator: false
+        operation: calc "ATTR.TABLE":"ATTRIBUTE"
+    }
+
+    field "D.LINE" {
+        format: User
+        comma-separator: false
+        operation: field-extract "LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "D.ATTRIBUTE" {
+        format: User
+        comma-separator: false
+        operation: field-extract "ATTR.ID"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "TYPE" {
+        label {
+            en = "Type"
+        }
+
+        display-type: "STARTTREE"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "ATTRIBUTE" Equals "NULL" process "LINE" "ATTRIBUTE"
+    }
+
+    field "D.TYPE" {
+        label {
+            en = "Type Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        hidden: true
+        operation: if "ATTRIBUTE" Equals "NULL" process "D.LINE" "D.ATTRIBUTE"
+    }
+
+    field "GROUP" {
+        label {
+            en = "Group"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.GROUP"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Group Description"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        hidden: true
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "B.TYPE" {
+        comma-separator: false
+        operation: break-change "TYPE"
+    }
+
+    field "G.TYPE" {
+        display-type: "ENDTREE" break-condition {
+            field: "B.TYPE"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "TYPE"
+    }
+
+    field "V.AA.PRODUCT.GROUP" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.GROUP,AA.OTHER\""
+    }
+
+    field "V.AA.PRODUCT" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.DESIGNER,AA.OTHER\""
+    }
+
+    field "E.AA.PRODUCTS" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.DESIGNER-PRODUCTS.NONAA\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "GROUP"
+        image: "view.gif" parameters {
+            function:  See
+            field: "GROUP"
+        }
+
+        from-field: "V.AA.PRODUCT.GROUP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "GROUP"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "GROUP"
+        }
+
+        from-field: "V.AA.PRODUCT.GROUP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "New Product"
+        }
+
+        label-field: "GROUP"
+        image: "new.gif"
+        criteria: "AA.PRODUCT.GROUP" > "GROUP" parameters {
+            function:  Input
+        }
+
+        from-field: "V.AA.PRODUCT"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Products"
+        }
+
+        label-field: "GROUP"
+        image: "right.arrow.gif"
+        criteria: "PRODUCT.GROUP" Equals "GROUP"
+        from-field: "E.AA.PRODUCTS"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "NO.BREADCRUMBS"
+}

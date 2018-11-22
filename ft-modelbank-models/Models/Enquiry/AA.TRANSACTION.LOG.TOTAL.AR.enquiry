@@ -1,0 +1,72 @@
+Enquiry "AA.TRANSACTION.LOG.TOTAL.AR" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Transaction Drill down"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 15
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        no-header: true
+        operation: selection "@ID"
+    }
+
+    field "ACC.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 320
+        no-header: true
+        operation: constant "\"Transaction Log\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Recent Txns"
+        }
+
+        label-field: "HEADER"
+        criteria: "ACCT.ID" Equals "ARR.ID"
+        enquiry: "AA.DETAILS.RECENT.TXNS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Future Txns"
+        }
+
+        label-field: "HEADER"
+        criteria: "ACCOUNT.NUMBER" Equals "ARR.ID"
+        enquiry: "AA.DETAILS.FORWARD.ENTRIES"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Pending Txns"
+        }
+
+        label-field: "HEADER"
+        criteria: "@ID" Contains "ACC.ID"
+        enquiry: "AA.DETAILS.RECYCLER"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "HORIZONTAL.DRILLDOWNS" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

@@ -1,0 +1,434 @@
+Enquiry "FATCA.WHT.DORMANT.ACC" for "name:/SC_SccEntitlements:SC.WHT.INC.BASE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Withholdable payments for"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Dormant Accounts"
+        }
+
+        column: 27
+        line: 1
+    }
+
+    full-description {
+        en = "FATCA- WHP Details of Dormant Accounts"
+    }
+
+    description {
+        en = "WHT Details of Dormant Accounts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CLASSIFICATION" {
+        Equals "DORMANT"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security No"
+            }
+
+        }
+
+        None
+    }
+
+    field "DAO" {
+        label {
+            en = "RM Id"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "DAO.NAME" {
+        label {
+            en = "RM Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: field-extract "DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "DAO.AREA" {
+        label {
+            en = "RM Market"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        hidden: true
+        operation: field-extract "DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 103
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ENT.ID" {
+        length: 97
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ENT.ID"
+    }
+
+    field "TRANS REF" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        processing-mode: Single
+        operation: field-extract "ENT.ID"
+        conversion: extract from 1 to 0 delimited by ".1"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 161
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 182
+        }
+
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 220
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "SUB.ACCOUNT" {
+        label {
+            en = "Sub Account"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 235
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SUB.ACCOUNT"
+    }
+
+    field "EVENT.TYPE" {
+        label {
+            en = "Event Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 255
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EVENT.TYPE"
+    }
+
+    field "TRANS.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 275
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.CCY"
+    }
+
+    field "SOURCE.LOCAL" {
+        label {
+            en = "Source Local"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 280
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SOURCE.LOCAL"
+    }
+
+    field "ENTITLEMENT.AMOUNT" {
+        label {
+            en = "Gross Income"
+        }
+
+        format: Currency "TRANS.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 290
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ENTITLEMENT.AMT"
+    }
+
+    field "CU.NET" {
+        label {
+            en = "Cu Net Amount"
+        }
+
+        format: Currency "TRANS.CCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 310
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CU.NET.AMT"
+    }
+
+    field "WHT.INCOME" {
+        label {
+            en = "Base amount"
+        }
+
+        format: Currency "TRANS.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 330
+        }
+
+        processing-mode: Single
+        operation: application-field-name "WHT.INCOME"
+    }
+
+    field "TAX.RATE" {
+        label {
+            en = "Tax Rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 350
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TAX.RATE"
+    }
+
+    field "TAX.AMT" {
+        label {
+            en = "Tax"
+        }
+
+        format: Currency "TRANS.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 365
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TAX.AMOUNT"
+    }
+
+    field "ADJ.RATE" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ADJ.TAX.RATE"
+    }
+
+    field "NU" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "Y" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "N" {
+        comma-separator: false
+        operation: constant "\"NO\""
+    }
+
+    field "TAX.ADJUSTED" {
+        label {
+            en = "Tax Adjusted"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 385
+        }
+
+        operation: if "ADJ.RATE" Equals "NU" process "N" "Y"
+    }
+
+    field "@ID" {
+        length: 120
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Withholdable payments for Dormant Accounts\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "DAO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SC.WHT.INC.BASE,VIEW"
+    }
+
+}

@@ -1,0 +1,492 @@
+Enquiry "AA.DETAILS.CHARGE" for "name:/AA_Fees:AA.ARR.CHARGE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Charge Calculation Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    custom-selection {
+
+        field "ID.COMP.1" {
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "FILE.VERSION" {
+        comma-separator: false
+        operation: application-field-name "!FILE.VERSION"
+    }
+
+    field "D.PROPERTY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 130
+        operation: field-extract "PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "D.FILE.VERSION" {
+        display-type: "CLASS-BOLD.ITALIC"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+        }
+
+        column-width: 225
+        operation: field-extract "FILE.VERSION"
+        conversion: replace {
+            oldData: "LIV"
+        }
+
+        conversion: replace {
+            oldData: "NAU"
+        }
+
+        conversion: replace {
+            oldData: "SIMULATED"
+            newData: "Simulated"
+        }
+
+    }
+
+    field "PRODUCT.ID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.PRODUCT.ID"
+    }
+
+    field "SIM.END.DATE" {
+        comma-separator: false
+        operation: selection "SIMULATION.REF"
+        conversion: getFrom "AA.SIMULATION.RUNNER" "SIM.END.DATE" false
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "PRODUCT.DATE" {
+        comma-separator: false
+        operation: if "SIM.END.DATE" Equals "\"\"" process "TODAY" "SIM.END.DATE"
+    }
+
+    field "CALC.SOURCE.ID" {
+        comma-separator: false
+        operation: calc "PRODUCT.ID":"\"_\"":"PRODUCT.DATE":"\"_\"":"PROPERTY"
+    }
+
+    field "CALC.SOURCE" {
+        comma-separator: false
+        operation: field-extract "CALC.SOURCE.ID"
+        conversion: call
+        jBC: "@ E.AA.GET.CAL.SOURCE"
+    }
+
+    field "SOURCE.CALC.TYPE" {
+        comma-separator: false
+        operation: field-extract "CALC.SOURCE"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SOURCE.BAL" {
+        format: User
+        comma-separator: false
+        operation: field-extract "CALC.SOURCE"
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: getFrom "AC.BALANCE.TYPE" "DESCRIPTION" false
+    }
+
+    field "CALC.TYPE" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SOURCE.CALC.TYPE"
+        conversion: getFrom "AA.SOURCE.CALC.TYPE" "CALC.TYPE" false
+        conversion: replace {
+            oldData: "TXN.AMOUNT"
+            newData: "Activity Amount"
+        }
+
+        conversion: replace {
+            oldData: "COUNT"
+            newData: "Activity Count"
+        }
+
+    }
+
+    field "CHARGE.TYPE" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CHARGE.TYPE"
+    }
+
+    field "D.CHARGE.TYPE" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 130
+        operation: field-extract "CHARGE.TYPE"
+        conversion: replace {
+            oldData: "FIXED"
+            newData: "Flat Amount"
+        }
+
+        conversion: replace {
+            oldData: "CALCULATED"
+            newData: "Calculated"
+        }
+
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "FIXED.AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FIXED.AMOUNT"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "C.OF.THE" {
+        comma-separator: false
+        operation: constant "\" of the \""
+    }
+
+    field "C.*" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "D.FLAT.AMOUNT" {
+        comma-separator: false
+        operation: calc "FIXED.AMOUNT":"SP":"CURRENCY"
+    }
+
+    field "CALC.TIER.TYPE" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CALC.TIER.TYPE"
+    }
+
+    field "D.TIER.TYPE" {
+        format: Translate
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 35
+        processing-mode: Multi
+        operation: field-extract "CALC.TIER.TYPE"
+        conversion: replace {
+            oldData: "LEVEL"
+            newData: "Level"
+        }
+
+        conversion: replace {
+            oldData: "BAND"
+            newData: "Band"
+        }
+
+    }
+
+    field "CALC.TYPE.02" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CALC.TYPE"
+    }
+
+    field "D.CALC.TYPE" {
+        format: Translate
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALC.TYPE"
+        conversion: replace {
+            oldData: "FLAT"
+        }
+
+        conversion: replace {
+            oldData: "UNIT"
+            newData: "per Unit"
+        }
+
+    }
+
+    field "CHG.AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHG.AMOUNT"
+    }
+
+    field "D.CHG.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CHG.AMOUNT":"SP":"CURRENCY":"SP":"D.CALC.TYPE"
+    }
+
+    field "CHARGE.RATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.RATE"
+    }
+
+    field "D.CHG.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CHARGE.RATE":"\"%\""
+    }
+
+    field "CHG.CALC.TYPE" {
+        comma-separator: false
+        operation: if "SOURCE.BAL" Equals "\"\"" process "CALC.TYPE" "SOURCE.BAL"
+    }
+
+    field "D.CHARGE.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "D.CHG.RATE":"C.OF.THE":"CHG.CALC.TYPE"
+    }
+
+    field "D.CALC.CHARGE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CHARGE.RATE" NotEquals "\"\"" process "D.CHARGE.RATE" "D.CHG.AMOUNT"
+    }
+
+    field "D.CHARGE" {
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 225
+        processing-mode: Multi
+        operation: if "FIXED.AMOUNT" NotEquals "\"\"" process "D.FLAT.AMOUNT" "D.CALC.CHARGE"
+    }
+
+    field "C.UPTO" {
+        format: Translate
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"up to \""
+    }
+
+    field "C.REMAINDER" {
+        format: Translate
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"remainder\""
+    }
+
+    field "TIER.AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.AMOUNT"
+    }
+
+    field "UPTO.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "C.UPTO":"TIER.AMOUNT"
+    }
+
+    field "UPTO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TIER.AMOUNT" NotEquals "\"\"" process "UPTO.AMOUNT" "C.REMAINDER"
+    }
+
+    field "TIER.AMOUNT.V1" {
+        comma-separator: false
+        operation: field-extract "TIER.AMOUNT"
+        conversion: value 1
+    }
+
+    field "D.UPTO" {
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        column-width: 145
+        processing-mode: Multi
+        operation: if "TIER.AMOUNT.V1" Equals "\"\"" process "\"\"" "UPTO"
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ACT.UPDATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"-UPDATE-\""
+    }
+
+    field "ACT.CHANGE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"-CHANGE-\""
+    }
+
+    field "BX.ACT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ACT.CHANGE"
+    }
+
+    field "AB.ACT" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "BUNDLE" process "ACT.UPDATE" "BX.ACT"
+    }
+
+    field "AL.ACT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PROD.LINE" Equals "LENDING" process "ACT.CHANGE" "AB.ACT"
+    }
+
+    field "AD.ACT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PROD.LINE" Equals "DEPOSITS" process "ACT.CHANGE" "AL.ACT"
+    }
+
+    field "RW.ACT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PROD.LINE" Equals "REWARDS" process "ACT.UPDATE" "AD.ACT"
+    }
+
+    field "AG.ACT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PROD.LINE" Equals "AGENT" process "ACT.UPDATE" "RW.ACT"
+    }
+
+    field "ACT.VALUE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PROD.LINE" Equals "ACCOUNTS" process "ACT.UPDATE" "AG.ACT"
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"ACT.VALUE":"PROPERTY"
+    }
+
+    field "ARRANGEMENT.ID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+    }
+
+    field "REFRESH.CHARGE" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.CHARGE\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refresh"
+        }
+
+        label-field: "D.CHARGE.TYPE"
+        image: "refresh.gif"
+        criteria: "ID.COMP.1" Equals "ARRANGEMENT.ID"
+        from-field: "REFRESH.CHARGE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "D.CHARGE.TYPE"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "DRILL.VER"
+    }
+
+    fileVersion: Live, Exception, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.BREADCRUMBS"
+}

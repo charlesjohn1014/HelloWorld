@@ -1,0 +1,156 @@
+Enquiry "CQ.COLL.DETAILS" for "name:/CO_Valuation:CQ.COLLAT.AC#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Cheque - Collateral Details"
+        }
+
+        column: 40
+        line: 0
+    }
+
+    header {
+        label {
+            en = " Customer :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = " Account Number :"
+        }
+
+        column: 50
+        line: 1
+    }
+
+    start-line: 4
+    end-line: 19
+
+    field "CC.ID" {
+        label {
+            en = "Cheque Coll Id"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHQ.COLL.ID"
+    }
+
+    field "AC.NO" {
+        label {
+            en = "Account Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 67
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CC.ID"
+        conversion: getFrom "CHEQUE.COLLECTION" "CREDIT.ACC.NO" false
+    }
+
+    field "CUSTOMER" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "AC.NO"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "CUST.DISPLAY" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CC.ID"
+        conversion: getFrom "CHEQUE.COLLECTION" "CURRENCY" false
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CC.ID"
+        conversion: getFrom "CHEQUE.COLLECTION" "AMOUNT" false
+    }
+
+    field "CHQ.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CC.ID"
+        conversion: getFrom "CHEQUE.COLLECTION" "CHQ.STATUS" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Cheque Collection Details"
+        }
+
+        label-field: "CC.ID" parameters {
+            function:  See
+            field: "CC.ID"
+        }
+
+        application: "CHEQUE.COLLECTION"
+    }
+
+}

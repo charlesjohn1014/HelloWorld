@@ -1,0 +1,152 @@
+Enquiry "ACCT.INACTIVE.RESET.NAU" for "name:/AC_AccountOpening:ACCT.INACTIVE.RESET$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Inactive Reset"
+    }
+
+    description {
+        en = "Unauthorised Inactive Reset"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "@ID" Null
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised Inactive Reset\""
+    }
+
+    field "ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "RESET.DATE" {
+        label {
+            en = "Reset Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RESET.DATE"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Inactive Accounts\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "ID"
+        }
+
+        screen: "ACCT.INACTIVE.RESET,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "ID"
+        }
+
+        screen: "ACCT.INACTIVE.RESET,INPUT"
+    }
+
+}

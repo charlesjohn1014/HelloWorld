@@ -1,0 +1,233 @@
+Enquiry "AM.DISP.PERF.CORR.TOOL" for "name:/AM_ModelBank:NOFILE.AM.DISP.CORR.TOOL#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Display of correction tool."
+        }
+
+        column: 40
+        line: 0
+    }
+
+    header {
+        label {
+            en = " Bank:"
+        }
+
+        column: 40
+        line: 1
+    }
+
+    header {
+        label {
+            en = " Portfolio.id :"
+        }
+
+        column: 0
+        line: 1
+    }
+
+    header {
+        label {
+            en = " Portfolio.opened:"
+        }
+
+        column: 0
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Portfolio.closed:"
+        }
+
+        column: 80
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Correction date:"
+        }
+
+        column: 80
+        line: 3
+    }
+
+    header {
+        label {
+            en = " Security.code :"
+        }
+
+        column: 0
+        line: 3
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "E.GET.CORR.TOOL" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "PORTFOLIO" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "INSTRUMENT" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "DATE" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "CORR.TOOL" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "PORT.ID" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: selection "PORTFOLIO"
+    }
+
+    field "BANK.NAME" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 46
+            line: 1
+        }
+
+        operation: company
+        conversion: getFrom "COMPANY" "COMPANY.NAME" false
+    }
+
+    field "PORTFOLIO.OPENED" {
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 2
+        }
+
+        operation: field-extract "PORT.ID"
+        conversion: getFrom "SEC.ACC.MASTER" "START.DATE" false
+    }
+
+    field "PORTFOLIO.CLOSED" {
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 98
+            line: 2
+        }
+
+        operation: field-extract "PORT.ID"
+        conversion: getFrom "SEC.ACC.MASTER" "CLOSURE.DATE" false
+    }
+
+    field "Y.DATE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 98
+            line: 3
+        }
+
+        operation: selection "DATE"
+    }
+
+    field "INSTR.ID" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 3
+        }
+
+        operation: selection "INSTRUMENT"
+    }
+
+    field "@ID" {
+        format: User
+        length: 60
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "GET.DETAIL" {
+        comma-separator: false
+        operation: field-extract "@ID"
+    }
+
+    field "USER" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CORR.DATE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CORR.TOOL" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+}

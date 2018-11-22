@@ -1,0 +1,207 @@
+Enquiry "TF.TENOR.OUTCLCOLLOS.SCV" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Outstanding Outward CleanCollection"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "LIABILITY.AMT" {
+        Greater "0"
+    }
+
+    fixed-sort: "EXPIRY.DATE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "EXPIRY.DATE" {
+            label {
+                en = "Reversal Date"
+            }
+
+        }
+
+        AND
+
+        field "BENEFICIARY.CUSTNO" {
+            label {
+                en = "Drawer Customer"
+            }
+
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "Doc Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        column-width: 120
+        operation: constant "\"Payment of collection\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 120
+        operation: application-field-name "@ID"
+    }
+
+    field "ISSUING.BANK.NO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ISSUING.BANK.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ISSUING.BANK" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ISSUING.BANK"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.COLLBK" {
+        label {
+            en = "Remitting Bank"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 150
+        processing-mode: Single
+        operation: if "ISSUING.BANK.NO" Equals "NULL" process "ISSUING.BANK" "ISSUING.BANK.NO"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 20
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        column-width: 65
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "LIABILITY.AMT" {
+        label {
+            en = "Outstg.Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.AMT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        column-width: 120
+        operation: constant "\"No Outward Collection Outstanding\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Payment"
+        }
+
+        label-field: "@ID"
+        image: "edit3.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,OUTCOLPMT"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

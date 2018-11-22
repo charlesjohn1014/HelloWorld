@@ -1,0 +1,192 @@
+Enquiry "ACCOUNT.DETAILS.SCV.CORP" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: true
+    start-line: 4
+    end-line: 99 fixed-selection "CUSTOMER" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "CATEGORY" {
+        Between "1000", "1999"
+    }
+
+    fixed-sort: "MNEMONIC" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.DISPLAY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Account Details\""
+    }
+
+    field "ACCT" {
+        label {
+            en = "Account"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CATEGORY" {
+        length: 6
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+    }
+
+    field "DESC.CATEGORY" {
+        label {
+            en = "Account Type"
+        }
+
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ONLINE.ACTUAL.BAL" {
+        label {
+            en = "Ledger Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "ONLINE.CLEARED.BAL" {
+        label {
+            en = "Cleared Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.CLEARED.BALANCE"
+    }
+
+    field "LOCKED.AMOUNT" {
+        label {
+            en = "Locked Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LOCKED.AMOUNT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Accounts for this Customer\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Account Overview"
+        }
+
+        label-field: "ACCT"
+        image: "oview.gif" parameters {
+            field: "ACCT"
+        }
+
+        composite-screen: "AC.OVERVIEW.SCV"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.BREADCRUMBS"
+}

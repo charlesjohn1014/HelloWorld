@@ -1,0 +1,617 @@
+Enquiry "PP.CANCEL.REQ" for "name:/PP_PaymentWorkflowDASService:POR.TRANSACTION#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Request for Cancel Swift Messages"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    full-description {
+        en = "Request for Cancel Swift Messages"
+    }
+
+    description {
+        en = "Request for Cancel Swift Messages"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "PP.BUILD.GET.RECID"
+    }
+
+    fixed-sort: "EntryDateTime" Null
+    custom-selection {
+
+        field "FTNumber" {
+            label {
+                en = "FT Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "Company" {
+        label {
+            en = "Company"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "RAC" {
+        comma-separator: false
+        operation: constant "\"-A\""
+    }
+
+    field "CompMne" {
+        comma-separator: false
+        operation: calc "Company":"RAC"
+    }
+
+    field "FTnumber" {
+        label {
+            en = "FT Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FTNumber"
+    }
+
+    field "TXN.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TransactionCurrencyCode"
+    }
+
+    field "TransactionAmount" {
+        label {
+            en = "Amt"
+        }
+
+        format: Currency "TXN.CCY" negative-pattern -#
+        length: 17
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TransactionAmount"
+    }
+
+    field "MsgFormat" {
+        label {
+            en = "Msg Format"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OutgoingMessageType"
+    }
+
+    field "TransferType" {
+        label {
+            en = "TransferType"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CTRBTRIndicator"
+    }
+
+    field "Direction" {
+        label {
+            en = "Direction"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PaymentDirection"
+    }
+
+    field "DEBIT.ACC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DebitMainAccount"
+    }
+
+    field "CREDIT.ACC" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CreditMainAccount"
+    }
+
+    field "CREDIT.COMPANY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CreditMainAccountCompanyID"
+    }
+
+    field "DEBIT.COMPANY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DebitMainAccountCompanyID"
+    }
+
+    field "ACCT.COMPANY" {
+        label {
+            en = "Acc Comp"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: if "Direction" Equals "I" process "CREDIT.COMPANY" "DEBIT.COMPANY"
+    }
+
+    field "DR.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DebitMainAccountCurrencyCode"
+    }
+
+    field "CR.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CreditMainAccountCurrencyCode"
+    }
+
+    field "ACCT.SELECT" {
+        label {
+            en = "Acc Num"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: if "Direction" Equals "I" process "CREDIT.ACC" "DEBIT.ACC"
+    }
+
+    field "CCY.SELECT" {
+        label {
+            en = "Acc Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "Direction" Equals "I" process "CR.CCY" "DR.CCY"
+    }
+
+    field "CTRBTRIndicator" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CTRBTRIndicator"
+    }
+
+    field "CTR.VER" {
+        comma-separator: false
+        operation: constant "\"EB.QUERIES.ANSWERS,PP.192\""
+    }
+
+    field "BTR.VER" {
+        comma-separator: false
+        operation: constant "\"EB.QUERIES.ANSWERS,PP.292\""
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: if "CTRBTRIndicator" Equals "\"C\"" process "CTR.VER" "BTR.VER"
+    }
+
+    field "CTR.VER.1" {
+        comma-separator: false
+        operation: constant "\"EB.QUERIES.ANSWERS,PP.195\""
+    }
+
+    field "BTR.VER.1" {
+        comma-separator: false
+        operation: constant "\"EB.QUERIES.ANSWERS,PP.195\""
+    }
+
+    field "DRILL.VER.1" {
+        comma-separator: false
+        operation: if "CTRBTRIndicator" Equals "\"C\"" process "CTR.VER.1" "BTR.VER.1"
+    }
+
+    field "CTR.VER.2" {
+        comma-separator: false
+        operation: constant "\"EB.FREE.MESSAGE,PP.199\""
+    }
+
+    field "BTR.VER.2" {
+        comma-separator: false
+        operation: constant "\"EB.FREE.MESSAGE,PP.299\""
+    }
+
+    field "DRILL.VER.2" {
+        comma-separator: false
+        operation: if "CTRBTRIndicator" Equals "\"C\"" process "CTR.VER.2" "BTR.VER.2"
+    }
+
+    field "EntryDateTime" {
+        label {
+            en = "Entry Date Time"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "EntryDateTime"
+        conversion: call
+        jBC: "@ PP.CONV.LOCALTIMESTAMP"
+    }
+
+    field "CSR" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CustomerSpecifiedReference"
+    }
+
+    field "TRI" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TransactionReferenceIncoming"
+    }
+
+    field "Customer Reference" {
+        label {
+            en = "Cust Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: if "CSR" NotEquals "\"\"" process "CSR" "TRI"
+    }
+
+    field "SendersReferenceIncoming" {
+        label {
+            en = "Sender Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SendersReferenceIncoming"
+    }
+
+    field "StatusCode" {
+        label {
+            en = "Status Code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "StatusCode"
+    }
+
+    field "StatusDescription" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        hidden: true
+        operation: field-extract "StatusCode"
+        conversion: getFrom "PP.STATUS.CODE" "StatusDescription" false
+    }
+
+    field "ProcessingDate" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ProcessingDate"
+    }
+
+    field "ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "Del.Ref" {
+        label {
+            en = "Del.Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FTNumber"
+        conversion: call
+        jBC: "@ PP.GET.DELIVERY.REF"
+    }
+
+    field "Del.Ref.1" {
+        comma-separator: false
+        operation: field-extract "Del.Ref"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "Del.Ref.2" {
+        comma-separator: false
+        operation: field-extract "Del.Ref"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "VER.NAME.4" {
+        comma-separator: false
+        operation: field-extract "DRILL.VER"
+    }
+
+    field "VER.NAME.11" {
+        comma-separator: false
+        operation: field-extract "DRILL.VER.1"
+    }
+
+    field "VER.NAME.21" {
+        comma-separator: false
+        operation: field-extract "DRILL.VER.2"
+    }
+
+    field "VER.NAME.3" {
+        comma-separator: false
+        operation: constant "\" I F3\""
+    }
+
+    field "VER.NAME.1" {
+        comma-separator: false
+        operation: calc "VER.NAME.4":"VER.NAME.3"
+    }
+
+    field "VER.NAME.12" {
+        comma-separator: false
+        operation: calc "VER.NAME.11":"VER.NAME.3"
+    }
+
+    field "VER.NAME.22" {
+        comma-separator: false
+        operation: calc "VER.NAME.21":"VER.NAME.3"
+    }
+
+    field "VER.NAME.2" {
+        comma-separator: false
+        operation: constant "\"COS PP.CANEL.REQ.COV.PAY\""
+    }
+
+    field "VER.NAME.5" {
+        comma-separator: false
+        operation: constant "\"COS PP.CANEL.REQ.COV.PAY.BTR\""
+    }
+
+    field "VER.NAME.6" {
+        comma-separator: false
+        operation: if "CTRBTRIndicator" Equals "\"C\"" process "VER.NAME.2" "VER.NAME.5"
+    }
+
+    field "VER.NAME.13" {
+        comma-separator: false
+        operation: constant "\"COS PP.QUERIES.MSGS.COV.PAY.CTR\""
+    }
+
+    field "VER.NAME.14" {
+        comma-separator: false
+        operation: constant "\"COS PP.QUERIES.MSGS.COV.PAY.BTR\""
+    }
+
+    field "VER.NAME.15" {
+        comma-separator: false
+        operation: if "CTRBTRIndicator" Equals "\"C\"" process "VER.NAME.13" "VER.NAME.14"
+    }
+
+    field "VER.NAME.23" {
+        comma-separator: false
+        operation: constant "\"COS PP.QUIRIES.REQ.COV.PAY.CTR\""
+    }
+
+    field "VER.NAME.24" {
+        comma-separator: false
+        operation: constant "\"COS PP.QUIRIES.REQ.COV.PAY.BTR\""
+    }
+
+    field "VER.NAME.25" {
+        comma-separator: false
+        operation: if "CTRBTRIndicator" Equals "\"C\"" process "VER.NAME.23" "VER.NAME.24"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FIN.VER" {
+        comma-separator: false
+        operation: if "Del.Ref.2" NotEquals "NULL" process "VER.NAME.6" "VER.NAME.1"
+    }
+
+    field "FIN.VER.1" {
+        comma-separator: false
+        operation: if "Del.Ref.2" NotEquals "NULL" process "VER.NAME.15" "VER.NAME.12"
+    }
+
+    field "FIN.VER.2" {
+        comma-separator: false
+        operation: if "Del.Ref.2" NotEquals "NULL" process "VER.NAME.25" "VER.NAME.22"
+    }
+
+    field "PP.APP.NAME" {
+        comma-separator: false
+        operation: constant "\"PP.ORDER.ENTRY\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\" No records found to display\""
+    }
+
+    field "VIEW" {
+        comma-separator: false
+        operation: constant "\"VIEW\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Cancel Request"
+        }
+
+        label-field: "FTnumber"
+        image: "txndelete.gif"
+        criteria: "CURRENT.ORG.PP.O.HEADER" > "Del.Ref.1"
+        criteria: "CURRENT.ORG.PP1.O.HEADER" > "Del.Ref.2"
+        from-field: "FIN.VER"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Send Query"
+        }
+
+        label-field: "FTnumber"
+        image: "edit.gif"
+        criteria: "CURRENT.ORG.PP.O.HEADER" > "Del.Ref.1"
+        criteria: "CURRENT.ORG.PP1.O.HEADER" > "Del.Ref.2"
+        from-field: "FIN.VER.1"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Send Free Msg"
+        }
+
+        label-field: "FTnumber"
+        image: "Email1.gif"
+        criteria: "CURRENT.PP.TXN.REF" > "FTnumber"
+        criteria: "CURRENT.PP.APP.NAME" > "PP.APP.NAME"
+        from-field: "FIN.VER.2"
+    }
+
+    security {
+        application: "PP.COMPANY"
+        field: "CompMne"
+    }
+
+}

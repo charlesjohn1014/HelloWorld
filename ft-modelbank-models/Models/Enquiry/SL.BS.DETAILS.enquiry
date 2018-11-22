@@ -1,0 +1,308 @@
+Enquiry "SL.BS.DETAILS" for "name:/SL_BuySell:SL.BUY.SELL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "SL - Buy/Sell Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "SL Buy Sell Id"
+            }
+
+        }
+
+        AND
+
+        field "BUY.PARTICIPANT" {
+            label {
+                en = "Buy Participant"
+            }
+
+        }
+
+        AND
+
+        field "SELL.PARTICIPANT" {
+            label {
+                en = "Sell Participant"
+            }
+
+        }
+
+        AND
+
+        field "TXN.TYPE" {
+            label {
+                en = "Trans type"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"SL - Buy/Sell Details\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Buy/Sell Id"
+        }
+
+        length: 24
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "FACILITY.ID" {
+        label {
+            en = "Facility Id"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 14
+    }
+
+    field "BUY.PARTICIPANT" {
+        label {
+            en = "Buy Participant"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BUY.PARTICIPANT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "SELL.PARTICIPANT" {
+        label {
+            en = "Sell Participant"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SELL.PARTICIPANT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "FACILITY.ID"
+        conversion: getFrom "FACILITY" "SL.CURRENCY" false
+    }
+
+    field "SELL.TYPE" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELL.TYPE"
+    }
+
+    field "C" {
+        comma-separator: false
+        operation: constant "\"C\""
+    }
+
+    field "SL.REF.NO" {
+        length: 21
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SL.REF.NO"
+        conversion: extract from 1 to 2
+        conversion: replace {
+            oldData: "TF"
+            newData: "Letter Of Credit"
+        }
+
+        conversion: replace {
+            oldData: "MD"
+            newData: "Guarantee"
+        }
+
+        conversion: replace {
+            oldData: "SL"
+            newData: "Loans"
+        }
+
+    }
+
+    field "APP1" {
+        comma-separator: false
+        operation: constant "\"Facility\""
+    }
+
+    field "GET.SELL.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: if "SELL.TYPE" Equals "C" process "APP1" "SL.REF.NO"
+    }
+
+    field "TOTAL.SL.AMT" {
+        label {
+            en = "Amount Sold"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.SL.AMT"
+    }
+
+    field "TOT.CONSIDERATION" {
+        label {
+            en = "Consideration Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.CONSIDERATION"
+    }
+
+    field "PREM.DISC" {
+        label {
+            en = "Premium/Discount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PREM.DISC"
+    }
+
+    field "VER.1" {
+        comma-separator: false
+        operation: constant "\"SL.BUY.SELL,BS.CONT\""
+    }
+
+    field "VER.2" {
+        comma-separator: false
+        operation: constant "\"SL.BUY.SELL,BS.NONCONT\""
+    }
+
+    field "DRILL.1" {
+        comma-separator: false
+        operation: if "SELL.TYPE" Equals "C" process "VER.1" "VER.2"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transaction Details Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "SL Buy Sell"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "DRILL.1"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Facility"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "FACILITY.ID"
+        }
+
+        screen: "FACILITY,INPUT"
+    }
+
+}

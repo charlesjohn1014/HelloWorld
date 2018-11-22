@@ -1,0 +1,975 @@
+Enquiry "RESO.VAR.MARGIN" for "name:/RP_Contract:REPO#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Variation Margin - Reso"
+    }
+
+    description {
+        en = "Variation Margin - Reso"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "REPO.TYPE" {
+        Equals "RESO"
+    }
+
+    fixed-sort: "REPO.TYPE" Null
+    fixed-sort: "MARGIN.PORTFOLIO" Null
+    custom-selection {
+
+        field "MARGIN.PORTFOLIO" {
+            mandatory: true
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Reso Portfolio Evaluation - Variation Margin\""
+    }
+
+    field "PORT.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Portfolio: \""
+    }
+
+    field "PORTFOLIO.NO" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: selection "MARGIN.PORTFOLIO"
+    }
+
+    field "PORTFOLIO.DESC" {
+        label {
+            en = "CLASS-ENQ.H.DATA"
+        }
+
+        format: User break-condition {
+            break: Page
+        }
+
+        length: 70
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "RCCY.TXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: constant "\"Ref Ccy:\""
+    }
+
+    field "REF.CCY" {
+        label {
+            en = "CLASS-ENQ.H.DATA"
+        }
+
+        break-condition {
+            break: Page
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "REPO.TYPE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REPO.TYPE"
+    }
+
+    field "BC" {
+        comma-separator: false
+        operation: break-change "REPO.TYPE"
+    }
+
+    field "REPO.NAME" {
+        display-type: "CLASS-BOLD" break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "REPO.TYPE"
+        conversion: oconv "MCT"
+    }
+
+    field "@ID" {
+        label {
+            en = "Trade ID"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TYPE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REPO.TYPE"
+        conversion: oconv "MCT"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Contract Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "SM.ID" {
+        label {
+            en = "Security No"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 36
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NEW.SEC.CODE"
+    }
+
+    field "SEC.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 47
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SM.ID"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SEC.ISIN" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 83
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SM.ID"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "SEC.CCY" {
+        label {
+            en = "Sec Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 102
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SM.ID"
+        conversion: getFrom "SECURITY.MASTER" "SECURITY.CURRENCY" false
+    }
+
+    field "NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 106
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NEW.NOMINAL"
+    }
+
+    field "MKT.PRICE" {
+        label {
+            en = "Mkt Price"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 126
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SM.ID"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    field "REPO.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "ID.CONCAT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "REPO.ID":"."
+    }
+
+    field "GET.VAL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "ID.CONCAT":"SM.ID"
+        conversion: call
+        jBC: "@ E.RP.CALC.ACR.INT.MARGIN"
+    }
+
+    field "ALL.IN.PRI" {
+        label {
+            en = "All in Price"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 147
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ORIG.CONS" {
+        label {
+            en = "Orig Consideration"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 168
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "INIT.MAR" {
+        label {
+            en = "Initial Margin"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: true
+        decimals: 3
+        position {
+            column: 190
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SC.INIT.MGN.RTE"
+    }
+
+    field "MGN.MTD" {
+        label {
+            en = "Init Mgn Method"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 202
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SC.INIT.MGN.METHOD"
+        conversion: oconv "MCT"
+        conversion: repeat-when-null
+    }
+
+    field "RATE.MTH" {
+        label {
+            en = "Rate Based on Method"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: true
+        decimals: 3
+        position {
+            column: 211
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "MGN.AMT" {
+        label {
+            en = "Initial Margin"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 225
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SC.INIT.MGN.AMT"
+    }
+
+    field "INT.TILL.DATE" {
+        label {
+            en = "Int charged to date"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 246
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "ACCRUED.INT" {
+        label {
+            en = "Accrued Int"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 267
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "MKT.VAL" {
+        label {
+            en = "Mkt Val"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 288
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "MGN.ADJUSTMENT" {
+        label {
+            en = "Mgn Adjustment"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 309
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "R.TYPE" {
+        display-type: "CLASS-BOLD" break-condition {
+            field: "BC"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 126
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "REPO.TYPE"
+        conversion: getFrom "REPO.TYPE" "DESCRIPTION" false
+        conversion: oconv "MCT"
+    }
+
+    field "P.FOOTER1" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Portfolio Values(In Ref Ccy)\""
+    }
+
+    field "SC.VAL" {
+        display-type: "CLASS-BOLD" break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 7
+        }
+
+        operation: constant "\"Security Value\""
+    }
+
+    field "SEC.VAL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "TOT.SEC.VAL" {
+        break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOT SEC.VAL"
+    }
+
+    field "INT.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "TOT.INT.DATE" {
+        break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: total "INT.DATE"
+    }
+
+    field "FIN.SEC.VAL" {
+        display-type: "CLASS-POSNEG" break-condition {
+            field: "BC"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 126
+            line: + 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOT.SEC.VAL"
+    }
+
+    field "LN.VAL" {
+        display-type: "CLASS-BOLD" break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 8
+        }
+
+        operation: constant "\"Deposit/Loan Value\""
+    }
+
+    field "LOAN.VAL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "TOT.LOAN.VAL" {
+        break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOT LOAN.VAL"
+    }
+
+    field "DEP.LN.VAL" {
+        display-type: "CLASS-POSNEG" break-condition {
+            field: "BC"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 126
+            line: + 8
+        }
+
+        processing-mode: Single
+        operation: calc "TOT.LOAN.VAL" + "TOT.INT.DATE"
+    }
+
+    field "MGN.LABEL" {
+        display-type: "CLASS-BOLD" break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 9
+        }
+
+        operation: constant "\"Margin Adjustment\""
+    }
+
+    field "MGN.ADJ" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "TOT.MGN.ADJ" {
+        break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOT MGN.ADJ"
+    }
+
+    field "TOTAL.ADJ" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: total "MGN.ADJ"
+    }
+
+    field "TOT.MGN.VAL" {
+        display-type: "CLASS-POSNEG" break-condition {
+            field: "BC"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 126
+            line: + 9
+        }
+
+        operation: field-extract "TOT.MGN.ADJ"
+    }
+
+    field "NET.LABEL" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 18
+        }
+
+        operation: constant "\"Netted Value (In Ref Ccy)\""
+    }
+
+    field "MGN.LABEL.02" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 19
+        }
+
+        operation: constant "\"Total Mgn Adjustment Excess/Shortfall\""
+    }
+
+    field "NET.VAL" {
+        display-type: "CLASS-POSNEG" break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 126
+            line: + 19
+        }
+
+        operation: field-extract "TOTAL.ADJ"
+    }
+
+    field "MGN.LIMIT" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 20
+        }
+
+        operation: constant "\"Margin Maintenance Limit (In Ref Ccy)\""
+    }
+
+    field "FIX.LABEL" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 21
+        }
+
+        operation: constant "\"Fixed Amount\""
+    }
+
+    field "FIXED.AMT" {
+        display-type: "CLASS-POSNEG" break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 126
+            line: + 21
+        }
+
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "MGN.MAINT.LMT.AMT" false
+    }
+
+    field "MGN.CALL" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 22
+        }
+
+        operation: constant "\"Total margin adjustment value Excess/Shortfall\""
+    }
+
+    field "MGN.CALL2" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 23
+        }
+
+        operation: constant "\"Net Value\""
+    }
+
+    field "MGN.CALL3" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 83
+            line: + 24
+        }
+
+        operation: constant "\"(Incl Mgn Maintenance Limit)\""
+    }
+
+    field "TOT.MGN.AMT" {
+        display-type: "CLASS-POSNEG" break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 126
+            line: + 22
+        }
+
+        operation: field-extract "TOTAL.ADJ"
+    }
+
+    field "NET.VALUE" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        operation: calc "FIXED.AMT" + "TOTAL.ADJ"
+    }
+
+    field "NET.VAL.02" {
+        display-type: "CLASS-POSNEG" break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 126
+            line: + 23
+        }
+
+        operation: field-extract "NET.VALUE"
+    }
+
+    field "Y" {
+        comma-separator: false
+        operation: constant "\"Margin Call Required\""
+    }
+
+    field "N" {
+        comma-separator: false
+        operation: constant "\"No Margin Call\""
+    }
+
+    field "Z" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "MSG" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        operation: if "FIXED.AMT" Greater "Z" process "N" "Y"
+    }
+
+    field "MSG1" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        operation: if "NET.VALUE" LessThan "Z" process "Y" "MSG"
+    }
+
+    field "FIN.MSG" {
+        display-type: "CLASS-BOLD.RED" break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 168
+            line: + 23
+        }
+
+        operation: if "MSG" Equals "Y" process "MSG" "MSG1"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transactions Found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Repo"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "REPO,RESO"
+    }
+
+}

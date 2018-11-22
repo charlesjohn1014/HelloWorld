@@ -1,0 +1,622 @@
+Enquiry "SC.SAM.END.VAL" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Portoflio Details"
+    }
+
+    description {
+        en = "Portfolio Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "SEL.CCY" {
+            label {
+                en = "Display Ccy"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "REF.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.CURRENCY"
+        conversion: call
+        jBC: "@ E.SC.SET.CCY"
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: selection "SEL.CCY"
+        conversion: call
+        jBC: "@ E.SC.SET.CCY2"
+    }
+
+    field "CUST" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NUMBER"
+    }
+
+    field "LIM.AMOUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ SC.MAR.O.LIM.AMT"
+    }
+
+    field "LIM.AMT" {
+        comma-separator: false
+        operation: field-extract "LIM.AMOUNT"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "SHORT.MGN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SHORT.POS.MGN.AMT"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "LOAN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOAN.MARGIN.AMT"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "FIN.MGN.VALUE" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MARGIN.VALUE"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "MARGIN.VAL" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INIT.MGN.VALUE"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "PORT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"SAM\""
+    }
+
+    field "PLD.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "@ID":"\".\"":"PORT"
+    }
+
+    field "PLD.BAL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PLD.ID"
+        conversion: call
+        jBC: "@ E.SC.GET.PLEDGED.AMT"
+    }
+
+    field "PLG.BAL" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PLD.BAL"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "PORT.LIAB" {
+        comma-separator: false
+        operation: calc "SHORT.MGN" + "LOAN"
+    }
+
+    field "AVAIL.LIM" {
+        comma-separator: false
+        operation: calc "LIM.AMT" + "PORT.LIAB"
+    }
+
+    field "MAR.VAL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        operation: constant "\"Market Value(Inc Accr Int & Dividends):\""
+    }
+
+    field "ASSET.ESTMTN" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ASSET.ESTMTN"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "SEC.MARKET" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 2
+        }
+
+        operation: constant "\"Market Value of Collateral Assets :\""
+    }
+
+    field "SECOND.MRKT.VALUE" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECOND.MRKT.VALUE"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "LOMB.VALUE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 3
+        }
+
+        operation: constant "\"Lombard Value :\""
+    }
+
+    field "PF.MAR.VAL" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: calc "MARGIN.VAL" - "PORT.LIAB"
+    }
+
+    field "LOMB.DIVERS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 4
+        }
+
+        operation: constant "\"Lombard Value (after Diversification) :\""
+    }
+
+    field "LOMB.DIVERS.AMT" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 4
+        }
+
+        operation: calc "FIN.MGN.VALUE" - "PORT.LIAB"
+    }
+
+    field "LIA" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 5
+        }
+
+        operation: constant "\"Liabilities (Inc FX and DX Exposure) :\""
+    }
+
+    field "TOT.LIAB" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 5
+        }
+
+        operation: field-extract "PORT.LIAB"
+    }
+
+    field "NET.LMB" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 6
+        }
+
+        operation: constant "\"Net Lombard Value :\""
+    }
+
+    field "NET.LIAB" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 6
+        }
+
+        operation: calc "LOMB.DIVERS.AMT" + "PORT.LIAB"
+    }
+
+    field "LIT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 7
+        }
+
+        operation: constant "\"Limit :\""
+    }
+
+    field "LIMIT.AMT" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 7
+        }
+
+        operation: field-extract "LIM.AMT"
+    }
+
+    field "BUY.PR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 8
+        }
+
+        operation: constant "\"Limit Availability :\""
+    }
+
+    field "BUY.POWER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 8
+        }
+
+        operation: calc "LIM.AMT" + "PORT.LIAB"
+    }
+
+    field "SEC.MAR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 9
+        }
+
+        operation: constant "\"Security Margin % :\""
+    }
+
+    field "SEC.MARGIN.RATIO" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SEC.MARGIN.RATIO"
+    }
+
+    field "CO" {
+        comma-separator: false
+        operation: company
+    }
+
+    field "CO.TOP" {
+        comma-separator: false
+        operation: field-extract "CO"
+        conversion: getFrom "OV.PARAMETER" "TOP.UP.MGN.RATE" false
+    }
+
+    field "CO.SELL" {
+        comma-separator: false
+        operation: field-extract "CO"
+        conversion: getFrom "OV.PARAMETER" "SELL.OUT.MGN.RATE" false
+    }
+
+    field "PF.TOP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOP.UP.MGN.RATE"
+    }
+
+    field "NU" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PCENT" {
+        comma-separator: false
+        operation: constant "\"%\""
+    }
+
+    field "TOP" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 10
+        }
+
+        operation: constant "\"Intervention (Top Up) :\""
+    }
+
+    field "TOP.VAL" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        operation: if "PF.TOP" NotEquals "NU" process "PF.TOP" "CO.TOP"
+    }
+
+    field "TOP.RATE" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+            line: + 10
+        }
+
+        operation: calc "TOP.VAL":"PCENT"
+    }
+
+    field "PF.SELL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELL.OUT.MGN.RATE"
+    }
+
+    field "CLOSE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 11
+        }
+
+        operation: constant "\"Realisation (Close Out) :\""
+    }
+
+    field "SELL.VAL" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        operation: if "PF.SELL" NotEquals "NU" process "PF.SELL" "CO.SELL"
+    }
+
+    field "SELL.RATE" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+            line: + 11
+        }
+
+        operation: calc "SELL.VAL":"PCENT"
+    }
+
+    field "PLD.LABEL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 12
+        }
+
+        operation: constant "\"Pledge Balance :\""
+    }
+
+    field "PLEDGE.BALANCE" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 45
+            line: + 12
+        }
+
+        operation: field-extract "PLG.BAL"
+    }
+
+    field "ZERONORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        operation: constant "\"No Details available for this Portfolio\""
+    }
+
+    toolbar: "ENQUIRY.PRINT"
+    attributes: "SINGLE.BACKGROUND.COLOUR"
+}

@@ -1,0 +1,333 @@
+Enquiry "CHQ.STOPPED.SCV" for "name:/ST_ChqSubmit:CHEQUE.REGISTER.SUPPLEMENT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cheque Stopped"
+    }
+
+    description {
+        en = "Cheque Stopped"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "@ID" {
+        BeginsWith "SB", "CURR"
+    }
+
+    fixed-selection "STATUS" {
+        Equals "STOPPED"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Account No"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "CHEQ.REG.SUPP.ID" {
+            label {
+                en = "Cheque No"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACCT.NO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "BC ACCT.NO" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACCT.NO"
+    }
+
+    field "CHEQUES" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Cheques\""
+    }
+
+    field "CHEQUES1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 9
+            line: 0
+        }
+
+        operation: constant "\"Stopped\""
+    }
+
+    field "ACCOUNTNO" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Account No:\""
+    }
+
+    field "SPACE" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 59
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "CCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 1
+        }
+
+        operation: constant "\"Ccy:\""
+    }
+
+    field "SPACE.02" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: constant "\" \""
+    }
+
+    field "DISP.ACCT.NO" {
+        label {
+            en = "Account No:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BC ACCT.NO"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 1
+        }
+
+        operation: field-extract "ACCT.NO"
+    }
+
+    field "SPACE.03" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 34
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "ACC.NAME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BC ACCT.NO"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 1
+        }
+
+        operation: field-extract "ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "SPACE.04" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 68
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "CCY.02" {
+        label {
+            en = "CCY:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BC ACCT.NO"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 69
+            line: 1
+        }
+
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "CHQ.TYP" {
+        label {
+            en = "Cheque Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHEQ.REG.SUPP.ID"
+        conversion: extract from 1 to 2
+        conversion: getFrom "CHEQUE.TYPE" "DESCRIPTION" false
+    }
+
+    field "CHQ.NO" {
+        label {
+            en = "Cheque No"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHEQ.REG.SUPP.ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "STOP.DATE" {
+        label {
+            en = "Stop Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE.TIME"
+    }
+
+    field "PAYM.STOP.TYPE" {
+        label {
+            en = "Stop Type"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PAYM.STOP.TYPE"
+        conversion: getFrom "PAYMENT.STOP.TYPE" "DESCRIPTION" false
+    }
+
+    field "ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Stopped Cheques to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CHQ.NO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        application: "CHEQUE.REGISTER.SUPPLEMENT"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

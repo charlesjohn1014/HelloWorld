@@ -1,0 +1,111 @@
+Enquiry "MO.CHANNEL.SUBSCRIBED" for "name:/MO_ModelBank:NOFILE.CHANNEL.SUBSCRIBED#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RESULT" {
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+        }
+
+        None
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Amend Subscription - Unsubscribe\""
+    }
+
+    field "CHANNEL" {
+        label {
+            en = "Channel"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ID"
+    }
+
+    field "CH.DESCRIPTION" {
+        label {
+            en = "Service"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "ID"
+        conversion: getFrom "EB.CHANNEL" "SHORT.NAME" false
+    }
+
+    field "CHANNEL.TYPE" {
+        label {
+            en = "Channel Type"
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: getFrom "EB.CHANNEL" "CHANNEL.TYPE" false
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No channels available to unsubscribe\""
+    }
+
+    field "ZERO.RECORD.HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Amend Subscription - Unsubscribe\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Unsubscribe"
+        }
+
+        label-field: "CH.DESCRIPTION"
+        criteria: "CURRENT.CHANNEL" > "ID"
+        criteria: "CURRENT.ARR" > "ARRANGEMENT.ID"
+        pw-process: "UPDATE.CHANNEL.PW"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "DISABLE.NO.SORT.OPTIONS" ; "UNDERLINE.HEADER.ROW"
+}

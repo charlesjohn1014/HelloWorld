@@ -1,0 +1,295 @@
+Enquiry "CASH.BALANCE.FORECAST" for "name:/AM_ModelBank:NOFILE.CASH.BALANCE.FORECAST#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cash Balance Forecast"
+    }
+
+    description {
+        en = "Cash Balance Forecast"
+    }
+
+    no-selection: true
+    start-line: 7
+    end-line: 19
+    build-routines {
+        jBC: "E.BUILD.CASH.BAL"
+    }
+
+    fixed-selection "SEL.REC" {
+    }
+
+    custom-selection {
+
+        field "PORTFOLIO.ID" {
+            label {
+                en = "Portfolio ID"
+            }
+
+        }
+
+        AND
+
+        field "AM.CRITERIA" {
+            label {
+                en = "Criteria Group"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Customer\'s Account Forward Balance\""
+    }
+
+    field "Client" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Portfolio/Group No:\""
+    }
+
+    field "SEL.PORT" {
+        comma-separator: false
+        operation: selection "PORTFOLIO.ID"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "SEL.CRIT" {
+        comma-separator: false
+        operation: selection "AM.CRITERIA"
+        conversion: getFrom "AM.CRITERIA" "DESCRIPTION" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CLIENT.VALUE" {
+        label {
+            en = "Portfolio/Group No:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CLIENT.DETS" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 4
+        }
+
+        operation: if "SEL.PORT" Equals "NULL" process "SEL.CRIT" "SEL.PORT"
+    }
+
+    field "Currency" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "Portfolio.Id" {
+        label {
+            en = "Portfolio ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "Account" {
+        label {
+            en = "Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "Acc Name" {
+        label {
+            en = "Account Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "Today" {
+        label {
+            en = "Balance Today"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "Currency" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "+1 Day" {
+        label {
+            en = "Balance +1 day"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "Currency" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "+2 Day" {
+        label {
+            en = "Balance +2 Days"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "Currency" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 125
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "+3 Day" {
+        label {
+            en = "Balance +3 Days"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "Currency" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "+4 Day" {
+        label {
+            en = "Balance +4 Days"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "Currency" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 175
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Statement History"
+        }
+
+        label-field: "Account"
+        image: "view.gif"
+        criteria: "STMT.ACCOUNT.NO" Equals "Account"
+        enquiry: "ACCT.STMT.HIST"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Detailed Forward Stmt"
+        }
+
+        label-field: "Account"
+        image: "details.gif"
+        criteria: "ACCOUNT.ID" Equals "Account"
+        enquiry: "NOSTRO.FWD.BAL.SCV"
+    }
+
+    attributes: "ALLDATA"
+}

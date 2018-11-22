@@ -1,0 +1,219 @@
+Enquiry "AM.SCE.PREVIEW.SOO" for "name:/AM_ModelBank:NOFILE.AM.SCE.PREVIEW.SOO#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Preview OPEN ORDER"
+        }
+
+        column: 50
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Date :"
+        }
+
+        column: 2
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Scenario : "
+        }
+
+        column: 2
+        line: 2
+    }
+
+    description {
+        en = "AM.SCE.PREVIEW.SOO"
+    }
+
+    start-line: 5
+    end-line: 19 fixed-selection "SOO.CODE" {
+        NotEquals "\"", "\""
+    }
+
+    custom-selection {
+
+        field "SCENARIO.CODE" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "SCENARIO.CODE" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: selection "SCENARIO.CODE"
+    }
+
+    field "DATE.DISPLAY" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 1
+        }
+
+        operation: today
+    }
+
+    field "CRIT.DISPLAY" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 2
+        }
+
+        operation: field-extract "SCENARIO.CODE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "STAR" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "SOO.CODE" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.AM.SCE.PREVIEW.SOO"
+    }
+
+    field "SECURITY" {
+        label {
+            en = "Security"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 3
+    }
+
+    field "SEC.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        operation: field-extract "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "TRANSACTION" {
+        label {
+            en = "Transaction"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Multi
+        operation: field-number 8
+    }
+
+    field "TOT.NOM" {
+        label {
+            en = "Tot Nominal"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 68
+        }
+
+        processing-mode: Multi
+        operation: field-number 78
+    }
+
+    field "BR.TRADING.UNIT" {
+        label {
+            en = "Br Trading Units"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 88
+        }
+
+        operation: field-extract "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "BR.TRADING.UNITS" false
+    }
+
+    field "NOM.STAR" {
+        comma-separator: false
+        operation: calc "TOT.NOM":"STAR"
+    }
+
+    field "NOM.STAR.UNIT" {
+        comma-separator: false
+        operation: calc "NOM.STAR":"BR.TRADING.UNIT"
+    }
+
+    field "VIOLATE" {
+        length: 2
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "NOM.STAR.UNIT"
+        conversion: call
+        jBC: "@ E.AM.MOD"
+    }
+
+    field "VIO" {
+        label {
+            en = "Violate"
+        }
+
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 106
+        }
+
+        operation: if "VIOLATE" Equals "ZERO" process "NULL" "STAR"
+    }
+
+}

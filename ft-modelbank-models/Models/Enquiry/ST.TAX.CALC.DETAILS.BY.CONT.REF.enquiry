@@ -1,0 +1,206 @@
+Enquiry "ST.TAX.CALC.DETAILS.BY.CONT.REF" for "name:/ST_ChargeConfig:ST.TAX.CALC.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Tax History Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "CONTRACT.REF" Null
+
+    field "CONTRACT.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.REF"
+    }
+
+    field "ARR.REF" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.REF"
+    }
+
+    field "DRILL.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.REF"
+    }
+
+    field "C.R.BRK" {
+        comma-separator: false
+        operation: break-change "ARR.REF"
+    }
+
+    field "AC.NO" {
+        label {
+            en = "Account Number"
+        }
+
+        break-condition {
+            field: "C.R.BRK"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "CONTRACT.REF"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+        conversion: value 1
+    }
+
+    field "AC.SHT.TITLE" {
+        label {
+            en = "Short Title"
+        }
+
+        format: User break-condition {
+            field: "C.R.BRK"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-extract "AC.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CT.REF" {
+        label {
+            en = "Contract Ref"
+        }
+
+        break-condition {
+            field: "C.R.BRK"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "CONTRACT.REF"
+    }
+
+    field "CUST.ID" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TAX.CUST.ID"
+    }
+
+    field "DISP.CUST.ID" {
+        label {
+            en = "Customer"
+        }
+
+        break-condition {
+            field: "C.R.BRK"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Short Name"
+        }
+
+        break-condition {
+            field: "C.R.BRK"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "DISP.CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PRODUCT" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CONTRACT.REF"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+    }
+
+    field "PRODUCT.FLD" {
+        format: User break-condition {
+            field: "C.R.BRK"
+        }
+
+        comma-separator: false
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "DRILL.REF.02" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.REF"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DELIM" {
+        comma-separator: false
+        operation: constant "\"---\""
+    }
+
+    field "PRD.DES" {
+        label {
+            en = "Product"
+        }
+
+        break-condition {
+            field: "C.R.BRK"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: if "PRODUCT.FLD" Equals "NULL" process "DELIM" "PRODUCT.FLD"
+    }
+
+    field "DD.CMD" {
+        comma-separator: false
+        operation: constant "\"ENQ ST.TAX.DETAILS.DRILL\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "DISP.CUST.ID"
+        image: "view.gif"
+        criteria: "CURRENT.CONT.REF" > "DRILL.REF"
+        from-field: "DD.CMD"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES"
+}

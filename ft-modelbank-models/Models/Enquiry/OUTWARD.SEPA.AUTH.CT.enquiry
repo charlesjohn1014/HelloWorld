@@ -1,0 +1,217 @@
+Enquiry "OUTWARD.SEPA.AUTH.CT" for "name:/FT_Contract:FUNDS.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "SEPA Authorise Credit Transfers"
+        }
+
+        column: 1
+        line: 0
+    }
+
+    description {
+        en = "SEPA Authorise Credit Transfers"
+    }
+
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "EP.SEPA.SEL.OUT.DB"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        Equals "ACOC"
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "CNAU", "INAU", "CNAO", "INAO"
+    }
+
+    fixed-selection "SEPA.IN.CLEAR" {
+        Equals "\"\""
+    }
+
+    fixed-sort: "@ID" Null
+
+    field "TODAY.DATE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: today
+        conversion: julian
+        conversion: oconv "D4/E"
+    }
+
+    field "VIDE" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Payment Order"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SEPA.PEACH" {
+        label {
+            en = "PE-ACH"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.PEACH"
+    }
+
+    field "SEPA.CODE.OPE" {
+        label {
+            en = "Payment Type"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.CODE.OPE"
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "Debit Account"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "CREDIT.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 36
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.CURRENCY"
+    }
+
+    field "CREDIT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 39
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.AMOUNT"
+    }
+
+    field "SEPA.THEIR.BANK" {
+        label {
+            en = "Beneficiary Bank"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 58
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.THEIR.BANK"
+    }
+
+    field "SEPA.THEIR.ACCT" {
+        label {
+            en = "IBAN"
+        }
+
+        length: 34
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.THEIR.ACCT"
+    }
+
+    field "CREDIT.VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.VALUE.DATE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorize"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif"
+        criteria: "EQ" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "FUNDS.TRANSFER,SEPA.OUTWARD.CT"
+    }
+
+}

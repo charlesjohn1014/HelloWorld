@@ -1,0 +1,674 @@
+Enquiry "SC.ASSET.VAL.CASH" for "name:/SC_ScvCashAndFundFlow:SC.CASH.FLOW02#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "PORTFOLIO EVALUATION DETAILS"
+        }
+
+        column: 23
+        line: 0
+    }
+
+    header {
+        label {
+            en = "+3 MTHS CCY:"
+        }
+
+        column: 65
+        line: 0
+    }
+
+    header {
+        label {
+            en = "A/C :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "DESCRIPTION"
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "ESTIMATION"
+        }
+
+        column: 23
+        line: 2
+    }
+
+    header {
+        label {
+            en = "EST.INCOME"
+        }
+
+        column: 34
+        line: 2
+    }
+
+    header {
+        label {
+            en = "ACCR.INT."
+        }
+
+        column: 45
+        line: 2
+    }
+
+    header {
+        label {
+            en = "DIV/CPN DATE CASH-FLOW"
+        }
+
+        column: 55
+        line: 2
+    }
+
+    description {
+        en = "SC.ASSET.VAL.CASH"
+    }
+
+    start-line: 4
+    end-line: 17
+    build-routines {
+        jBC: "E.CF.FILE.NO"
+    }
+
+    custom-selection {
+
+        field "MONTH.NO" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "SECURITY.ACC" {
+        }
+
+        None
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "RUN.DTE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.SC.CASH.REP.DATE"
+    }
+
+    field "D.DATE.D" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 53
+            line: 0
+        }
+
+        operation: field-extract "RUN.DTE"
+    }
+
+    field "Z" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DASH" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"--\""
+    }
+
+    field "NU" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SPACE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "REF.CUR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.SC.VAL.PARAM"
+    }
+
+    field "REF.CCY" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 77
+            line: 0
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.CURRENCY" false
+    }
+
+    field "SEC.ACC" {
+        break-condition {
+            break: Page
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 1
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "SEC.NME" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 1
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "SEC.CODE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 1
+    }
+
+    field "DESC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SEC.CODE"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" true
+    }
+
+    field "NM.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 2
+    }
+
+    field "NAME.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 18
+    }
+
+    field "LQ.YEAR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "NAME.DATE"
+        conversion: extract from 1 to 4
+    }
+
+    field "LQ.MONTH" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "NAME.DATE"
+        conversion: extract from 5 to 2
+    }
+
+    field "DASH.DATEA" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "LQ.YEAR":"SPACE"
+    }
+
+    field "DASH.DATEB" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "DASH.DATEB":"LQ.MONTH"
+    }
+
+    field "SPACE.NAME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SPACE":"DASH.DATEB"
+    }
+
+    field "DE.MM" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "DESC":"SPACE.NAME"
+    }
+
+    field "DESC.NAM" {
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: if "NM.DATE" NotEquals "NULL" process "NM.DATE" "DE.MM"
+        conversion: extract from 1 to 16
+    }
+
+    field "EST" {
+        length: 13
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-number 7
+        conversion: oconv "MD0"
+        conversion: oconv "MD2"
+        conversion: oconv "MD1"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "EST.INC" {
+        length: 10
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 34
+        }
+
+        processing-mode: Multi
+        operation: field-number 11
+        conversion: oconv "MD0"
+        conversion: oconv "MD2"
+        conversion: oconv "MD1"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "ACCR.INT" {
+        length: 9
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 46
+        }
+
+        processing-mode: Multi
+        operation: field-number 9
+        conversion: oconv "MD0"
+        conversion: oconv "MD2"
+        conversion: oconv "MD1"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "DIV.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 37
+        conversion: julian
+        conversion: oconv "D2/E"
+    }
+
+    field "D.DV.DTE" {
+        comma-separator: false
+        position {
+            column: 57
+        }
+
+        processing-mode: Multi
+        operation: if "DIV.DATE" Equals "DASH" process "NU" "DIV.DATE"
+    }
+
+    field "CASH.FL" {
+        length: 9
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 67
+        }
+
+        processing-mode: Multi
+        operation: field-number 37
+        conversion: oconv "MD0"
+        conversion: oconv "MD2"
+        conversion: oconv "MD1"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        position {
+            column: 77
+        }
+
+        processing-mode: Multi
+        operation: field-number 40
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "B.ID" {
+        comma-separator: false
+        operation: break-change "ID"
+    }
+
+    field "B.SEC" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "SEC.ACC"
+    }
+
+    field "CUST.GR" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "B.ASSET" {
+        comma-separator: false
+        operation: break-change "CUST.GR"
+    }
+
+    field "TOT.LIT" {
+        break-condition {
+            field: "B.ASSET"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"TOTAL\""
+    }
+
+    field "ASSET" {
+        break-condition {
+            field: "B.ASSET"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "CUST.GR"
+        conversion: getFrom "ASSET.TYPE" "SHORT.DESC" true
+    }
+
+    field "TOT.CUST" {
+        break-condition {
+            field: "B.ASSET"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 20
+        }
+
+        operation: total "EST"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "T.ACCR.I" {
+        break-condition {
+            field: "B.ASSET"
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 46
+        }
+
+        operation: total "ACCR.INT"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "T.CASH" {
+        break-condition {
+            field: "B.ASSET"
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 67
+        }
+
+        operation: total "CASH.FL"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "T.EST.IN" {
+        break-condition {
+            field: "B.ASSET"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 34
+        }
+
+        operation: total "EST.INC"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "BLANK" {
+        break-condition {
+            field: "B.ASSET"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "P.LIT1" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        operation: constant "\"PORTFOLIO TOTAL\""
+    }
+
+    field "PORT.TOT" {
+        break-condition {
+            break: End
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 17
+            line: + 2
+        }
+
+        operation: total "EST"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "PORT.INC" {
+        break-condition {
+            break: End
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 34
+            line: + 2
+        }
+
+        operation: total "EST.INC"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "PORT.INT" {
+        break-condition {
+            break: End
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 45
+            line: + 2
+        }
+
+        operation: total "ACCR.INT"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "PORT.CSH" {
+        break-condition {
+            break: End
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 67
+            line: + 2
+        }
+
+        operation: total "CASH.FL"
+        conversion: iconv "MD1"
+        conversion: oconv "MD1"
+    }
+
+    field "VAL.SEL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 1
+        conversion: call
+        jBC: "@ E.SC.VAL.SELECTION"
+    }
+
+    field "ENQ.NAME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "VAL.SEL"
+        conversion: extract from 1 to 1 delimited by "~"
+    }
+
+    field "ENQ.SEL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "VAL.SEL"
+        conversion: extract from 2 to 1 delimited by "~"
+        conversion: extract from 1 to 1 delimited by "+"
+    }
+
+    field "ENQ.SEL2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "VAL.SEL"
+        conversion: extract from 2 to 1 delimited by "~"
+        conversion: extract from 2 to 1 delimited by "+"
+    }
+
+    drilldown "1" {
+        label-field: "DESC.NAM"
+        criteria: "ENQ.SEL"
+        criteria: "ENQ.SEL2"
+        from-field: "ENQ.NAME"
+    }
+
+}

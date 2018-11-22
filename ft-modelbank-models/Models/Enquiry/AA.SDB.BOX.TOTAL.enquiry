@@ -1,0 +1,188 @@
+Enquiry "AA.SDB.BOX.TOTAL" for "name:/BX_ModelBank:NOFILE.AA.SDB.BOX.LIST.BY.TYPE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Safe Deposit Box - Total by Status"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "RECORD" {
+    }
+
+    custom-selection {
+
+        field "BOX.TYPE" {
+            label {
+                en = "Box Type"
+            }
+
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Safe Deposit Box Report\""
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "EB.TYPE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"AA.SDB.BOX.TYPE*\""
+    }
+
+    field "C.TYPE" {
+        label {
+            en = "Box Type"
+        }
+
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: User
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: calc "EB.TYPE":"TYPE"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "BRK.TYPE" {
+        comma-separator: false
+        operation: break-change "C.TYPE"
+    }
+
+    field "STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "BX.STATUS" {
+        comma-separator: false
+        operation: field-extract "STATUS"
+    }
+
+    field "EB.STATUS" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"AA.SDB.BOX.STATUS*\""
+    }
+
+    field "C.STATUS" {
+        label {
+            en = "Box Status"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: calc "EB.STATUS":"STATUS"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "COUNT" {
+        label {
+            en = "Total"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 3 to 0 delimited by "*"
+    }
+
+    field "TOTAL" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 4 to 0 delimited by "*"
+    }
+
+    field "FIN.TOTAL" {
+        comma-separator: false
+        operation: field-extract "TOTAL"
+    }
+
+    field "CAL.TOTAL" {
+        break-condition {
+            break: End
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+            line: + 1
+        }
+
+        operation: total "FIN.TOTAL"
+    }
+
+    field "ENQ.DRILL" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"AA.SDB.BOX.DUE.AMOUNT\""
+    }
+
+    field "C.TYPE.2" {
+        comma-separator: false
+        operation: field-extract "C.TYPE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Box Details"
+        }
+
+        label-field: "C.TYPE"
+        image: "launch.gif"
+        criteria: "BOX.TYPE" Equals "TYPE"
+        criteria: "CURRENT.BX.STS" > "BX.STATUS"
+        from-field: "ENQ.DRILL"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

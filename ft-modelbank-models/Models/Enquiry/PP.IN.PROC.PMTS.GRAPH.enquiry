@@ -1,0 +1,130 @@
+Enquiry "PP.IN.PROC.PMTS.GRAPH" for "name:/PP_PaymentFlowMonitorGUI:NOFILE.PP.IN.PROCESS.PAYMENTS.GRAPH#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "In-Process Payments-List"
+    }
+
+    description {
+        en = "In-Process Payments-List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "OUT.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "StatusCodeValue" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "StatusDesc" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "HP" {
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "StatusCodeValue.1" {
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: calc "StatusCodeValue":"HP":"StatusDesc"
+    }
+
+    field "NO.OF.PAYMENTS" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "NO.OF.PAYMENTS.1" {
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "NO.OF.PAYMENTS"
+    }
+
+    field "CompanyCode" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "NO.REC.TO.DISPLAY" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: constant "\"No Payments to Monitor\""
+    }
+
+    security {
+        application: "PP.COMPANY"
+        field: "CompanyCode"
+    }
+
+    graph {
+        type: "BAR.ORDINAL"
+        label {
+            en = "In Process Payments" x: 120 y: 30
+        }
+
+        dimension {
+            width: 470 height: 600
+        }
+
+        margins {
+            top: 50 bottom: 400 left: 40 right: 100
+        }
+
+        scale {
+            x: 100 y: 100
+        }
+
+        legend {
+            x: 400 y: 50
+        }
+
+        x-axis {
+            field: "StatusCodeValue.1"
+            display-legend: true
+            show-grid: true
+        }
+
+        y-axis {
+            field: "NO.OF.PAYMENTS.1"
+            display-legend: true
+            show-grid: true
+        }
+
+    }
+
+    enquiry-graph-id {
+        "PP.IN.PROC.PMTS.GRAPH"
+    }
+
+    attributes: "ALLDATA" ; "NO.ENQUIRY.FAVOURITES"
+}

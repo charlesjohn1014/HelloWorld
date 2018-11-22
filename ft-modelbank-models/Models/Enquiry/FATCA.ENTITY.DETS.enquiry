@@ -1,0 +1,371 @@
+Enquiry "FATCA.ENTITY.DETS" for "name:/FA_CustomerIdentification:FATCA.CUSTOMER.SUPPLEMENTARY.INFO#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "FATCA - List of Entities"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CLIENT.TYPE" {
+        NotEquals "INDIVIDUAL", "PRIVATE", "RETAIL"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "FATCA.STATUS" {
+            label {
+                en = "Classification"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "RM.ID" {
+        label {
+            en = "RM Id"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "RM.NAME" {
+        label {
+            en = "RM Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "RM.ID"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "RM.AREA" {
+        label {
+            en = "RM Market"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        operation: field-extract "RM.ID"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Entities\""
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 98
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CUSTOM.NAME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUS.NAME"
+    }
+
+    field "FATCA.STATUS" {
+        label {
+            en = "Classification"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 137
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FATCA.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "BIRTH.PLACE" {
+        label {
+            en = "Incorporated in US"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 175
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "US.PLACE.OF.BIRTH"
+        conversion: oconv "MCT"
+    }
+
+    field "ENTITY.STATUS" {
+        label {
+            en = "Self Classification"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 184
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ENTITY.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "EIN" {
+        label {
+            en = "GIIN"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 222
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "EIN"
+    }
+
+    field "ROLE.TYPE" {
+        label {
+            en = "Owner Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 260
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ROLE.TYPE"
+    }
+
+    field "HOLDER.NAME" {
+        label {
+            en = "Owner Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 298
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "HOLDER.NAME"
+    }
+
+    field "JO.BO.STATUS" {
+        label {
+            en = "Owner Classification"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 336
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "JO.BO.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "FORM.TYPE" {
+        label {
+            en = "Doc Received"
+        }
+
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 375
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FORM.TYPE"
+        conversion: getFrom "FATCA.FORM.TYPE" "DESCRIPTION" false
+    }
+
+    field "FORM.OWNER" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "FORM.OWNER"
+        conversion: repeat-sub
+    }
+
+    field "INP.VALUE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "@ID":"\"~\"":"FORM.OWNER"
+        conversion: repeat-when-null
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "INP.DATA" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FORM.TYPE" NotEquals "NULL" process "INP.VALUE" "NULL"
+    }
+
+    field "O.DATA" {
+        label {
+            en = "Received From"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 428
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "INP.DATA"
+        conversion: call
+        jBC: "@ E.GET.FATCA.HOLDER.NAME"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available for current selection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "CUST.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,ENTITY"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Details"
+        }
+
+        label-field: "CUST.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,ENTITY"
+    }
+
+}

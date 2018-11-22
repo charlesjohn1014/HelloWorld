@@ -1,0 +1,218 @@
+Enquiry "EBQA.PAY.295" for "name:/DE_Messaging:EB.QUERIES.ANSWERS$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Incoming SWIFT MTn95 (Inward)"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "STATUS" {
+        NotEquals "PROCESSED"
+    }
+
+    fixed-selection "EB.ADVICE.NO" {
+        Equals "\'EB-0295\'"
+    }
+
+    fixed-selection "DIRECTION" {
+        Equals "INWARD"
+    }
+
+    custom-selection {
+
+        field "EB.QUERIES.ANS.ID" {
+            label {
+                en = "Message Key"
+            }
+
+        }
+
+        AND
+
+        field "MSG.CNTL.CATEGORY" {
+            label {
+                en = "Category"
+            }
+
+        }
+
+        AND
+
+        field "ASSIGNED.TO" {
+            label {
+                en = "Assigned To"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Incoming n95 Messages\""
+    }
+
+    field "EB.QUERIES.ANS.ID" {
+        label {
+            en = "Message Key"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EB.QUERIES.ANS.ID"
+    }
+
+    field "EB.ADVICE.NO" {
+        label {
+            en = "Msg Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EB.ADVICE.NO"
+        conversion: extract from 5 to 10
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer Number"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CUSTOMER.NO"
+    }
+
+    field "RECV.ADDR" {
+        label {
+            en = "Received From"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "RECV.ADDR"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "INWARD.DE.I.HEADER" {
+        label {
+            en = "Delivery Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: application-field-name "INWARD.DE.I.HEADER"
+    }
+
+    field "QUERY" {
+        label {
+            en = "Query"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "QUERY"
+    }
+
+    field "ORG.MSG.FIELD" {
+        label {
+            en = "Original Message"
+        }
+
+        length: 70
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ORG.MSG.FIELD"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Messages Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Send MT296"
+        }
+
+        label-field: "EB.QUERIES.ANS.ID"
+        image: "right.arrow.gif"
+        criteria: "EB.QUERIES.ANSWERS" > "EB.QUERIES.ANS.ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.QUERIES.ANSWERS,296"
+    }
+
+}

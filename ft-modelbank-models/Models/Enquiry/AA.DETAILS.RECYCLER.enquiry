@@ -1,0 +1,317 @@
+Enquiry "AA.DETAILS.RECYCLER" for "name:/RC_TransactionCycler:RC.DETAIL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Pending Transaction Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        column-width: 40
+        processing-mode: Single
+        operation: constant "\"Pending Transaction\""
+    }
+
+    field "BILL" {
+        label {
+            en = "Bill Ref"
+        }
+
+        length: 80
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 40
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 6 to 0 delimited by "*"
+    }
+
+    field "@ID" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "RETRYSTARTDATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        column-width: 40
+        processing-mode: Single
+        operation: application-field-name "RETRY.START.DATE"
+    }
+
+    field "RETRYNEXTDATE" {
+        label {
+            en = "Next Retry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 40
+        processing-mode: Single
+        operation: application-field-name "NEXT.RETRY.DATE"
+    }
+
+    field "AAPRODUCT" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AA.PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "ARRANGEMENTID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "ORIG.ENTRY.TABLE" {
+        label {
+            en = "Entry In"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        column-width: 40
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ORIG.ENTRY.TABLE"
+    }
+
+    field "ORIG.ENTRY.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ORIG.ENTRY.ID"
+    }
+
+    field "SETTLESTATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 40
+        processing-mode: Single
+        operation: application-field-name "SETTLE.STATUS"
+        conversion: replace {
+            oldData: "PENDING"
+            newData: "Pending"
+        }
+
+        conversion: replace {
+            oldData: "SETTLED"
+            newData: "Settled"
+        }
+
+        conversion: replace {
+            oldData: "PARTIAL"
+            newData: "Partial"
+        }
+
+        conversion: replace {
+            oldData: "REJECTED"
+            newData: "Rejected"
+        }
+
+    }
+
+    field "LAST.RETRY.STAGE" {
+        label {
+            en = "Stage"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        column-width: 40
+        processing-mode: Single
+        operation: application-field-name "LAST.RETRY.STAGE"
+        conversion: value 1 1
+        conversion: replace {
+            oldData: "COB-SOD"
+            newData: "Start of Day"
+        }
+
+        conversion: replace {
+            oldData: "COB-EOD"
+            newData: "End of Day"
+        }
+
+        conversion: replace {
+            oldData: "COB-ONLINE"
+            newData: "Online"
+        }
+
+    }
+
+    field "LAST.RESULT" {
+        label {
+            en = "Result"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 40
+        processing-mode: Single
+        operation: application-field-name "LAST.RESULT"
+        conversion: value 1 1
+    }
+
+    field "BILL.VER" {
+        comma-separator: false
+        operation: constant "\"AA.BILL.DETAILS,AA S \""
+    }
+
+    field "DRILL.BILL" {
+        comma-separator: false
+        operation: calc "BILL.VER":"BILL"
+    }
+
+    field "RC.DET" {
+        comma-separator: false
+        operation: constant "\"RC.DETAIL S \""
+    }
+
+    field "RC.CON" {
+        comma-separator: false
+        operation: calc "RC.DET":"@ID"
+    }
+
+    field "SEE" {
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "ORG.DRILL" {
+        comma-separator: false
+        operation: calc "ORIG.ENTRY.TABLE":"SP":"SEE":"SP":"ORIG.ENTRY.ID"
+    }
+
+    field "DRILL.EVENT" {
+        comma-separator: false
+        operation: if "ORIG.ENTRY.ID" Equals "NULL" process "RC.CON" "ORG.DRILL"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+        }
+
+        operation: constant "\"No Pending Transactions\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Bill Details"
+        }
+
+        label-field: "BILL"
+        image: "view.gif"
+        from-field: "DRILL.BILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Event Details"
+        }
+
+        label-field: "ORIG.ENTRY.TABLE"
+        image: "drill.gif"
+        from-field: "DRILL.EVENT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Pending Txn Details"
+        }
+
+        label-field: "@ID"
+        image: "details.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "RC.DETAIL,AA"
+    }
+
+    fileVersion: Live
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

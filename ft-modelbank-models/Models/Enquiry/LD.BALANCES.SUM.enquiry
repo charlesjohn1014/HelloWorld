@@ -1,0 +1,1124 @@
+Enquiry "LD.BALANCES.SUM" for "name:/LM_Contract:LMM.ACCOUNT.BALANCES#" {
+    metamodelVersion: "1.30.6" full-description {
+        en =
+        "This enquiry shows Principal, Interest, Chargesfrom the start date, and the future events upto the maturity date, or a supplied END.DATE.The enquiry selects LMM.ACCOUNT.BALANCES whichis updated at NAUstage by LD.Once selected this utilises 2 routines:LD.ENQ.INT.I - initialises common variablesE.LD.SCHED.LIST- routine to build schedulesThis buildsupR.RECORD for each contract witha m/v assocaitedlist of details based on theSCHEDULES.PAST file,"
+    }
+
+    description {
+        en = "Summary of LD Schedules Balances"
+    }
+
+    no-selection: true
+    start-line: 9
+    end-line: 19
+    build-routines {
+        jBC: "BUILD.ACCBAL.ID"
+    }
+
+    custom-selection {
+
+        field "CONTRACT.ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "END.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "SHOW.PD.INFO" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"LD Schedule Balances.\""
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 0
+        }
+
+        operation: constant "\"(Summary)\""
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Contract No:\""
+    }
+
+    field "HEADER3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        operation: constant "\"Current Outstanding:\""
+    }
+
+    field "HEADER4" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: constant "\"Customer:\""
+    }
+
+    field "HEADER5" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Value Date:\""
+    }
+
+    field "HEADER6" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 3
+        }
+
+        operation: constant "\"Type:\""
+    }
+
+    field "HEADER7" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 2
+        }
+
+        operation: constant "\"Maturity Date :\""
+    }
+
+    field "HEADER8" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Int Rate:\""
+    }
+
+    field "HEADER9" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 4
+        }
+
+        operation: constant "\"O/D Status:\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FWD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"FWD\""
+    }
+
+    field "SCHED.NARR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Schedule types :\""
+    }
+
+    field "SCHEDULE.TYPES" {
+        comments: "Use this field to denote the schedu le types to be shown"
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"PIF\""
+    }
+
+    field "S.DT.ID" {
+        length: 17
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ID" {
+        comments: "Key of the LD file"
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "DMMY.OPF" {
+        comments: "Open files and store in common" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ LD.ENQ.INT.I"
+    }
+
+    field "START.DATE.SEL" {
+        comments: "Optional Start Date" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "START.DATE"
+    }
+
+    field "END.DATE.SEL" {
+        comments: "OPtional end date supplied"
+        format: Date break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "END.DATE"
+    }
+
+    field "BK.LD.ID" {
+        comments: "Throw new page when id changes"
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ID"
+    }
+
+    field "DMMY.FLD" {
+        comments: "Build the record used for display o of info For each loan"
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.LD.SCHED.LIST"
+    }
+
+    field "D.ID" {
+        label {
+            en = "Contract No:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: field-extract "ID"
+    }
+
+    field "LD.STAT" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS$NAU" "RECORD.STATUS" false
+    }
+
+    field "AMOUNT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "TEST.CCY" negative-pattern -# break-condition {
+            break: NewPage
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: Header
+        operation: field-extract "ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "AMOUNT" false
+    }
+
+    field "AMT.2" {
+        format: Currency "TEST.CCY" negative-pattern -# break-condition {
+            break: NewPage
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        operation: field-extract "ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "AMOUNT" false
+    }
+
+    field "TEST.CCY" {
+        label {
+            en = "Current Outstanding:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 5
+        }
+
+        operation: field-extract "ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "CURRENCY" false
+    }
+
+    field "AMT.CCY" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: calc "TEST.CCY":"AMOUNT"
+    }
+
+    field "D.AMT.CCCY" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "AMT.CCY"
+    }
+
+    field "CHECK.AMT" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 5
+        }
+
+        operation: if "TEST.CCY" Equals "\"JPY\"" process "AMT.2" "AMOUNT"
+    }
+
+    field "CUSTOMER" {
+        comments: "Customer Number. FIELD 6" break-condition {
+            break: NewPage
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUTS.CURR.PRINC"
+    }
+
+    field "HDR7" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 6
+        }
+
+        operation: constant "\"Joint Holder:\""
+    }
+
+    field "D.CUST" {
+        label {
+            en = "Customer:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "CUSTOMER"
+    }
+
+    field "@ID" {
+        label {
+            en = "Joint Holder:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 6
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "JOINT.HOLDER" false
+    }
+
+    field "CU.NAME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 23
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 1
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY" {
+        comments: "Currency FIELD 7"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "OUTS.OD.PRINC"
+    }
+
+    field "CCYM" {
+        comma-separator: false
+        operation: field-extract "CCY"
+    }
+
+    field "STATUS.TXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Status : \""
+    }
+
+    field "STATUS" {
+        comments: "LD status FIELD 10"
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "STATUS" false
+    }
+
+    field "PROD.CAT" {
+        label {
+            en = "Type:"
+        }
+
+        comments: "Field 9"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CUM.PRIN.REC"
+    }
+
+    field "PROD.DESC" {
+        comma-separator: false
+        operation: field-extract "PROD.CAT"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "CON.CAT.DES" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 3
+        }
+
+        operation: calc "PROD.CAT":"NULL":"PROD.DESC"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: NewPage
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUTS.OVER.DUE.INT"
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Maturity Date :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUTS.SUSP.INT"
+        conversion: call
+        jBC: "@ LD.ENQ.MATDATE"
+    }
+
+    field "CURRENT.RATE" {
+        label {
+            en = "Int Rate:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Rate break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "S.DT.ID"
+        conversion: call
+        jBC: "@ E.MB.LD.BALANCES"
+    }
+
+    field "LD.STATUS" {
+        label {
+            en = "Status :"
+        }
+
+        comments: "LD status"
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: application-field-name "DATE.PRIN.REC"
+        conversion: value 1
+    }
+
+    field "DISP.STATUS" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: calc "STATUS.TXT":"LD.STATUS"
+    }
+
+    field "D DISP.STATUS" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "DISP.STATUS"
+    }
+
+    field "OD.STATUS" {
+        label {
+            en = "O/D Status:"
+        }
+
+        comments: "Overdue status"
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "OVERDUE.STATUS" false
+    }
+
+    field "DATE.HD" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Date\""
+    }
+
+    field "OD.HD" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: constant "\"Overdue\""
+    }
+
+    field "TOT.HD" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: constant "\"Total Amount\""
+    }
+
+    field "PRINCIPAL.HD" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Single
+        operation: constant "\"Principal\""
+    }
+
+    field "INT.HD" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Single
+        operation: constant "\"Interest\""
+    }
+
+    field "FEES.HD" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        processing-mode: Single
+        operation: constant "\"Fees\""
+    }
+
+    field "CHG.HD" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 101
+        }
+
+        processing-mode: Single
+        operation: constant "\"Charges\""
+    }
+
+    field "OUT.HD" {
+        label {
+            en = "\"\""
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 121
+        }
+
+        operation: constant "\"Outstanding\""
+    }
+
+    field "DATE" {
+        comments: "Field 15"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "OUTS.ACCRUED.COMM"
+    }
+
+    field "DISP.DATE" {
+        label {
+            en = "Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "OD.IND" {
+        label {
+            en = "Overdue"
+        }
+
+        comments: "Overdue included"
+        comma-separator: false
+        escapeSequence: BL
+        position {
+            column: 11
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MTHLY.AMORT.AMT"
+        conversion: replace {
+            oldData: "1"
+            newData: "*"
+        }
+
+    }
+
+    field "AMT.DUE" {
+        label {
+            en = "Total amount"
+        }
+
+        comments: "Field 18 Total Payment amount"
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCYM" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 21
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "COM.REC.IN.ADV"
+    }
+
+    field "PRINCIPAL" {
+        label {
+            en = "Principal"
+        }
+
+        comments: "Principal Paid / Received"
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCYM" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 41
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUTS.SUSP.COMM"
+    }
+
+    field "INT" {
+        label {
+            en = "Interest"
+        }
+
+        comments: "Field 16"
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCYM" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 61
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUTS.OVER.DUE.COM"
+    }
+
+    field "FEE" {
+        label {
+            en = "Fees"
+        }
+
+        comments: "Fees Payable"
+        format: Currency "CCYM" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 81
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUTS.INT.ON.NAB"
+    }
+
+    field "CHG" {
+        label {
+            en = "Charges"
+        }
+
+        comments: "Charges receivable"
+        format: Currency "CCYM" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 101
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUTS.COMM.ON.NAB"
+    }
+
+    field "RUNNING.BAL" {
+        label {
+            en = "Outstanding"
+        }
+
+        comments: "Running Balances"
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCYM" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 121
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OS.COM.ACC.ON.OD.P"
+    }
+
+    field "MATURITY.DATE" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUTS.SUSP.INT"
+    }
+
+    field "END.LIT" {
+        break-condition {
+            field: "BK.LD.ID"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 13
+            line: + 2
+        }
+
+        operation: constant "\"Closing Balance in \""
+    }
+
+    field "LAST.DATE" {
+        comments: "The last schedule date shown or the maturity date" break-condition {
+            field: "BK.LD.ID"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        operation: field-extract "MAT.DATE"
+    }
+
+    field "DISP.END.DATE" {
+        break-condition {
+            field: "BK.LD.ID"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        operation: if "END.DATE.SEL" Equals "NULL" process "LAST.DATE" "END.DATE.SEL"
+    }
+
+    field "DF.DT.2" {
+        break-condition {
+            field: "BK.LD.ID"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 2
+        }
+
+        operation: field-extract "DISP.END.DATE"
+    }
+
+    field "END.CCY" {
+        break-condition {
+            field: "BK.LD.ID"
+        }
+
+        comma-separator: false
+        escapeSequence: HI
+        display-section: Footer
+        position {
+            column: 31
+            line: + 2
+        }
+
+        operation: field-extract "CCYM"
+    }
+
+    field "END.OUT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PEN.C.LAST.DAY.ACC"
+    }
+
+    field "DISP.END.OUT" {
+        format: Currency "CCYM" negative-pattern -# break-condition {
+            field: "BK.LD.ID"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: Footer
+        position {
+            column: 101
+            line: + 2
+        }
+
+        operation: field-extract "END.OUT"
+    }
+
+    field "NEXT.ENQ" {
+        comments: "Next Level Down"
+        length: 2
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NO.OF.MTHS.LEFT"
+    }
+
+}

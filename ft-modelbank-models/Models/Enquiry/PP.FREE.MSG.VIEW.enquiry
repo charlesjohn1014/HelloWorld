@@ -1,0 +1,271 @@
+Enquiry "PP.FREE.MSG.VIEW" for "name:/EB_Delivery:EB.FREE.MESSAGE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "View Free Format Msg"
+        }
+
+        column: 0
+        line: 0
+    }
+
+    description {
+        en = "View Free Format Msg"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99 fixed-selection "EB.ADVICE.NO" {
+        Equals "\'EB-0199\'", "\'EB-0299\'"
+    }
+
+    fixed-selection "REMARK" {
+        NotEquals "\'Accepted\'", "\'Rejected\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Receiver Bank"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "MSG.TYPE" {
+        label {
+            en = "Msg Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EB.ADVICE.NO"
+        conversion: extract from 5 to 7
+    }
+
+    field "EB.ADVICE.NO" {
+        label {
+            en = "EB.Advice"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EB.ADVICE.NO"
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Free Format Messages\""
+    }
+
+    field "APPLICATION.NAME" {
+        label {
+            en = "Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICATION.NAME"
+    }
+
+    field "OUR.REFERENCE" {
+        label {
+            en = "Our Ref"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUR.REFERENCE"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Receiver Bank"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "DEL.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DELIVERY.REF"
+    }
+
+    field "VER1" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EB.ADVICE.NO"
+        conversion: replace {
+            oldData: "EB-0199"
+            newData: "199"
+        }
+
+        conversion: replace {
+            oldData: "EB-0299"
+            newData: "299"
+        }
+
+    }
+
+    field "THEIR.REFERENCE" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "THEIR.REFERENCE"
+    }
+
+    field "APPL" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"EB.FREE.MESSAGE,PP.\""
+    }
+
+    field "Y.VAL" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "APPL":"VER1"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transactions Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Transaction"
+        }
+
+        label-field: "@ID"
+        image: "details.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "Y.VAL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Delivery Ref"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "DEL.REF"
+        }
+
+        application: "DE.O.HEADER"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "@ID"
+        image: "Email1.gif"
+        criteria: "DELIVERY.REF" Equals "DEL.REF"
+        enquiry: "DE.MSG.SUM"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View Payment Details"
+        }
+
+        label-field: "@ID"
+        image: "drill.gif"
+        criteria: "FTNumber" Equals "THEIR.REFERENCE"
+        enquiry: "PAY.PEN.PROCESS"
+    }
+
+}

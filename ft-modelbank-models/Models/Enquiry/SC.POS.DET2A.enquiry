@@ -1,0 +1,362 @@
+Enquiry "SC.POS.DET2A" for "name:/SC_ScoSecurityPositionUpdate:SECURITY.TRANS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Security position details"
+        }
+
+        column: 1
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Security Account:"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    description {
+        en = "Security Position Detail"
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "TRADE.DATE" Descending
+    custom-selection {
+
+        field "REF.NO" {
+        }
+
+        None
+    }
+
+    field "PAGE" {
+        comma-separator: false
+        operation: break-line 0
+    }
+
+    field "REV.LIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"R\""
+    }
+
+    field "YES" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Y\""
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TRANS" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "SEC.ACC" {
+        break-condition {
+            break: Page
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 21
+            line: 1
+        }
+
+        operation: application-field-name "SECURITY.ACCOUNT"
+    }
+
+    field "SAM.CU" {
+        break-condition {
+            break: Page
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "SEC.ACC"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "CU.NAME" {
+        break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 1
+        }
+
+        operation: field-extract "SAM.CU"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "SEC.DESC" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "SEC.ACC"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "SEC.NO" {
+        break-condition {
+            break: Page
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "SEC.DESC.02" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 2
+        }
+
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" true
+    }
+
+    field "TRADE.DT" {
+        label {
+            en = "trade date"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "TRADE.DATE"
+        conversion: julian
+        conversion: oconv "D"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "value date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "REF.NO" {
+        label {
+            en = "transaction ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "REV.FLG" {
+        comma-separator: false
+        operation: application-field-name "REVERSAL.DATE"
+    }
+
+    field "UNAUTH.FLG" {
+        label {
+            en = "inau"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "REF.NO"
+        conversion: call
+        jBC: "@ E.SC.UNAUTH.FLAG"
+    }
+
+    field "REVERSAL" {
+        comma-separator: false
+        operation: if "REV.FLG" NotEquals "NULL" process "REV.LIT" "UNAUTH.FLG"
+    }
+
+    field "TRAN.NME" {
+        label {
+            en = "type"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        operation: application-field-name "TRANS.TYPE"
+    }
+
+    field "TRAD.CCY" {
+        label {
+            en = "ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        operation: application-field-name "TRADE.CURRENCY"
+    }
+
+    field "PRICE" {
+        label {
+            en = "price"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 45
+        }
+
+        operation: application-field-name "PRICE"
+    }
+
+    field "EXCH" {
+        comma-separator: false
+        operation: application-field-name "EXCH.RATE.BASE.ACC"
+        conversion: iconv "MD3"
+        conversion: oconv "MD3"
+    }
+
+    field "NOMINAL" {
+        label {
+            en = "nominal"
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 63
+        }
+
+        operation: application-field-name "NO.NOMINAL.TOTAL"
+    }
+
+    field "EXAMPLE" {
+        comma-separator: false
+        operation: field-extract "REF.NO"
+        conversion: call
+        jBC: "@ E.SC.POS.DET"
+    }
+
+    field "REF.ID" {
+        comma-separator: false
+        operation: application-field-name "REF.NO.SEQUENCE"
+    }
+
+    field "UNSETTLED.NOMINAL" {
+        label {
+            en = "unsett nom"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: true
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "UNSETTLED.NOMINAL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View details"
+        }
+
+        label-field: "TRADE.DT" parameters {
+            function:  See
+            field: "REF.ID"
+        }
+
+        from-field: "EXAMPLE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update settlement"
+        }
+
+        label-field: "REF.NO" parameters {
+            function:  Input
+            field: "REF.NO"
+        }
+
+        screen: "SC.SETTLEMENT,INP"
+    }
+
+}

@@ -1,0 +1,306 @@
+Enquiry "MF.FMC.TRADE.NAU" for "name:/MF_Contract:MF.TRADE$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of trades to be authorised"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RECORD.STATUS" {
+        Equals "\'INAU\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "FUND.ID" {
+            label {
+                en = "Fund Id"
+            }
+
+        }
+
+        AND
+
+        field "TRANS.TYPE" {
+            label {
+                en = "Transaction Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"List of trades to be authorised\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "FUND.ID" {
+        label {
+            en = "Fund Id"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FUND.ID"
+    }
+
+    field "FUND.NAME" {
+        label {
+            en = "Fund Name"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: field-extract "FUND.ID"
+        conversion: getFrom "MF.FUND.MASTER" "FUND.NAME" false
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Agent ID"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+    }
+
+    field "AGENT.NAME" {
+        label {
+            en = "Agent Name"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "TRANS.TYPE" {
+        label {
+            en = "Trans Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.TYPE"
+        conversion: getFrom "SC.TRANS.NAME" "SHORT.NAME" false
+    }
+
+    field "DEAL.DATE" {
+        label {
+            en = "Deal Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.DATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "TRANS.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANS.CCY"
+    }
+
+    field "TRANS.AMOUNT" {
+        label {
+            en = "Trans Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "TRANS.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.AMOUNT"
+    }
+
+    field "NAV" {
+        label {
+            en = "NAV"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.PRICE"
+    }
+
+    field "TRANS.UNITS" {
+        label {
+            en = "Units"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.UNITS"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Record Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        hidden: true
+        operation: application-field-name "INPUTTER"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "MF.TRADE,INP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        screen: "MF.TRADE,INP"
+    }
+
+}

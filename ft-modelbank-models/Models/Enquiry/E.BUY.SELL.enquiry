@@ -1,0 +1,408 @@
+Enquiry "E.BUY.SELL" for "name:/SC_ModelBank:NOFILE.BUY.SELL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Eligibility Calculator"
+    }
+
+    description {
+        en = "Eligibility Calculator"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 5
+    end-line: 20
+    build-routines {
+        jBC: "E.SC.ELIG.CALC"
+    }
+
+    fixed-selection "ARR" {
+    }
+
+    custom-selection {
+
+        field "PORTFOLIO.NO" {
+            mandatory: true
+            label {
+                en = "Portfolio Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SEC.CODE" {
+            mandatory: true
+            label {
+                en = "Security Code"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ACC.NO" {
+            mandatory: true
+            label {
+                en = "Account Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BUY.SELL" {
+            mandatory: true
+            label {
+                en = "Buy/Transfer"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Eligibility Calculator\""
+    }
+
+    field "SAM" {
+        label {
+            en = "Portfolio No"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: selection "PORTFOLIO.NO"
+    }
+
+    field "PORT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "SECNO" {
+        label {
+            en = "Security No"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: selection "SEC.CODE"
+    }
+
+    field "ACCOUNT" {
+        comma-separator: false
+        operation: selection "ACC.NO"
+    }
+
+    field "BAL" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT"
+        conversion: getFrom "ACCOUNT" "WORKING.BALANCE" false
+    }
+
+    field "VA" {
+        comma-separator: false
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.AMT" false
+    }
+
+    field "LNA" {
+        comma-separator: false
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "LOAN.MARGIN.AMT" false
+    }
+
+    field "SPM" {
+        comma-separator: false
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "SHORT.POS.MGN.AMT" false
+    }
+
+    field "M" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "LNAT" {
+        comma-separator: false
+        operation: calc "M" * "LNA"
+    }
+
+    field "VAT" {
+        label {
+            en = "Total Port Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: calc "VA" + "LNAT"
+    }
+
+    field "MAR" {
+        comma-separator: false
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "MARGIN.VALUE" false
+    }
+
+    field "MV1" {
+        comma-separator: false
+        operation: calc "MAR" + "LNAT"
+    }
+
+    field "NMV" {
+        comma-separator: false
+        operation: calc "LNA" + "SPM"
+    }
+
+    field "MV2" {
+        comma-separator: false
+        operation: calc "MAR" - "NMV"
+    }
+
+    field "CC" {
+        comma-separator: false
+        operation: company
+    }
+
+    field "ADJ.VAL" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "ADJ.SHORT.POS" false
+    }
+
+    field "YE" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "FMV" {
+        label {
+            en = "Margin Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        operation: if "ADJ.VAL" Equals "YE" process "MV1" "MV2"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Buying Power"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "LOAN" {
+        label {
+            en = "Loan"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        operation: field-extract "LNAT"
+    }
+
+    field "PRICE" {
+        label {
+            en = "Sec Price"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "NOMINALS" {
+        label {
+            en = "Buy/Transfer Nominal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 9
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 0 delimited by "*"
+    }
+
+    field "ALN" {
+        comma-separator: false
+        operation: calc "AMOUNT" - "BAL"
+    }
+
+    field "Z" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "ADLN" {
+        label {
+            en = "Additional Loan"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 10
+        }
+
+        operation: if "BAL" LessOrEquals "Z" process "AMOUNT" "ALN"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Only Available for Buy or Transfer\""
+    }
+
+    tool ELG.CALC {
+        label {
+            en = "Eligibility Calculator"
+        }
+
+        command: "ENQ E.BUY.SELL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Place Order"
+        }
+
+        label-field: "AMOUNT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SEC.OPEN.ORDER,OV.INP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Transfer Position"
+        }
+
+        label-field: "AMOUNT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SECURITY.TRANSFER,OV.OUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Capture Margin Loan"
+        }
+
+        label-field: "AMOUNT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "AA.ARRANGEMENT.ACTIVITY,ML.INPUT"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Disburse Margin Loan"
+        }
+
+        label-field: "AMOUNT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "FUNDS.TRANSFER,AA.ML.DISBURSE"
+    }
+
+    attributes: "ALLDATA" ; "DISABLE.NO.SORT.OPTIONS" ; "NO.ENQUIRY.FAVOURITES"
+}

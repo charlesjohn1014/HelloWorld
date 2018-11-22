@@ -1,0 +1,480 @@
+Enquiry "HIS.STS" for "name:/ST_ModelBank:NOFILE.HIS.STS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "HISTORY DETAILS OF CHEQUE STATUS"
+        }
+
+        column: 10
+        line: 0
+    }
+
+    header {
+        label {
+            en = " - FOR AN ACCOUNT"
+        }
+
+        column: 42
+        line: 0
+    }
+
+    header {
+        label {
+            en = "ACCOUNT NUMBER   :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "ACCOUNT TYPE :"
+        }
+
+        column: 35
+        line: 1
+    }
+
+    header {
+        label {
+            en = "ACCOUNT NAME   :"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CUSTOMER NUMBER :"
+        }
+
+        column: 1
+        line: 3
+    }
+
+    header {
+        label {
+            en = "DATE OF REPORT :"
+        }
+
+        column: 35
+        line: 3
+    }
+
+    header {
+        label {
+            en = "STATUS "
+        }
+
+        column: 1
+        line: 5
+    }
+
+    header {
+        label {
+            en = "DATE"
+        }
+
+        column: 1
+        line: 6
+    }
+
+    header {
+        label {
+            en = "STATUS "
+        }
+
+        column: 15
+        line: 5
+    }
+
+    header {
+        label {
+            en = "CODE"
+        }
+
+        column: 15
+        line: 6
+    }
+
+    header {
+        label {
+            en = "STATUS "
+        }
+
+        column: 25
+        line: 5
+    }
+
+    header {
+        label {
+            en = "DETAILS"
+        }
+
+        column: 25
+        line: 6
+    }
+
+    header {
+        label {
+            en = "CURRENCY"
+        }
+
+        column: 45
+        line: 5
+    }
+
+    header {
+        label {
+            en = "CHARGES "
+        }
+
+        column: 55
+        line: 5
+    }
+
+    header {
+        label {
+            en = "IN LCY"
+        }
+
+        column: 55
+        line: 6
+    }
+
+    header {
+        label {
+            en = "CHARGES"
+        }
+
+        column: 65
+        line: 5
+    }
+
+    header {
+        label {
+            en = "IN FCY"
+        }
+
+        column: 65
+        line: 6
+    }
+
+    header {
+        label {
+            en = "TAX "
+        }
+
+        column: 75
+        line: 5
+    }
+
+    header {
+        label {
+            en = "IN LCY"
+        }
+
+        column: 75
+        line: 6
+    }
+
+    header {
+        label {
+            en = "TAX"
+        }
+
+        column: 85
+        line: 5
+    }
+
+    header {
+        label {
+            en = "IN FCY"
+        }
+
+        column: 85
+        line: 6
+    }
+
+    header {
+        label {
+            en = "REMARKS"
+        }
+
+        column: 95
+        line: 5
+    }
+
+    header {
+        label {
+            en = "ID :"
+        }
+
+        column: 20
+        line: 7
+    }
+
+    start-line: 8
+    end-line: 20 fixed-selection "YID.LIST" {
+    }
+
+    custom-selection {
+
+        field "ACCT.NO" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "ST.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "END.DATE" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ACCT.NO" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        operation: selection "ACCT.NO"
+    }
+
+    field "ACCT.CATEG" {
+        comma-separator: false
+        operation: selection "ACCT.NO"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+    }
+
+    field "ACCT.TYPE" {
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: field-extract "ACCT.CATEG"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "ACCT.NAME" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        operation: selection "ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CUS.NAME" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 3
+        }
+
+        operation: selection "ACCT.NO"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "DATE.OF.REPORT" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 52
+            line: 3
+        }
+
+        operation: today
+    }
+
+    field "ID" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 7
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "B.ID" {
+        break-condition {
+            field: "NEW PAGE"
+        }
+
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ID"
+    }
+
+    field "STS.DATE" {
+        label {
+            en = "STATUS DATE"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "STS.CODE" {
+        label {
+            en = "STATUS CODE"
+        }
+
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "STS.DESC" {
+        label {
+            en = "STATUS DESCRIPTION"
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "CURR" {
+        label {
+            en = "CURRENCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CHARGES IN LCY" {
+        label {
+            en = "CHARGES IN LCY"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 52
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "CHARGES IN FCY" {
+        label {
+            en = "CHARGES IN FCY"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 60
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "TAX" {
+        label {
+            en = "TAX IN LCY"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 70
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "TAX IN FCY" {
+        label {
+            en = "TAX IN FCY"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 82
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "REMARKS" {
+        label {
+            en = "REMARKS"
+        }
+
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    attributes: "PAGE"
+}

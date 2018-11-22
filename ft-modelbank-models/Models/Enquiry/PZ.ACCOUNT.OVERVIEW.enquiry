@@ -1,0 +1,214 @@
+Enquiry "PZ.ACCOUNT.OVERVIEW" for "name:/PZ_ModelBank:NOFILE.ACCOUNT.OVERVIEW#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Account Overview"
+    }
+
+    description {
+        en = "Account Overview"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ACC.DATA" {
+    }
+
+    custom-selection {
+
+        field "ACCOUNTREFERENCE" {
+            mandatory: true
+            label {
+                en = "Account Id/IBAN"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACC.DATA" {
+        label {
+            en = "Full Output"
+        }
+
+        comments: "The entire string output"
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "ACCOUNTID" {
+        label {
+            en = "Account Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "IBAN" {
+        label {
+            en = "IBAN Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BIC" {
+        label {
+            en = "BIC"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Account Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "TYPE.AA" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "TYPE.AC" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TYPE" {
+        label {
+            en = "Account Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: if "TYPE.AA" NotEquals "NULL" process "TYPE.AA" "TYPE.AC"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: field-extract "CURRENCY"
+    }
+
+    field "LEDGERBALANCE" {
+        label {
+            en = "Ledger Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+        conversion: replace {
+            newData: "0.00"
+        }
+
+    }
+
+    field "AVAILABLEBALANCE" {
+        label {
+            en = "Available Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+        conversion: replace {
+            oldData: "ACTIVE"
+            newData: "Active"
+        }
+
+        conversion: replace {
+            oldData: "INACTIVE"
+            newData: "Inactive"
+        }
+
+        conversion: replace {
+            oldData: "CLOSED"
+            newData: "Closed"
+        }
+
+    }
+
+}

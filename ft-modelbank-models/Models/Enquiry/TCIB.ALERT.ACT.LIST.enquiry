@@ -1,0 +1,180 @@
+Enquiry "TCIB.ALERT.ACT.LIST" for "name:/EB_AlertProcessing:EB.ALERT.REQUEST#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 19 fixed-selection "CUSTOMER" {
+        Equals "!EXT.CUSTOMER"
+    }
+
+    fixed-sort: "CONTRACT.REF" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "At ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "ID" {
+        label {
+            en = "ID for App"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "EVENT" {
+        label {
+            en = "EventIDS"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EVENT"
+    }
+
+    field "CONTRACT.REF" {
+        label {
+            en = "Account/Portfolio"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.REF"
+    }
+
+    field "ACCT.DESC" {
+        label {
+            en = "AccCatDesc"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "CONTRACT.REF"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "PORT.DESC" {
+        label {
+            en = "PortCatDesc"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "CONTRACT.REF"
+    }
+
+    field "DESC" {
+        label {
+            en = "OrgName"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: if "ACCT.DESC" Equals "\"\"" process "PORT.DESC" "ACCT.DESC"
+    }
+
+    field "EVENTS" {
+        label {
+            en = "AlertDesc"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EVENT"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "FIELD.DESC" {
+        label {
+            en = "FldDesc"
+        }
+
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: application-field-name "FIELD.DESC"
+    }
+
+    field "OPER" {
+        label {
+            en = "FldOprand"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPERAND"
+    }
+
+    field "VALUE" {
+        label {
+            en = "FldValue"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE"
+    }
+
+}

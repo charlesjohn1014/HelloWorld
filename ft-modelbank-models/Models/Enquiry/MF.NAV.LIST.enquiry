@@ -1,0 +1,99 @@
+Enquiry "MF.NAV.LIST" for "name:/MF_Config:MF.FUND.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "NAV List"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "INTERNAL.FUND" {
+        Equals "Y"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Fund ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Fund ID"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "FUND.NAME" {
+        label {
+            en = "Fund Name"
+        }
+
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "FUND.NAME"
+    }
+
+    field "IHDR" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"NAV of MF Schemes\""
+    }
+
+    field "NAV" {
+        label {
+            en = "NAV"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SECURITY.MASTER,PRICE"
+    }
+
+}

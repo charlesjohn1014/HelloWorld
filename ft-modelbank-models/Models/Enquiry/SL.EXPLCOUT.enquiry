@@ -1,0 +1,565 @@
+Enquiry "SL.EXPLCOUT" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "SL Linked Export LCs Outstanding"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.EXPLCOS"
+    }
+
+    fixed-selection "OPERATION" {
+        NotEquals "\'P\'"
+    }
+
+    fixed-selection "SL.REF.TRANCHE" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "ADVICE.EXPIRY.DATE" Null
+    custom-selection {
+
+        field "BENEFICIARY.CUSTNO" {
+            label {
+                en = "Beneficiary Customer"
+            }
+
+        }
+
+        AND
+
+        field "ISSUING.BANK.NO" {
+            label {
+                en = "Issuing Bank"
+            }
+
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "LC Currency"
+            }
+
+        }
+
+        AND
+
+        field "LC.AMOUNT" {
+            label {
+                en = "LC Amount"
+            }
+
+        }
+
+        AND
+
+        field "ADVICE.EXPIRY.DATE" {
+            label {
+                en = "Expiry Date"
+            }
+
+        }
+
+        AND
+
+        field "EXPIRY.DATE" {
+            label {
+                en = "LiabilityReversalOn"
+            }
+
+        }
+
+        AND
+
+        field "SL.REF.TRANCHE" {
+            label {
+                en = "SL Tranche Ref"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "BENEFIC.CUSTNO" {
+        display-type: "CLASS-TITLE"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY.CUSTNO"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"SL Linked Export LCs Outstanding\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SL.REF.TRANCHE" {
+        label {
+            en = "SL Reference"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SL.REF.TRANCHE"
+    }
+
+    field "ISS.BANK.REF" {
+        label {
+            en = "LC Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ISS.BANK.REF"
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LC.TYPE"
+        conversion: getFrom "LC.TYPES" "1" false
+    }
+
+    field "ISSUE.DATE" {
+        label {
+            en = "Issue Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ISSUE.DATE"
+    }
+
+    field "ADVICE.EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ADVICE.EXPIRY.DATE"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "LIABILITY.AMT" {
+        label {
+            en = "Outstanding Amt"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.AMT"
+    }
+
+    field "BENEFICIARY.CUSTNO" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY.CUSTNO"
+    }
+
+    field "BENE.CUSTNO" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY.CUSTNO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BENEFICIARY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BENEFICIARY"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.BENEF" {
+        label {
+            en = "Beneficiary"
+        }
+
+        comma-separator: false
+        operation: if "BENE.CUSTNO" Equals "NULL" process "BENEFICIARY" "BENE.CUSTNO"
+    }
+
+    field "ISSUING.BANK.NO" {
+        label {
+            en = "Issuing Bank"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ISSUING.BANK.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "OLD.LC.NUMBER" {
+        label {
+            en = "Advising Ref"
+        }
+
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "OLD.LC.NUMBER"
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Liability Reversal Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "LC.ENSB" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.TYPE"
+        conversion: replace {
+            oldData: "ENSB"
+            newData: "EXPSTDBY"
+        }
+
+    }
+
+    field "EXPSTDBY" {
+        comma-separator: false
+        operation: constant "\"EXPSTDBY\""
+    }
+
+    field "LCTYPE" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.TYPE"
+        conversion: extract from 1 to 2
+    }
+
+    field "SL.REF" {
+        label {
+            en = "SL REF"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SL.REF.TRANCHE"
+        conversion: extract from 1 to 14
+    }
+
+    field "VER.DECIDE" {
+        comma-separator: false
+        operation: field-extract "LCTYPE"
+        conversion: replace {
+            oldData: "EM"
+            newData: "EXPSL"
+        }
+
+        conversion: replace {
+            oldData: "EN"
+            newData: "EXPSL"
+        }
+
+        conversion: replace {
+            oldData: "ET"
+            newData: "EXPSL"
+        }
+
+        conversion: replace {
+            oldData: "EU"
+            newData: "EXPSL"
+        }
+
+        conversion: replace {
+            oldData: "EA"
+            newData: "EXPSL"
+        }
+
+        conversion: replace {
+            oldData: "ES"
+            newData: "EXPSL"
+        }
+
+        conversion: replace {
+            oldData: "ED"
+            newData: "EXPSL"
+        }
+
+    }
+
+    field "LC" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,\""
+    }
+
+    field "VER.1" {
+        comma-separator: false
+        operation: calc "LC":"VER.DECIDE"
+    }
+
+    field "VER.2" {
+        comma-separator: false
+        operation: calc "LC":"LC.ENSB"
+    }
+
+    field "DRILL.VERSION" {
+        comma-separator: false
+        operation: if "LC.ENSB" NotEquals "EXPSTDBY" process "VER.1" "VER.2"
+    }
+
+    field "COS.NAME" {
+        comma-separator: false
+        operation: field-extract "LCTYPE"
+        conversion: replace {
+            oldData: "EM"
+            newData: "LC.EXP.OVERVIEW.SL"
+        }
+
+        conversion: replace {
+            oldData: "EN"
+            newData: "SIGHT.LC.EXP.OVERVIEW.SL"
+        }
+
+        conversion: replace {
+            oldData: "ET"
+            newData: "SIGHT.LC.EXP.OVERVIEW.SL"
+        }
+
+        conversion: replace {
+            oldData: "EU"
+            newData: "USANCE.LC.EXP.OVERVIEW.SL"
+        }
+
+        conversion: replace {
+            oldData: "EA"
+            newData: "USANCE.LC.EXP.OVERVIEW.SL"
+        }
+
+        conversion: replace {
+            oldData: "ES"
+            newData: "SIGHT.LC.EXP.OVERVIEW.SL"
+        }
+
+        conversion: replace {
+            oldData: "ED"
+            newData: "USANCE.LC.EXP.OVERVIEW.SL"
+        }
+
+    }
+
+    field "COS" {
+        comma-separator: false
+        operation: constant "\"COS \""
+    }
+
+    field "COS.DECIDE" {
+        comma-separator: false
+        operation: calc "COS":"COS.NAME"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Outstanding LCs to be listed\""
+    }
+
+    tool AM.ENQ.DETAIL {
+        label {
+            en = "New Task"
+        }
+
+        command: "docommand(\'LC,EXPSL I F3\')"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "DRILL.VERSION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Facility Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "SL.REF"
+        }
+
+        screen: "FACILITY,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "LC Overview"
+        }
+
+        label-field: "@ID"
+        image: "oview.gif" parameters {
+            field: "@ID"
+        }
+
+        from-field: "COS.DECIDE"
+    }
+
+}

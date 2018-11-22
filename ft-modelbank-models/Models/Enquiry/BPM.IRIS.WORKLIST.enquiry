@@ -1,0 +1,360 @@
+Enquiry "BPM.IRIS.WORKLIST" for "name:/JP_Foundation:BPM.ENQUIRY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Work List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 25 fixed-selection "AUTOREFRESH" {
+        Equals "60"
+    }
+
+    custom-selection {
+
+        field "PROCESS.NO" {
+            label {
+                en = "Process Id"
+            }
+
+            operands: Equals
+        }
+
+        OR
+
+        field "TASK.ID" {
+            label {
+                en = "Task Id"
+            }
+
+            operands: Equals
+        }
+
+        OR
+
+        field "TASK.STATUS" {
+            label {
+                en = "Status"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"New PW Worklist\""
+    }
+
+    field "DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "^"
+    }
+
+    field "OD.MKR" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 19 to 1 delimited by "^"
+    }
+
+    field "PROCESS.PW" {
+        label {
+            en = "Process"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 57
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PROCESS.PW"
+    }
+
+    field "PW.ACTIVITY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PW.ACTIVITY"
+    }
+
+    field "PW.ACT.DESC" {
+        label {
+            en = "Task Name"
+        }
+
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 117
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PW.ACT.DESC"
+    }
+
+    field "OWNER" {
+        label {
+            en = "Owner"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 218
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OWNER"
+    }
+
+    field "DASH" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "PROC.NO" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "^"
+    }
+
+    field "REF.ID" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "REF.ID"
+        conversion: extract from 1 to 1 delimited by "^"
+    }
+
+    field "DISP.REF.ID" {
+        label {
+            en = "Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 319
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: calc "PROC.NO":"DASH":"REF.ID"
+    }
+
+    field "REASSIGN.APPLICATION" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 14 to 1 delimited by "^"
+    }
+
+    field "REASSIGN.VERSION" {
+        comma-separator: false
+        operation: constant "\"REASSIGN\""
+    }
+
+    field "CLICK.APPL1" {
+        comma-separator: false
+        operation: calc "REASSIGN.APPLICATION":"REASSIGN.VERSION"
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "PW.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 497
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PW.STATUS"
+        conversion: extract from 17 to 1 delimited by "^"
+    }
+
+    field "PROCESS.FLAG" {
+        label {
+            en = "."
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 22 to 1 delimited by "^"
+    }
+
+    field "PW.TARGET" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 12 to 1 delimited by "^"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No tasks for actioning or waiting to refresh\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Action"
+        }
+
+        label-field: "DISP.REF.ID"
+        criteria: "CURRENT.REF.ID" > "REF.ID"
+        should-be-changed: "PW.ACTIVITY.TXN.ID PW.TARGET"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Acquire"
+        }
+
+        label-field: "DISP.REF.ID"
+        criteria: "CURRENT.REF.ID" > "REF.ID"
+        should-be-changed: "PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,ACQUIRE I REF.ID"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reassign"
+        }
+
+        label-field: "DISP.REF.ID"
+        criteria: "CURRENT.REF.ID" > "REF.ID"
+        should-be-changed: "PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,REASSIGN I REF.ID"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Release"
+        }
+
+        label-field: "DISP.REF.ID"
+        criteria: "CURRENT.REF.ID" > "REF.ID"
+        should-be-changed: "PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,RELEASE I REF.ID"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Suspend"
+        }
+
+        label-field: "DISP.REF.ID"
+        criteria: "CURRENT.REF.ID" > "REF.ID"
+        should-be-changed: "PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,SUSPEND I REF.ID"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Resume"
+        }
+
+        label-field: "DISP.REF.ID"
+        criteria: "CURRENT.REF.ID" > "REF.ID"
+        should-be-changed: "PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,RESUME I REF.ID"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Skip"
+        }
+
+        label-field: "DISP.REF.ID"
+        criteria: "CURRENT.REF.ID" > "REF.ID"
+        should-be-changed: "PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,SKIP I REF.ID"
+    }
+
+    introspection-messages: "Error in drilldown 1: APP \'PW.ACTIVITY.TXN.ID\' does not exist, broken reference"
+    introspection-messages: "Error in drilldown 2: APP \'PW.ACTIVITY.TXN.ID\' does not exist, broken reference"
+    introspection-messages:
+    "Error in drilldown 2: Unhandled: \'BPM.TASK.ACTIONS,ACQUIRE\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,ACQUIRE I REF.ID\'"
+    introspection-messages:
+    "Error in drilldown 2: Unhandled: \'I\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,ACQUIRE I REF.ID\'"
+    introspection-messages: "Error in drilldown 3: APP \'PW.ACTIVITY.TXN.ID\' does not exist, broken reference"
+    introspection-messages:
+    "Error in drilldown 3: Unhandled: \'BPM.TASK.ACTIONS,REASSIGN\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,REASSIGN I REF.ID\'"
+    introspection-messages:
+    "Error in drilldown 3: Unhandled: \'I\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,REASSIGN I REF.ID\'"
+    introspection-messages: "Error in drilldown 4: APP \'PW.ACTIVITY.TXN.ID\' does not exist, broken reference"
+    introspection-messages:
+    "Error in drilldown 4: Unhandled: \'BPM.TASK.ACTIONS,RELEASE\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,RELEASE I REF.ID\'"
+    introspection-messages:
+    "Error in drilldown 4: Unhandled: \'I\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,RELEASE I REF.ID\'"
+    introspection-messages: "Error in drilldown 5: APP \'PW.ACTIVITY.TXN.ID\' does not exist, broken reference"
+    introspection-messages:
+    "Error in drilldown 5: Unhandled: \'BPM.TASK.ACTIONS,SUSPEND\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,SUSPEND I REF.ID\'"
+    introspection-messages:
+    "Error in drilldown 5: Unhandled: \'I\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,SUSPEND I REF.ID\'"
+    introspection-messages: "Error in drilldown 6: APP \'PW.ACTIVITY.TXN.ID\' does not exist, broken reference"
+    introspection-messages:
+    "Error in drilldown 6: Unhandled: \'BPM.TASK.ACTIONS,RESUME\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,RESUME I REF.ID\'"
+    introspection-messages:
+    "Error in drilldown 6: Unhandled: \'I\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,RESUME I REF.ID\'"
+    introspection-messages: "Error in drilldown 7: APP \'PW.ACTIVITY.TXN.ID\' does not exist, broken reference"
+    introspection-messages:
+    "Error in drilldown 7: Unhandled: \'BPM.TASK.ACTIONS,SKIP\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,SKIP I REF.ID\'"
+    introspection-messages:
+    "Error in drilldown 7: Unhandled: \'I\' in \'PW.ACTIVITY.TXN.ID BPM.TASK.ACTIONS,SKIP I REF.ID\'"
+}

@@ -1,0 +1,339 @@
+Enquiry "AA.SCHEDULES.FULL" for "name:/AA_PaymentSchedule:NOFILE.AA.SCHED.DETS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Arrangement Schedule Projection"
+        }
+
+        column: 40
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Arrangement Id :"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Product Name :"
+        }
+
+        column: 35
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Customer Id :"
+        }
+
+        column: 1
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Currency :"
+        }
+
+        column: 1
+        line: 4
+    }
+
+    start-line: 7
+    end-line: 19 fixed-selection "XID" {
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "SIM.REF" {
+            operands: Equals
+        }
+
+        AND
+
+        field "DATE.FROM" {
+        }
+
+        AND
+
+        field "DATE.TO" {
+        }
+
+        None
+    }
+
+    field "ARR.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "PRODUCT" {
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.AA.GET.PRODUCT.ID"
+    }
+
+    field "PRODUCT.NAME" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 2
+        }
+
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CUST.ID" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+    }
+
+    field "SHORT.NAME" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 3
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ARR.CCY" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 4
+        }
+
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "DUE.DT" {
+        label {
+            en = "Due Date"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: julian
+        conversion: oconv "D2/E"
+    }
+
+    field "DEFER.DATE" {
+        label {
+            en = "Defer Date"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: julian
+        conversion: oconv "D2/E"
+    }
+
+    field "TOT.PAYMENT" {
+        label {
+            en = "Total Payment"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 29
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "DUE.TYPE" {
+        label {
+            en = "Due Type"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+        conversion: getFrom "AA.PAYMENT.TYPE" "DESCRIPTION" false
+    }
+
+    field "DUE.TYPE.AMT" {
+        label {
+            en = "Due Type Amt"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 76
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "PROPERTY" {
+        label {
+            en = "Property"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "PROP.DELIM" {
+        label {
+            en = "PropDelimited"
+        }
+
+        comma-separator: false
+        operation: field-extract "PROPERTY"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "PROP.DESC" {
+        label {
+            en = "PropDes"
+        }
+
+        comma-separator: false
+        operation: field-extract "PROP.DELIM"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "TAX" {
+        label {
+            en = "Tax"
+        }
+
+        comma-separator: false
+        operation: constant "\"-Tax\""
+    }
+
+    field "TAX.CAP" {
+        comma-separator: false
+        operation: constant "\"...-TAX\""
+    }
+
+    field "PROP.TAX" {
+        label {
+            en = "PropTax"
+        }
+
+        comma-separator: false
+        operation: calc "PROP.DESC":"TAX"
+    }
+
+    field "DISP.PROPERTY" {
+        label {
+            en = "Property"
+        }
+
+        comma-separator: false
+        position {
+            column: 97
+        }
+
+        operation: if "PROPERTY" Matches "TAX.CAP" process "PROP.TAX" "PROP.DESC"
+    }
+
+    field "PROP.AMT" {
+        label {
+            en = "Prop Amount"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 113
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "CURR.OUTS" {
+        label {
+            en = "OS Amount"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 130
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+}

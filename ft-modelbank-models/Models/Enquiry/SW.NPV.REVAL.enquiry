@@ -1,0 +1,511 @@
+Enquiry "SW.NPV.REVAL" for "name:/SW_Contract:SWAP#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Transaction Ref"
+        }
+
+        column: 1
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Maturity Date"
+        }
+
+        column: 18
+        line: 4
+    }
+
+    header {
+        label {
+            en = "NPV Asset"
+        }
+
+        column: 39
+        line: 4
+    }
+
+    header {
+        label {
+            en = "NPV Liability"
+        }
+
+        column: 58
+        line: 4
+    }
+
+    header {
+        label {
+            en = "P&L to Date"
+        }
+
+        column: 81
+        line: 4
+    }
+
+    header {
+        label {
+            en = "P&L Today"
+        }
+
+        column: 103
+        line: 4
+    }
+
+    description {
+        en = "SW.NPV.REVALUATION"
+    }
+
+    start-line: 5
+    end-line: 99
+    build-routines {
+        jBC: "E.SW.STORE.DISCOUNT.RATE"
+    }
+
+    fixed-selection "REVALUATION.TYPE" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "VALUE.DATE" {
+        LessOrEquals "!TODAY"
+    }
+
+    fixed-selection "CONTRACT.STATUS" {
+        NotEquals "\'MAT\'"
+    }
+
+    fixed-sort: "AS.CURRENCY" Null
+    fixed-sort: "MATURITY.DATE" Null
+    fixed-sort: "CONTRACT.NUMBER" Null
+    custom-selection {
+
+        field "AS.CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DISCOUNT.RATE" {
+            label {
+                en = "Discount Rate"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "DISCOUNT.RATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"*\""
+        conversion: call
+        jBC: "@ E.SW.GET.DISCOUNT.RATE"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Swap NPV Revaluation\""
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Currency:\""
+    }
+
+    field "CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AS.CURRENCY"
+    }
+
+    field "BREAK.CCY" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "CCY"
+    }
+
+    field "@ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CCY.DISP" {
+        label {
+            en = "Currency:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: application-field-name "FLD CCY"
+    }
+
+    field "DISP.ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD @ID"
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Mat Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "NPV" {
+        comma-separator: false
+        operation: application-field-name "FLD DISCOUNT.RATE"
+        conversion: call
+        jBC: "@ E.SW.PROFIT.LOSS"
+    }
+
+    field "NPV.A" {
+        comma-separator: false
+        operation: application-field-name "FLD NPV"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "NPV.L" {
+        comma-separator: false
+        operation: application-field-name "FLD NPV"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PL.TO.DATE" {
+        comma-separator: false
+        operation: application-field-name "FLD NPV"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "VAR0" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "DISP.NPV.A" {
+        label {
+            en = "NPV Asset"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: calc "NPV.A" + "VAR0"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DISP.NPV.L" {
+        label {
+            en = "NPV Liab"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 51
+        }
+
+        operation: calc "NPV.L" + "VAR0"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DISP.PL.TO.DATE" {
+        label {
+            en = "PL To Date"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        operation: application-field-name "FLD PL.TO.DATE"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "FWD.REVAL.AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FWD.REVAL.AMOUNT"
+    }
+
+    field "PL.TODAY" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "FLD NPV"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "DISP.PL.TODAY" {
+        label {
+            en = "PL Today"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 93
+        }
+
+        operation: application-field-name "FLD PL.TODAY"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "LINES1" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "LINES2" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 51
+            line: + 1
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "LINES3" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 72
+            line: + 1
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "LINES4" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 93
+            line: + 1
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "TOTAL.TEXT" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        operation: constant "\"Totals\""
+    }
+
+    field "DISP.TOT.NPV.A" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        operation: total "NPV.A"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DISP.TOT.NPV.L" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 51
+            line: + 2
+        }
+
+        operation: total "NPV.L"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DSP.TOT.PL.TO.DATE" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 72
+            line: + 2
+        }
+
+        operation: total "PL.TO.DATE"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DSP.TOT.PL.TODAY" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 93
+            line: + 2
+        }
+
+        operation: total "PL.TODAY"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "STAR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "DASHES" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-------------------\""
+    }
+
+    field "DASHES13" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-------------\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "DISP.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "SWAP"
+    }
+
+    attributes: "ALLDATA"
+}

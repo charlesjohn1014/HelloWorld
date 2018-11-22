@@ -1,0 +1,1052 @@
+Enquiry "SW.NPV.DETAILS" for "name:/SW_Reports:NOFILE.SW.NPV.DETAILS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Swap NPV Details"
+    }
+
+    description {
+        en = "Swap NPV Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 8
+    end-line: 95
+    build-routines {
+        jBC: "E.SW.NPV.DETAILS"
+    }
+
+    fixed-selection "NPV.DETAILS" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CONTRACT.ID" {
+            label {
+                en = "Contract ID"
+            }
+
+        }
+
+        AND
+
+        field "DISCOUNT.RATE" {
+            label {
+                en = "Discount Rate"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Swap NPV Details\""
+    }
+
+    field "@ID" {
+        comma-separator: false
+        operation: selection "CONTRACT.ID"
+    }
+
+    field "SWAP.REF" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "HDR9" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Transaction Ref\""
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Eff Date:\""
+    }
+
+    field "SW.EFF.DATE" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "SWAP" "VALUE.DATE" false
+    }
+
+    field "HDR5" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 48
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Type: \""
+    }
+
+    field "SWAP.TYPE" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 55
+            line: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "SWAP" "SWAP.TYPE" false
+    }
+
+    field "HDR6" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Leg:\""
+    }
+
+    field "LEG.TYPE" {
+        comments: "Routine to build enquiry data."
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "D.LEG.TYPE" {
+        comments: "Swap customer number. Header data."
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 6
+            line: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "LEG.TYPE"
+        conversion: replace {
+            oldData: "A"
+            newData: "ASSET"
+        }
+
+        conversion: replace {
+            oldData: "L"
+            newData: "LIABILITY"
+        }
+
+    }
+
+    field "B.LEG.TYPE" {
+        comments: "Leg CCY. Header data."
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Multi
+        operation: break-change "LEG.TYPE"
+    }
+
+    field "HDR7" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 3
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Ccy:\""
+    }
+
+    field "SCHED.CCY" {
+        label {
+            en = "Ccy:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: field-extract "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ASS.CCY" {
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: field-extract "SCHED.CCY"
+        conversion: getFrom "SWAP" "AS.CURRENCY" false
+    }
+
+    field "LIAB.CCY" {
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: field-extract "SCHED.CCY"
+        conversion: getFrom "SWAP" "LB.CURRENCY" false
+    }
+
+    field "LEG.CCY.TYPE" {
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "CCY.DECIDE" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 55
+            line: 3
+        }
+
+        processing-mode: Multi
+        operation: if "LEG.CCY.TYPE" Equals "A" process "ASS.CCY" "LIAB.CCY"
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        processing-mode: Single
+        operation: constant "\"Mat Date:\""
+    }
+
+    field "MATURITY.DATE" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 4
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "SWAP" "MATURITY.DATE" false
+    }
+
+    field "HDR8" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 48
+            line: 4
+        }
+
+        operation: constant "\"Rate:\""
+    }
+
+    field "RATE.1" {
+        comments: "Swap contract id."
+        comma-separator: false
+        operation: constant "\"FIXED\""
+    }
+
+    field "RATE.2" {
+        comments: "Leg CCY. Header data. period."
+        comma-separator: false
+        operation: constant "\"FLOAT\""
+    }
+
+    field "AS.FIX.RATE" {
+        comments: "From swap.balances."
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "SWAP" "AS.FIXED.RATE" false
+    }
+
+    field "LB.FIX.RATE" {
+        comments: "From swap.balances."
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "SWAP" "LB.FIXED.RATE" false
+    }
+
+    field "LB.RATE" {
+        comma-separator: false
+        operation: if "LB.FIX.RATE" Equals "NULL" process "RATE.2" "RATE.1"
+    }
+
+    field "AS.RATE" {
+        comments: "From swap.balances."
+        comma-separator: false
+        operation: if "AS.FIX.RATE" Equals "NULL" process "RATE.2" "RATE.1"
+    }
+
+    field "SCHED.RATE.TYPE" {
+        comments: "From swap.balances."
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 4
+        }
+
+        operation: if "LEG.CCY.TYPE" Equals "A" process "AS.RATE" "LB.RATE"
+    }
+
+    field "HDR3" {
+        comments: "Page break on leg type. From swap.b alances."
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        processing-mode: Single
+        operation: constant "\"Counterparty:\""
+    }
+
+    field "CPARTY" {
+        comments: "Schedule type. From swap.balances."
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SWAP" "CUSTOMER" false
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CPARTY.SHORT.NAME" {
+        label {
+            en = "Counterparty:"
+        }
+
+        comments: "Header data. From swap.balances."
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: field-extract "CPARTY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "HDR5.02" {
+        comments: "Page break on leg type. From swap.b alances."
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 48
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Type: \""
+    }
+
+    field "@ID.02" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comments: "Schedule type description. From swa p.balances."
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Page
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: field-number 0
+    }
+
+    field "MATURITY.DATE.02" {
+        label {
+            en = "Mat Date:"
+        }
+
+        comments: "Schedule type description. From swa p.balances."
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 4
+        }
+
+        processing-mode: Single
+        operation: selection "CONTRACT.ID"
+        conversion: getFrom "SWAP" "MATURITY.DATE" false
+    }
+
+    field "INT.EFF.DATE" {
+        comments: "Schedule type description. From swa p.balances."
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 157
+    }
+
+    field "D.INT.EFF.DATE" {
+        label {
+            en = "Eff Date:"
+        }
+
+        comments: "Schedule type. From swap.balances."
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "INT.EFF.DATE"
+        conversion: iconv "D"
+        conversion: oconv "D2"
+    }
+
+    field "SCHED.TYPE" {
+        label {
+            en = "Sched"
+        }
+
+        comments: "Schedule type description. From swa p.balances."
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SCHED.TYPE.DESC" {
+        label {
+            en = "Sched Type Desc"
+        }
+
+        comments: "Schedule type description. From swa p.balances."
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "SCHED.TYPE"
+        conversion: getFrom "SWAP.SCHEDULE.TYPE" "1" false
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "END.DATE" {
+        label {
+            en = "End Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "CASH.FLOW" {
+        label {
+            en = "Cash flow"
+        }
+
+        comments: "CASH.FLOW"
+        format: Currency "CCY.DECIDE" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "DAYS.DIFFERENCE" {
+        label {
+            en = "Days Diff"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "PERIOD.DAYS" {
+        label {
+            en = "Period Days"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 92
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "CURVE.RATE" {
+        label {
+            en = "Coupon Rates"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 99
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "PREVIOUS.PV" {
+        label {
+            en = "Cumulative PV"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 118
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "ZERO.RATES" {
+        label {
+            en = "Zero Discount Rates"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 139
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "NPV" {
+        label {
+            en = "Present Value"
+        }
+
+        comments: "NPV"
+        format: Currency "CCY.DECIDE" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 160
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "BREAK.TOTAL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: break-change "LEG.TYPE"
+    }
+
+    field "T.TOT.CASH" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: total "CASH.FLOW"
+    }
+
+    field "TOT.LINES11" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+            line: + 0
+        }
+
+        processing-mode: Multi
+        operation: constant "\"-------------\""
+    }
+
+    field "TOTAL.TEXT" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Total of CF\""
+        conversion: convert {
+        }
+
+    }
+
+    field "FIN.TOT" {
+        format: Currency "CCY.DECIDE" negative-pattern -# break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "T.TOT.CASH"
+    }
+
+    field "TOT.LINES12" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: constant "\"-------------\""
+    }
+
+    field "TOT.LINES13" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 160
+            line: + 0
+        }
+
+        processing-mode: Multi
+        operation: constant "\"-------------------\""
+    }
+
+    field "TOTAL.NPV.TEXT" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 139
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Leg PV\""
+        conversion: convert {
+        }
+
+    }
+
+    field "T.TOT.NPV" {
+        format: Currency "CCY.DECIDE" negative-pattern -# break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 160
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: total "NPV"
+    }
+
+    field "TOT.LINES14" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 160
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: constant "\"-------------------\""
+    }
+
+    field "INTEREST.ACCRUED" {
+        label {
+            en = "Interest Accrued"
+        }
+
+        format: Currency "CCY.DECIDE" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    field "ACC.INT.TEXT" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 139
+            line: + 3
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Accrued Interest\""
+    }
+
+    field "TOT.INTEREST.ACCRUED" {
+        format: Currency "CCY.DECIDE" negative-pattern -# break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 160
+            line: + 3
+        }
+
+        processing-mode: Multi
+        operation: total "INTEREST.ACCRUED"
+    }
+
+    field "TOT.LINES15" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 160
+            line: + 4
+        }
+
+        processing-mode: Multi
+        operation: constant "\"-------------------\""
+    }
+
+    field "TOT.ASSET.NPV.TEXT" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 24
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 139
+            line: + 5
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Net of Accrued Interest\""
+    }
+
+    field "LEG.NPV" {
+        format: Currency "CCY.DECIDE" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        operation: field-number 0
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "TOT.LEG.NPV" {
+        format: Currency "CCY.DECIDE" negative-pattern -# break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 160
+            line: + 5
+        }
+
+        operation: total "LEG.NPV"
+    }
+
+    field "ACC.INT.TEXT.02" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Accrued Interest\""
+    }
+
+    field "TOT.ASSET.NPV.TEXT.02" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 24
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Net of Accrued Interest\""
+    }
+
+    field "NET.TEXT" {
+        break-condition {
+            field: "BREAK.TOTAL"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 160
+            line: + 6
+        }
+
+        processing-mode: Multi
+        operation: constant "\"==============\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Swap NPV details available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Schedule FWD RR"
+        }
+
+        label-field: "T.TOT.NPV"
+        image: "view.gif"
+        criteria: "CONTRACT.NUMBER" Equals "@ID"
+        enquiry: "SWAP.SCHED.FWD.RR"
+    }
+
+}

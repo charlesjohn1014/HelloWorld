@@ -1,0 +1,460 @@
+Enquiry "AA.PUBLISH.SERVICE.MONITOR" for "name:/AA_ProductManagement:AA.PRODUCT.MANAGER#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "AUTOREFRESH" {
+        Equals "10"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Product Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Proof and Publish Monitor\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "L.PRODUCT" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        operation: constant "\"Product\""
+    }
+
+    field "PRODUCT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "D.PRODUCT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+        }
+
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "L.ACTION" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        operation: constant "\"Action\""
+    }
+
+    field "ACTION" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACTION"
+        conversion: replace {
+            oldData: "CANCEL.PROOF"
+            newData: "Cancel Proof"
+        }
+
+        conversion: oconv "MCT"
+    }
+
+    field "L.STATUS" {
+        comments: "Extract the text completed"
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Status\""
+    }
+
+    field "D.STATUS" {
+        comments: "Extract the text completed"
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PROCESS.STATUS"
+        conversion: oconv "MCT"
+    }
+
+    field "L.AVAILABLE" {
+        comments: "Extract the text completed"
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        operation: constant "\"Available\""
+    }
+
+    field "AVAILABLE.DATE" {
+        comments: "Extract the text completed"
+        format: Date break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AVAILABLE.DATE"
+    }
+
+    field "C.DASH" {
+        label {
+            en = "\" till \""
+        }
+
+        comments: "Extract the text completed"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "EXPIRY.DATE" {
+        comments: "Extract the text completed"
+        format: Date break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "AVAIL.PERIOD" {
+        comments: "Extract the text completed" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: calc "AVAILABLE.DATE":"C.DASH":"EXPIRY.DATE"
+    }
+
+    field "D.AVAILABLE" {
+        comments: "Extract the text completed"
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        operation: if "EXPIRY.DATE" NotEquals "NULL" process "AVAIL.PERIOD" "AVAILABLE.DATE"
+    }
+
+    field "C.CHILD.PRODUCTS" {
+        comments: "Extract the text completed"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Child Products\""
+    }
+
+    field "RELATED.PRODUCT" {
+        comments: "Extract the text completed"
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RELATED.PRODUCT"
+    }
+
+    field "L.CHILD.PRODUCTS" {
+        comments: "Extract the text completed"
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 3
+        }
+
+        operation: if "RELATED.PRODUCT" Equals "NULL" process "NULL" "C.CHILD.PRODUCTS"
+    }
+
+    field "D.RELATED.PRODUCT" {
+        comments: "Extract the text completed"
+        format: User
+        comma-separator: false
+        position {
+            column: 20
+            line: + 3
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-extract "RELATED.PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "C.PRODUCT.ERROR" {
+        comments: "Extract the text completed"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Error\""
+    }
+
+    field "PRODUCT.ERROR" {
+        comments: "Extract the text completed"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT.ERROR"
+    }
+
+    field "L.PRODUCT.ERROR" {
+        comments: "Extract the text completed"
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        position {
+            column: 30
+            line: + 3
+        }
+
+        operation: if "PRODUCT.ERROR" Equals "NULL" process "NULL" "C.PRODUCT.ERROR"
+    }
+
+    field "D.PRODUCT.ERROR" {
+        comments: "Extract the text completed"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 3
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-extract "PRODUCT.ERROR"
+    }
+
+    field "C.SUGGESTION" {
+        comments: "Extract the text completed"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Suggestion\""
+    }
+
+    field "SUGGESTION" {
+        comments: "Extract the text completed"
+        length: 70
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SUGGESTION"
+    }
+
+    field "L.SUGGESTION" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 50
+            line: + 3
+        }
+
+        operation: if "PRODUCT.ERROR" Equals "NULL" process "NULL" "C.SUGGESTION"
+    }
+
+    field "D.SUGGESTION" {
+        comma-separator: false
+        position {
+            column: 60
+            line: + 3
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SUGGESTION"
+    }
+
+    field "STATUS.PART" {
+        comments: "Extract the text completed"
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROCESS.STATUS"
+        conversion: extract from 1 to 9
+    }
+
+    field "C.STATUS" {
+        comments: "Extract the text completed"
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"COMPLETED\""
+    }
+
+    field "V.AA.PRODUCT.MANAGER" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.MANAGER,AA\""
+    }
+
+    field "C.INPUT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" I \""
+    }
+
+    field "C.SEE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" S \""
+    }
+
+    field "V.AA.PM.INPUT1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: calc "V.AA.PRODUCT.MANAGER":"C.INPUT":"PRODUCT"
+    }
+
+    field "V.AA.PM.SEE1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: calc "V.AA.PRODUCT.MANAGER":"C.SEE":"PRODUCT"
+    }
+
+    field "V.AA.PM.INPUT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: if "STATUS.PART" Equals "C.STATUS" process "V.AA.PM.INPUT1"
+    }
+
+    field "V.AA.PM.SEE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: if "STATUS.PART" Equals "C.STATUS" process "V.AA.PM.SEE1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "D.PRODUCT"
+        image: "view.gif"
+        from-field: "V.AA.PM.SEE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Manage"
+        }
+
+        label-field: "D.PRODUCT"
+        image: "tools.gif"
+        from-field: "V.AA.PM.INPUT"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "SINGLE.BACKGROUND.COLOUR"
+}

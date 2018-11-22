@@ -1,0 +1,101 @@
+Enquiry "AA.DIAGNOSTIC.SUMMARY" for "name:/AA_Util:NOFILE.DIAGNOSTIC.SUMMARY#" {
+    metamodelVersion: "1.30.6"
+    start-line: 7
+    end-line: 40 fixed-selection "XID" {
+    }
+
+    custom-selection {
+
+        field "SCAN.DATE" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: constant "\"Arrangement Diagnostic Summary\""
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 3
+        }
+
+        operation: constant "\"Scan run date\""
+    }
+
+    field "RUN.DATE" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        operation: selection "SCAN.DATE"
+    }
+
+    field "CURR.DATE" {
+        format: Date
+        comma-separator: false
+        operation: today
+    }
+
+    field "DISPLAY.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 3
+        }
+
+        operation: if "RUN.DATE" Equals "\"\"" process "CURR.DATE" "RUN.DATE"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "^"
+    }
+
+    field "TOTAL.COUNT" {
+        label {
+            en = "Total Count"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "^"
+    }
+
+    attributes: "SINGLE.BACKGROUND.COLOUR"
+}

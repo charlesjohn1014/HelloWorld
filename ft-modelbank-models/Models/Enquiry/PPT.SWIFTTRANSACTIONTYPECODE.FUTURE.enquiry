@@ -1,0 +1,306 @@
+Enquiry "PPT.SWIFTTRANSACTIONTYPECODE.FUTURE" for "name:/:PPT.SWIFTTRANSACTIONTYPECODE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Swift Tran Type Code List - Future"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    description {
+        en = "Swift Tran Type Code Search"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RACSWIFTTranTypeCode" {
+        Equals "\'F\'"
+    }
+
+    fixed-selection "RSCSWIFTTranTypeCode" {
+        Equals "\'L\'"
+    }
+
+    fixed-sort: "CompanyID" Null
+    fixed-sort: "BookingCode" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "SWIFTTranTypeCode ID"
+            }
+
+        }
+
+        AND
+
+        field "CompanyID" {
+            label {
+                en = "Company"
+            }
+
+        }
+
+        AND
+
+        field "BookingCode" {
+            label {
+                en = "Booking Code"
+            }
+
+        }
+
+        AND
+
+        field "SWIFTTransactionTypeCode" {
+            label {
+                en = "Swift Tran Type Code"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "SWIFTTranTypeCode ID"
+        }
+
+        length: 255
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "BookingCode" {
+        label {
+            en = "Booking Code"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BookingCode"
+    }
+
+    field "SWIFTTransactionTypeCode" {
+        label {
+            en = "SWIFT Tran Type Code"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SWIFTTransactionTypeCode"
+    }
+
+    field "StartDateSWIFTTranTypeCode" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StartDateSWIFTTranTypeCode"
+    }
+
+    field "EndDateSWIFTTranTypeCode" {
+        label {
+            en = "End Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EndDateSWIFTTranTypeCode"
+    }
+
+    field "ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "RACSWIFTTranTypeCode" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "RACSWIFTTranTypeCode"
+    }
+
+    field "RSCSWIFTTranTypeCode" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "RSCSWIFTTranTypeCode"
+    }
+
+    field "CaptureID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ PP.GET.CAPTURE.TABLE.ID"
+    }
+
+    field "AMENDVERSION" {
+        comma-separator: false
+        operation: constant "\"PP.SWIFT.TRANS.TYPECODE,FUTURE.AMEND I \""
+    }
+
+    field "REVERSEVERSION" {
+        comma-separator: false
+        operation: constant "\"PP.SWIFT.TRANS.TYPECODE,FUTURE.REVERSE I \""
+    }
+
+    field "NEWID" {
+        comma-separator: false
+        operation: constant "\"F3\""
+    }
+
+    field "CAPNEWID" {
+        comma-separator: false
+        operation: calc "AMENDVERSION":"NEWID"
+    }
+
+    field "CAPOLDID" {
+        comma-separator: false
+        operation: calc "AMENDVERSION":"CaptureID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CAPTUREAMEND" {
+        comma-separator: false
+        operation: if "CaptureID" Equals "NULL" process "CAPNEWID" "CAPOLDID"
+    }
+
+    field "CAPREVNEWID" {
+        comma-separator: false
+        operation: calc "REVERSEVERSION":"NEWID"
+    }
+
+    field "CAPREVOLDID" {
+        comma-separator: false
+        operation: calc "REVERSEVERSION":"CaptureID"
+    }
+
+    field "REVERSECAPTURE" {
+        comma-separator: false
+        operation: if "CaptureID" Equals "NULL" process "CAPREVNEWID" "CAPREVOLDID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    tool PP.ENQ.DETAIL {
+        label {
+            en = "Create New Record"
+        }
+
+        command: "docommand(\"PP.SWIFT.TRANS.TYPECODE,CREATE I F3\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "CompanyID"
+        image: "edit.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "CAPTUREAMEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "CompanyID"
+        image: "txnreverse.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "REVERSECAPTURE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CompanyID"
+        image: "view.gif"
+        should-be-changed: "PPT.SWIFTTRANSACTIONTYPECODE,VIEW S ID"
+    }
+
+    introspection-messages:
+    "Error in drilldown 3: APP \'PPT.SWIFTTRANSACTIONTYPECODE,VIEW\' does not exist, broken reference"
+}

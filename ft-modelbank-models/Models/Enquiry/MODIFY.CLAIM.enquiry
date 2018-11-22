@@ -1,0 +1,286 @@
+Enquiry "MODIFY.CLAIM" for "name:/LC_Contract:DRAWINGS$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Modify Reimburswement Claims"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DRAWING.TYPE" {
+        Equals "CO", "SP"
+    }
+
+    fixed-selection "LC.CREDIT.TYPE" {
+        Equals "REIM"
+    }
+
+    fixed-sort: "VALUE.DATE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.LINK" {
+            label {
+                en = "Issuing Bank Id"
+            }
+
+        }
+
+        AND
+
+        field "DRAW.CURRENCY" {
+            label {
+                en = "Claim Ccy"
+            }
+
+        }
+
+        AND
+
+        field "DOCUMENT.AMOUNT" {
+            label {
+                en = "Claim Amount"
+            }
+
+        }
+
+        AND
+
+        field "PRESENTOR.CUST" {
+            label {
+                en = "Claiming Bank Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: constant "\"List of Claims to be Modified\""
+    }
+
+    field "PRESENTOR.CUST" {
+        label {
+            en = "Claiming Bank"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "PRESENTOR.REF" {
+        label {
+            en = "Claiming Bank Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.REF"
+    }
+
+    field "CO" {
+        comma-separator: false
+        operation: constant "\"Register Claim\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\"Pay Claim\""
+    }
+
+    field "DRAWING.TYPE" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "CLAIM TYPE" {
+        label {
+            en = "Pay/Register"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "DRAWING.TYPE" Equals "\"CO\"" process "CO" "SP"
+    }
+
+    field "CUSTOMER.LINK" {
+        label {
+            en = "LC issuing Bank"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.LINK"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMT" {
+        label {
+            en = "Claim Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "VAL.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Claims to be modified\""
+    }
+
+    field "TXN.DRILLDOWN" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "DRAWING.TYPE"
+        conversion: replace {
+            oldData: "CO"
+            newData: "REIMB.CLAIMREGISTER"
+        }
+
+        conversion: replace {
+            oldData: "SP"
+            newData: "REIMB.CLAIM"
+        }
+
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS,\""
+    }
+
+    field "TXN.DRILL" {
+        comma-separator: false
+        operation: calc "APPL":"TXN.DRILLDOWN"
+    }
+
+    field "VER.DEC1" {
+        comma-separator: false
+        operation: field-extract "TXN.DRILL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "VER.DEC1"
+    }
+
+}

@@ -1,0 +1,542 @@
+Enquiry "FATCA.TAX.BASE.LIST.DETS" for "name:/FE_FatcaReporting:FATCA.TAX.BASE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "FATCA Tax Base"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    full-description {
+        en = "FATCA Tax Base"
+    }
+
+    description {
+        en = "FATCA Tax Base"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"FATCA Tax Base\""
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Year\""
+    }
+
+    field "HDR1D" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 4
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BASE.YEAR"
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Date\""
+    }
+
+    field "HDR2D" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 55
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS.DATE"
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 120
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "ACCOUNT" {
+        label {
+            en = "Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 135
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT"
+    }
+
+    field "ACC.BALANCE" {
+        label {
+            en = "Balance in Acc Ccy"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 172
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACC.BALANCE"
+    }
+
+    field "ACC.EXCH.RATE" {
+        label {
+            en = "USD Spot Rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 192
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACC.EXCH.RATE"
+    }
+
+    field "ACC.BAL.USD" {
+        label {
+            en = "Balance in USD"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 209
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACC.BAL.USD"
+    }
+
+    field "TOT.ACC.BAL.DEP" {
+        label {
+            en = "Tot Acc Bal-Dep"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Single
+        operation: application-field-name "TOT.ACC.BAL.DEP"
+    }
+
+    field "TOT.ACC.BAL.CUST" {
+        label {
+            en = "Tot Acc Bal-Cus"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Single
+        operation: application-field-name "TOT.ACC.BAL.CUST"
+    }
+
+    field "CLOSING.DATE" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ACCOUNT"
+        conversion: getFrom "ACCOUNT.CLOSED" "ACCT.CLOSE.DATE" false
+    }
+
+    field "NUL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "ACCOUNT.CLOSED" {
+        label {
+            en = "Account Closed"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 269
+        }
+
+        processing-mode: Multi
+        operation: if "CLOSING.DATE" Equals "NUL" process "0" "1"
+    }
+
+    field "DATE.OF.CLOSING" {
+        label {
+            en = "Closing Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 274
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CLOSING.DATE"
+    }
+
+    field "FATCA.STATUS" {
+        label {
+            en = "Acc Classification"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 287
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FATCA.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "ACCT.HOLDER.TYPE" {
+        label {
+            en = "Holder Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 324
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCT.HOLDER.TYPE"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 361
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "STREET" {
+        label {
+            en = "Street Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 398
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STREET"
+    }
+
+    field "ADDRESS" {
+        label {
+            en = "Address"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 435
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ADDRESS"
+    }
+
+    field "COUNTRY.SUB.ENTITY" {
+        label {
+            en = "District"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 472
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "COUNTRY.SUB.ENTITY"
+    }
+
+    field "TOWN.COUNTRY" {
+        label {
+            en = "City"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 509
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TOWN.COUNTRY"
+    }
+
+    field "POST.CODE" {
+        label {
+            en = "PO Code"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 546
+        }
+
+        processing-mode: Single
+        operation: application-field-name "POST.CODE"
+    }
+
+    field "COUNTRY" {
+        label {
+            en = "Country Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 583
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COUNTRY"
+    }
+
+    field "TIN.CODE.TYPE" {
+        label {
+            en = "TIN Code"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 620
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TIN.CODE.TYPE"
+    }
+
+    field "EIN" {
+        label {
+            en = "TIN"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 637
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EIN"
+    }
+
+    field "TIN.COUNTRY" {
+        label {
+            en = "TIN Country Code"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 674
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TIN.COUNTRY"
+    }
+
+    field "BIRTH.INCORP.DATE" {
+        label {
+            en = "Birthdate"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 685
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BIRTH.INCORP.DATE"
+    }
+
+    field "XML.MSG" {
+        label {
+            en = "XML Msg Ref"
+        }
+
+        length: 120
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 701
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.FATCA.AGGR.XML"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available for current selection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend Details"
+        }
+
+        label-field: "CUSTOMER"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "FATCA.BASE.MANUAL.UPDATE,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "CUSTOMER"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "FATCA.TAX.BASE"
+    }
+
+}

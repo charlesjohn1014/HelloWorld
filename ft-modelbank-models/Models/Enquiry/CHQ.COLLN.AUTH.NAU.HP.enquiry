@@ -1,0 +1,234 @@
+Enquiry "CHQ.COLLN.AUTH.NAU.HP" for "name:/TT_Contract:TELLER$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Teller Outstation Chqs sent on Coll Unauth List"
+    }
+
+    description {
+        en = "Authorise/delete Cheques"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "TRANSACTION.CODE" {
+        Equals "43", "41", "42", "45"
+    }
+
+    field "ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Authorise/Delete Cheques \""
+    }
+
+    field "ACCOUNT.2" {
+        label {
+            en = "Credit Acct"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.2"
+    }
+
+    field "CURRENCY.2" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "CURRENCY.2"
+    }
+
+    field "AMOUNT.LOCAL.2" {
+        label {
+            en = "Chq Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LOCAL.2"
+    }
+
+    field "VALUE.DATE.2" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE.2"
+    }
+
+    field "EXPOSURE.DATE.2" {
+        label {
+            en = "Exposure Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPOSURE.DATE.2"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Clearing Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: getFrom "TELLER.TRANSACTION" "SHORT.DESC" false
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Transactions\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "ID"
+        }
+
+        screen: "TELLER,OUTSTATION.CHQS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "ID"
+        }
+
+        screen: "TELLER,OUTSTATION.CHQS"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "TELLER,OUTSTATION.CHQS"
+    }
+
+}

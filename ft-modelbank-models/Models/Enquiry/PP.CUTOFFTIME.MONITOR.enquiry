@@ -1,0 +1,346 @@
+Enquiry "PP.CUTOFFTIME.MONITOR" for "name:/PP_PaymentFlowMonitorGUI:NOFILE.PP.CUTOFFTIME.MONITOR#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cut-off Time Monitor"
+    }
+
+    description {
+        en = "Cut-off Time Monitor"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "OUT.VAL" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            label {
+                en = "Company"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR1.1" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Cut-off Ti\""
+    }
+
+    field "HDR1.2" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        operation: constant "\"me Monitor\""
+    }
+
+    field "COMPANY.HEADER" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Company\""
+    }
+
+    field "CompanyCode" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "Amountflag" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "Amt" {
+        comma-separator: false
+        operation: field-extract "Amountflag"
+    }
+
+    field "RED.DIS" {
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/redlight.gif\""
+    }
+
+    field "GREEN.DIS" {
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/greenlight.gif\""
+    }
+
+    field "AMBER.DIS" {
+        display-type: "CLASS-BOLD.RED"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/amberlight.gif\""
+    }
+
+    field "ALERT.DISP" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: if "Amt" Greater "10000" process "AMBER.DIS"
+    }
+
+    field "ALERT.DISP.02" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: if "Amt" Greater "1000000" process "RED.DIS"
+    }
+
+    field "ALERT.DISP.03" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: if "Amt" LessOrEquals "10000" process "GREEN.DIS"
+    }
+
+    field "ALERT.DISP.04" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: if "Amt" Equals "0" process "GREEN.DIS"
+    }
+
+    field "FLAG" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "compID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BRK.COMP" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "compID"
+    }
+
+    field "Cut-off time" {
+        label {
+            en = "\"\""
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "Name" {
+        label {
+            en = "Cut-off"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TransferandMsgType" {
+        label {
+            en = "Channel"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "Currency" {
+        label {
+            en = "Message"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "Amount" {
+        label {
+            en = "Ccy"
+        }
+
+        format: Currency "Currency" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CcyLocal" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "AmtHome1" {
+        label {
+            en = "Total Amount"
+        }
+
+        format: Currency "CcyLocal" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        column-width: 1
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "AmtCurrencyHome" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "No. of Payments" {
+        label {
+            en = "Total in Local Ccy"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "dummy.hdr" {
+        label {
+            en = "No. of Payments"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"\""
+    }
+
+    field "REC.IDS" {
+        label {
+            en = "Record Ids"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "NORECTODISPLAY" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No Payments in Queue\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "Amount"
+        image: "view.gif"
+        criteria: "@ID" Equals "REC.IDS"
+        enquiry: "PP.ENQ.CUTOFFTIME"
+    }
+
+}

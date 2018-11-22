@@ -1,0 +1,271 @@
+Enquiry "CONTRACT.IMPAIRED" for "name:/IA_ModelBank:NOFILE.CONT.EXP.CASHFLOW.IMPAIRED#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Impaired Contracts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 30 fixed-selection "ENQUIRY.DATA" {
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Trans Reference"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Impaired Contracts\""
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CONTRACT.ID" {
+        label {
+            en = "Contract Number"
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Application"
+        }
+
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: extract from 1 to 2
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "LD.ID" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+    }
+
+    field "LD.AMT" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "AMOUNT" false
+    }
+
+    field "PD" {
+        comma-separator: false
+        operation: constant "\"PD\""
+    }
+
+    field "PD.ID" {
+        comma-separator: false
+        operation: calc "PD":"LD.ID"
+    }
+
+    field "PD.AMT" {
+        comma-separator: false
+        operation: field-extract "PD.ID"
+        conversion: getFrom "PD.PAYMENT.DUE" "TOTAL.AMT.TO.REPAY" false
+    }
+
+    field "APP.LD" {
+        comma-separator: false
+        operation: calc "LD.AMT" + "PD.AMT"
+    }
+
+    field "APP.MM" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: getFrom "MM.MONEY.MARKET" "PRINCIPAL" false
+    }
+
+    field "APP.SL" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: getFrom "SL.LOANS" "OWN.AMOUNT" false
+    }
+
+    field "APP.AA" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.ID"
+        conversion: getFrom "EB.CONTRACT.BALANCES" "WORKING.BALANCE" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DEC3" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "\"SL\"" process "APP.SL" "APP.AA"
+    }
+
+    field "DEC2" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "\"MM\"" process "APP.MM" "DEC3"
+    }
+
+    field "DEC1" {
+        label {
+            en = "Outstanding Balance"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        operation: if "APPLICATION" Equals "\"LD\"" process "APP.LD" "DEC2"
+    }
+
+    field "DATE.IMPAIRED" {
+        label {
+            en = "Impairment Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 31 to 1 delimited by "*"
+    }
+
+    field "IMPAIRMENT.LOSS" {
+        label {
+            en = "Total Impairment Loss"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        operation: field-number 0
+        conversion: extract from 28 to 1 delimited by "*"
+    }
+
+    field "LCY.IMPAIRMENT.LOSS" {
+        label {
+            en = "Lcy Total Impairment Loss"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        operation: field-number 0
+        conversion: extract from 29 to 1 delimited by "*"
+    }
+
+    field "Account Officer" {
+        label {
+            en = "Account Officer"
+        }
+
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "ZERORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Contracts to display\""
+    }
+
+}

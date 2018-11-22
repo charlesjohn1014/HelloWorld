@@ -1,0 +1,324 @@
+Enquiry "CHEQ.REG.PAY" for "name:/ST_ChqSubmit:CHEQUE.REGISTER.SUPPLEMENT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Local Drafts Cleared"
+    }
+
+    description {
+        en = "Local Drafts Cleared"
+    }
+
+    start-line: 2
+    end-line: 4 fixed-selection "STATUS" {
+        Equals "CLEARED"
+    }
+
+    fixed-selection "ID.COMP1" {
+        Equals "DD"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        AND
+
+        field "ID.COMP3" {
+            label {
+                en = "Draft Amt"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT" {
+            label {
+                en = "Draft Amt"
+            }
+
+        }
+
+        AND
+
+        field "ORIGIN.REF" {
+            label {
+                en = "Origin Reference"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        label {
+            en = "Header"
+        }
+
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Local Drafts Cleared\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "Y.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP2"
+    }
+
+    field "DRAFT.NO" {
+        label {
+            en = "Draft No"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ID.COMP3"
+    }
+
+    field "DRAFT.CCY" {
+        label {
+            en = "Draft Ccy"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "DRAFT.AMT" {
+        label {
+            en = "Draft Amt"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "PAYEE.NAME" {
+        label {
+            en = "Payee Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYEE.NAME"
+    }
+
+    field "ISSUE.DATE" {
+        label {
+            en = "Issue Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ISSUE.DATE"
+    }
+
+    field "ORIGIN" {
+        label {
+            en = "Origin"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ORIGIN"
+    }
+
+    field "ORIGIN.REF" {
+        label {
+            en = "Origin Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORIGIN.REF"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "LK.FT" {
+        comma-separator: false
+        operation: constant "\"FT...\""
+    }
+
+    field "Y.OID1" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGIN.REF"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "Y.OID2" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGIN.REF"
+        conversion: extract from 3 to 1 delimited by "-"
+    }
+
+    field "Y.OID" {
+        comma-separator: false
+        operation: calc "Y.OID1":"\"-\"":"Y.OID2"
+    }
+
+    field "Y.FT" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER\""
+    }
+
+    field "Y.FID" {
+        comma-separator: false
+        operation: if "ORIGIN.REF" Matches "LK.FT" process "ORIGIN.REF" "Y.OID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records to display\""
+    }
+
+    field "Y.APP" {
+        comma-separator: false
+        operation: if "ORIGIN" Equals "Y.FT" process "FUNDS.TRANSFER" "AC.INWARD.ENTRY"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "CHEQUE.REGISTER.SUPPLEMENT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Ref"
+        }
+
+        label-field: "@ID"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "Y.FID"
+        }
+
+        from-field: "Y.APP"
+    }
+
+    fileVersion: Live, History
+}

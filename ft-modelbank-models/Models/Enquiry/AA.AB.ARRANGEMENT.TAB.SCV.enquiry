@@ -1,0 +1,200 @@
+Enquiry "AA.AB.ARRANGEMENT.TAB.SCV" for "name:/AA_Framework:AA.ARRANGEMENT.ACTIVITY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Search"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "ACTIVITY.CLASS" {
+        Matches "BUNDLE...NEW..."
+    }
+
+    fixed-selection "CUSTOMER" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT" {
+            label {
+                en = "Arrangement ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADER" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Bundle Product\""
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "PROD" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+        conversion: value 1 1
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+    }
+
+    field "C.GEN.OVER" {
+        comma-separator: false
+        operation: constant "\"COS AA.ARRANGEMENT.OVERVIEW \""
+    }
+
+    field "PRODUCT.LINE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "COS.NAME" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.AB \""
+    }
+
+    field "ACC.COS" {
+        comma-separator: false
+        operation: calc "COS.NAME":"ARRANGEMENT":"SP":"PROD"
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 50
+        }
+
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.GET.BUNDLE.BALANCE.SCV"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records to Display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Overview"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "view.gif"
+        from-field: "ACC.COS"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

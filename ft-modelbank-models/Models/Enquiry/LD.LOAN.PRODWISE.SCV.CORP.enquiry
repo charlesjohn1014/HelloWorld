@@ -1,0 +1,301 @@
+Enquiry "LD.LOAN.PRODWISE.SCV.CORP" for "name:/LD_Contract:LD.LOANS.AND.DEPOSITS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of LD Loans - Product-wise"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CUSTOMER.ID" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "CATEGORY" {
+        Between "21051", "21062"
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "LIQ"
+    }
+
+    fixed-sort: "CATEGORY" Null
+    custom-selection {
+
+        field "CATEGORY" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.ID" {
+            label {
+                en = "Customer id"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        operation: constant "\"List of LD Loans - Product-Wise\""
+    }
+
+    field "CATEG.BRK" {
+        comma-separator: false
+        operation: break-change "CATEGORY"
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FIN.MAT.DATE"
+    }
+
+    field "CATEG" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: replace {
+            oldData: "21062"
+            newData: "DISCLN"
+        }
+
+    }
+
+    field "DISCLN" {
+        comma-separator: false
+        operation: constant "\"DISCLN\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "COMMIT" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COMMITMENT.NO"
+    }
+
+    field "VER1" {
+        comma-separator: false
+        operation: constant "\"LD,BRIDGE.UE.SCH.LN\""
+    }
+
+    field "VER2" {
+        comma-separator: false
+        operation: constant "\"LD,COMMDR\""
+    }
+
+    field "VER3" {
+        comma-separator: false
+        operation: constant "\"LD,DISCLN\""
+    }
+
+    field "VER.DEC" {
+        comma-separator: false
+        operation: if "COMMIT" Equals "NULL" process "VER1" "VER2"
+    }
+
+    field "DRILL.VERSION" {
+        comma-separator: false
+        operation: if "CATEG" Equals "DISCLN" process "VER3" "VER.DEC"
+    }
+
+    field "LIMIT.REFERENCE" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.REFERENCE"
+    }
+
+    field "LIMIT.ID" {
+        comma-separator: false
+        operation: calc "CUSTOMER":".":"LIMIT.REFERENCE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View LD Contract"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "DRILL.VERSION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Collateral"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "LIMIT.ID"
+        }
+
+        screen: "LIMIT,COLLATERAL"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

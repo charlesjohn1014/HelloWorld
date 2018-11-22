@@ -1,0 +1,233 @@
+Enquiry "STO.LIST.US.BEN" for "name:/AC_StandingOrders:STANDING.ORDER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "List of Standing Orders by Type"
+    }
+
+    description {
+        en = "List of Standing Orders by Type"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "BEN.TYPE" {
+        Equals "\'US\'"
+    }
+
+    fixed-sort: "K.TYPE" Null
+    custom-selection {
+
+        field "K.TYPE" {
+            label {
+                en = "K Type"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "PAY.METHOD" {
+            label {
+                en = "Pay Method"
+            }
+
+        }
+
+        AND
+
+        field "CURRENT.FREQUENCY" {
+            label {
+                en = "Frequency"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "STO Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        operation: constant "\"US BANK STO\'s\""
+    }
+
+    field "K.TYPE" {
+        label {
+            en = "Txn Type"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "K.TYPE"
+        conversion: getFrom "STO.TYPE" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "DEBIT.ACT.NO" {
+        label {
+            en = "Debit Acct No."
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "DEBIT.ACT.NAME" {
+        label {
+            en = "Debit Account Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "DEBIT.ACT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CURRENT.AMOUNT.BAL" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.AMOUNT.BAL"
+    }
+
+    field "CPTY.ACCT.NO" {
+        label {
+            en = "Credit Acct No."
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CPTY.ACCT.NO"
+    }
+
+    field "CRD.ACT.NAME" {
+        label {
+            en = "Credit Account Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "CPTY.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "BEN.TYPE" {
+        label {
+            en = "Ben Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BEN.TYPE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transactions Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "STANDING.ORDER,AUTH.PO"
+    }
+
+}

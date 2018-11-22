@@ -1,0 +1,276 @@
+Enquiry "ACCOUNT.PREVIEW" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Preview of Account"
+    }
+
+    description {
+        en = "Account Preview"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CATEGORY" {
+        Between "1000", "9999"
+    }
+
+    fixed-sort: "CUSTOMER" Null
+    custom-selection {
+
+        field "ACCOUNT.NUMBER" {
+            label {
+                en = "Account.No"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.CODE" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "LIMIT.REF" {
+            label {
+                en = "Limit Ref"
+            }
+
+        }
+
+        AND
+
+        field "ONLINE.ACTUAL.BAL" {
+            label {
+                en = "Online Actual Bal"
+            }
+
+        }
+
+        None
+    }
+
+    field "NULLVAR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HDR.LINE1.1" {
+        display-type: "CLASS-HEADER"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Account Preview\""
+    }
+
+    field "HDR.LINE1.2" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Account No.: \""
+    }
+
+    field "ACC" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUST" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        operation: field-extract "ACC"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "DISP.CCY" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Currency :\""
+    }
+
+    field "CCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 4
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ACC"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "WORK.BAL" {
+        label {
+            en = "Working Bal"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 2
+        }
+
+        operation: field-extract "ACC"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Ledger Bal"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 3
+        }
+
+        operation: field-extract "ACC"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "LOCK.AMT" {
+        label {
+            en = "Locked Amount"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ACC"
+        conversion: call
+        jBC: "@ E.TOTAL.LOCK.AMT"
+    }
+
+    field "LOCKED.AMOUNT" {
+        label {
+            en = "Locked Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: if "LOCK.AMT" Equals "ZERO" process "NULLVAR" "LOCK.AMT"
+    }
+
+    field "POS.RESTRICT" {
+        label {
+            en = "Restriction"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "POSTING.RESTRICT"
+        conversion: call
+        jBC: "@ E.GET.MASS.BLOCK"
+    }
+
+    field "ACC.NO" {
+        comma-separator: false
+        display-section: NoDisplay
+        operation: field-extract "ACC"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Account Details\""
+    }
+
+    attributes: "NO.TOOLBAR"
+}

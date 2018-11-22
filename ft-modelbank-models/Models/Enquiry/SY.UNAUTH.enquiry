@@ -1,0 +1,250 @@
+Enquiry "SY.UNAUTH" for "name:/SY_ModelBank:NOFILE.SY.UNAUTH#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised SY Records"
+    }
+
+    description {
+        en = "Unauthorised SY Records"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "TXN.REF" {
+            label {
+                en = "Txn Ref"
+            }
+
+        }
+
+        AND
+
+        field "APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        AND
+
+        field "PORTFOLIO.NO" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised SY Records\""
+    }
+
+    field "APPLN" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "#"
+    }
+
+    field "HDR2" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "#"
+    }
+
+    field "BRK1" {
+        comma-separator: false
+        operation: break-change "HDR2"
+    }
+
+    field "APPL.NAME" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        display-type: "CLASS-FDLB" break-condition {
+            field: "BRK1"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "HDR2"
+    }
+
+    field "REF.ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "CUST.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "#"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Client "
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        comma-separator: false
+        position {
+            column: 51
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "#"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 71
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "#"
+    }
+
+    field "CCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 84
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "#"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        comma-separator: false
+        position {
+            column: 88
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "#"
+        conversion: extract from 2 to 0 delimited by "_"
+    }
+
+    field "AUTHVER" {
+        comma-separator: false
+        operation: constant "\",AUTH\""
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: calc "APPLN":"AUTHVER"
+    }
+
+    field "NO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available for authorisation\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "REF.ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "REF.ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "REF.ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "REF.ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "REF.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "REF.ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+}

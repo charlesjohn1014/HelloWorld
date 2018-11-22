@@ -1,0 +1,238 @@
+Enquiry "PWM.SENT.MSG" for "name:/EB_ModelBank:NOFILE.INTERNAL.MESSAGE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Messages to customer"
+    }
+
+    description {
+        en = "Messages to customer"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "INTERNAL.MESSAGE" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "USER.ID" {
+            label {
+                en = "User"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DEPT.ACCT.OFFICER" {
+            label {
+                en = "Dept Acct Officer"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        label {
+            en = "Message Id"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Sent Messages\""
+    }
+
+    field "CLIENT" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "INT.USER" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: getFrom "EB.TICKLER" "TO.USER.ID" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SEND.TO" {
+        label {
+            en = "Receiver ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: if "CLIENT" Equals "NULL" process "INT.USER" "CLIENT"
+    }
+
+    field "CUST.NAME" {
+        comma-separator: false
+        operation: field-extract "CLIENT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "INT.NAME" {
+        comma-separator: false
+        operation: field-extract "INT.USER"
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "SENT.NAME" {
+        label {
+            en = "Sent To"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "CUST.NAME" Equals "NULL" process "INT.NAME" "CUST.NAME"
+    }
+
+    field "SUBJECT" {
+        label {
+            en = "Subject"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "SENT.BY" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ES" {
+        comma-separator: false
+        operation: constant "\"EB.SECURE.MESSAGE,VIEW.MESSAGE\""
+    }
+
+    field "ET" {
+        comma-separator: false
+        operation: constant "\"EB.TICKLER,VIEW\""
+    }
+
+    field "M" {
+        comma-separator: false
+        operation: constant "\"SM...\""
+    }
+
+    field "T" {
+        comma-separator: false
+        operation: constant "\"TK...\""
+    }
+
+    field "TXN.ID" {
+        comma-separator: false
+        operation: field-extract "ID"
+    }
+
+    field "ENQ" {
+        comma-separator: false
+        operation: if "TXN.ID" Matches "T" process "ET" "ES"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Sent Messages Queue empty\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        from-field: "ENQ"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "ID"
+        image: "trashcan.gif" parameters {
+            function:  Delete
+            field: "ID"
+        }
+
+        from-field: "ENQ"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

@@ -1,0 +1,224 @@
+Enquiry "DX.TRADE.NAU" for "name:/DX_Trade:DX.TRADE$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised DX Trades"
+    }
+
+    start-line: 4
+    end-line: 19
+
+    field "@ID" {
+        label {
+            en = "Txn Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Unauthorised Trades\""
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "CONTRACT" {
+        label {
+            en = "Contract"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CODE"
+        conversion: getFrom "DX.CONTRACT.MASTER" "2" false
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "TRADE.TYPE" {
+        label {
+            en = "Fut/Option"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.TYPE"
+    }
+
+    field "PRI.LOTS" {
+        label {
+            en = "No Lots/Rate"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.LOTS"
+    }
+
+    field "PRI.CUST.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.CUST.NO"
+        conversion: getFrom "CUSTOMER" "2" false
+    }
+
+    field "SEC.CUST.NO" {
+        label {
+            en = "Broker/Counterparty"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SEC.CUST.NO"
+        conversion: getFrom "CUSTOMER" "2" false
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Record Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no unauthorised trades\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "DX.TRADE,AUTH"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "DX.TRADE,AUTH"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Input/Edit Deal"
+        }
+
+        label-field: "RECORD.STATUS"
+        criteria: "RECORD.STATUS" Equals "\"IHLD\"" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DX.TRADE,AUTH"
+    }
+
+}

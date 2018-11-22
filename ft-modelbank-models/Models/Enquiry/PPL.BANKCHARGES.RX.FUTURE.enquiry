@@ -1,0 +1,276 @@
+Enquiry "PPL.BANKCHARGES.RX.FUTURE" for "name:/:PPL.BANKCHARGES#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Bank charges List - Future"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    description {
+        en = "Bank Charges - Future"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RACBankCharges" {
+        Equals "\'F\'"
+    }
+
+    fixed-selection "RACBankCharges" {
+        Equals "\'L\'"
+    }
+
+    field "Charges.ID" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BankChargesID"
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company Code"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CompanyID"
+    }
+
+    field "ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "Not Applicable" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SendingOrReceivingBankCharge"
+    }
+
+    field "Correspondent BIC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CorrespondentBIC"
+    }
+
+    field "CTRBTR" {
+        label {
+            en = "CTR/BTR"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CTRBTRIndicator"
+    }
+
+    field "SLA" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SLACode"
+    }
+
+    field "Currency" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CurrencyCode"
+    }
+
+    field "Destination Country" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CountryCodeDestination"
+    }
+
+    field "Fee Currency" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CommonCurrency"
+    }
+
+    field "Start Date" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "StartDateBankCharges"
+    }
+
+    field "End Date" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EndDateBankCharges"
+    }
+
+    field "CaptureID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ PP.GET.CAPTURE.TABLE.ID"
+    }
+
+    field "AMENDVERSION" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"PP.BANKCHARGES,RX.FUTURE.AMEND I \""
+    }
+
+    field "REVERSEVERSION" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"PP.BANKCHARGES,RX.FUTURE.REVERSE I \""
+    }
+
+    field "NEWID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"F3\""
+    }
+
+    field "CAPNEWID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "AMENDVERSION":"NEWID"
+    }
+
+    field "CAPOLDID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "AMENDVERSION":"CaptureID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "CAPTUREAMEND" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "CaptureID" Equals "NULL" process "CAPNEWID" "CAPOLDID"
+    }
+
+    field "CAPREVNEWID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "REVERSEVERSION":"NEWID"
+    }
+
+    field "CAPREVOLDID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "REVERSEVERSION":"CaptureID"
+    }
+
+    field "REVERSECAPTURE" {
+        comma-separator: false
+        operation: if "CaptureID" Equals "NULL" process "CAPREVNEWID" "CAPREVOLDID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No unauthorised records found in PP Bank charges\""
+    }
+
+    tool AM.ENQ.DETAIL {
+        label {
+            en = "Create New Record"
+        }
+
+        command: "docommand(\"PP.BANKCHARGES,RX.CREATE I F3\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "CompanyID"
+        image: "edit.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "CAPTUREAMEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "CompanyID"
+        image: "txnreverse.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "REVERSECAPTURE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CompanyID"
+        image: "view.gif"
+        should-be-changed: "PPL.BANKCHARGES,RX.VIEW S ID"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Bankchrgs FeeType"
+        }
+
+        label-field: "CompanyID"
+        image: "right.arrow.gif"
+        criteria: "BankChargesID" Equals "Charge.ID"
+        enquiry: "PPL.BANKCHARGESFEETYPE"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+    introspection-messages: "Error in drilldown 3: APP \'PPL.BANKCHARGES,RX.VIEW\' does not exist, broken reference"
+    introspection-messages:
+    "Error in drilldown 4: Field: \'BankChargesID\' not found in application \'PPL.BANKCHARGESFEETYPE\'"
+}

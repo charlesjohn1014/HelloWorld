@@ -1,0 +1,632 @@
+Enquiry "CUS.REL.CUSTOMER" for "name:/SC_ModelBank:NOFILE.CUS.REL.DETS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Customer Relationships"
+    }
+
+    description {
+        en = "Customer Relationships"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 99
+    no-mandatory-selection: 1 fixed-selection "FIN.ARRAY" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "GROUP.ID" {
+            label {
+                en = "Group Id"
+            }
+
+            operands: Equals, NotEquals, Matches
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Relationship Navigation\""
+    }
+
+    field "CUST.HDR" {
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Customer:\""
+    }
+
+    field "CUST.SEL" {
+        comma-separator: false
+        display-section: Header
+        operation: selection "CUSTOMER"
+    }
+
+    field "CU.NAME" {
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "CUST.SEL"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PORT.HDR" {
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Portfolio:\""
+    }
+
+    field "PORT.SEL" {
+        comma-separator: false
+        display-section: Header
+        operation: selection "PORTFOLIO"
+    }
+
+    field "PO.NAME" {
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "PORT.SEL"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "GRP.HDR" {
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Group:\""
+    }
+
+    field "GRP.SEL" {
+        comma-separator: false
+        display-section: Header
+        operation: selection "GROUP.ID"
+    }
+
+    field "G.NAME" {
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "GRP.SEL"
+        conversion: getFrom "CUSTOMER.REL.GROUP" "GROUP.NAME" false
+    }
+
+    field "NU" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "IHDR1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: if "GRP.SEL" NotEquals "\"\"" process "GRP.HDR" "NU"
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: if "PORT.SEL" NotEquals "\"\"" process "PORT.HDR" "NU"
+    }
+
+    field "CHDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: if "CUST.SEL" NotEquals "\"\"" process "CUST.HDR" "NU"
+    }
+
+    field "IHDR3" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 2
+        }
+
+        operation: if "GRP.SEL" NotEquals "\"\"" process "GRP.SEL" "NU"
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 3
+        }
+
+        operation: if "PORT.SEL" NotEquals "\"\"" process "PORT.SEL" "NU"
+    }
+
+    field "CHDR3" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 4
+        }
+
+        operation: if "CUST.SEL" NotEquals "\"\"" process "CUST.SEL" "NU"
+    }
+
+    field "IHDR4" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 2
+        }
+
+        operation: if "GRP.SEL" NotEquals "\"\"" process "G.NAME" "NU"
+    }
+
+    field "HDR4" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 3
+        }
+
+        operation: if "PORT.SEL" NotEquals "\"\"" process "PO.NAME" "NU"
+    }
+
+    field "CHDR4" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 4
+        }
+
+        operation: if "CUST.SEL" NotEquals "\"\"" process "CU.NAME" "NU"
+    }
+
+    field "ID" {
+        length: 200
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+    }
+
+    field "TYPE" {
+        label {
+            en = "Type"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "START.TYPE" {
+        label {
+            en = "Relationships"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "TYPE"
+    }
+
+    field "PORTFOLIO.ID" {
+        label {
+            en = "Portfolio Id"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "GROUP.ID" {
+        label {
+            en = "Group Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "GROUP.DESCRIPTION" {
+        label {
+            en = "Group Description"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "GROUP.ID"
+        conversion: getFrom "CUSTOMER.REL.GROUP" "GROUP.NAME" false
+    }
+
+    field "GROUP.NAME" {
+        label {
+            en = "Group Name"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "RELATIONSHIP.ID" {
+        label {
+            en = "Relationship ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "SEL.REL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "RELATIONSHIP.ID"
+        conversion: repeat-when-null
+    }
+
+    field "RELATION.TYPE" {
+        label {
+            en = "Relation Type"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "SEL.PORT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PORTFOLIO.ID"
+        conversion: repeat-when-null
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "NAME.CUST" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NAME.ENT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "PERSON.ENTITY" "NAME" false
+    }
+
+    field "Name" {
+        label {
+            en = "Name"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: calc "NAME.CUST":"NAME.ENT"
+    }
+
+    field "ORIG.REL" {
+        label {
+            en = "Party Type"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "ROLE" {
+        label {
+            en = "Role"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "ROLE NAME" {
+        label {
+            en = "Role Description"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ROLE"
+        conversion: getFrom "EB.ROLE" "DESCRIPTION" false
+    }
+
+    field "RELATION" {
+        label {
+            en = "Relation"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "RELATION.DESCRIPTION" {
+        label {
+            en = "Relation Description"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Multi
+        operation: field-extract "RELATION"
+        conversion: getFrom "RELATION" "DESCRIPTION" false
+    }
+
+    field "PERCENT" {
+        label {
+            en = "Owning Percent"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 23
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "V1" {
+        label {
+            en = "."
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"PERSON.ENTITY,MB.P.INPUT S \""
+    }
+
+    field "V2" {
+        comma-separator: false
+        operation: constant "\"PERSON.ENTITY,MB.E.INPUT S \""
+    }
+
+    field "V3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"CUSTOMER,INPUT S \""
+    }
+
+    field "V4" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "ORIG.REL" Equals "\"ENTITY\"" process "V2" "V1"
+    }
+
+    field "DDOWN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "ORIG.REL" Equals "\"CUSTOMER\"" process "V3" "V4"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Relation"
+        }
+
+        label-field: "RELATION.TYPE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "SEL.REL"
+        }
+
+        screen: "CUSTOMER.RELATIONSHIP,MB.INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Portfolio"
+        }
+
+        label-field: "RELATION.TYPE"
+        image: "details.gif" parameters {
+            function:  See
+            field: "SEL.PORT"
+        }
+
+        screen: "SEC.ACC.MASTER,INP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Customer"
+        }
+
+        label-field: "CUSTOMER.NO"
+        image: "drill.gif" parameters {
+            field: "CUSTOMER.NO"
+        }
+
+        from-field: "DDOWN"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Portfolio Relationships"
+        }
+
+        label-field: "CUSTOMER.NO"
+        image: "records.gif"
+        criteria: "PORTFOLIO" Equals "PORTFOLIO.ID"
+        enquiry: "CUS.REL.CUSTOMER"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Customer Relationships"
+        }
+
+        label-field: "CUSTOMER.NO"
+        image: "edit3.gif"
+        criteria: "CUSTOMER" Equals "CUSTOMER.NO"
+        enquiry: "CUS.REL.CUSTOMER"
+    }
+
+    attributes: "ALLDATA"
+}

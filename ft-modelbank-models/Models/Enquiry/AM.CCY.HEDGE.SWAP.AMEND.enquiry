@@ -1,0 +1,285 @@
+Enquiry "AM.CCY.HEDGE.SWAP.AMEND" for "name:/AM_CurrencyHedging:AM.CCY.HEDGE.DETAIL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Cash Sweep Amendment"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "REQUIRE.RECALC" {
+        NotEquals "\'Yes\'"
+    }
+
+    fixed-selection "OPERATION.TYPE" {
+        Equals "\'Swap\'"
+    }
+
+    fixed-selection "ORDERED" {
+        NotEquals "\'Yes\'"
+    }
+
+    custom-selection {
+
+        field "SOURCE.ID" {
+            label {
+                en = "Source ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "HEDGE.PORTFOLIO" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "REF.CCY" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "REQUEST.ID" {
+        label {
+            en = "Sweep Request"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "REQUEST.ID"
+    }
+
+    field "HEDGE.CUSTOMER" {
+        label {
+            en = "Client "
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "HEDGE.CUSTOMER"
+    }
+
+    field "HEDGE.PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "HEDGE.PORTFOLIO"
+    }
+
+    field "REF.CCY" {
+        label {
+            en = "Portfolio Ref CCY"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REF.CCY"
+    }
+
+    field "EXPOSED.POSN" {
+        label {
+            en = "Exposed Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "REF.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPOSED.POSN"
+    }
+
+    field "EXPOSED.CASHBAL" {
+        label {
+            en = "Cash Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "REF.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPOSED.CASHBAL"
+    }
+
+    field "EXPOSED.TOTAL" {
+        label {
+            en = "Total Exposed Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "REF.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPOSED.TOTAL"
+    }
+
+    field "EXPOSURE.CCY" {
+        label {
+            en = "Exposure CCY"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPOSURE.CCY"
+    }
+
+    field "ACT.HEDGE.FCTR" {
+        label {
+            en = "Hedging Factor %"
+        }
+
+        display-type: "EDIT"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        column-width: 8
+        processing-mode: Single
+        operation: application-field-name "ACT.HEDGE.FCTR"
+    }
+
+    field "ACT.SPOT.RATE" {
+        label {
+            en = "Spot Rate"
+        }
+
+        display-type: "EDIT"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 10
+        }
+
+        column-width: 8
+        processing-mode: Single
+        operation: application-field-name "ACT.SPOT.RATE"
+    }
+
+    field "ACT.FWD.RATE" {
+        label {
+            en = "Forward Rate"
+        }
+
+        display-type: "EDIT"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 11
+        }
+
+        column-width: 8
+        processing-mode: Single
+        operation: application-field-name "ACT.FWD.RATE"
+    }
+
+    field "PROP.TRA.AMT" {
+        label {
+            en = "Amount to Hedge"
+        }
+
+        format: Currency "REF.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 12
+        }
+
+        column-width: 8
+        processing-mode: Single
+        operation: application-field-name "PROP.TRA.AMT"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Commit"
+        }
+
+        label-field: "REQUEST.ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        application: "AM.CCY.HEDGE.DETAIL"
+    }
+
+    attributes: "FASTPATH"
+}

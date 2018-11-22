@@ -1,0 +1,238 @@
+Enquiry "TAP.EB.CONTRACT.BALANCES" for "name:/RE_ConBalanceUpdates:EB.CONTRACT.BALANCES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Tap Eb Contract Balances"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "APPLICATION" {
+        Equals "\'ACCOUNT\'"
+    }
+
+    fixed-selection "ONLINE.ACTUAL.BAL" {
+        NotEquals "NULL"
+    }
+
+    field "TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Type5\""
+    }
+
+    field "@ID" {
+        label {
+            en = "@id"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ARRANGEMENT.ID.WP" {
+        label {
+            en = "Arrangement Id w/o postfix"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "ACCOUNT" "ARRANGEMENT.ID" false
+    }
+
+    field "COMPANY" {
+        label {
+            en = "Company mnemo of EBCB company"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CO.CODE"
+        conversion: getFrom "COMPANY" "MNEMONIC" false
+    }
+
+    field "ARRANGEMENT.ID.POSTF" {
+        label {
+            en = "Arrang. ID with postfix"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        operation: calc "ARRANGEMENT.ID.WP":"\"_\"":"COMPANY"
+    }
+
+    field "ARRANGEMENT.PRODUCT.LINE" {
+        label {
+            en = "Arrang. Product Line"
+        }
+
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        operation: field-extract "ARRANGEMENT.ID.WP"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ARRANGEMENT.ARR.STATUS" {
+        label {
+            en = "Arrang. Arr. Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        operation: field-extract "ARRANGEMENT.ID.WP"
+        conversion: getFrom "AA.ARRANGEMENT" "ARR.STATUS" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: field-extract "ARRANGEMENT.ID.WP"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "PORTFOLIO.ID" {
+        label {
+            en = "Portfolio Id"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 115
+        }
+
+        processing-mode: Single
+        operation: field-extract "ARRANGEMENT.ID.WP"
+        conversion: call
+        jBC: "@ TAP.GET.PORTFOLIO.FROM.ARRANGEMENT"
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        length: 55
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 170
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ TAP.EB.GET.BALANCE"
+    }
+
+    field "ACC.PORT" {
+        label {
+            en = "Account Portfolio"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 190
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "ACCOUNT" "PORTFOLIO.NO" false
+    }
+
+    field "MEMO.ACCOUNT" {
+        label {
+            en = "Memo Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 245
+        }
+
+        operation: field-extract "PORTFOLIO.ID"
+        conversion: getFrom "SEC.ACC.MASTER" "MEMO.ACCOUNT" false
+    }
+
+    field "DEALER.BOOK" {
+        label {
+            en = "Dealer Book"
+        }
+
+        comments: "?"
+        comma-separator: false
+        position {
+            column: 250
+        }
+
+        operation: field-extract "PORTFOLIO.ID"
+        conversion: getFrom "SEC.ACC.MASTER" "DEALER.BOOK" false
+    }
+
+    field "CUSTOMER.TYPE" {
+        label {
+            en = "Customer Type"
+        }
+
+        length: 80
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 270
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER.SECURITY" "CUSTOMER.TYPE" false
+    }
+
+}

@@ -1,0 +1,195 @@
+Enquiry "ARR.BY.PERIOD" for "name:/AA_ModelBank:NOFILE.ACCT.BALANCE.MVMT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Arrangement By Period"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ENQ.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            label {
+                en = "Arrangement Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BALANCE.TYPE" {
+            mandatory: true
+            label {
+                en = "Balance Type"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "START.YEAR.MONTH" {
+            label {
+                en = "Start Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "END.YEAR.MONTH" {
+            label {
+                en = "End Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ENQUIRYHEAD" {
+        display-type: "CLASS-TITLE"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Balance by Period\""
+    }
+
+    field "ACTIVITY.MVMT" {
+        label {
+            en = "Arrangement Number"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "ENQ.DATA" {
+        label {
+            en = "Activity Data"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+    }
+
+    field "F.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "F.CREDIT" {
+        label {
+            en = "Credit Turnover"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "F.DEB" {
+        label {
+            en = "Debit Turnover"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "F.DEBIT" {
+        label {
+            en = "Debit Turnover"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "F.DEBIT" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Single
+        operation: field-extract "F.DEB"
+    }
+
+    field "F.BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records for this selection\""
+    }
+
+}

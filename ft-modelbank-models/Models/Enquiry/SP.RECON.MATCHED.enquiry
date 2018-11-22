@@ -1,0 +1,222 @@
+Enquiry "SP.RECON.MATCHED" for "name:/SP_Foundation:SP.RECONCILIATION#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Reconciled Trades"
+    }
+
+    description {
+        en = "Reconciled Trades"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5 fixed-selection "CANCEL.TRADES" {
+        NotEquals "\"YES\""
+    }
+
+    fixed-selection "CONF.STATUS" {
+        Equals "MATCHED"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Recon Key"
+            }
+
+        }
+
+        AND
+
+        field "BROKER.NO" {
+            label {
+                en = "Broker"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Recon Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Reconciled Trades\""
+    }
+
+    field "BROKER.NO" {
+        label {
+            en = "Broker No"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BROKER.NO"
+    }
+
+    field "SECURITY" {
+        label {
+            en = "Security No"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "CONF.REF" {
+        label {
+            en = "MT515 Ref"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONF.REF"
+    }
+
+    field "CONF.AMOUNT" {
+        label {
+            en = "Conf Amount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONF.AMOUNT"
+    }
+
+    field "CONF.NOMINAL" {
+        label {
+            en = "Conf Nominal"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONF.NOMINAL"
+    }
+
+    field "STATUS.NARR" {
+        label {
+            en = "Status Narr"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS.NARR"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No reconciled trades found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Recon"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SP.RECONCILIATION,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "CONF.REF"
+        image: "details.gif"
+        criteria: "KEY" Equals "CONF.REF"
+        enquiry: "INCOMING.MSG.DETS"
+    }
+
+}

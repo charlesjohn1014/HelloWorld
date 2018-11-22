@@ -1,0 +1,615 @@
+Enquiry "ACC.CURRENT.INT" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Interest Rate Changes"
+    }
+
+    description {
+        en = "Interest Rate Changes"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 9
+    end-line: 30
+    custom-selection {
+
+        field "ACCOUNT.NUMBER" {
+            mandatory: true
+            label {
+                en = "Account"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            mandatory: true
+            label {
+                en = "Start Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "END.DATE" {
+            mandatory: true
+            label {
+                en = "End Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "DISP.TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 28
+            line: 0
+        }
+
+        operation: constant "\"Interest Rate Changes\""
+    }
+
+    field "DISP.AC" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Account Number:\""
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 2
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "DISP.AC.NAME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 37
+            line: 2
+        }
+
+        operation: constant "\"Account Name : \""
+    }
+
+    field "DISP.PERIOD" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Period:\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Account Number:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 16
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "AC.NAME" {
+        label {
+            en = "Customer :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 49
+            line: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Period:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: selection "START.DATE"
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "DASH" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 3
+        }
+
+        operation: constant "\"-\""
+    }
+
+    field "END.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 37
+            line: 3
+        }
+
+        processing-mode: Multi
+        operation: selection "END.DATE"
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "ACC.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        processing-mode: Single
+        operation: constant "\"Account Opening Date:\""
+    }
+
+    field "ACC.OPENNING.DATE" {
+        label {
+            en = "Account Opening Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPENING.DATE"
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "RATES.DESC" {
+        comments: "I-Desc field RATES.DESC has Handled in Conversion rtn"
+        format: User
+        length: 52
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.RATES.DESC"
+    }
+
+    field "DESC" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "RATES.DESC"
+    }
+
+    field "MB.BASIC.RATES" {
+        format: User
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.IC.CR.BASIC"
+    }
+
+    field "MB.DISP.BASIC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 400
+        conversion: call
+        jBC: "@ E.MB.IC.DISP.BLANK"
+    }
+
+    field "MB.CR.BASIC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "MB.DISP.BASIC"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "MB.DISP.BAS" {
+        label {
+            en = "Rate Cr"
+        }
+
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        processing-mode: Multi
+        operation: if "MB.CR.BASIC" Equals "0000000" process "NULL" "MB.CR.BASIC"
+    }
+
+    field "MB.MARGIN.RATES" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.IC.CR.MARGIN"
+    }
+
+    field "MB.MAR.OPER" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 401
+    }
+
+    field "MB.MAR.OPERATOR" {
+        label {
+            en = "#"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "MB.MAR.OPER"
+        conversion: call
+        jBC: "@ E.MB.IC.MARGIN.OPER.DISP"
+    }
+
+    field "MB.MARG.RATE" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "MB.MAR.OPER"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: extract from 1 to 1 delimited by "-"
+        conversion: extract from 1 to 1 delimited by "+"
+    }
+
+    field "MB.MAR.DISP" {
+        label {
+            en = "Spread(Cr)"
+        }
+
+        comma-separator: false
+        position {
+            column: 57
+        }
+
+        processing-mode: Multi
+        operation: calc "MB.MAR.OPERATOR":"MB.MARG.RATE"
+        conversion: call
+        jBC: "@ E.MB.IC.DISP.BLANK"
+    }
+
+    field "RATES.CR" {
+        label {
+            en = "Total(Cr)"
+        }
+
+        comments: "I-Desc field RATES.CR has been Hand led via conversion RTN"
+        format: User
+        length: 60
+        alignment: Left
+        comma-separator: true
+        decimals: 6
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.RATES.CR"
+    }
+
+    field "MB.RATES.TOTAL" {
+        label {
+            en = "Total(Cr)"
+        }
+
+        format: User
+        length: 13
+        alignment: Left
+        comma-separator: true
+        decimals: 6
+        processing-mode: Multi
+        operation: field-extract "RATES.CR"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "MB.RATES.DESC" {
+        label {
+            en = "Total Desc(Cr)"
+        }
+
+        length: 50
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "RATES.CR"
+        conversion: extract from 2 to 1 delimited by "%"
+    }
+
+    field "MB.BAS.RATE.DR" {
+        label {
+            en = "Rate Dr"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.IC.DEB.BASIC"
+    }
+
+    field "MB.BAS.DR" {
+        label {
+            en = "Rate(Dr)"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 402
+        conversion: call
+        jBC: "@ E.MB.IC.DISP.BLANK"
+    }
+
+    field "MB.DR.FINAL.BS" {
+        label {
+            en = "Rate(Dr)"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 66
+        }
+
+        processing-mode: Multi
+        operation: if "MB.BAS.DR" Equals "0000000" process "NULL" "MB.BAS.DR"
+    }
+
+    field "MB.MAR.RATE.DR" {
+        format: User
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.IC.DEB.MARGIN"
+    }
+
+    field "MB.MARG.DR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 403
+    }
+
+    field "MB.MAR.OPERATOR.DR" {
+        format: User
+        length: 13
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "MB.MARG.DR"
+        conversion: call
+        jBC: "@ E.MB.IC.MARGIN.OPER.DISP"
+    }
+
+    field "MB.MARGIN.DR" {
+        label {
+            en = "Spread(Dr)"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "MB.MARG.DR"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: extract from 1 to 1 delimited by "+"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "MB.MAR.DR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "MB.MARGIN.DR" Equals "000000" process "NULL" "MB.MARGIN.DR"
+    }
+
+    field "MB.MAR.FINAL.DR" {
+        label {
+            en = "Spread(Dr)"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: calc "MB.MAR.OPERATOR.DR":"MB.MAR.DR"
+        conversion: call
+        jBC: "@ E.MB.IC.DISP.BLANK"
+    }
+
+    field "RATES.DR" {
+        label {
+            en = "Total(Dr)"
+        }
+
+        comments: "I-Desc field RATES.DR handled via C onversion RTN"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.RATES.DR"
+    }
+
+    field "MB.RATES.DR" {
+        label {
+            en = "Total(Dr)"
+        }
+
+        format: User
+        length: 13
+        alignment: Left
+        comma-separator: true
+        decimals: 6
+        processing-mode: Multi
+        operation: field-extract "RATES.DR"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "MB.RATE.DESC" {
+        label {
+            en = "Total Desc(Dr)"
+        }
+
+        format: User
+        length: 50
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "RATES.DR"
+        conversion: extract from 2 to 1 delimited by "%"
+    }
+
+    field "B.ID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Multi
+        operation: break-change "@ID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Account not found\""
+    }
+
+}

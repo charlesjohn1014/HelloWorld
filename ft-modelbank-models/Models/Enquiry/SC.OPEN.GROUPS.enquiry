@@ -1,0 +1,156 @@
+Enquiry "SC.OPEN.GROUPS" for "name:/SC_SctOrderGrouping:SC.GROUP.ORDERS$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Closed Order Groups"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5 fixed-selection "GROUP.ORDER" {
+        Equals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Group Id"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Open Groups\""
+    }
+
+    field "ORDER.NUMBER" {
+        label {
+            en = "Orders"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ORDER.NUMBER"
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Security No"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "ORDER.NUMBER"
+        conversion: getFrom "SEC.OPEN.ORDER" "SECURITY.NO" false
+    }
+
+    field "TRANS.CODE" {
+        label {
+            en = "Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "ORDER.NUMBER"
+        conversion: getFrom "SEC.OPEN.ORDER" "TRANSACTION.CODE" false
+    }
+
+    field "DEPO" {
+        label {
+            en = "Depository"
+        }
+
+        comma-separator: false
+        operation: field-extract "ORDER.NUMBER"
+        conversion: getFrom "SEC.OPEN.ORDER" "DEPOSITORY" false
+    }
+
+    field "ORD.TYPE" {
+        label {
+            en = "Order Type"
+        }
+
+        comma-separator: false
+        operation: field-extract "ORDER.NUMBER"
+        conversion: getFrom "SEC.OPEN.ORDER" "ORDER.TYPE" false
+    }
+
+    field "NORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Open Groups\""
+    }
+
+    tool ENQ.NEW {
+        label {
+            en = "New Group"
+        }
+
+        command: "docommand(\"SC.GROUP.ORDERS,INP\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit Group"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SC.GROUP.ORDERS,MAN"
+    }
+
+}

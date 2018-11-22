@@ -1,0 +1,733 @@
+Enquiry "AA.DETAILS.ACCOUNT.DATES" for "name:/AA_PaymentSchedule:AA.ACCOUNT.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Key Arrangement Dates"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 90
+        operation: constant "\"Account Dates\""
+    }
+
+    field "ARR.ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "LIV.PROD.LINE" {
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "SIM.PROD.LINE" {
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT$SIM" "PRODUCT.LINE" false
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        display-section: Header
+        operation: if "SIM.PROD.LINE" Equals "\"\"" process "LIV.PROD.LINE" "SIM.PROD.LINE"
+    }
+
+    field "FILE.VERSION" {
+        display-type: "CLASS-BOLD.ITALIC"
+        comma-separator: false
+        display-section: Header
+        operation: application-field-name "!FILE.VERSION"
+        conversion: replace {
+            oldData: "LIV"
+        }
+
+        conversion: replace {
+            oldData: "SIM"
+            newData: "Simulated"
+        }
+
+    }
+
+    field "SYSTEM.DATE" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "SIM.REF" {
+        comma-separator: false
+        operation: selection "SIMULATION.REF"
+    }
+
+    field "SIM.END.DATE" {
+        comma-separator: false
+        operation: field-extract "SIM.REF"
+        conversion: getFrom "AA.SIMULATION.RUNNER" "SIM.END.DATE" false
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: if "SIM.REF" Equals "\"\"" process "SYSTEM.DATE" "SIM.END.DATE"
+    }
+
+    field "LAST.RENEW.DATE" {
+        format: Date
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.GET.LAST.RENEW.DATE"
+    }
+
+    field "START.DATE" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "C.START.DATE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Start Date\""
+    }
+
+    field "L.START.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        operation: if "LAST.RENEW.DATE" Equals "\"\"" process "C.START.DATE" "\"\""
+    }
+
+    field "L.START.DATE.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 90
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "L.START.DATE"
+    }
+
+    field "D.START.DATE" {
+        format: Date
+        comma-separator: false
+        operation: if "LAST.RENEW.DATE" Equals "\"\"" process "START.DATE" "\"\""
+    }
+
+    field "D.START.DATE.CHK" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 150
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "D.START.DATE"
+    }
+
+    field "C.LAST.RENEWAL" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Last Renewal\""
+    }
+
+    field "L.LAST.RENEWAL" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        operation: if "LAST.RENEW.DATE" NotEquals "\"\"" process "C.LAST.RENEWAL" "\"\""
+    }
+
+    field "L.LAST.RENEWAL.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 90
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "L.LAST.RENEWAL"
+    }
+
+    field "D.LAST.RENEWAL" {
+        format: Date
+        comma-separator: false
+        operation: if "LAST.RENEW.DATE" NotEquals "\"\"" process "LAST.RENEW.DATE" "\"\""
+    }
+
+    field "D.LAST.RENEWAL.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Date
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 150
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "D.LAST.RENEWAL"
+    }
+
+    field "C.COOLING.DATE" {
+        comma-separator: false
+        operation: constant "\"Cooling Date\""
+    }
+
+    field "COOLING.DATE1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COOLING.DATE"
+    }
+
+    field "COOLING.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "COOLING.DATE1" LessThan "TODAY" process "\"\"" "COOLING.DATE1"
+    }
+
+    field "L.COOLING.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        operation: if "COOLING.DATE" NotEquals "\"\"" process "C.COOLING.DATE" "\"\""
+    }
+
+    field "L.COOLING.DATE.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+            line: + 3
+        }
+
+        column-width: 90
+        operation: if "START.DATE" NotEquals "\"\"" process "L.COOLING.DATE" "\"\""
+    }
+
+    field "D.COOLING.DATE" {
+        format: Date
+        comma-separator: false
+        operation: if "COOLING.DATE" NotEquals "\"\"" process "COOLING.DATE" "\"\""
+    }
+
+    field "D.COOLING.DATE.CHK" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 20
+            line: + 3
+        }
+
+        column-width: 150
+        operation: if "START.DATE" NotEquals "\"\"" process "D.COOLING.DATE" "\"\""
+    }
+
+    field "PRODUCT.ID" {
+        comma-separator: false
+        operation: calc "ARR.ID":"\"%\"":"SIM.REF"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.PRODUCT"
+    }
+
+    field "ACCOUNT.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+    }
+
+    field "ACCOUNT.SIM.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "AA.ARRANGEMENT$SIM" "LINKED.APPL.ID" false
+    }
+
+    field "ACCT.ID" {
+        comma-separator: false
+        operation: if "ACCOUNT.ID" Equals "\"\"" process "ACCOUNT.SIM.ID" "ACCOUNT.ID"
+    }
+
+    field "CHK.BALANCE" {
+        comma-separator: false
+        operation: calc "ACCT.ID":"\"*\"":"PRODUCT.ID":"\"*\"":"SIM.REF"
+        conversion: call
+        jBC: "@ E.AA.CHK.PARTIAL.PAYMENT"
+    }
+
+    field "C.CANCEL.DATE" {
+        comma-separator: false
+        operation: constant "\"Cancel Date\""
+    }
+
+    field "CANCEL.DATE1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CANCEL.DATE"
+    }
+
+    field "CANCEL.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "CANCEL.DATE1" LessThan "TODAY" process "\"\"" "CANCEL.DATE1"
+    }
+
+    field "L.BASE.DATE" {
+        comma-separator: false
+        operation: constant "\"Effective Date\""
+    }
+
+    field "L.CANCEL.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        operation: if "CANCEL.DATE" NotEquals "\"\"" process "C.CANCEL.DATE" "L.BASE.DATE"
+    }
+
+    field "L.CHK.PAR.PAY" {
+        comma-separator: false
+        operation: if "CHK.BALANCE" LessThan "0" process "L.CANCEL.DATE" "\"\""
+    }
+
+    field "L.CANCEL.DATE.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+            line: + 4
+        }
+
+        column-width: 90
+        operation: if "START.DATE" Equals "\"\"" process "L.CANCEL.DATE" "L.CHK.PAR.PAY"
+    }
+
+    field "BASE.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BASE.DATE"
+    }
+
+    field "D.CANCEL.DATE" {
+        format: Date
+        comma-separator: false
+        operation: if "CANCEL.DATE" NotEquals "\"\"" process "CANCEL.DATE" "BASE.DATE"
+    }
+
+    field "D.CHK.PAR.PAY" {
+        comma-separator: false
+        operation: if "CHK.BALANCE" LessThan "0" process "D.CANCEL.DATE" "\"\""
+    }
+
+    field "D.CANCEL.DATE.CHK" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 20
+            line: + 4
+        }
+
+        column-width: 150
+        operation: if "START.DATE" Equals "\"\"" process "D.CANCEL.DATE" "D.CHK.PAR.PAY"
+    }
+
+    field "C.NEXT.PAY.DATE" {
+        comma-separator: false
+        operation: constant "\"Next Payment\""
+    }
+
+    field "NEXT.PAY.DATE1" {
+        comma-separator: false
+        operation: constant "\"DATE\""
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.NEXT.PAYMENT"
+    }
+
+    field "NEXT.PAY.DATE" {
+        comma-separator: false
+        operation: field-extract "NEXT.PAY.DATE1"
+    }
+
+    field "L.NEXT.PAY.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        operation: if "NEXT.PAY.DATE" NotEquals "\"\"" process "C.NEXT.PAY.DATE" "\"\""
+    }
+
+    field "L.NEXT.PAY.DATE.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 5
+        }
+
+        column-width: 90
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "L.NEXT.PAY.DATE"
+    }
+
+    field "D.NEXT.PAY.DATE" {
+        display-type: "CLASS-BOLD"
+        format: Date
+        comma-separator: false
+        operation: if "NEXT.PAY.DATE" NotEquals "\"\"" process "NEXT.PAY.DATE" "\"\""
+    }
+
+    field "D.NEXT.PAY.DATE.CHK" {
+        display-type: "CLASS-BOLD"
+        format: Date
+        comma-separator: false
+        position {
+            column: 20
+            line: + 5
+        }
+
+        column-width: 150
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "D.NEXT.PAY.DATE"
+    }
+
+    field "RENEWAL.CHK" {
+        comma-separator: false
+        operation: calc "ARR.ID":"\"-\"":"\"RENEWAL\"":"\"-\"":"\"ARRANGEMENT\""
+        conversion: call
+        jBC: "@ E.GET.CHANGE.PRODUCT"
+    }
+
+    field "R.TYPE" {
+        comma-separator: false
+        operation: field-extract "RENEWAL.CHK"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "R.ACTIVITY" {
+        comma-separator: false
+        operation: field-extract "RENEWAL.CHK"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "C.RENEWAL.DATE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Renewal Date\""
+    }
+
+    field "C.MANUAL.DATE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Manual Renewal\""
+    }
+
+    field "C.ROLLOVER" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Rollover\""
+    }
+
+    field "RESET" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Reset Product\""
+    }
+
+    field "CHANGE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Change Product\""
+    }
+
+    field "ACTIVITY.CHK1" {
+        comma-separator: false
+        operation: if "R.ACTIVITY" Equals "\"RESET\"" process "RESET"
+    }
+
+    field "ACTIVITY.CHK" {
+        comma-separator: false
+        operation: if "R.ACTIVITY" Equals "\"ROLLOVER\"" process "C.ROLLOVER" "ACTIVITY.CHK1"
+    }
+
+    field "ACTIVITY.CHK2" {
+        comma-separator: false
+        operation: if "R.ACTIVITY" Equals "\"CHANGE.PRODUCT\"" process "CHANGE" "ACTIVITY.CHK"
+    }
+
+    field "ACTIVITY.CHK3" {
+        comma-separator: false
+        operation: if "R.ACTIVITY" Equals "\"RENEWAL\"" process "C.RENEWAL.DATE" "ACTIVITY.CHK2"
+    }
+
+    field "R.CHK" {
+        comma-separator: false
+        operation: if "R.TYPE" Equals "\"MANUAL\"" process "C.MANUAL.DATE" "ACTIVITY.CHK3"
+    }
+
+    field "RENEWAL.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "RENEWAL.DATE"
+    }
+
+    field "L.RENEWAL.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        operation: if "RENEWAL.DATE" NotEquals "\"\"" process "R.CHK" "\"\""
+    }
+
+    field "L.RENEWAL.DATE.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 6
+        }
+
+        column-width: 90
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "L.RENEWAL.DATE"
+    }
+
+    field "D.RENEWAL.DATE" {
+        format: Date
+        comma-separator: false
+        operation: field-extract "RENEWAL.DATE"
+    }
+
+    field "D.RENEWAL.DATE.CHK" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 20
+            line: + 6
+        }
+
+        column-width: 150
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "D.RENEWAL.DATE"
+    }
+
+    field "C.RENEWS.IN" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"renews in\""
+    }
+
+    field "C.CHANGES.IN" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Changes in\""
+    }
+
+    field "C.RESET.IN" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"resets in\""
+    }
+
+    field "C.RENEWS.IN2" {
+        comma-separator: false
+        operation: if "R.ACTIVITY" Equals "\"CHANGE.PRODUCT\"" process "C.CHANGES.IN" "C.RENEWS.IN"
+    }
+
+    field "C.RENEWS.IN1" {
+        comma-separator: false
+        operation: if "R.ACTIVITY" Equals "\"RESET.PRODUCT\"" process "C.RESET.IN" "C.RENEWS.IN2"
+    }
+
+    field "ROLL" {
+        comma-separator: false
+        operation: constant "\"rolls over in\""
+    }
+
+    field "C.RENEW" {
+        comma-separator: false
+        operation: if "R.ACTIVITY" Equals "\"ROLLOVER\"" process "ROLL" "C.RENEWS.IN1"
+    }
+
+    field "C.RENEWS" {
+        comma-separator: false
+        operation: if "R.TYPE" Equals "\"MANUAL\"" process "C.RENEWS.IN" "C.RENEW"
+    }
+
+    field "L.RENEWS.IN" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: if "RENEWAL.DATE" NotEquals "\"\"" process "C.RENEWS" "\"\""
+    }
+
+    field "L.RENEWS.IN.CHK" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+            line: + 7
+        }
+
+        column-width: 90
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "L.RENEWS.IN"
+    }
+
+    field "REMAINING.RENEWAL" {
+        comma-separator: false
+        operation: field-extract "RENEWAL.DATE"
+        conversion: call
+        jBC: "@ E.MAT.DATE.ENRICHMENT"
+    }
+
+    field "REMAINING.RENEWAL.CHK" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 7
+        }
+
+        column-width: 150
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "REMAINING.RENEWAL"
+    }
+
+    field "C.MAT.DATE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Maturity Date\""
+    }
+
+    field "MATURITY.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "L.MAT.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        operation: if "MATURITY.DATE" NotEquals "\"\"" process "C.MAT.DATE" "\"\""
+    }
+
+    field "L.MAT.DATE.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 8
+        }
+
+        column-width: 90
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "L.MAT.DATE"
+    }
+
+    field "D.MATURITY.DATE" {
+        format: Date
+        comma-separator: false
+        operation: field-extract "MATURITY.DATE"
+    }
+
+    field "D.MATURITY.DATE.CHK" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 20
+            line: + 8
+        }
+
+        column-width: 150
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "D.MATURITY.DATE"
+    }
+
+    field "C.MATURES.IN" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"matures in\""
+    }
+
+    field "L.MATURES.IN" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: if "MATURITY.DATE" NotEquals "\"\"" process "C.MATURES.IN" "\"\""
+    }
+
+    field "L.MATURES.IN.CHK" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+            line: + 9
+        }
+
+        column-width: 90
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "L.MATURES.IN"
+    }
+
+    field "REMAINING.MAT" {
+        comma-separator: false
+        operation: field-extract "MATURITY.DATE"
+        conversion: call
+        jBC: "@ E.MAT.DATE.ENRICHMENT"
+    }
+
+    field "REMAINING.MAT.CHK" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 9
+        }
+
+        column-width: 150
+        operation: if "START.DATE" Equals "\"\"" process "\"\"" "REMAINING.MAT"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 90
+        operation: constant "\"No Account Details Available\""
+    }
+
+    security {
+        abort: false
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

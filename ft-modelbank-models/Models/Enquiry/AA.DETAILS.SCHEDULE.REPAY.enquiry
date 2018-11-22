@@ -1,0 +1,607 @@
+Enquiry "AA.DETAILS.SCHEDULE.REPAY" for "name:/AA_PaymentSchedule:AA.BILL.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Recent Repayments"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    full-description {
+        en = "Repayment Schedule"
+    }
+
+    description {
+        en = "Repayment Schedule"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5
+    fixed-sort: "PAYMENT.DATE" Descending
+
+    field "@ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ARRANGEMENT.ID" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Recent Repayments\""
+    }
+
+    field "BILL.REFERENCE" {
+        label {
+            en = "Bill Reference"
+        }
+
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "B.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "BILL.REFERENCE"
+        conversion: getFrom "AA.BILL.DETAILS" "PAYMENT.DATE" false
+    }
+
+    field "PAYMENT.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.DATE"
+    }
+
+    field "BILL.DATE" {
+        label {
+            en = "Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: if "PAYMENT.DATE" NotEquals "\"" process "\"" "PAYMENT.DATE"
+    }
+
+    field "REPA.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PAYMENT.DATE"
+    }
+
+    field "BILL.TYPE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BILL.TYPE"
+    }
+
+    field "REPAY.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "PAYMENT.DATE"
+    }
+
+    field "SIM.REF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "SIMULATION.REF"
+    }
+
+    field "ARR.SIMREF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "ARRANGEMENT.ID":"\"*\"":"SIM.REF"
+    }
+
+    field "REPAY.AMOUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "ARR.SIMREF":"\"*\"":"REPAY.DATE"
+        conversion: call
+        jBC: "@ E.MB.LOAN.BILL.STATUS"
+    }
+
+    field "D.TYPE" {
+        label {
+            en = "Payment Type"
+        }
+
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.TYPE"
+        conversion: replace {
+            oldData: "ACT.CHARGE"
+            newData: "Activity Charge"
+        }
+
+        conversion: replace {
+            oldData: "PAYMENT"
+            newData: "Scheduled Payment"
+        }
+
+        conversion: replace {
+            oldData: "PR.CHARGE"
+            newData: "Break Rule Charge"
+        }
+
+        conversion: replace {
+            oldData: "PAYOFF"
+            newData: "Payoff"
+        }
+
+    }
+
+    field "CAPITAL" {
+        label {
+            en = "Capital"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 2
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: field-extract "REPAY.AMOUNT"
+        conversion: extract from 3 to 1 delimited by "*"
+        conversion: abs
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: field-extract "ARRANGEMENT.ID"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "BILL.DETAILS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "BILL.REFERENCE"
+        conversion: call
+        jBC: "@ E.AA.GET.BILL.DETAILS"
+    }
+
+    field "NO.TRANS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"No Transaction\""
+    }
+
+    field "OR.TOTAL.AMOUNT" {
+        label {
+            en = "Repayment Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Single
+        operation: field-extract "BILL.DETAILS"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TOTAL.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: if "OR.TOTAL.AMOUNT" Equals "\"0\"" process "NO.TRANS" "OR.TOTAL.AMOUNT"
+    }
+
+    field "REPAYMENT" {
+        label {
+            en = "Principal"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: field-extract "REPAY.AMOUNT"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "INTEREST" {
+        label {
+            en = "Interest"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: field-extract "REPAY.AMOUNT"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PAY.TYPE" {
+        label {
+            en = "Payment Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        column-width: 150
+        processing-mode: Single
+        operation: field-extract "D.TYPE"
+    }
+
+    field "OS.TOTAL.AMOUNT" {
+        label {
+            en = "Outstanding"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.DETAILS"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BILL.STATUS" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BILL.STATUS"
+        conversion: oconv "MCT"
+    }
+
+    field "BILL.STAT.DATE" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.DETAILS"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "AGING.STATUS" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AGING.STATUS"
+    }
+
+    field "AGE.STATUS.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "\"AA.OVERDUE.STATUS*\"":"AGING.STATUS"
+    }
+
+    field "D.AGE.STATUS" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "AGE.STATUS.ID"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "AGE.ST.CHG.DT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.DETAILS"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: if "D.AGE.STATUS" NotEquals "\"\"" process "D.AGE.STATUS" "BILL.STATUS"
+        conversion: replace {
+            oldData: "Settled"
+            newData: "Paid"
+        }
+
+    }
+
+    field "TYPE.STATUS" {
+        label {
+            en = "Result"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "D.TYPE":"\"*\"":"STATUS"
+    }
+
+    field "TY.STATUS" {
+        label {
+            en = "Result"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Scheduled Payment*Settled\""
+    }
+
+    field "R.PAY.DATE" {
+        label {
+            en = "Date"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TYPE.STATUS" Equals "TY.STATUS" process "PAYMENT.DATE" "NULL"
+    }
+
+    field "R.CAPITAL" {
+        label {
+            en = "Capital"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TYPE.STATUS" Equals "TY.STATUS" process "CAPITAL" "NULL"
+    }
+
+    field "R.CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TYPE.STATUS" Equals "TY.STATUS" process "CURRENCY" "NULL"
+    }
+
+    field "R.REPAY.AMOUNT" {
+        label {
+            en = "Repayment Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TYPE.STATUS" Equals "TY.STATUS" process "REPAYMENT" "NULL"
+    }
+
+    field "R.INT.AMOUNT" {
+        label {
+            en = "Interest Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TYPE.STATUS" Equals "TY.STATUS" process "INTEREST" "NULL"
+    }
+
+    field "R.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TYPE.STATUS" Equals "TY.STATUS" process "STATUS" "NULL"
+    }
+
+    field "STATUS.DATE" {
+        label {
+            en = "Status Date"
+        }
+
+        format: Date
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "AGING.STATUS" NotEquals "\"\"" process "AGE.ST.CHG.DT" "BILL.STAT.DATE"
+    }
+
+    field "BILL.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.REFERENCE"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "V.BILL1" {
+        comma-separator: false
+        operation: constant "\"AA.BILL.DETAILS,AA S \""
+    }
+
+    field "V.BILL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "V.BILL1":"BILL.REFERENCE"
+    }
+
+    field "C.PAYOFF.SIM" {
+        comma-separator: false
+        operation: constant "\"COS AA.PAYOFF.STATEMENT.SIM \""
+    }
+
+    field "C.PAYOFF.LIV" {
+        comma-separator: false
+        operation: constant "\"COS AA.PAYOFF.STATEMENT \""
+    }
+
+    field "FV" {
+        comma-separator: false
+        operation: selection "FILE.VERSION"
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "C.PAYOFF2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SIM.REF" Equals "NULL" process "C.PAYOFF.LIV" "C.PAYOFF.SIM"
+    }
+
+    field "C.SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "C.PAYOFF1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "C.PAYOFF2":"BILL.REFERENCE":"C.SP"
+    }
+
+    field "C.PAYOFF" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "C.PAYOFF1":"FV":"C.SP":"SIM.REF"
+    }
+
+    field "BILL.DRILLDOWN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "BILL.TYPE" Equals "\"PAYOFF\"" process "C.PAYOFF" "V.BILL"
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: constant "\"No recent repayments available to display\""
+    }
+
+    field "ZERO.RECORD.HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Recent Repayments\""
+    }
+
+    toolbar: "ARC.DOWNLOAD"
+    fileVersion: Live, Simulation
+    attributes: "NO.BREADCRUMBS" ; "UNDERLINE.HEADER.ROW"
+}

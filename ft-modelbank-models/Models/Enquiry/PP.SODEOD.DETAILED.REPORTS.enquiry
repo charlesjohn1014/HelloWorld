@@ -1,0 +1,137 @@
+Enquiry "PP.SODEOD.DETAILED.REPORTS" for "name:/:NOFILE.SODEOD.DETAILED.REPORTS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "SOD/EOD Detailed View Report"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "REPORT.LIST" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            mandatory: true
+            label {
+                en = "Company"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ID" {
+            mandatory: true
+            label {
+                en = "SODEOD Report Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Report ID:\""
+    }
+
+    field "REPORT.ID" {
+        label {
+            en = "Report ID"
+        }
+
+        display-type: "CLASS-ENQ.H.ID"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: selection "ID"
+    }
+
+    field "REPORT" {
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "Date" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        no-header: true
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "Start Time" {
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        no-header: true
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+        conversion: call
+        jBC: "@ PP.ENQ.GET.DATE.TIMES"
+    }
+
+    field "End Time" {
+        format: Translate
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        no-header: true
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+        conversion: call
+        jBC: "@ PP.ENQ.GET.DATE.TIMES"
+    }
+
+    field "JobStatus" {
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        no-header: true
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

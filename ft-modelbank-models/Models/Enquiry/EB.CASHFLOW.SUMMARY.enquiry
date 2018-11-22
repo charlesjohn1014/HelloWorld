@@ -1,0 +1,206 @@
+Enquiry "EB.CASHFLOW.SUMMARY" for "name:/IA_ModelBank:NOFILE.CASHFLOW.SUMMARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Cashflow Summary"
+    }
+
+    start-line: 4
+    end-line: 30 fixed-selection "ENQUIRY.DATA" {
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE.HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Cashflow Summary for Contracts\""
+    }
+
+    field "TRANS.REF" {
+        label {
+            en = "Transantion Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "IAS.CLASSIFICATION" {
+        label {
+            en = "IAS Classification"
+        }
+
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "IMPAIR.STATUS" {
+        label {
+            en = "Impair Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 115
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FUNC" {
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: field-extract "TRANS.REF"
+    }
+
+    field "APP.DEC" {
+        comma-separator: false
+        operation: field-extract "TRANS.REF"
+        conversion: extract from 1 to 1 delimited by ";"
+    }
+
+    field "APP.DEC1" {
+        comma-separator: false
+        operation: field-extract "TRANS.REF"
+        conversion: extract from 2 to 1 delimited by ";"
+    }
+
+    field "APP" {
+        comma-separator: false
+        operation: constant "\"EB.CASHFLOW\""
+    }
+
+    field "APP1" {
+        comma-separator: false
+        operation: constant "\"EB.CASHFLOW.HIS\""
+    }
+
+    field "APPLICATION" {
+        comma-separator: false
+        operation: if "APP.DEC1" Equals "NULL" process "APP" "APP1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Cashflow"
+        }
+
+        label-field: "TRANS.REF"
+        image: "view.gif" parameters {
+            field: "FUNC"
+            field: "ID"
+        }
+
+        from-field: "APPLICATION"
+    }
+
+}

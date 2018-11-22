@@ -1,0 +1,279 @@
+Enquiry "PPT.RECEIVEDBULKDETAILS.STATUS.REPORT.AUTH" for
+"name:/PP_MessageAcceptanceDASService:PPT.RECEIVEDBULKDETAILS$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Clearing Rejected Bulk List"
+    }
+
+    description {
+        en = "Clearing Rejected Bulk List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "ClearingStatusOriginalBulk" {
+        Equals "PART", "RJCT"
+    }
+
+    fixed-selection "ClearingActionStatusCode" {
+        Equals "CMPT"
+    }
+
+    fixed-sort: "BulkReference" Descending
+
+    field "ID" {
+        label {
+            en = "Record ID"
+        }
+
+        length: 255
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Clearing Rejected Bulk List\""
+    }
+
+    field "OriginalBulkReference" {
+        label {
+            en = "Original Bulk Reference"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OriginalBulkReference"
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company ID"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "BulkReference" {
+        label {
+            en = "Bulk Reference"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BulkReference"
+    }
+
+    field "ClearingStatusOriginalBulk" {
+        label {
+            en = "Clearing Status Original Bulk"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ClearingStatusOriginalBulk"
+    }
+
+    field "ClearingActionStatusDateTime" {
+        label {
+            en = "Clearing Action Status Date Time"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ClearingActionStatusDateTime"
+    }
+
+    field "ClearingActionStatusCode" {
+        label {
+            en = "Clearing Action Status Code"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ClearingActionStatusCode"
+    }
+
+    field "ReceiverAddress" {
+        label {
+            en = "Receiver Address"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ReceiverAddress"
+    }
+
+    field "ClearingReasonCode" {
+        label {
+            en = "Clearing Reason Code"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ClearingReasonCode"
+    }
+
+    field "ClearingReasonCodeProprietary" {
+        label {
+            en = "Clearing Reason Code Proprietary"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ClearingReasonCodeProprietary"
+    }
+
+    field "NOZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"No Bulks Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Bulk Details"
+        }
+
+        label-field: "ID"
+        image: "details.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        application: "PPT.RECEIVEDBULKDETAILS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Exception Content"
+        }
+
+        label-field: "BulkReference"
+        image: "view.gif"
+        criteria: "CURRENT.BulkReference" > "BulkReference" parameters {
+            field: "BulkReference"
+        }
+
+        composite-screen: "PP.PRB.BLOB.STATUS.REPORT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "ID"
+        }
+
+        screen: "PPT.RECEIVEDBULKDETAILS,ACTION.AUTH"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "ID"
+        }
+
+        screen: "PPT.RECEIVEDBULKDETAILS,ACTION.AUTH"
+    }
+
+    drilldown "5" {
+        description {
+            en = "View Messages"
+        }
+
+        label-field: "ID"
+        criteria: "CURRENT.BulkReference" > "BulkReference"
+        enquiry: "PRM.BLOB.STATUS.REPORT"
+    }
+
+}

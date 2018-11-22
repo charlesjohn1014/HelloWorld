@@ -1,0 +1,122 @@
+Enquiry "BPM.PENDING.PROCESS" for "name:/JP_Foundation:NOFILE.BPM.PENDING.PROCESS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Pending Process"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 25 fixed-selection "Y.DATA" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "AUTOREFRESH" {
+        Equals "60"
+    }
+
+    custom-selection {
+
+        field "BUSINESS.VAR.NAME" {
+            mandatory: true
+            operands: Matches
+        }
+
+        AND
+
+        field "BUSINESS.VAR.VALUE" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Pending Process\""
+    }
+
+    field "DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "^"
+    }
+
+    field "PROCESS.PW" {
+        label {
+            en = "Process"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "^"
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "^"
+    }
+
+    field "DISP.ID" {
+        label {
+            en = "ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "^"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Not a Valid or existing Business Variable\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Tasks"
+        }
+
+        label-field: "DISP.ID"
+        criteria: "PROCESS.NO" Equals "ID"
+        enquiry: "BPM.ALL.TASKS"
+    }
+
+}

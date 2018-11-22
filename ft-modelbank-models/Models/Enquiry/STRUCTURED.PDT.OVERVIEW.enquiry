@@ -1,0 +1,208 @@
+Enquiry "STRUCTURED.PDT.OVERVIEW" for "name:/SY_Trading:SY.TRANSACTION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "SY Overview"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        NotMatches "......."
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Trans Ref"
+            }
+
+        }
+
+        AND
+
+        field "USER.APP.ID" {
+            label {
+                en = "Application ID"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        AND
+
+        field "USER.APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        AND
+
+        field "TERMINATED" {
+            label {
+                en = "Terminated?"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans ID"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of SY Transactions\""
+    }
+
+    field "PRODUCT.DEFINITION" {
+        label {
+            en = "Product"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.DEFINITION"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "COUNTERPARTY" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COUNTERPARTY"
+    }
+
+    field "TRANSACTION" {
+        label {
+            en = "Transaction"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION"
+    }
+
+    field "USER.APP" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "USER.APPLICATION"
+    }
+
+    field "APP.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "USER.APP.ID"
+    }
+
+    field "INP" {
+        comma-separator: false
+        operation: constant "\",INPUT\""
+    }
+
+    field "SEE" {
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "DDOWN" {
+        comma-separator: false
+        operation: calc "USER.APP":"INP"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Overview"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            field: "@ID"
+        }
+
+        composite-screen: "SY.TRANS.OVERVIEW.FO"
+    }
+
+}

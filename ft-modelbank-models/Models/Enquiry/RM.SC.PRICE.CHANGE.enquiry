@@ -1,0 +1,228 @@
+Enquiry "RM.SC.PRICE.CHANGE" for "name:/SC_ScoSecurityMasterMaintenance:SECURITY.MASTER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Active Share Prices"
+    }
+
+    description {
+        en = "Active Share Prices"
+    }
+
+    no-selection: true
+    start-line: 3
+    end-line: 4 fixed-selection "BOND.OR.SHARE" {
+        Equals "\"S\""
+    }
+
+    fixed-selection "QUOTED.LISTED.NO" {
+        Equals "QUOTED"
+    }
+
+    fixed-selection "LAST.PRICE" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Security Number"
+            }
+
+        }
+
+        AND
+
+        field "DATE.LAST.PRICE" {
+            label {
+                en = "Date Change"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Active Share Prices\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Sec No"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Sec Name"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "PRICE.CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PRICE.CURRENCY"
+    }
+
+    field "PRICE.UPDATE.CODE" {
+        label {
+            en = "Price Source"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        hidden: true
+        operation: application-field-name "PRICE.UPDATE.CODE"
+    }
+
+    field "DATE.LAST.PRICE" {
+        comma-separator: false
+        operation: application-field-name "DATE.LAST.PRICE"
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "SC.PC" {
+        comma-separator: false
+        operation: calc "@ID":"DOT":"DATE.LAST.PRICE"
+    }
+
+    field "OLDPRICE" {
+        label {
+            en = "Old Price"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        operation: field-extract "SC.PC"
+        conversion: getFrom "SC.PRICE.CHANGE" "OLD.PRICE" false
+        conversion: call
+        jBC: "@ E.MB.SCPRICE.OLD"
+    }
+
+    field "LAST.PRICE" {
+        label {
+            en = "Current Price"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LAST.PRICE"
+    }
+
+    field "RED" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/down.gif\""
+    }
+
+    field "AMBER" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/flat.gif\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "GREEN" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/up.gif\""
+    }
+
+    field "CHANGE" {
+        comma-separator: false
+        operation: if "LAST.PRICE" Greater "OLDPRICE" process "GREEN" "RED"
+    }
+
+    field "CHANGE.DISP" {
+        comma-separator: false
+        operation: if "LAST.PRICE" Equals "OLDPRICE" process "AMBER" "CHANGE"
+    }
+
+    field "TREND" {
+        label {
+            en = "Trend"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: if "LAST.PRICE" Equals "NULL" process "NULL" "CHANGE.DISP"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Graph"
+        }
+
+        label-field: "@ID"
+        image: "graph09.gif"
+        criteria: "SECURITY.NO" Equals "@ID"
+        enquiry: "SC.PRICE.CHANGE.PFO"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

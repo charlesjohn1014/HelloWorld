@@ -1,0 +1,344 @@
+Enquiry "INACTIVE.ACCTS" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "List of Inactive Accounts"
+    }
+
+    description {
+        en = "List of Inactive Accounts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "INACTIV.MARKER" {
+        Equals "\"Y\""
+    }
+
+    fixed-sort: "CATEGORY" Null
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.NUMBER" {
+            label {
+                en = "Account"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACCT.OPEN.DATE" {
+        label {
+            en = "Acct Open Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OPENING.DATE"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"List of Inactive Accounts\""
+    }
+
+    field "ACCOUNT.NUMBER" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NUMBER"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Product"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+    }
+
+    field "SHORT.TITLE" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 33
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.TITLE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "WORKING.BALANCE" {
+        label {
+            en = "Working Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 72
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "DATE.LAST.CR.CUST" {
+        label {
+            en = "Date Last Cr Cust"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.LAST.CR.CUST"
+    }
+
+    field "DISP.CR.DATE" {
+        label {
+            en = "Date Last Cr Cust"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 93
+        }
+
+        operation: field-extract "DATE.LAST.CR.CUST"
+    }
+
+    field "AMNT.LAST.CR.CUST" {
+        label {
+            en = "Amnt Last Cr Cust"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 106
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMNT.LAST.CR.CUST"
+    }
+
+    field "DATE.LAST.DR.CUST" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.LAST.DR.CUST"
+    }
+
+    field "DISP.DR.DATE" {
+        label {
+            en = "Date Last Dr Cust"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 127
+        }
+
+        operation: field-extract "DATE.LAST.DR.CUST"
+    }
+
+    field "AMNT.LAST.DR.CUST" {
+        label {
+            en = "Amnt Last Dr Cust"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 135
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMNT.LAST.DR.CUST"
+    }
+
+    field "DR.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.LAST.DR.CUST"
+    }
+
+    field "CR.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.LAST.CR.CUST"
+    }
+
+    field "LATEST.TXN.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        operation: if "CR.DATE" Greater "DR.DATE" process "CR.DATE" "DR.DATE"
+    }
+
+    field "ASTERIX" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "COMPARE.DATE1" {
+        comma-separator: false
+        operation: calc "LATEST.TXN.DATE":"ASTERIX"
+    }
+
+    field "COMPARE.DATE2" {
+        comma-separator: false
+        operation: calc "COMPARE.DATE1":"ACCT.OPEN.DATE"
+    }
+
+    field "MONTH.DISPLAY" {
+        comma-separator: false
+        operation: constant "\"Months\""
+    }
+
+    field "NO.OF.DAYS" {
+        comma-separator: false
+        operation: field-extract "COMPARE.DATE2"
+        conversion: call
+        jBC: "@ E.MB.CHG.TO.NOS"
+    }
+
+    field "COUNT.DAYS" {
+        format: Translate
+        comma-separator: false
+        operation: field-extract "MONTH.DISPLAY"
+    }
+
+    field "APPEND.MONTHS" {
+        comma-separator: false
+        operation: calc "NO.OF.DAYS":"COUNT.DAYS"
+    }
+
+    field "DISPLAY.INACTIVE" {
+        label {
+            en = "Inactive Period"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        operation: field-extract "APPEND.MONTHS"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Inactive accounts to display\""
+    }
+
+}

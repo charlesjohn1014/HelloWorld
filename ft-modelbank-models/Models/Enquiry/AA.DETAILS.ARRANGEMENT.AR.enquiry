@@ -1,0 +1,729 @@
+Enquiry "AA.DETAILS.ARRANGEMENT.AR" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Basic Arrangement Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "L.ARRANGEMENT" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 115
+        operation: constant "\"Arrangement\""
+    }
+
+    field "ID" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "FILE.VERSION" {
+        comma-separator: false
+        operation: application-field-name "!FILE.VERSION"
+    }
+
+    field "ARR.STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.STATUS"
+    }
+
+    field "ARRANGEMENT.ID" {
+        display-type: "CLASS-ENQ.H.ID"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 175
+        processing-mode: Single
+        operation: field-extract "ARR.ID"
+    }
+
+    field "LINKED.APPL.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: value 1
+    }
+
+    field "L.ACCOUNT" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 115
+        operation: if "LINKED.APPL.ID" NotEquals "\"\"" process "\"Account\"" "\"\""
+    }
+
+    field "ACCOUNT.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "LINKED.APPL.ID"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "C.DASH" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "ACCOUNT.CCY" {
+        comma-separator: false
+        operation: calc "ACCOUNT.ID":"C.DASH":"CURRENCY"
+    }
+
+    field "D.ACCOUNT.CCY" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 158
+        operation: if "LINKED.APPL.ID" NotEquals "\"\"" process "ACCOUNT.CCY" "\"\""
+    }
+
+    field "ARR.ID.CUS" {
+        label {
+            en = "Customer"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.AA.CONV.GET.BENEFICIAL.CUSTOMERS"
+    }
+
+    field "L.PRODUCT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 115
+        operation: constant "\"Product\""
+    }
+
+    field "PRODUCT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.PRODUCT"
+    }
+
+    field "D.PRODUCT" {
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 175
+        processing-mode: Single
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "L.START.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        column-width: 115
+        operation: constant "\"Arrangement Date\""
+    }
+
+    field "START.DATE" {
+        format: Date
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 2
+        }
+
+        column-width: 158
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "L.ORGIN.DATE" {
+        comma-separator: false
+        operation: constant "\"Orig Contract Date\""
+    }
+
+    field "ORGIN.DATE" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 3
+        }
+
+        column-width: 158
+        processing-mode: Single
+        operation: application-field-name "ORIG.CONTRACT.DATE"
+    }
+
+    field "L.ORGIN.DATE.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 30
+            line: + 3
+        }
+
+        column-width: 115
+        processing-mode: Single
+        operation: if "ORGIN.DATE" Equals "\"\"" process "\"\"" "L.ORGIN.DATE"
+    }
+
+    field "L.STATUS" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Status\""
+    }
+
+    field "ALT.ACCT.ID" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.ID"
+        conversion: getFrom "ACCOUNT" "ALT.ACCT.ID" false
+    }
+
+    field "L.ALT.ACCT.ID" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"IBAN\""
+    }
+
+    field "C.L.IBAN" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        alignment: Left
+        comma-separator: false
+        operation: if "ALT.ACCT.ID" Equals "\"\"" process "\"\"" "L.ALT.ACCT.ID"
+    }
+
+    field "ARRG.STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.STATUS"
+        conversion: replace {
+            oldData: "CLOSE"
+            newData: "Closed"
+        }
+
+        conversion: replace {
+            oldData: "REQUEST.CLOSURE"
+            newData: "Request Closure"
+        }
+
+        conversion: replace {
+            oldData: "CURRENT"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "CANCELLED"
+            newData: "Cancelled"
+        }
+
+        conversion: replace {
+            oldData: "EXPIRED"
+            newData: "Expired"
+        }
+
+        conversion: replace {
+            oldData: "AUTH-FWD"
+            newData: "Future Dated"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Unauthorised"
+        }
+
+        conversion: replace {
+            oldData: "PENDING.CLOSURE"
+            newData: "Pending Closure"
+        }
+
+    }
+
+    field "PEN.STATUS" {
+        comma-separator: false
+        operation: field-extract "ARR.STATUS"
+        conversion: replace {
+            oldData: "PENDING.CLOSURE"
+            newData: "PC"
+        }
+
+        conversion: replace {
+            oldData: "CLOSE"
+            newData: "CL"
+        }
+
+    }
+
+    field "PRODUCT.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "AS.PL" {
+        comma-separator: false
+        operation: calc "ARRG.STATUS":"PRODUCT.LINE"
+    }
+
+    field "AUTH" {
+        comma-separator: false
+        operation: constant "\"AUTH\""
+    }
+
+    field "F.STATUS" {
+        comma-separator: false
+        operation: field-extract "AS.PL"
+    }
+
+    field "STATUS" {
+        format: Translate
+        comma-separator: false
+        operation: if "ARRG.STATUS" Equals "AUTH" process "F.STATUS" "ARRG.STATUS"
+        conversion: replace {
+            oldData: "CANCELLED"
+            newData: "Cancelled"
+        }
+
+        conversion: replace {
+            oldData: "CLOSE"
+            newData: "Closed"
+        }
+
+        conversion: replace {
+            oldData: "REVERSED"
+            newData: "Reversed"
+        }
+
+        conversion: replace {
+            oldData: "EXPIRED"
+            newData: "Expired"
+        }
+
+        conversion: replace {
+            oldData: "AUTH-FWD"
+            newData: "Future Dated"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Unauthorised"
+        }
+
+        conversion: replace {
+            oldData: "MATURED"
+            newData: "Matured"
+        }
+
+        conversion: replace {
+            oldData: "CURRENT"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "PENDING.CLOSURE"
+            newData: "Pending Closure"
+        }
+
+        conversion: replace {
+            oldData: "AUTHDEPOSITS"
+            newData: "Not Funded"
+        }
+
+        conversion: replace {
+            oldData: "AUTHLENDING"
+            newData: "Not Disbursed"
+        }
+
+        conversion: replace {
+            oldData: "AUTHSAVINGS"
+            newData: "Not Funded"
+        }
+
+        conversion: replace {
+            oldData: "AUTHBUNDLE"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "AUTHACCOUNTS"
+            newData: "Authorised"
+        }
+
+        conversion: replace {
+            oldData: "AUTHRELATIONSHIP.PRICING"
+            newData: "Current"
+        }
+
+    }
+
+    field "POSTING.RESTRICT1" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.ID"
+        conversion: getFrom "ACCOUNT" "POSTING.RESTRICT" false
+    }
+
+    field "POSTING.RESTRICT" {
+        comma-separator: false
+        operation: if "POSTING.RESTRICT1" LessThan "\"90\"" process "POSTING.RESTRICT1" "\"\""
+    }
+
+    field "C.RESTRICTION" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Posting Restriction\""
+    }
+
+    field "L.RESTRICTION" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        alignment: Left
+        comma-separator: false
+        operation: if "POSTING.RESTRICT" NotEquals "\"\"" process "C.RESTRICTION" "\"\""
+    }
+
+    field "D.POSTING.RESTRICT" {
+        display-type: "CLASS-BOLD.RED"
+        format: User
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "POSTING.RESTRICT"
+        conversion: extract from 1 to 1 delimited by " "
+        conversion: getFrom "POSTING.RESTRICT" "DESCRIPTION" false
+    }
+
+    field "LAST.CR" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.ID"
+        conversion: getFrom "ACCOUNT" "DATE.LAST.CR.CUST" false
+    }
+
+    field "LAST.DR" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.ID"
+        conversion: getFrom "ACCOUNT" "DATE.LAST.DR.CUST" false
+    }
+
+    field "AC.INACT.DATE" {
+        format: Date
+        comma-separator: false
+        operation: if "LAST.CR" Greater "LAST.DR" process "LAST.CR" "LAST.DR"
+    }
+
+    field "INACT.STATUS" {
+        comma-separator: false
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "INACTIV.MARKER" false
+    }
+
+    field "INACT.DESC" {
+        comma-separator: false
+        operation: field-extract "INACT.STATUS"
+        conversion: replace {
+            oldData: "Y"
+            newData: "Inactive"
+        }
+
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ST.DATE" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "DORM.TABLE" {
+        comma-separator: false
+        operation: constant "\"AA.DORMANCY.STATUS*\""
+    }
+
+    field "DORM.STS.RAW" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "ARR.DORMANCY.STATUS" false
+    }
+
+    field "DORM.DESC" {
+        comma-separator: false
+        operation: calc "DORM.TABLE":"DORM.STS.RAW"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "AA.DORM.DATE" {
+        format: Date
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "DORMANCY.DATE" false
+        conversion: value 1
+    }
+
+    field "DORM.DATE" {
+        comma-separator: false
+        operation: if "DORM.STS.RAW" NotEquals "NULL" process "AA.DORM.DATE" "AC.INACT.DATE"
+    }
+
+    field "DORM.STATUS.1" {
+        comma-separator: false
+        operation: if "INACT.STATUS" NotEquals "NULL" process "INACT.DESC" "NULL"
+    }
+
+    field "DORM.STATUS" {
+        comma-separator: false
+        operation: if "DORM.STS.RAW" NotEquals "NULL" process "DORM.DESC" "DORM.STATUS.1"
+    }
+
+    field "IN.TEXT" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\" ( since \""
+    }
+
+    field "CLS.B" {
+        comma-separator: false
+        operation: constant "\" )\""
+    }
+
+    field "DORM.TEXT" {
+        comma-separator: false
+        operation: field-extract "DORM.STATUS"
+    }
+
+    field "CL.STATUS" {
+        comma-separator: false
+        operation: if "PEN.STATUS" Equals "CL" process "STATUS" "DORM.STATUS"
+    }
+
+    field "PC.STATUS" {
+        comma-separator: false
+        operation: if "PEN.STATUS" Equals "PC" process "STATUS" "CL.STATUS"
+    }
+
+    field "DORM.CHK" {
+        comma-separator: false
+        operation: if "DORM.STATUS" Equals "NULL" process "STATUS" "PC.STATUS"
+    }
+
+    field "SHORT.TITLE" {
+        comma-separator: false
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "L.SHORT.TITLE" {
+        comma-separator: false
+        operation: constant "\"Account Short Title\""
+    }
+
+    field "D.SHORT.TITLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 4
+        }
+
+        column-width: 115
+        processing-mode: Single
+        operation: if "SHORT.TITLE" NotEquals "NULL" process "L.SHORT.TITLE"
+    }
+
+    field "SHORT.TITLE.1" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 4
+        }
+
+        column-width: 175
+        processing-mode: Single
+        operation: if "SHORT.TITLE" NotEquals "NULL" process "SHORT.TITLE"
+    }
+
+    field "MNEMONIC" {
+        comma-separator: false
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "MNEMONIC" false
+    }
+
+    field "L.MNEMONIC" {
+        comma-separator: false
+        operation: constant "\"Mnemonic\""
+    }
+
+    field "D.MNEMONIC" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 4
+        }
+
+        column-width: 115
+        processing-mode: Single
+        operation: if "MNEMONIC" NotEquals "NULL" process "L.MNEMONIC" "L.STATUS"
+    }
+
+    field "MNEMONIC.1" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 4
+        }
+
+        column-width: 158
+        processing-mode: Single
+        operation: if "MNEMONIC" NotEquals "NULL" process "MNEMONIC" "DORM.CHK"
+    }
+
+    field "L.CUSTOMER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 5
+        }
+
+        column-width: 115
+        processing-mode: Single
+        operation: constant "\"Beneficial Owner\""
+    }
+
+    field "ARR.ID.MUL" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 5
+            multiLine: true
+        }
+
+        column-width: 175
+        processing-mode: Multi
+        operation: field-extract "ARR.ID.CUS"
+        conversion: call
+        jBC: "@ E.AA.CONV.DISPLAY.BENEFICIAL.CUSTOMERS"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "STATUS.LBL" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 5
+        }
+
+        column-width: 115
+        processing-mode: Single
+        operation: if "MNEMONIC" NotEquals "NULL" process "L.STATUS"
+    }
+
+    field "STATUS.DISPLAY" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 5
+        }
+
+        column-width: 158
+        processing-mode: Single
+        operation: if "MNEMONIC" NotEquals "NULL" process "DORM.CHK"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

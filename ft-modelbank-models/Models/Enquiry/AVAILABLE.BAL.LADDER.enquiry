@@ -1,0 +1,129 @@
+Enquiry "AVAILABLE.BAL.LADDER" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        Equals "!CURRENT.ACCOUNT"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Available Ladder\""
+    }
+
+    field "CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AVAILABLE.DATE" {
+        label {
+            en = "Available Date"
+        }
+
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AVAILABLE.DATE"
+    }
+
+    field "DR.MVMT" {
+        label {
+            en = "Amount"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AV.AUTH.DB.MVMT"
+    }
+
+    field "CR.MVMT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AV.AUTH.CR.MVMT"
+    }
+
+    field "TOT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: calc "CR.MVMT" + "DR.MVMT"
+    }
+
+    field "AVAILABLE.BAL" {
+        label {
+            en = "Available Balance"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AVAILABLE.BAL"
+    }
+
+    field "ZERONORECORD" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"No Availble Ladder to display\""
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.ENQUIRY.FAVOURITES"
+}

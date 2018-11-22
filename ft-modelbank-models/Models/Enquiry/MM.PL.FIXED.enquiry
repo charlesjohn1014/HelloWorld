@@ -1,0 +1,196 @@
+Enquiry "MM.PL.FIXED" for "name:/MM_Contract:MM.MONEY.MARKET#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "MM Placements-FixedPeriod Contracts"
+    }
+
+    description {
+        en = "MM Fixed Period Placement Contracts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CATEGORY" {
+        Between "21075", "21084"
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "\'LIQ\'"
+    }
+
+    fixed-selection "MATURITY.DATE" {
+        Greater "999"
+    }
+
+    fixed-sort: "CUSTOMER.ID" Null
+    fixed-sort: "CURRENCY" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\" MM Fixed Period Placements \""
+    }
+
+    field "CLIENT" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "Amount" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRINCIPAL"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Contracts Available for Amendment or Maturity\""
+    }
+
+    field "VER" {
+        comma-separator: false
+        operation: constant "\"MM.MONEY.MARKET,ROLLAMD\""
+    }
+
+    field "INPUT" {
+        comma-separator: false
+        operation: constant "\"I\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "VER.DRILL" {
+        comma-separator: false
+        operation: calc "VER":"SP":"INPUT":"SP":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend/Rollover"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif"
+        from-field: "VER.DRILL"
+    }
+
+}

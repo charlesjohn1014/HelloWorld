@@ -1,0 +1,419 @@
+Enquiry "ACCOUNT.DETS.HP.AUTH" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Account Details"
+    }
+
+    description {
+        en = "Account Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CATEGORY" {
+        NotBetween "6601", "6999"
+    }
+
+    fixed-selection "CATEGORY" {
+        NotBetween "3001", "4999"
+    }
+
+    fixed-sort: "MNEMONIC" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "MNEMONIC" {
+            label {
+                en = "Mnemonic"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account officer"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.NUMBER" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "SHORT.TITLE" {
+            label {
+                en = "Account Name"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Customer\'s Accounts\""
+    }
+
+    field "ID1" {
+        break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "@ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCOUNT.TITLE.1" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.TITLE.1"
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Acct Type"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Account Officer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "LIMIT.REF" {
+        label {
+            en = "Limit"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LIMIT.REF"
+    }
+
+    field "WORKING.BALANCE" {
+        label {
+            en = "Working Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "ONLINE.ACTUAL.BAL" {
+        label {
+            en = "Ledger Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "ONLINE.CLEARED.BAL" {
+        label {
+            en = "Cleared Bal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.CLEARED.BALANCE"
+    }
+
+    field "LOCKED.AMOUNT" {
+        label {
+            en = "Locked Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LOCKED.AMOUNT"
+    }
+
+    field "CHEQ.TYPE" {
+        comma-separator: false
+        operation: field-extract "CATEGORY"
+        conversion: replace {
+            oldData: "6001"
+            newData: "SB."
+        }
+
+        conversion: replace {
+            oldData: "1001"
+            newData: "CURR."
+        }
+
+    }
+
+    field "FORM.CHQ.ID" {
+        comma-separator: false
+        operation: calc "CHEQ.TYPE":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Account"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "AC,SB.AMEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Credit Interest"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.CREDIT.INT,CR.MAIN"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Debit Interest"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.DEBIT.INT,DR.MAIN"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View Capitalisation Frequency"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "ACCT.CAPITALISATION,INPUT"
+    }
+
+    drilldown "5" {
+        description {
+            en = "View Statement Frequency"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.STATEMENT,INPUT"
+    }
+
+    drilldown "6" {
+        description {
+            en = "View Posting Restrict"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT.NUMBER" Equals "@ID"
+        enquiry: "POST.RESTRICT"
+    }
+
+    drilldown "7" {
+        description {
+            en = "View Block Funds"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "AC.LOCKED.EVENTS,INPUT"
+    }
+
+    drilldown "8" {
+        description {
+            en = "View Stop Payment"
+        }
+
+        label-field: "@ID"
+        criteria: "CHEQ.REG.SUPP.ID" Equals "@ID"
+        enquiry: "CHQ.STOPPED"
+    }
+
+    drilldown "9" {
+        description {
+            en = "View Revoked Cheques"
+        }
+
+        label-field: "@ID"
+        criteria: "ACCOUNT.NUMBER" Equals "@ID"
+        enquiry: "CHQ.REVOKE"
+    }
+
+}

@@ -1,0 +1,228 @@
+Enquiry "FT.HOLD.STO.BOM" for "name:/FT_Contract:FUNDS.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unexecuted STOs - FT on HOLD"
+    }
+
+    description {
+        en = "Unexecuted STOs - FTs on HOLD"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 4 fixed-selection "DEBIT.CUSTOMER" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "INWARD.PAY.TYPE" {
+        Matches "STO..."
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "IHLD"
+    }
+
+    fixed-sort: "PROCESSING.DATE" Null
+    custom-selection {
+
+        field "DEBIT.CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "DEBIT.ACCT.NO" {
+            label {
+                en = "Debit Acct No"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.ACCT.NO" {
+            label {
+                en = "Credit Acct No"
+            }
+
+        }
+
+        None
+    }
+
+    field "STO.REF" {
+        label {
+            en = "STO Reference"
+        }
+
+        length: 27
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INWARD.PAY.TYPE"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        operation: constant "\"Unexecuted STOs - FTs on HOLD\""
+    }
+
+    field "@ID" {
+        label {
+            en = "FT Reference"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Txn Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "Debit Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "DEBIT.ACCT.NO1" {
+        label {
+            en = "Debit Account Name"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "CREDIT.ACCT.NO1" {
+        label {
+            en = "Credit Account Name"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "OVERRIDE" {
+        label {
+            en = "Reason for HoldingFT"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "OVERRIDE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transactions Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "FUNDS.TRANSFER,ACTR"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

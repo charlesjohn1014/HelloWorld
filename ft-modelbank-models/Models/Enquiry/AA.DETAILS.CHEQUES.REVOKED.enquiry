@@ -1,0 +1,178 @@
+Enquiry "AA.DETAILS.CHEQUES.REVOKED" for "name:/ST_ChqSubmit:CHEQUE.REGISTER.SUPPLEMENT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cheque Revoked"
+    }
+
+    description {
+        en = "Cheques Revoked"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: true
+    start-line: 4
+    end-line: 99 fixed-selection "@ID" {
+        BeginsWith "SB", "CURR"
+    }
+
+    fixed-selection "STATUS" {
+        Equals "ISSUED"
+    }
+
+    fixed-selection "ORIGIN" {
+        Equals "PAYMENT.STOP"
+    }
+
+    field "ACCT.NO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 170
+        operation: constant "\"Cheques Revoked\""
+    }
+
+    field "Z.HEADING" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 170
+        operation: constant "\"Cheques Revoked\""
+    }
+
+    field "CHEQ.REG.SUPP.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CHEQ.REG.SUPP.ID"
+    }
+
+    field "CHEQUE.TYPE" {
+        label {
+            en = "Cheque Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 170
+        processing-mode: Single
+        operation: field-extract "CHEQ.REG.SUPP.ID"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "CHEQUE.TYPE" "DESCRIPTION" false
+    }
+
+    field "CHEQUE.NUMBER" {
+        label {
+            en = "Number"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 60
+        processing-mode: Single
+        operation: field-extract "CHEQ.REG.SUPP.ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "DATE.STOPPED" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: application-field-name "DATE.STOPPED"
+    }
+
+    field "PAYM.STOP.TYPE" {
+        label {
+            en = "Reason"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 206
+        processing-mode: Multi
+        operation: application-field-name "PAYM.STOP.TYPE"
+        conversion: getFrom "PAYMENT.STOP.TYPE" "DESCRIPTION" false
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 170
+        operation: constant "\"No Revoked Cheques to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CHEQUE.NUMBER"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CHEQ.REG.SUPP.ID"
+        }
+
+        screen: "CHEQUE.REGISTER.SUPPLEMENT,AR"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

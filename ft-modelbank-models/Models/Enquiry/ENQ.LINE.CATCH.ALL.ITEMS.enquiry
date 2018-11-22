@@ -1,0 +1,235 @@
+Enquiry "ENQ.LINE.CATCH.ALL.ITEMS" for "name:/RE_Consolidation:RE.STAT.LINE.CONT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Catch All Items"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 9
+    build-routines {
+        jBC: "E.MB.REPORT.LINE.DETAIL"
+    }
+
+    field "AC.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ASST.CONSOL.KEY"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "LINE.HEADER" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Line Number :\""
+    }
+
+    field "LINE.NUMBER" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 34
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DESC.HEADER" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Line Description :\""
+    }
+
+    field "LINE.DESCRIPTION" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 3
+        }
+
+        operation: field-extract "LINE.NUMBER"
+        conversion: getFrom "RE.STAT.LINE.CONT" "DESC" false
+    }
+
+    field "PL.ID" {
+        length: 85
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRFT.CONSOL.KEY"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "APP.ID" {
+        label {
+            en = "Application Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: if "AC.ID" Equals "NULL" process "PL.ID" "AC.ID"
+    }
+
+    field "CAL.CCY" {
+        length: 85
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ASST.CONSOL.KEY"
+        conversion: extract from 4 to 1 delimited by "."
+    }
+
+    field "CPL.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PROFIT.CCY"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: if "AC.ID" NotEquals "NULL" process "CAL.CCY" "CPL.CCY"
+    }
+
+    field "CAL.CATEGORY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ASST.CONSOL.KEY"
+        conversion: extract from 5 to 1 delimited by "."
+    }
+
+    field "CPL.CATEGORY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRFT.CONSOL.KEY"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "CATE" {
+        label {
+            en = "Category"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: if "AC.ID" NotEquals "NULL" process "CAL.CATEGORY" "CPL.CATEGORY"
+    }
+
+    field "CAT.DESCRP" {
+        label {
+            en = "Category Description"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CATE"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "ASSET.TYPE" {
+        label {
+            en = "Asset Type"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ASSET.TYPE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Line Input"
+        }
+
+        label-field: "CAT.DESCRP"
+        image: "new.gif" parameters {
+            function:  Input
+        }
+
+        screen: "RE.STAT.REP.LINE,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Range Input"
+        }
+
+        label-field: "CAT.DESCRP"
+        image: "new.gif" parameters {
+            function:  Input
+        }
+
+        screen: "RE.STAT.RANGE,INPUT"
+    }
+
+}

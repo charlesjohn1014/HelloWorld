@@ -1,0 +1,147 @@
+Enquiry "SC.TOP.10.PFO" for "name:/SC_ModelBank:NOFILE.SC.TOP.TEN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Top 10 Pvt Clients"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 10 fixed-selection "CUST.LIST" {
+        NotEquals "\"\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Customer No"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Top 10 Private Customers as on\""
+    }
+
+    field "IHDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: today
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "VALUATION.AMT" {
+        label {
+            en = "Valuation in Lcy"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "NO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No portfolio linked to your ID\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Customer Overview"
+        }
+
+        label-field: "@ID"
+        image: "custview.gif"
+        criteria: "CURRENT.CUSTOMER" > "@ID" parameters {
+            field: "@ID"
+        }
+
+        composite-screen: "PVT.CUSTOMER.VIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Portfolio List"
+        }
+
+        label-field: "@ID"
+        image: "records.gif"
+        criteria: "CUSTOMER.NUMBER" Equals "@ID"
+        enquiry: "PORTFOLIO.LIST"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Generate Wealth Reports"
+        }
+
+        label-field: "@ID"
+        image: "launch.gif"
+        criteria: "CUSTOMER.NUMBER" Equals "@ID"
+        enquiry: "WR.REPORT"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

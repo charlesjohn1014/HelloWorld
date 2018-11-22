@@ -1,0 +1,111 @@
+Enquiry "AA.SETTLE.PAYOFF.DRILL.AR" for "name:/AA_Settlement:AA.ARR.SETTLEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Closure"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "ARR.STATUS" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "ARR.STATUS" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADING" {
+        format: User
+        comma-separator: false
+        operation: constant "\"Perform Closure (Live)\""
+    }
+
+    field "AUTH" {
+        comma-separator: false
+        operation: constant "\"AUTH\""
+    }
+
+    field "AUTHFW" {
+        comma-separator: false
+        operation: constant "\"AUTH-FWD\""
+    }
+
+    field "RESAUTH" {
+        comma-separator: false
+        operation: constant "\"RESTORE-AUTH\""
+    }
+
+    field "CHK.RES" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "RESAUTH" process "HEADING" "NULL"
+    }
+
+    field "CHK.FW" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "AUTHFW" process "HEADING" "CHK.RES"
+    }
+
+    field "CHK.AUTH" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 200
+        operation: if "ARR.STATUS" Equals "AUTH" process "HEADING" "CHK.FW"
+    }
+
+    field "ACTIVITY" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"ACCOUNTS-SETTLE-PAYOFF\""
+    }
+
+    field "DRILL.SETTLE" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Run"
+        }
+
+        label-field: "CHK.AUTH"
+        image: "execute.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT"
+        criteria: "AA.ACTIVITY" > "ACTIVITY"
+        from-field: "DRILL.SETTLE"
+    }
+
+    fileVersion: Live
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

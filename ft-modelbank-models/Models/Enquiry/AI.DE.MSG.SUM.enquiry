@@ -1,0 +1,245 @@
+Enquiry "AI.DE.MSG.SUM" for "name:/DE_Reports:NOFILE.DE.MSG.SUM#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "View Deposit Delivery Messages"
+    }
+
+    description {
+        en = "View Deposit Delivery Messages"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "STMT.DATA" {
+    }
+
+    custom-selection {
+
+        field "DELIVERY.REF" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"View Delivery Messages\""
+    }
+
+    field "DE.ID" {
+        label {
+            en = "Delivery ref"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BANK.DATE" {
+        label {
+            en = "Bank Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: extract from 1 to 8
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "TYPE.ID" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "D.TYPE.ID" {
+        label {
+            en = "Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "TYPE.ID"
+    }
+
+    field "MSG.TYPE" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        operation: field-extract "D.TYPE.ID"
+        conversion: getFrom "DE.MESSAGE" "DESCRIPTION" false
+    }
+
+    field "STATUS" {
+        format: User
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "UNMAPPED" {
+        comma-separator: false
+        operation: constant "\"DATA UNMAPPED\""
+    }
+
+    field "DISP.TEXT" {
+        label {
+            en = "Status"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        operation: if "STATUS" Equals "NULL" process "UNMAPPED" "STATUS"
+    }
+
+    field "HEADER.CARRIER" {
+        label {
+            en = "Carrier"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "TO.ADDRESS" {
+        label {
+            en = "To address"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "ENQ" {
+        comments: "Next level enquiry separated by &am p;gt ; with criteria"
+        comma-separator: false
+        operation: constant "\"DE.XML\""
+    }
+
+    field "REPAIR" {
+        comments: "To get the carrier type ; with crit eria"
+        comma-separator: false
+        operation: constant "\"REPAIR\""
+    }
+
+    field "DRILL1" {
+        label {
+            en = "Drill1"
+        }
+
+        comments: "Next level enquiry separated by &am p;gt ; with criteria"
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "DE.ID.02" {
+        comments: "To get the carrier type"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DRILL1"
+        conversion: extract from 2 to 1 delimited by ">"
+    }
+
+    field "DRILL2" {
+        comments: "To get the carrier type"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "HEADER.CARRIER"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: replace {
+            oldData: "SMS"
+            newData: "DE.XML"
+        }
+
+        conversion: replace {
+            oldData: "EMAIL"
+            newData: "DE.XML"
+        }
+
+        conversion: replace {
+            oldData: "SECUREMSG"
+            newData: "DE.XML"
+        }
+
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "HEADER.CARRIER"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "DRILL3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "DRILL2" Equals "ENQ" process "DRILL2" "DRILL1"
+    }
+
+    field "NEXT.LEVEL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "DISP.TEXT" Equals "REPAIR" process "DRILL1" "DRILL3"
+    }
+
+    toolbar: "ARC.PRINT.MSG" drilldown "1" {
+        description {
+            en = "View Delivery"
+        }
+
+        label-field: "MSG.TYPE"
+        image: "view.gif"
+        criteria: "KEY" Equals "DE.ID"
+        criteria: "MESSAGE.TEXT" NotEquals "TYPE"
+        from-field: "NEXT.LEVEL"
+    }
+
+    attributes: "UNDERLINE.HEADER.ROW"
+}

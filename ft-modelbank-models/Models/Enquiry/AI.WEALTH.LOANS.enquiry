@@ -1,0 +1,203 @@
+Enquiry "AI.WEALTH.LOANS" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Back to Loans"
+    }
+
+    description {
+        en = "Back to Loans"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5 fixed-selection "PRODUCT.LINE" {
+        Equals "\'LENDING\'"
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "UNAUTH", "CANCELLED", "MATURED", "CLOSE"
+    }
+
+    fixed-selection "CUSTOMER" {
+        Equals "!EXT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Loan Details\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Loan Reference"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LINKED.APPL.ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: field-extract "@ID"
+    }
+
+    field "H.DUMMY" {
+        format: User
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.MB.AA.LOAN.DETAILS.HEADER"
+    }
+
+    field "D.INT.RATE" {
+        label {
+            en = "Interest Rate"
+        }
+
+        comma-separator: false
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "AMT.SANC" {
+        label {
+            en = "Amount Sanctioned"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 19
+        alignment: Left
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "H.DUMMY"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No outstanding Loans\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Schedule"
+        }
+
+        label-field: "@ID"
+        image: "next.gif"
+        criteria: "ARRANGEMENT.ID" Equals "@ID"
+        enquiry: "AI.AA.PAYMENT.SCHEDULES"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "UNDERLINE.HEADER.ROW" ; "ALLDATA"
+}

@@ -1,0 +1,145 @@
+Enquiry "AC.GROUP.CASH.POOL" for "name:/PO_ModelBank:NOFILE.AC.GROUP.CASH.POOL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cash Pool Groups"
+    }
+
+    description {
+        en = "Cash Pool Groups"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "GRP.ID" {
+            label {
+                en = "Group Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CASH.POOL" {
+            label {
+                en = "Cash Pool Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "VALUE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+    }
+
+    field "GROUP.ID" {
+        label {
+            en = "Group ID"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "VALUE"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DISP.GROUP.ID" {
+        label {
+            en = "Group ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "GROUP.ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Cash Pool Groups\""
+    }
+
+    field "CASH.POOL.ID" {
+        label {
+            en = "Cash Pool ID"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: field-extract "VALUE"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ID.NAME" {
+        label {
+            en = "Name"
+        }
+
+        comments: "5"
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        operation: field-extract "CASH.POOL.ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "DISP.GROUP.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "GROUP.ID"
+        }
+
+        screen: "AC.CP.GROUP.PARAM,GROUPS"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

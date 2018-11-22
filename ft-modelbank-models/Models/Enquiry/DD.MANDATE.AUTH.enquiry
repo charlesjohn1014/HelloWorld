@@ -1,0 +1,284 @@
+Enquiry "DD.MANDATE.AUTH" for "name:/DD_Contract:DD.DDI$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Authorise/Delete DD Mandates"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 4 fixed-selection "RECORD.STATUS" {
+        NotEquals "\'IHLD\'", "\'FHLD\'", "\'SHLD\'"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+        }
+
+        AND
+
+        field "PARAM.ID" {
+            label {
+                en = "Param"
+            }
+
+        }
+
+        AND
+
+        field "CREATE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"DD Mandates\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Mandate Ref"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "DIRECTION" {
+        label {
+            en = "DD Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DIRECTION"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        hidden: true
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "STAND.ALONE.AMT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 22
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STAND.ALONE.AMT"
+    }
+
+    field "STATUS" {
+        label {
+            en = "DD Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "CYCLE.FREQUENCY" {
+        label {
+            en = "Execution Date"
+        }
+
+        format: Date
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CYCLE.FREQUENCY"
+        conversion: extract from 1 to 1 delimited by " "
+    }
+
+    field "CYCLE.FREQ" {
+        label {
+            en = "Frequency"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CYCLE.FREQUENCY"
+        conversion: call
+        jBC: "@ E.MB.FREQ.TEXT"
+    }
+
+    field "DEST.ACCT.NO" {
+        label {
+            en = "Destination Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEST.ACCT.NO"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transactions Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise Mandate"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "DD.DDI,STANDALONE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete Manadate"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        screen: "DD.DDI,STANDALONE"
+    }
+
+}

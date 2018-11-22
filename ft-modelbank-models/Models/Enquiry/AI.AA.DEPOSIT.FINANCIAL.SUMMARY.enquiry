@@ -1,0 +1,495 @@
+Enquiry "AI.AA.DEPOSIT.FINANCIAL.SUMMARY" for "name:/AA_Framework:NOFILE.AA.FIN.SUMMARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Financial Summary Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "BALANCE.TYPE" {
+        Equals "TOTCOMMITMENT", "PAYDEPOSITINT"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DISPLAY.ZERO.BALS" {
+            mandatory: true
+            label {
+                en = "Zero Balance"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 113
+        operation: constant "\"Financial Summary\""
+    }
+
+    field "ID" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "TYPE.BAL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BAL.TYPE" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "AC.BALANCE.TYPE" "DESCRIPTION" false
+    }
+
+    field "BAL.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "VIRTUAL.BALANCES" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "PROPERTY" {
+        display-type: "CLASS-ENQ.H.ID"
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "PROPERTY.CLASS" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ARRANGEMENT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "SIMULATION" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: selection "SIM.REF"
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "COM.TOT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Deposit Amount\""
+    }
+
+    field "INT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Interest Amount\""
+    }
+
+    field "D.BAL.TYPE" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 113
+        processing-mode: Multi
+        operation: if "TYPE.BAL" Equals "\"TOTCOMMITMENT\"" process "COM.TOT" "INT"
+    }
+
+    field "D.BAL.INT" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BAL.TYPE"
+    }
+
+    field "D.BAL" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TYPE.BAL" Equals "\"TOTCOMMITMENT\"" process "BAL.AMOUNT" "\"\""
+        conversion: abs
+    }
+
+    field "D.BALANCE.INT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 113
+        processing-mode: Multi
+        operation: field-extract "BAL.AMOUNT"
+        conversion: abs
+    }
+
+    field "CCY" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 113
+        operation: field-extract "CURRENCY"
+    }
+
+    field "AMT.TOTAL" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 113
+        processing-mode: Multi
+        operation: constant "\"Capital + Interest\""
+    }
+
+    field "AMOUNT.TOTAL" {
+        break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 113
+        processing-mode: Multi
+        operation: total "D.BALANCE.INT"
+        conversion: abs
+    }
+
+    field "C.CCY" {
+        break-condition {
+            break: End
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        column-width: 113
+        operation: field-extract "CURRENCY"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+            line: + 5
+        }
+
+        column-width: 113
+        operation: constant "\" \""
+    }
+
+    field "EMPTY" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+            line: + 5
+        }
+
+        column-width: 113
+        operation: constant "\" \""
+    }
+
+    field "BLANK" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+            line: + 6
+        }
+
+        column-width: 113
+        operation: constant "\" \""
+    }
+
+    field "B.EMPTY" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+            line: + 6
+        }
+
+        column-width: 113
+        operation: constant "\" \""
+    }
+
+    field "NULL.1" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+            line: + 10
+        }
+
+        column-width: 113
+        operation: constant "\" \""
+    }
+
+    field "NULL.2" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+            line: + 10
+        }
+
+        column-width: 113
+        operation: constant "\" \""
+    }
+
+    field "AGEING.STATUS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.AGEING.STATUS"
+    }
+
+    field "C.CUR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"CUR\""
+    }
+
+    field "C.OD.STATUS" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Overdue Status: \""
+    }
+
+    field "L.AGEING.STATUS.1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "AGEING.STATUS" NotEquals "C.CUR" process "C.OD.STATUS" "\"\""
+    }
+
+    field "L.AGEING.STATUS" {
+        display-type: "CLASS-ENQ.DATA.ID" break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: if "AGEING.STATUS" Equals "\"\"" process "\"\"" "L.AGEING.STATUS.1"
+    }
+
+    field "C.AGEING.TABLE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"AA.OVERDUE.STATUS*\""
+    }
+
+    field "AGEING.ID" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "C.AGEING.TABLE":"AGEING.STATUS"
+    }
+
+    field "D.AGEING.STATUS" {
+        display-type: "CLASS-BOLD.RED"
+        format: User break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: field-extract "AGEING.ID"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "SUSPENDED" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.SUSPENSION.STATUS"
+        conversion: replace {
+            oldData: "YES"
+            newData: "Suspended"
+        }
+
+    }
+
+    field "C.ACC.STATUS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Accrual Status:\""
+    }
+
+    field "L.SUSPENDED" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: if "SUSPENDED" NotEquals "\"\"" process "C.ACC.STATUS" "\"\""
+    }
+
+    field "D.SUSPENDED" {
+        display-type: "CLASS-BOLD.RED"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: if "SUSPENDED" NotEquals "\"\"" process "SUSPENDED" "\"\""
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS" ; "NO.TOOLBAR" ; "UNDERLINE.HEADER.ROW"
+}

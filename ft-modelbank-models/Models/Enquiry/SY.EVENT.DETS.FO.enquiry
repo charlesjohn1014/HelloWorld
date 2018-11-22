@@ -1,0 +1,369 @@
+Enquiry "SY.EVENT.DETS.FO" for "name:/SY_Config:SY.PRODUCT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Events"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    fixed-sort: "TRANSACTION" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction ID"
+            }
+
+            operands: Contains
+        }
+
+        None
+    }
+
+    field "TRANS" {
+        length: 32
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 0 delimited by "."
+    }
+
+    field "B.TRANS" {
+        comma-separator: false
+        display-section: Header
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Single
+        operation: break-change "TRANS"
+    }
+
+    field "EHEAD" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Product Lifecycle Events\""
+    }
+
+    field "DEALT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "TRANS"
+    }
+
+    field "EVENT" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "EVENT"
+    }
+
+    field "EVENT.ID" {
+        length: 100
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EVENT":"\".\"":"TRANS"
+    }
+
+    field "ID" {
+        label {
+            en = "Event ID"
+        }
+
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "EVENT.ID"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Short Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: getFrom "SY.EVENT" "SHORT.NAME" false
+        conversion: oconv "MCT"
+    }
+
+    field "EVENT.TYPE" {
+        label {
+            en = "Event Type"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: getFrom "SY.EVENT" "EVENT.TYPE" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LAST.RUN.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: getFrom "SY.EVENT" "LAST.RUN.DATE" false
+    }
+
+    field "LRUN" {
+        comma-separator: false
+        operation: if "LAST.RUN.DATE" NotEquals "NULL" process "LAST.RUN.DATE" "1"
+    }
+
+    field "COB.ERR.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: getFrom "SY.EVENT.ERRORS" "DATE" false
+    }
+
+    field "COB.ERR.EXIST" {
+        comma-separator: false
+        operation: if "COB.ERR.DATE" NotEquals "NULL" process "1" "0"
+    }
+
+    field "RECENT.COB.ERR" {
+        comma-separator: false
+        operation: if "COB.ERR.DATE" Greater "LRUN" process "1" "0"
+    }
+
+    field "COB.ERR" {
+        comma-separator: false
+        operation: calc "COB.ERR.EXIST" * "RECENT.COB.ERR"
+    }
+
+    field "LAST.RUN" {
+        label {
+            en = "Last Run Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: getFrom "SY.EVENT" "LAST.RUN.DATE" false
+    }
+
+    field "NEXT.RUN.DATE" {
+        label {
+            en = "Next Run Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.SY.GET.NEXT.EVENT.DATE"
+    }
+
+    field "COB.PHASE" {
+        label {
+            en = "COB Phase"
+        }
+
+        display-type: "CLASS-ITALIC"
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "ID"
+        conversion: getFrom "SY.EVENT" "COB.PHASE" false
+    }
+
+    field "L.ID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: getFrom "SY.EVENT" "LOG.ID" false
+    }
+
+    field "LOG.ID" {
+        label {
+            en = "Log"
+        }
+
+        display-type: "CLASS-ITALIC"
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "L.ID"
+        conversion: getFrom "SY.EVENT.LOG" "PROCESS" false
+    }
+
+    field "CYES" {
+        label {
+            en = "CYES"
+        }
+
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "YES.GIF" {
+        label {
+            en = "yesg"
+        }
+
+        display-type: "IMAGE"
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/success.gif\""
+    }
+
+    field "NO.GIF" {
+        label {
+            en = "nog"
+        }
+
+        display-type: "IMAGE"
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/failed.gif\""
+    }
+
+    field "HAS.RUN" {
+        label {
+            en = "hasrun"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: if "LOG.ID" Equals "CYES" process "YES.GIF" "NULL"
+    }
+
+    field "HAS.RUN.OK" {
+        label {
+            en = "hasrunok"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: if "COB.ERR" NotEquals "1" process "HAS.RUN" "NULL"
+    }
+
+    field "COB.FAIL" {
+        label {
+            en = "cobfail"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: if "COB.ERR" Equals "1" process "NO.GIF" "NULL"
+    }
+
+    field "RUN" {
+        label {
+            en = "Run"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: calc "HAS.RUN.OK":"COB.FAIL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "SHORT.NAME"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "SY.EVENT,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Error Details"
+        }
+
+        label-field: "SHORT.NAME"
+        image: "details.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        application: "SY.EVENT.ERRORS"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Process"
+        }
+
+        label-field: "SHORT.NAME"
+        image: "execute.gif" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "SY.EVENT,PROCESS"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

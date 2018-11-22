@@ -1,0 +1,310 @@
+Enquiry "AA.DETAILS.INT.PROPERTY" for "name:/AA_PreferentialPricing:AA.ARR.PREFERENTIAL.PRICING#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Pricing Conditions"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "ARR.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "ARR.PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "NEG.TXT" {
+        comma-separator: false
+        operation: constant "\" (negotiated) \""
+    }
+
+    field "NEGOTIATED.FLDS" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NEGOTIATED.FLDS"
+    }
+
+    field "INT.NEG" {
+        comma-separator: false
+        operation: if "NEGOTIATED.FLDS" Matches "...INT...." process "NEG.TXT" "\"\""
+    }
+
+    field "FILE.VERSION" {
+        comma-separator: false
+        operation: application-field-name "!FILE.VERSION"
+    }
+
+    field "INT.TXT" {
+        comma-separator: false
+        operation: constant "\"Interest\""
+    }
+
+    field "HEADER" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: calc "INT.TXT":"INT.NEG"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "INT.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"Interest Property\""
+    }
+
+    field "INT.LINE.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: constant "\"Product Line\""
+    }
+
+    field "INT.GRP.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: constant "\"Product Group\""
+    }
+
+    field "INT.PROD.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: constant "\"Product\""
+    }
+
+    field "INT.CCY" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: constant "\"Ccy\""
+    }
+
+    field "INT.OPERAND" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Operand\""
+    }
+
+    field "INT.PCT.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: constant "\"Margin\""
+    }
+
+    field "INT.PROP" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INT.PROPERTY"
+    }
+
+    field "INT.DESC" {
+        display-type: "CLASS-ITALIC"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "INT.PROP"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "INT.PROD.LINE" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INT.PROD.LINE"
+        conversion: repeat-sub
+    }
+
+    field "INT.LINE" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "INT.PROD.LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "INT.PROD.GRP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INT.PROD.GROUP"
+        conversion: repeat-sub
+    }
+
+    field "INT.PROD.GROUP" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "INT.PROD.GRP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "DESCRIPTION" false
+    }
+
+    field "INT.PROD" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INT.PRODUCT"
+        conversion: repeat-sub
+    }
+
+    field "INT.PROD.DESC" {
+        format: User
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "INT.PROD"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INT.CURRENCY"
+    }
+
+    field "INT.OP.VAL" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INT.OPERAND"
+    }
+
+    field "INT.MAR" {
+        length: 12
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 70
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INT.MARGIN"
+    }
+
+    fileVersion: Live, Exception
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.COLUMN.HEADER"
+}

@@ -1,0 +1,239 @@
+Enquiry "EB.STP.CONDITION" for "name:/EB_SystemTables:EB.STP.CONDITION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List Authorised Auto Txn Rules"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"List Authorised Auto Txn Rules\""
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Application"
+        }
+
+        length: 54
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: oconv "MCC;,;*"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "VER.NAME" {
+        label {
+            en = "Screen Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: oconv "MCC;,;*"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Single
+        operation: field-extract "APPLICATION"
+        conversion: getFrom "PGM.FILE" "SCREEN.TITLE" false
+    }
+
+    field "CONDITION.GRP" {
+        label {
+            en = "Group"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 63
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CONDITION.GRP"
+    }
+
+    field "FIELD.NAME" {
+        label {
+            en = "Field Name"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FIELD.NAME"
+    }
+
+    field "DATA.COMP" {
+        label {
+            en = "Operand"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 88
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATA.COMP"
+    }
+
+    field "DATA.FROM" {
+        label {
+            en = "Data from"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 96
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATA.FROM"
+    }
+
+    field "DATA.TO" {
+        label {
+            en = "Data to"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 117
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATA.TO"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Rule available for the Selection\""
+    }
+
+    field "APP" {
+        label {
+            en = "Application Id"
+        }
+
+        length: 54
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 125
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    tool AM.ENQ.DETAIL {
+        label {
+            en = "Add Auto Approval Txns"
+        }
+
+        command: "docommand(\"EB.STP.CONDITION,SETUP\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "APP"
+        image: "view.gif" parameters {
+            function:  See
+            field: "APP"
+        }
+
+        screen: "EB.STP.CONDITION,SETUP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "APP"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "APP"
+        }
+
+        screen: "EB.STP.CONDITION,SETUP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "APP"
+        image: "txnreverse.gif" parameters {
+            function:  Reverse
+            field: "APP"
+        }
+
+        screen: "EB.STP.CONDITION,SETUP"
+    }
+
+    attributes: "ALLDATA"
+}

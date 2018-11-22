@@ -1,0 +1,144 @@
+Enquiry "SL.BANK.FACILITY" for "name:/SL_Reports:NOFILE.BNK.FACILITY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "SL Bank Facility Reports"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "PARTICIPANT.ID" {
+            mandatory: true
+            label {
+                en = "Participant Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Participant ID:\""
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"SL Bank Facility Report\""
+    }
+
+    field "PARTICIPANT" {
+        label {
+            en = "Participant ID:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "PARTICIPANT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: field-extract "PARTICIPANT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "FACILITY.ID" {
+        label {
+            en = "Facility Id"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "PART.AMT" {
+        label {
+            en = "Participation Amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 30
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Facility Reports avaialble for Participant\""
+    }
+
+}

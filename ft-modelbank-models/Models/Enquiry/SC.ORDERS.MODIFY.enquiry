@@ -1,0 +1,297 @@
+Enquiry "SC.ORDERS.MODIFY" for "name:/SC_SctOrderCapture:SEC.OPEN.ORDER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Orders to Modify"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 98 fixed-selection "DEAL.STATUS" {
+        NotEquals "TRANSMITTED"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Trans Ref"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security No"
+            }
+
+        }
+
+        AND
+
+        field "ORDER.TYPE" {
+            label {
+                en = "Order Type"
+            }
+
+        }
+
+        AND
+
+        field "CUST.NUMBER" {
+            label {
+                en = "Client No"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Pending Orders\""
+    }
+
+    field "ORDER.NO" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "3" false
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Order Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.DATE"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Direction"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+    }
+
+    field "ORDER.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.TYPE"
+    }
+
+    field "DEAL.STATUS" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEAL.STATUS"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "CUST.NUMBER" {
+        label {
+            en = "Client "
+        }
+
+        length: 0
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.NUMBER"
+        conversion: getFrom "CUSTOMER" "2" false
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Client No"
+        }
+
+        length: 0
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.NUMBER"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "CU.CASH.AMOUNT" {
+        label {
+            en = "Cash Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "TRADE.CCY" negative-pattern -#
+        length: 0
+        alignment: Left
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 110
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CU.CASH.AMOUNT"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "ORDER.NO"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "ORDER.NO"
+        }
+
+        screen: "SEC.OPEN.ORDER,BUY"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Cancel"
+        }
+
+        label-field: "ORDER.NO"
+        image: "txnreverse.gif" parameters {
+            function:  Reverse
+            field: "ORDER.NO"
+        }
+
+        screen: "SEC.OPEN.ORDER,REVERSE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ORDER.NO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ORDER.NO"
+        }
+
+        screen: "SEC.OPEN.ORDER,BUY"
+    }
+
+}

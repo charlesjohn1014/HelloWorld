@@ -1,0 +1,169 @@
+Enquiry "AA.OVERVIEW-SUBHEADING.ADDITIONAL.AR" for "name:/AA_PaymentSchedule:AA.ACCOUNT.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Further Arrangement Details"
+    }
+
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "ARR" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "CONST1" {
+        comma-separator: false
+        operation: constant "\"...\""
+    }
+
+    field "ARR.OD" {
+        comma-separator: false
+        operation: calc "ARR":"CONST1"
+    }
+
+    field "SIM.REF" {
+        comma-separator: false
+        operation: selection "SIMULATION.REF"
+    }
+
+    field "FILE.VER" {
+        comma-separator: false
+        operation: selection "FILE.VERSION"
+    }
+
+    field "FROM.DATE" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "TO.DATE" {
+        comma-separator: false
+        operation: calc "FROM.DATE" + "10000"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "C.NULL" {
+        comma-separator: false
+        operation: constant "\"\'\'\""
+    }
+
+    field "FV" {
+        comma-separator: false
+        operation: if "FILE.VER" Equals "\"\"" process "C.NULL" "FILE.VER"
+    }
+
+    field "SIM" {
+        comma-separator: false
+        operation: if "SIM.REF" Equals "\"\"" process "C.NULL" "SIM.REF"
+    }
+
+    field "C.COS.ACT.LOG" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.ACTIVITY.LOG.FIN \""
+    }
+
+    field "COS.ACT.LOG" {
+        comma-separator: false
+        operation: calc "C.COS.ACT.LOG":"ARR":"SP":"FV":"SP":"SIM"
+    }
+
+    field "ENQ.LAST.N.TXNS" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.RECENT.TXNS \""
+    }
+
+    field "C.COS.ENQUIRIES" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.ENQUIRIES \""
+    }
+
+    field "COS.ENQUIRIES" {
+        comma-separator: false
+        operation: calc "C.COS.ENQUIRIES":"ARR":"SP":"FV":"SP":"SIM"
+    }
+
+    field "ADDITIONAL.DETAILS" {
+        display-type: "CLASS-COS.SUBHEADING"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 255
+        operation: constant "\"Additional Details\""
+    }
+
+    field "ACCOUNT.NO" {
+        comma-separator: false
+        operation: field-extract "ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Activity Log"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        from-field: "COS.ACT.LOG"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Recent Txns"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        criteria: "ACCT.ID" Equals "ACCOUNT.NO"
+        from-field: "ENQ.LAST.N.TXNS"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Enquiries"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        from-field: "COS.ENQUIRIES"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Bills"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        criteria: "ARR.ID" Equals "ARR"
+        enquiry: "AA.DETAILS.BILLS"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Correspondence"
+        }
+
+        label-field: "ADDITIONAL.DETAILS" parameters {
+            field: "ARR"
+        }
+
+        composite-screen: "AA.DETAILS.DOCUMENTS.AR"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "HORIZONTAL.DRILLDOWNS" ; "SINGLE.BACKGROUND.COLOUR"
+}

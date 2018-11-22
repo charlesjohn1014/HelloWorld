@@ -1,0 +1,252 @@
+Enquiry "SC.SETTLEMENT.AUTH" for "name:/SC_SctSettlement:SC.SETTLEMENT$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Settlements to be Authorised"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RECORD.STATUS" {
+        Matches "...NAU..."
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Client No"
+            }
+
+        }
+
+        AND
+
+        field "CU.PORTFOLIO" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "DEPOSITORY" {
+            label {
+                en = "Depository"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NUMBER" {
+            label {
+                en = "Security No"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 55
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised Settlement Details\""
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Client "
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        operation: application-field-name "CU.PORTFOLIO"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CU.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "SECURITY" {
+        label {
+            en = "Security"
+        }
+
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "CU.NOM.OS" {
+        label {
+            en = "Client nom o/s"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CU.NOM.OUTSTAND"
+    }
+
+    field "CU.AMT.OS" {
+        label {
+            en = "Client amt o/s"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CU.AMT.OUTSTAND"
+    }
+
+    field "BR.NOM.OS" {
+        label {
+            en = "Brok Nom o/s"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 125
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "BR.NOM.OUTSTAND"
+    }
+
+    field "BR.AMT.OS" {
+        label {
+            en = "Brok amt o/s"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "BR.AMT.OUTSTAND"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "SC.SETTLEMENT,OWN.INP"
+    }
+
+}

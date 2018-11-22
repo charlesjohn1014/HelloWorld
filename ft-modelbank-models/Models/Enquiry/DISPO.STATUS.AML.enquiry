@@ -1,0 +1,299 @@
+Enquiry "DISPO.STATUS.AML" for "name:/EB_OverrideProcessing:DISPO.ITEMS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of FCM Pending Txns"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "DISPO.STATUS" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        AND
+
+        field "DISPO.STATUS" {
+            label {
+                en = "Dispo Status"
+            }
+
+        }
+
+        AND
+
+        field "EVENT.REFERENCE" {
+            label {
+                en = "Event Reference"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"FCM Pending Records\""
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "DISPO.STATUS" {
+        label {
+            en = "Dispo Status"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DISPO.STATUS"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DATE"
+    }
+
+    field "TIME" {
+        label {
+            en = "Time"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIME"
+    }
+
+    field "CDATETIME" {
+        label {
+            en = "Date Time"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: calc "DATE":"TIME"
+    }
+
+    field "REFERENCE" {
+        label {
+            en = "Txn Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "EVENT.REFERENCE"
+    }
+
+    field "LEVEL" {
+        label {
+            en = "Level"
+        }
+
+        format: User
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LEVEL"
+        conversion: getFrom "DISPO.OFFICER" "SHORT.TITLE" false
+    }
+
+    field "CUS.NAME" {
+        format: User
+        length: 60
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EVENT.REFERENCE"
+        conversion: getFrom "CUSTOMER$NAU" "SHORT.NAME" false
+    }
+
+    field "BENE.NAME" {
+        length: 60
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EVENT.REFERENCE"
+        conversion: getFrom "FUNDS.TRANSFER$NAU" "BEN.CUSTOMER" false
+    }
+
+    field "CUS" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER\""
+    }
+
+    field "FT" {
+        comma-separator: false
+        operation: constant "\"FUNDS TRANSFER\""
+    }
+
+    field "NAME" {
+        label {
+            en = "Customer/Beneficiary"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: if "APPLICATION" Equals "CUS" process "CUS.NAME" "BENE.NAME"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "DD1" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "APPLICATION"
+        conversion: replace {
+            oldData: "FUNDS.TRANSFER"
+            newData: " FUNDS.TRANSFER#OT103.SERIAL.AML"
+        }
+
+        conversion: replace {
+            oldData: "CUSTOMER"
+            newData: " CUSTOMER#INPUT.PVT.AML"
+        }
+
+        conversion: replace {
+            oldData: "SECURITY.TRANSFER"
+            newData: " SECURITY.TRANSFER#INPUT.AML"
+        }
+
+    }
+
+    field "DRILLDOWN" {
+        comma-separator: false
+        operation: field-extract "DD1"
+        conversion: oconv "MCC;#;,"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No record pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "REFERENCE"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "REFERENCE"
+        }
+
+        from-field: "DRILLDOWN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View"
+        }
+
+        label-field: "REFERENCE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "REFERENCE"
+        }
+
+        from-field: "DRILLDOWN"
+    }
+
+    attributes: "ALLDATA"
+}

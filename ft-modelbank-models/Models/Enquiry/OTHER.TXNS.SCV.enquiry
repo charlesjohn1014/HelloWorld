@@ -1,0 +1,366 @@
+Enquiry "OTHER.TXNS.SCV" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Other Account Transactions"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+
+    field "@ID" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUS.ID" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        no-header: true
+        operation: constant "\"Facilities\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: constant "\"No options for this selection\""
+    }
+
+    field "CHQ.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: call
+        jBC: "@ E.MB.CHEQUE.TYPE"
+    }
+
+    field "CONCAT1" {
+        comma-separator: false
+        operation: calc "CHQ.TYPE":"\".\""
+    }
+
+    field "CHQ.ID" {
+        comma-separator: false
+        operation: calc "CONCAT1":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend Account"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT,SB.AMEND.SCV"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Account Debit Limit"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.DEBIT.LIMIT,CREATE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Credit Interest"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.CREDIT.INT,CR.MAIN"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Debit Interest"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.DEBIT.INT,DR.MAIN"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Capitalisation Frequency"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCT.CAPITALISATION,INPUT"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Interim Charges"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+        }
+
+        screen: "ACCT.INTERIM.CHG,INPUT"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Interim Capitalisation"
+        }
+
+        label-field: "HEADER"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  Input
+        }
+
+        screen: "ACCT.INTERIM.CAP,INPUT"
+    }
+
+    drilldown "8" {
+        description {
+            en = "Account Closure"
+        }
+
+        label-field: "HEADER"
+        criteria: "CURRENT.ACCOUNT" > "@ID"
+        composite-screen: "ACCOUNT.CLOSURE.SCV"
+    }
+
+    drilldown "9" {
+        description {
+            en = "Issue Card"
+        }
+
+        label-field: "HEADER"
+        criteria: "CURRENT.ACCOUNT" > "@ID" parameters {
+            function:  Input
+        }
+
+        screen: "CARD.ISSUE,INPUT.SCV"
+    }
+
+    drilldown "10" {
+        description {
+            en = "Hold Funds"
+        }
+
+        label-field: "HEADER"
+        criteria: "CURRENT.ACCOUNT" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "AC.LOCKED.EVENTS,INPUT.SCV"
+    }
+
+    drilldown "11" {
+        description {
+            en = "Release Funds"
+        }
+
+        label-field: "HEADER"
+        criteria: "ACCOUNT.NUMBER" Equals "@ID"
+        enquiry: "AC.LOCKED.AMT.REST"
+    }
+
+    drilldown "12" {
+        description {
+            en = "Manage Card"
+        }
+
+        label-field: "HEADER"
+        criteria: "ACCOUNT" Equals "@ID"
+        enquiry: "AMEND.CARD.SCV"
+    }
+
+    drilldown "13" {
+        description {
+            en = "Issue Cheque"
+        }
+
+        label-field: "HEADER"
+        criteria: "CURRENT.ACCOUNT" > "@ID" parameters {
+            function:  Input
+            field: "CHQ.ID"
+        }
+
+        screen: "CHEQUE.ISSUE,INPUT.SCV1"
+    }
+
+    drilldown "14" {
+        description {
+            en = "Stop Cheque"
+        }
+
+        label-field: "HEADER"
+        criteria: "CURRENT.ACCOUNT" > "@ID"
+        criteria: "CURRENT.CUSTOMER" > "CUS.ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "PAYMENT.STOP,INPUTCHQ.SCV"
+    }
+
+    drilldown "15" {
+        description {
+            en = "Stop Amount"
+        }
+
+        label-field: "HEADER"
+        criteria: "CURRENT.ACCOUNT" > "@ID"
+        criteria: "CURRENT.CUSTOMER" > "CUS.ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "PAYMENT.STOP,INPUTAMT.SCV"
+    }
+
+    drilldown "16" {
+        description {
+            en = "Revoke Stop"
+        }
+
+        label-field: "HEADER"
+        criteria: "CURRENT.CUSTOMER" > "CUS.ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "PAYMENT.STOP,REVOKE.SCV"
+    }
+
+    drilldown "17" {
+        description {
+            en = "Set Posting Restriction"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT,PO"
+    }
+
+    drilldown "18" {
+        description {
+            en = "Remove Posting Restriction"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT,PO"
+    }
+
+    drilldown "19" {
+        description {
+            en = "Notice Withdrawal"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "NOTICE.WITHDRAWAL,INPUT"
+    }
+
+    drilldown "20" {
+        description {
+            en = "Statement Frequency"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.STATEMENT,INPUT"
+    }
+
+    drilldown "21" {
+        description {
+            en = "Update Account Statement"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.STATEMENT,PASSBK.SCV"
+    }
+
+    drilldown "22" {
+        description {
+            en = "Print Passbook"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "TT.PASSBOOK.PRINT,SCV"
+    }
+
+    drilldown "23" {
+        description {
+            en = "Alert Subscription"
+        }
+
+        label-field: "HEADER"
+        criteria: "ACCOUNT.NUMBER" Equals "@ID"
+        enquiry: "CUST.ACCOUNT.ALERT.SCV.AA"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.ENQUIRY.FAVOURITES" ; "NO.TOOLBAR"
+}

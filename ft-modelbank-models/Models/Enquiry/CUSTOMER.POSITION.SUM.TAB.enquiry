@@ -1,0 +1,839 @@
+Enquiry "CUSTOMER.POSITION.SUM.TAB" for "name:/ST_Customer:CUSTOMER.POSITION#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Customer Position Summaryreport."
+    }
+
+    description {
+        en = "Customer Position Summary"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 97
+    build-routines {
+        jBC: "E.BUILD.CUS.POSITION"
+    }
+
+    fixed-selection "LIMIT.LEVEL" {
+        Equals "PRODUCT", "INFO", "NULL"
+    }
+
+    fixed-selection "EB.SYSTEM.ID" {
+        NotEquals "LIUT", "FX", "FXBPL", "FXSPL", "SCS", "SCB"
+    }
+
+    fixed-sort: "CUSTOMER" Null
+    fixed-sort: "SORT.POSITION" Null
+    custom-selection {
+
+        field "CUSTOMER.NO" {
+            mandatory: true
+            label {
+                en = "Customer No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DISPLAY.CCY" {
+            label {
+                en = "Ccy"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ASTERIX" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "LOCAL.CCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISPLAY.CCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "DISPLAY.CCY"
+    }
+
+    field "NOT.SPLIT" {
+        comments: "Notional Category to hold the split between off balance sheet items (Limits, Commit) and the rest"
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"40000\""
+    }
+
+    field "CALC.CCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: if "DISPLAY.CCY" Equals "NULL" process "LOCAL.CCY" "DISPLAY.CCY"
+    }
+
+    field "CPE.TYPE" {
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "A" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"A\""
+    }
+
+    field "L" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"L\""
+    }
+
+    field "MINUS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "PERC" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"PERC\""
+    }
+
+    field "CUSTOMER" {
+        comments: "Customer number"
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "CPEP.RECORD" {
+        comments: "Full parameter record which is relevant"
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.CPEP.RECOROD"
+    }
+
+    field "AMT.TO.TAKE" {
+        comments: "Display amount from parameter"
+        comma-separator: false
+        operation: field-extract "CPEP.RECORD"
+        conversion: extract from 4 to 1 delimited by ">"
+    }
+
+    field "AL.TYPE" {
+        comments: "Asset or Liab indicator"
+        comma-separator: false
+        operation: field-extract "CPEP.RECORD"
+        conversion: extract from 6 to 0 delimited by ">"
+    }
+
+    field "BRKCUS" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "CUSTOMER"
+    }
+
+    field "CUS.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Client \""
+    }
+
+    field "DISP.CUST" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            break: NewPage
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 21
+            line: 1
+        }
+
+        operation: field-extract "DISP.CUST"
+        conversion: getFrom "CUSTOMER" "2" false
+    }
+
+    field "OFFICER.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Officer \""
+    }
+
+    field "ACCT.OFFICER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "ACCT.OFFICER.NAME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 21
+            line: 2
+        }
+
+        operation: field-extract "ACCT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "2" false
+    }
+
+    field "CCY.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        operation: constant "\"Amounts in \""
+    }
+
+    field "CCY.CALC" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 5
+        }
+
+        operation: field-extract "CALC.CCY"
+    }
+
+    field "CAT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+    }
+
+    field "SORT.POS" {
+        format: User
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "SORT.POSITION"
+    }
+
+    field "CAT.OR.SORT" {
+        comma-separator: false
+        operation: if "SORT.POS" NotEquals "NULL" process "SORT.POS" "CAT"
+    }
+
+    field "CAT.BK" {
+        comma-separator: false
+        operation: break-change "CAT.OR.SORT"
+    }
+
+    field "D.CAT" {
+        label {
+            en = "Categ"
+        }
+
+        break-condition {
+            field: "CAT.BK"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "CAT.OR.SORT"
+    }
+
+    field "CAT.DESC" {
+        comments: "Display the CATEGORY enrichment"
+        format: User break-condition {
+            field: "CAT.BK"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "D.CAT"
+        conversion: getFrom "CATEGORY" "1" false
+    }
+
+    field "SORT.POS.NAME" {
+        format: User break-condition {
+            field: "CAT.BK"
+        }
+
+        comma-separator: false
+        operation: field-extract "D.CAT"
+        conversion: getFrom "CUS.POS.ENQ.PARAM" "DESCRIPTION" false
+    }
+
+    field "DISP.DESC" {
+        label {
+            en = "Desc"
+        }
+
+        break-condition {
+            field: "CAT.BK"
+        }
+
+        length: 28
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: if "CAT.DESC" NotEquals "NULL" process "CAT.DESC" "SORT.POS.NAME"
+    }
+
+    field "CONVERT.RECORD" {
+        comments: "Convert amounts to local"
+        comma-separator: false
+        operation: field-extract "CALC.CCY"
+        conversion: call
+        jBC: "@ E.CUS.POSITION.EXCHANGE"
+    }
+
+    field "A.L" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ASSET.LIAB.MARKER"
+    }
+
+    field "USE.AL" {
+        comma-separator: false
+        operation: if "AL.TYPE" NotEquals "NULL" process "AL.TYPE" "A.L"
+    }
+
+    field "LOC.AMT.FULL" {
+        comments: "The local equivalent for the comparison and totals"
+        comma-separator: false
+        operation: field-extract "CONVERT.RECORD"
+        conversion: extract from 1 to 1 delimited by ">"
+    }
+
+    field "LOC.AMT.PERC" {
+        comments: "The local percentage amount"
+        comma-separator: false
+        operation: field-extract "CONVERT.RECORD"
+        conversion: extract from 2 to 1 delimited by ">"
+    }
+
+    field "LOCAL.AMOUNT" {
+        comma-separator: false
+        operation: if "AMT.TO.TAKE" Equals "PERC" process "LOC.AMT.PERC" "LOC.AMT.FULL"
+    }
+
+    field "TOTAL.NARR" {
+        break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        escapeSequence: RV
+        display-section: Footer
+        operation: constant "\"TOTAL VALUE IN \""
+    }
+
+    field "TOTAL.CCY" {
+        break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        escapeSequence: RV
+        display-section: Footer
+        operation: field-extract "CALC.CCY"
+    }
+
+    field "ASST" {
+        comma-separator: false
+        operation: if "USE.AL" Equals "A" process "LOCAL.AMOUNT" "ZERO"
+        conversion: convert {
+            oldData: "-"
+        }
+
+    }
+
+    field "LIAL" {
+        comma-separator: false
+        operation: constant "\"LIAL\""
+    }
+
+    field "EB.SYSTEM.ID" {
+        format: User
+        length: 2
+        alignment: Right
+        comma-separator: false
+        operation: i-desc "EB.SYSTEM.ID"
+    }
+
+    field "NON.LIMITS" {
+        comma-separator: false
+        operation: if "EB.SYSTEM.ID" Equals "LIAL" process "ZERO" "ASST"
+    }
+
+    field "TOT.NON.LIMITS" {
+        break-condition {
+            field: "CAT.BK"
+        }
+
+        comma-separator: false
+        operation: total "NON.LIMITS"
+    }
+
+    field "CUS.TOT.NON.LIMITS" {
+        break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        operation: total "NON.LIMITS"
+    }
+
+    field "LIMITS" {
+        comma-separator: false
+        operation: if "EB.SYSTEM.ID" Equals "LIAL" process "ASST" "ZERO"
+    }
+
+    field "TOT.LIMITS" {
+        break-condition {
+            field: "CAT.BK"
+        }
+
+        comma-separator: false
+        operation: total "LIMITS"
+    }
+
+    field "CUS.TOT.LIMITS" {
+        break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        operation: total "LIMITS"
+    }
+
+    field "CAP.LIMIT" {
+        break-condition {
+            field: "CAT.BK"
+        }
+
+        comma-separator: false
+        operation: selection "CUSTOMER.NO"
+        conversion: call
+        jBC: "@ E.CAP.LIMIT.AMOUNT"
+    }
+
+    field "CUS.CAP.LIMIT" {
+        break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        operation: selection "CUSTOMER.NO"
+        conversion: call
+        jBC: "@ E.CAP.LIMIT.AMOUNT"
+    }
+
+    field "MAX.LIMITS" {
+        break-condition {
+            field: "CAT.BK"
+        }
+
+        comma-separator: false
+        operation: if "TOT.LIMITS" Greater "CAP.LIMIT" process "CAP.LIMIT" "TOT.LIMITS"
+    }
+
+    field "CUS.MAX.LIMITS" {
+        break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        operation: if "CUS.TOT.LIMITS" Greater "CUS.CAP.LIMIT" process "CUS.CAP.LIMIT" "CUS.TOT.LIMITS"
+    }
+
+    field "LIAB" {
+        comments: "Strip leading - sign"
+        comma-separator: false
+        operation: if "USE.AL" Equals "L" process "LOCAL.AMOUNT" "ZERO"
+        conversion: convert {
+            oldData: "-"
+        }
+
+    }
+
+    field "TOT.ASST" {
+        label {
+            en = "Assets"
+        }
+
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "CAT.BK"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        escapeSequence: RV
+        position {
+            column: 38
+        }
+
+        processing-mode: Single
+        operation: calc "MAX.LIMITS" + "TOT.NON.LIMITS"
+    }
+
+    field "TOT.LIAB" {
+        label {
+            en = "Liabilities"
+        }
+
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "CAT.BK"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        escapeSequence: RV
+        position {
+            column: 58
+        }
+
+        operation: total "LIAB"
+    }
+
+    field "TOT.CUST.ASST" {
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "BRKCUS"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        escapeSequence: RV
+        display-section: Footer
+        operation: calc "CUS.TOT.NON.LIMITS" + "CUS.MAX.LIMITS"
+    }
+
+    field "ASST.LIAB.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Asset/Liabilities \""
+    }
+
+    field "TOT.CUST.ASST.G" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "BRKCUS"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        escapeSequence: RV
+        display-section: Header
+        position {
+            column: 38
+            line: 3
+        }
+
+        operation: calc "CUS.TOT.NON.LIMITS" + "CUS.MAX.LIMITS"
+    }
+
+    field "TOT.CUST.LIAB" {
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "BRKCUS"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        escapeSequence: RV
+        display-section: Footer
+        processing-mode: Single
+        operation: total "LIAB"
+    }
+
+    field "TOT.CUST.LIAB.G" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "BRKCUS"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        escapeSequence: RV
+        display-section: Header
+        position {
+            column: 58
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: total "LIAB"
+    }
+
+    field "TOT.CUST.VALUE" {
+        break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        operation: calc "TOT.CUST.ASST" - "TOT.CUST.LIAB"
+    }
+
+    field "TOTAL.VALUE.TEXT" {
+        break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        operation: constant "\"Total Customer Value\""
+    }
+
+    field "NULL.02" {
+        break-condition {
+            field: "BRKCUS"
+        }
+
+        length: 28
+        alignment: Right
+        comma-separator: false
+        display-section: Footer
+        operation: constant "\"\""
+    }
+
+    field "TOT.DISP.ASSET" {
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "BRKCUS"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Footer
+        operation: if "TOT.CUST.VALUE" Greater "ZERO" process "TOT.CUST.VALUE" "NULL"
+    }
+
+    field "TOT.VAL.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "BRKCUS"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Total Value \""
+    }
+
+    field "TOT.DISP.ASSET.G" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "BRKCUS"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 38
+            line: 4
+        }
+
+        operation: if "TOT.CUST.VALUE" Greater "ZERO" process "TOT.CUST.VALUE" "NULL"
+    }
+
+    field "TOT.DISP.LIAB" {
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "BRKCUS"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Footer
+        operation: if "TOT.CUST.VALUE" LessThan "ZERO" process "TOT.CUST.VALUE" "NULL"
+    }
+
+    field "TOT.DISP.LIAB.G" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CALC.CCY" negative-pattern #- break-condition {
+            field: "BRKCUS"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 58
+            line: 4
+        }
+
+        operation: if "TOT.CUST.VALUE" LessThan "ZERO" process "TOT.CUST.VALUE" "NULL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "D.CAT"
+        criteria: "CUSTOMER.NO" Equals "CUSTOMER"
+        criteria: "CATEGORY" Equals "CAT"
+        criteria: "SORT.POSITION" Equals "SORT.POS"
+        criteria: "REBUILD.DATA" Equals "\'NO\'"
+        enquiry: "CUSTOMER.POSITION"
+    }
+
+}

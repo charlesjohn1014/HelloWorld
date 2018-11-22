@@ -1,0 +1,427 @@
+Enquiry "AA.PRODUCT.CATALOG" for "name:/AA_ProductManagement:AA.PRODUCT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Groups"
+    }
+
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99 fixed-selection "ACTIVE.PRODUCTS" {
+        Equals "PRODUCT.GROUP"
+    }
+
+    fixed-selection "@ID" {
+        NotMatches "...DEF..."
+    }
+
+    fixed-selection "PRODUCT.GROUP" {
+        NotMatches "\'SEC...\'"
+    }
+
+    fixed-sort: "GROUP.ATTRIBUTE" Null
+    fixed-sort: "PRODUCT.LINE" Null
+    fixed-sort: "PRODUCT.GROUP" Null
+    fixed-sort: "@ID" Null
+    fixed-sort: "DESCRIPTION" Null
+    custom-selection {
+
+        field "PRODUCT.LINE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "ACTIVE.PRODUCTS" {
+            operands: Equals, NotMatches
+        }
+
+        None
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"\""
+    }
+
+    field "TODAY" {
+        alignment: Left
+        comma-separator: false
+        operation: today
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Product Catalogue\""
+    }
+
+    field "PRODUCT.GROUP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.GROUP"
+    }
+
+    field "GROUP" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PRODUCT.GROUP"
+    }
+
+    field "BC.GROUP" {
+        alignment: Left
+        comma-separator: false
+        operation: break-change "D.GROUP"
+    }
+
+    field "DESC.GROUP" {
+        format: User
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PRODUCT.GROUP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "DESCRIPTION" false
+    }
+
+    field "PRODUCT.LINE" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "PRODUCT.LINE"
+    }
+
+    field "DESC.LINE" {
+        format: User
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PRODUCT.LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "G.DESC.LINE" {
+        break-condition {
+            field: "BC.GROUP"
+        }
+
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "DESC.LINE"
+    }
+
+    field "DUP" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "LAST.PRODUCT.LINE" process "\"YES\"" "\"NO\""
+    }
+
+    field "LAST.PRODUCT.LINE" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PRODUCT.LINE"
+    }
+
+    field "D.PRODUCT.LINE" {
+        label {
+            en = "Category"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "DUP" Equals "\"NO\"" process "DESC.LINE" "NULL"
+    }
+
+    field "D.GROUP" {
+        label {
+            en = "Group"
+        }
+
+        display-type: "STARTTREE"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "DESC.GROUP"
+    }
+
+    field "PRODUCT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT"
+    }
+
+    field "D.PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "G.PRODUCT.LINE" {
+        break-condition {
+            field: "BC.GROUP"
+        }
+
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PRODUCT.LINE"
+    }
+
+    field "DUP.GROUP.PL" {
+        break-condition {
+            field: "BC.GROUP"
+        }
+
+        alignment: Left
+        comma-separator: false
+        operation: if "G.PRODUCT.LINE" Equals "LG.PRODUCT.LINE" process "\"YES\"" "\"NO\""
+    }
+
+    field "LG.PRODUCT.LINE" {
+        break-condition {
+            field: "BC.GROUP"
+        }
+
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "G.PRODUCT.LINE"
+    }
+
+    field "GD.PRODUCT.LINE" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User break-condition {
+            field: "BC.GROUP"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "DUP.GROUP.PL" Equals "\"NO\"" process "G.PRODUCT.LINE" "NULL"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "G.GROUP" {
+        display-type: "ENDTREE" break-condition {
+            field: "BC.GROUP"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "D.GROUP"
+    }
+
+    field "V.AAA1" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.NEW I F3 \""
+    }
+
+    field "V.AAA2" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.NEW.NOCCY I F3 \""
+    }
+
+    field "V.PRE.PRI" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"RELATIONSHIP.PRICING\"" process "V.AAA2" "V.AAA1"
+    }
+
+    field "V.AAA3" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"BUNDLE\"" process "V.AAA2" "V.PRE.PRI"
+    }
+
+    field "V.ASC1" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"AA.SIMULATION.CAPTURE,AA.NEW I F3 \""
+    }
+
+    field "NEW.ARR1" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"-NEW-ARRANGEMENT\""
+    }
+
+    field "NEW.ARR" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "PRODUCT.LINE":"NEW.ARR1"
+    }
+
+    field "EFF.DATE1" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\" EFFECTIVE.DATE=\""
+    }
+
+    field "EFF.DATE" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "EFF.DATE1":"TODAY"
+    }
+
+    field "V.AAA" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "V.AAA3":"EFF.DATE"
+    }
+
+    field "V.ASC" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "V.ASC1":"EFF.DATE"
+    }
+
+    field "E.OTHER.PDT" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT.LINK" "DRILL.DOWN.1" false
+    }
+
+    field "ENQ1" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "E.OTHER.PDT"
+    }
+
+    field "E.NO.SIM" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"ENQ AA.NO.SIMULATION.POSSIBLE NONE\""
+    }
+
+    field "ENQ2" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "E.NO.SIM"
+    }
+
+    field "DDOWN1" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "OTHER" process "ENQ1" "V.AAA"
+    }
+
+    field "AG.DDOWN1" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"AGENT\"" process "DRILL1" "DDOWN1"
+    }
+
+    field "DRILL1" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.AG.NEW I F3\""
+    }
+
+    field "DDOWN2" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "OTHER" process "ENQ2" "V.ASC"
+    }
+
+    field "PR" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"RELATIONSHIP.PRICING\""
+    }
+
+    field "D.PR.DOWN" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "PR" process "ENQ2" "DDOWN2"
+    }
+
+    field "AG.DDOWN2" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"AGENT\"" process "ENQ2" "D.PR.DOWN"
+    }
+
+    field "RW.DDOWN3" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"REWARDS\"" process "DRILL3" "AG.DDOWN1"
+    }
+
+    field "DRILL3" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.RD.NEW I F3\""
+    }
+
+    field "RW.DDOWN4" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"REWARDS\"" process "ENQ2" "AG.DDOWN2"
+    }
+
+    drilldown "1" {
+        description {
+            en = "New Arrangement"
+        }
+
+        label-field: "D.PRODUCT"
+        image: "new.gif"
+        criteria: "AA.ACTIVITY" > "NEW.ARR"
+        criteria: "AA.PRODUCT" > "PRODUCT"
+        from-field: "RW.DDOWN3"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Simulate"
+        }
+
+        label-field: "D.PRODUCT"
+        criteria: "AA.ACTIVITY" > "NEW.ARR"
+        criteria: "AA.PRODUCT" > "PRODUCT"
+        from-field: "RW.DDOWN4"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

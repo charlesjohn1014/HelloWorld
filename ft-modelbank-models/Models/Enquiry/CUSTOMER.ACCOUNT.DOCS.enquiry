@@ -1,0 +1,496 @@
+Enquiry "CUSTOMER.ACCOUNT.DOCS" for "name:/DM_ModelBank:NOFILE.CUSTOMER.DOCUMENTS#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "USER.RTN" {
+    }
+
+    fixed-selection "CUSTOMER.NO" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer Documents\""
+    }
+
+    field "HDR.1.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Customer:\""
+    }
+
+    field "CUSTOMER.ID" {
+        comments: "Customer Id"
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 5 to 1 delimited by "#"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HDR.CUSTOMER" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 2
+        }
+
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 2
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "CUST.STREET" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 45
+            line: 2
+        }
+
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "STREET" false
+    }
+
+    field "CUST.ADDRESS" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 2
+        }
+
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "ADDRESS" false
+    }
+
+    field "CUST.DOCS.LINKED" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "#"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "CUST.DOCS" {
+        label {
+            en = "Customer Documents"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "CUST.DOCS.LINKED"
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: replace {
+            oldData: "INTRO"
+            newData: "Introductory"
+        }
+
+        conversion: replace {
+            oldData: "INCORP"
+            newData: "Incorporation"
+        }
+
+        conversion: replace {
+            oldData: "BOARD"
+            newData: "Board"
+        }
+
+        conversion: replace {
+            oldData: "OPERATION"
+            newData: "Operation"
+        }
+
+        conversion: replace {
+            oldData: "MEMORANDUM"
+            newData: "Memorandum"
+        }
+
+        conversion: replace {
+            oldData: "MANDATE"
+            newData: "Mandate"
+        }
+
+    }
+
+    field "CUST.STATUS" {
+        comma-separator: false
+        operation: field-extract "CUST.DOCS.LINKED"
+        conversion: getFrom "CUST.DOCUMENT" "STATUS" false
+    }
+
+    field "ACCT.NO" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "#"
+    }
+
+    field "AC.NO" {
+        label {
+            en = "Account No"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "ACCT.NO"
+    }
+
+    field "ACCOUNT.DOCS" {
+        label {
+            en = "Account Documents"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "#"
+        conversion: extract from 4 to 1 delimited by "*"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: replace {
+            oldData: "INTRO"
+            newData: "Introductory"
+        }
+
+        conversion: replace {
+            oldData: "INCORP"
+            newData: "Incorp"
+        }
+
+        conversion: replace {
+            oldData: "BOARD"
+            newData: "Board"
+        }
+
+        conversion: replace {
+            oldData: "OPERATION"
+            newData: "Operation"
+        }
+
+        conversion: replace {
+            oldData: "MEMORANDUM"
+            newData: "Memorandum"
+        }
+
+        conversion: replace {
+            oldData: "MANDATE"
+            newData: "Mandate"
+        }
+
+    }
+
+    field "ACCT.STATUS" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "#"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "TRANS.DOCUMENT" "STATUS" false
+    }
+
+    field "DISP.DOCS.STATUS" {
+        comma-separator: false
+        operation: if "ACCOUNT.DOCS" NotEquals "NULL" process "ACCT.STATUS" "CUST.STATUS"
+        conversion: replace {
+            oldData: "1"
+            newData: "Received"
+        }
+
+        conversion: replace {
+            oldData: "2"
+            newData: "Not Recevied"
+        }
+
+        conversion: replace {
+            oldData: "3"
+            newData: "Expired"
+        }
+
+    }
+
+    field "DOCS.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "DISP.DOCS.STATUS"
+    }
+
+    field "NO.OF.CHQS.ISSUED" {
+        label {
+            en = "Chqs Issued"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "#"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CHQ.STATUS" {
+        label {
+            en = "Cheque Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "#"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "CHEQUE.ISSUE" "CHEQUE.STATUS" false
+        conversion: getFrom "CHEQUE.STATUS" "DESCRIPTION" false
+        conversion: replace {
+            oldData: "ISSUED"
+            newData: "Issued"
+        }
+
+    }
+
+    field "CUS.APPLN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "#"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "ACC.APPLN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "#"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "VER.1" {
+        comma-separator: false
+        operation: constant "\"IM.DOCUMENT.IMAGE,CAPTURE.CUST.DOC\""
+    }
+
+    field "VER.2" {
+        comma-separator: false
+        operation: constant "\"IM.DOCUMENT.IMAGE,CAPTURE.ACCT.DOC\""
+    }
+
+    field "VER.DECIDE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CUS.APPLN" NotEquals "NULL" process "VER.1" "VER.2"
+    }
+
+    field "CUST.DOC.VER" {
+        comma-separator: false
+        operation: constant "\"CUST.DOCUMENT,INP\""
+    }
+
+    field "TRANS.DOC.VER" {
+        comma-separator: false
+        operation: constant "\"TRANS.DOCUMENT,INPUT\""
+    }
+
+    field "AMEND.DOCUMENT" {
+        comma-separator: false
+        operation: if "CUS.APPLN" NotEquals "NULL" process "CUST.DOC.VER" "TRANS.DOC.VER"
+    }
+
+    field "TRANS.DOC.ID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "#"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "DOCUMENT.ID" {
+        comma-separator: false
+        operation: if "CUS.APPLN" NotEquals "NULL" process "CUST.DOCS.LINKED" "TRANS.DOC.ID"
+    }
+
+    field "GEN.SEL" {
+        comma-separator: false
+        operation: constant "\"IMAGE.REFERENCE EQ \""
+    }
+
+    field "CUS.SEL" {
+        comma-separator: false
+        operation: field-extract "CUSTOMER.ID"
+    }
+
+    field "CONCAT.SEL" {
+        comma-separator: false
+        operation: calc "GEN.SEL":"CUS.SEL"
+    }
+
+    field "DECIDE.SELECTION" {
+        comma-separator: false
+        operation: field-extract "CONCAT.SEL"
+    }
+
+    field "SPACE.02" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "VER.AMEND1" {
+        comma-separator: false
+        operation: calc "AMEND.DOCUMENT":"SPACE":"\"I\"":"SPACE"
+    }
+
+    field "VER.AMEND" {
+        comma-separator: false
+        operation: calc "VER.AMEND1":"DOCUMENT.ID"
+    }
+
+    field "DISP.TEXT" {
+        comma-separator: false
+        operation: constant "\"DOCUMENTS.DRILLDOWN\""
+    }
+
+    field "AMEND.DRILL" {
+        comma-separator: false
+        operation: if "DISP.DOCS.STATUS" NotEquals "NULL" process "VER.AMEND" "DISP.TEXT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Documents available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Capture Document"
+        }
+
+        label-field: "DOCS.STATUS"
+        image: "new.gif"
+        criteria: "CURRENT.CUST" > "CUSTOMER.ID"
+        criteria: "CURRENT.ACCT" > "CUSTOMER.ID"
+        criteria: "CURRENT.DOCS" > "CUST.DOCS"
+        criteria: "CURRENT.ACCT.DOCS" > "ACCOUNT.DOCS" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        from-field: "VER.DECIDE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Document"
+        }
+
+        label-field: "AC.NO"
+        image: "view.gif"
+        criteria: "DECIDE.SELECTION"
+        enquiry: "CUSTOMER.DOCUMENT.VIEW"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reverse Document"
+        }
+
+        label-field: "DOCS.STATUS"
+        image: "view.gif"
+        criteria: "DECIDE.SELECTION"
+        enquiry: "REVERSE.DOCUMENT"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Amend Document"
+        }
+
+        label-field: "DOCS.STATUS"
+        image: "edit.gif"
+        from-field: "AMEND.DRILL"
+    }
+
+    attributes: "NO.TOOLBAR" ; "DISABLE.NO.SORT.OPTIONS"
+}

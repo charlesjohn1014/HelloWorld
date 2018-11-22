@@ -1,0 +1,239 @@
+Enquiry "AA.PRODUCT.CATALOG-PRODUCT.GROUPS" for "name:/AA_ProductManagement:AA.PRODUCT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Groups"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "GROUP.ATTRIBUTE" Null
+    fixed-sort: "PRODUCT.LINE" Null
+    fixed-sort: "PRODUCT.GROUP" Null
+    custom-selection {
+
+        field "PRODUCT.LINE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "ACTIVE.PRODUCTS" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"\""
+    }
+
+    field "PROD.GROUP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.GROUP"
+    }
+
+    field "LINE" {
+        comma-separator: false
+        operation: field-extract "PROD.GROUP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "PRODUCT.LINE" false
+    }
+
+    field "DESC.LINE" {
+        format: User
+        comma-separator: false
+        operation: field-extract "LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "GROUP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PROD.GROUP"
+    }
+
+    field "DESC.GROUP" {
+        format: User
+        comma-separator: false
+        operation: field-extract "GROUP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "DESCRIPTION" false
+    }
+
+    field "ATTR.TABLE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.GROUP.ATTRIBUTE*\""
+    }
+
+    field "GRP.ATTR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: i-desc "GROUP.ATTRIBUTE"
+    }
+
+    field "GRP.ATTRIBUTE" {
+        comma-separator: false
+        operation: field-extract "GRP.ATTR"
+        conversion: value 1
+    }
+
+    field "GRP.ATTRIBUTE.ID" {
+        comma-separator: false
+        operation: calc "ATTR.TABLE":"GRP.ATTRIBUTE"
+    }
+
+    field "DESC.GRP.ATTRIB" {
+        format: User
+        comma-separator: false
+        operation: field-extract "GRP.ATTRIBUTE.ID"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "CATEGORY" {
+        comma-separator: false
+        operation: if "GRP.ATTRIBUTE" Equals "NULL" process "LINE" "GRP.ATTRIBUTE"
+    }
+
+    field "DESC.CATEGORY" {
+        comma-separator: false
+        operation: if "GRP.ATTRIBUTE" Equals "NULL" process "DESC.LINE" "DESC.GRP.ATTRIB"
+    }
+
+    field "B.CATEGORY" {
+        comma-separator: false
+        operation: break-change "CATEGORY"
+    }
+
+    field "D.DESC.CATEGORY" {
+        label {
+            en = "Category"
+        }
+
+        display-type: "STARTTREE"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "DESC.CATEGORY"
+    }
+
+    field "D.DESC.GROUP" {
+        label {
+            en = "Group"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "DESC.GROUP"
+    }
+
+    field "D.GROUP" {
+        label {
+            en = "Group ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        hidden: true
+        operation: field-extract "GROUP"
+    }
+
+    field "G.CATEGORY" {
+        display-type: "ENDTREE" break-condition {
+            field: "B.CATEGORY"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "D.DESC.CATEGORY"
+    }
+
+    field "PLINE" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "PRODUCT.LINE"
+    }
+
+    field "ENQ1" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.CATALOG-PRODUCTS\""
+    }
+
+    field "ENQ2" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"AA.PRODUCT.CATALOG-PRODUCTS.NOSIM\""
+    }
+
+    field "DRILL5" {
+        comma-separator: false
+        operation: if "PLINE" Matches "\"X...\"" process "ENQ1" "ENQ2"
+    }
+
+    field "DRILL4" {
+        comma-separator: false
+        operation: if "PLINE" Equals "\"SAFE.DEPOSIT.BOX\"" process "ENQ1" "DRILL5"
+    }
+
+    field "DRILL1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "PLINE" Equals "\"LENDING\"" process "ENQ1" "DRILL4"
+    }
+
+    field "DRILL2" {
+        comma-separator: false
+        operation: if "PLINE" Equals "\"DEPOSITS\"" process "ENQ1" "DRILL1"
+    }
+
+    field "DRILL3" {
+        comma-separator: false
+        operation: if "PLINE" Equals "\"SAVINGS\"" process "ENQ1" "DRILL2"
+    }
+
+    field "DRILLDOWN" {
+        comma-separator: false
+        operation: if "PLINE" Equals "\"ACCOUNTS\"" process "ENQ1" "DRILL3"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Products"
+        }
+
+        label-field: "D.GROUP"
+        image: "right.arrow.gif"
+        criteria: "PRODUCT.GROUP" Equals "GROUP"
+        from-field: "DRILLDOWN"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

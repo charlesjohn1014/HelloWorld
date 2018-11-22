@@ -1,0 +1,274 @@
+Enquiry "POS.TRANS.DEPO.INAU.LIST" for "name:/SC_SctPositionTransfer:POSITION.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Position Transfers"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DEPOSITORY.FROM" {
+        NotEquals "NULL"
+    }
+
+    fixed-selection "DEPOSITORY.TO" {
+        NotEquals "NULL"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised Position Transfers-BetweenCustodians\""
+    }
+
+    field "ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "SECURITY" {
+        label {
+            en = "Security"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 39
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SEC.ACCT.FM" {
+        label {
+            en = "From Portfolio"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SEC.ACCT.FROM"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "DEPO.FROM" {
+        label {
+            en = "From Custodian"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        column-width: 12
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY.FROM"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "SEC.ACCT" {
+        label {
+            en = "To Portfolio"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SEC.ACCT.TO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "DEP.TO" {
+        label {
+            en = "To Custodian"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        column-width: 12
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY.TO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "INP" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 190
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 0 delimited by "_"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date-Time Stamp"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 225
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "DATE.TIME"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Record Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 226
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "POSITION.TRANSFER,DEPO.INP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "ID"
+        }
+
+        screen: "POSITION.TRANSFER,DEPO.INP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "POSITION.TRANSFER,DEPO.INP"
+    }
+
+}

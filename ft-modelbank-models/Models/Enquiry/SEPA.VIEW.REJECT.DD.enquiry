@@ -1,0 +1,230 @@
+Enquiry "SEPA.VIEW.REJECT.DD" for "name:/EP_OutwardProcess:SEPA.FOLLOW.UP$NAU#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "SEPA transfer waiting to be rejected"
+        }
+
+        column: 1
+        line: 0
+    }
+
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "EP.SEPA.SEL.OUT.CR"
+    }
+
+    fixed-selection "APPLYING.ON" {
+        Equals "\"INWARD\""
+    }
+
+    field "TODAY.DATE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 39
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: today
+        conversion: julian
+        conversion: oconv "D4/E"
+    }
+
+    field "SEPAIN" {
+        comma-separator: false
+        operation: constant "\"SEPAIN\""
+    }
+
+    field "FILE.ID" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "OPERATION.CODE" {
+        label {
+            en = "Operation Code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPERATION.CODE"
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "Debit account no."
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "DEBIT.CCY" {
+        label {
+            en = "Debit currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEBIT.CURRENCY"
+    }
+
+    field "DEBIT.AMOUNT" {
+        label {
+            en = "Debit amount"
+        }
+
+        format: Currency "DEBIT.CCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.AMOUNT"
+    }
+
+    field "DEBIT.CCY.PRINT" {
+        label {
+            en = "Debit CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 57
+        }
+
+        operation: field-extract "DEBIT.CCY"
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit account"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "CREDIT.CCY" {
+        label {
+            en = "Credit currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CREDIT.CURRENCY"
+    }
+
+    field "CREDIT.AMOUNT" {
+        label {
+            en = "Credit amount"
+        }
+
+        format: Currency "CREDIT.CCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 76
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.AMOUNT"
+    }
+
+    field "CREDIT.CCY.PRINT" {
+        label {
+            en = "Credit CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 93
+        }
+
+        operation: field-extract "CREDIT.CCY"
+    }
+
+    field "INITIAL.CLEAR.ID" {
+        label {
+            en = "Initial clear ID"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 97
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INITIAL.CLEAR.ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Reject of a debit operation"
+        }
+
+        label-field: "FILE.ID"
+        criteria: "EQ" parameters {
+            function:  Input
+            field: "FILE.ID"
+        }
+
+        screen: "SEPA.FOLLOW.UP,SEPA.OUTWARD.DB"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View of initial operation"
+        }
+
+        label-field: "INITIAL.CLEAR.ID"
+        criteria: "EQ" parameters {
+            function:  See
+            field: "INITIAL.CLEAR.ID"
+        }
+
+        screen: "SEPA.INWARD,VIEW"
+    }
+
+}

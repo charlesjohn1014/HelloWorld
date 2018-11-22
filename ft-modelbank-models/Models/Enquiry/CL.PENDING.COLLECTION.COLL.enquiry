@@ -1,0 +1,258 @@
+Enquiry "CL.PENDING.COLLECTION.COLL" for "name:/CL_ModelBank:NOFILE.CL.PENDING.COLL.COLLECTOR#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Pending Collections"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+    }
+
+    fixed-selection "AUTOREFRESH" {
+        Equals "60"
+    }
+
+    custom-selection {
+
+        field "COLLECTOR.ID" {
+            label {
+                en = "Collector"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADING" {
+        label {
+            en = "\"Pending Collection Cases\""
+        }
+
+        display-type: "CLASS-HEADER"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Pending Collection Cases\""
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer ID"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "TOT.OD.AMT" {
+        label {
+            en = "Total OD Amt"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "CONTRACT.ID" {
+        label {
+            en = "Contract ID"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "ACTION.CODE" {
+        label {
+            en = "Action Code"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "NO.OF.DAYS.PD" {
+        label {
+            en = "Days in OD"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ACTION.DATE" {
+        label {
+            en = "Action Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "OUTCOME.CODE" {
+        label {
+            en = "Outcome"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+        conversion: getFrom "CL.OUTCOME" "DESCRIPTION" false
+    }
+
+    field "QUEUE" {
+        label {
+            en = "Queue"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "ZERORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\" No data to display \""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Contact Log"
+        }
+
+        label-field: "CUSTOMER.NO"
+        image: "sell.gif"
+        criteria: "CONTACT.CLIENT" Equals "CUSTOMER.NO"
+        enquiry: "CR.CONTACT.LOG"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Execute Activity"
+        }
+
+        label-field: "CUSTOMER.NO"
+        image: "action.gif"
+        criteria: "COLLECTOR" Equals "COLLECTOR.ID" parameters {
+            function:  Input
+            field: "CUSTOMER.NO"
+        }
+
+        screen: "CL.COLLECTION.ITEM,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Single Customer View"
+        }
+
+        label-field: "CUSTOMER.NO"
+        image: "custscv.gif"
+        criteria: "CURRENT.CUSTOMER" > "CUSTOMER.NO" parameters {
+            field: "CUSTOMER.NO"
+        }
+
+        composite-screen: "CUSTOMER.OVERVIEW.CSM"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES" ; "DISABLE.NO.SORT.OPTIONS" ; "NO.MORE.OPTIONS"
+}

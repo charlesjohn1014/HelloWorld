@@ -1,0 +1,106 @@
+Enquiry "MO.CHEQUE.STATUS" for "name:/MO_ModelBank:NOFILE.MO.CHEQUE.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Cheque Status"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "SEL.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "ACCOUNT.NO" {
+            mandatory: true
+            label {
+                en = "Account No"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "RET.DATA" {
+        format: User
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "CHQ.NO" {
+        label {
+            en = "CHEQUE NO"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "RET.DATA"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CHQ.TYPE" {
+        label {
+            en = "CHEQUE TYPE"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "RET.DATA"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CHEQUE.TYPE" {
+        label {
+            en = "CHEQUE TYPE"
+        }
+
+        comma-separator: false
+        operation: field-extract "CHQ.TYPE"
+        conversion: getFrom "CHEQUE.TYPE" "DESCRIPTION" false
+    }
+
+    field "CHQ.STATUS" {
+        label {
+            en = "CHEQUE STATUS"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "RET.DATA"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "ZERO.RECORD" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"The cheque status details are unavailable\""
+    }
+
+    security {
+        application: "CHEQUE.TYPE"
+        field: "CHEQUE.TYPE"
+        abort: true
+    }
+
+    attributes: "UNDERLINE.HEADER.ROW"
+}

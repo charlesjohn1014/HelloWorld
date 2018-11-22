@@ -1,0 +1,367 @@
+Enquiry "TF.IMPACCEPT" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Outstg.Import Bills Sent on Collection"
+    }
+
+    description {
+        en = "Outstg.Importt Bills Sent on Colln"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.IMPDR"
+    }
+
+    fixed-selection "DRAWING.TYPE" {
+        Equals "CO", "SG"
+    }
+
+    fixed-selection "DISCREPANCY" {
+        Equals "NO", "NULL"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.LINK" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: constant "\"Import LC Clean Documents and Shipping GuaranteeDrawings\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Drawing No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LC.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "LC.OLD.NO" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "LC.NO"
+        conversion: getFrom "LETTER.OF.CREDIT" "OLD.LC.NUMBER" false
+    }
+
+    field "LC.CREDIT.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: getFrom "LC.TYPES" "PAY.TYPE" false
+    }
+
+    field "CUSTOMER.LINK" {
+        label {
+            en = "Applicant"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.LINK"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PRESENTOR" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRESENTOR"
+    }
+
+    field "PRESENTOR.CUST" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "PRESENTOR.DISP" {
+        label {
+            en = "Presentor"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "PRESENTOR.CUST" NotEquals "NULL" process "PRESENTOR.CUST" "PRESENTOR"
+    }
+
+    field "DRAWING.TYPE" {
+        label {
+            en = "Draw Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "P" {
+        comma-separator: false
+        operation: constant "\"Sight Payment\""
+    }
+
+    field "A" {
+        comma-separator: false
+        operation: constant "\"Acceptance\""
+    }
+
+    field "D" {
+        comma-separator: false
+        operation: constant "\"Deferred Payment\""
+    }
+
+    field "M" {
+        comma-separator: false
+        operation: constant "\"Mixed Payment\""
+    }
+
+    field "NA" {
+        comma-separator: false
+        operation: constant "\"Usance Negotiation\""
+    }
+
+    field "NS" {
+        comma-separator: false
+        operation: constant "\"Sight Negotiation\""
+    }
+
+    field "COND1" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: if "LC.CREDIT.TYPE" Equals "\"P\"" process "P" "COND2"
+    }
+
+    field "COND2" {
+        comma-separator: false
+        operation: if "LC.CREDIT.TYPE" Equals "\"A\"" process "A" "COND3"
+    }
+
+    field "COND3" {
+        comma-separator: false
+        operation: if "LC.CREDIT.TYPE" Equals "\"D\"" process "D" "COND4"
+    }
+
+    field "COND4" {
+        comma-separator: false
+        operation: if "LC.CREDIT.TYPE" Equals "\"NA\"" process "NA" "COND5"
+    }
+
+    field "COND5" {
+        comma-separator: false
+        operation: if "LC.CREDIT.TYPE" Equals "\"NS\"" process "NS" "COND6"
+    }
+
+    field "COND6" {
+        comma-separator: false
+        operation: if "LC.CREDIT.TYPE" Equals "\"M\"" process "M" "NULL"
+    }
+
+    field "NEW.DRAW.SET" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NEW.DRAW.SET"
+    }
+
+    field "TXN.DOWN" {
+        comma-separator: false
+        operation: field-extract "NEW.DRAW.SET"
+        conversion: replace {
+            oldData: "SP"
+            newData: "IMPSP"
+        }
+
+        conversion: replace {
+            oldData: "AC"
+            newData: "IMPAC"
+        }
+
+        conversion: replace {
+            oldData: "DP"
+            newData: "IMDP"
+        }
+
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS,\""
+    }
+
+    field "TXN.DRILL" {
+        comma-separator: false
+        operation: calc "APPL":"TXN.DOWN"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Document Recd on"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Import LC documents is Pending for Payment/Acceptance\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Pay/Accept"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "TXN.DRILL"
+    }
+
+}

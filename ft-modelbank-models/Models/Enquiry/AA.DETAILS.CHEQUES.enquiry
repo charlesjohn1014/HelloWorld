@@ -1,0 +1,137 @@
+Enquiry "AA.DETAILS.CHEQUES" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Cheque Enquiries"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "ARR" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "C.DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "F.AC.NO" {
+        length: 34
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "F.AC.NO.LIKE" {
+        comma-separator: false
+        operation: calc "C.DOT":"F.AC.NO":"C.DOT"
+    }
+
+    field "CUS.ID" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "ENQ.CHEQUES.REQUEST" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.CHEQUES.REQUESTED\""
+    }
+
+    field "ENQ.CHEQUES.ISSUED" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.CHEQUES.ISSUED\""
+    }
+
+    field "ENQ.CHEQUES.PRESENTED" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.CHEQUES.PRESENTED\""
+    }
+
+    field "ENQ.CHEQUES.STOPPED" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.CHEQUES.STOPPED\""
+    }
+
+    field "ENQ.CHEQUES.REVOKED" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.CHQ.REVOKE.AR\""
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 300
+        operation: constant "\"Cheque Enquiries\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Requested"
+        }
+
+        label-field: "HEADER"
+        criteria: "ACCOUNT.NO" Equals "F.AC.NO"
+        from-field: "ENQ.CHEQUES.REQUEST"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Issued"
+        }
+
+        label-field: "HEADER"
+        criteria: "ACCOUNT.NO" Equals "F.AC.NO"
+        from-field: "ENQ.CHEQUES.ISSUED"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Presented"
+        }
+
+        label-field: "HEADER"
+        criteria: "@ID" Contains "F.AC.NO.LIKE"
+        from-field: "ENQ.CHEQUES.PRESENTED"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Stopped"
+        }
+
+        label-field: "HEADER"
+        criteria: "CURRENT.STP.CHQ.VIEW" > "F.AC.NO"
+        from-field: "ENQ.CHEQUES.STOPPED"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Revoked"
+        }
+
+        label-field: "HEADER"
+        criteria: "@ID" Equals "F.AC.NO"
+        from-field: "ENQ.CHEQUES.REVOKED"
+    }
+
+    attributes: "HORIZONTAL.DRILLDOWNS" ; "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ;
+    "SINGLE.BACKGROUND.COLOUR"
+}

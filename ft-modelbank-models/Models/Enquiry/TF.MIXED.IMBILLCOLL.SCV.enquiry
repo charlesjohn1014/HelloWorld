@@ -1,0 +1,265 @@
+Enquiry "TF.MIXED.IMBILLCOLL.SCV" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Outstg.Import Bills Sent on Collection"
+    }
+
+    description {
+        en = "Outstg.Importt Bills Sent on Colln"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.IMPDR"
+    }
+
+    fixed-selection "DRAWING.TYPE" {
+        Equals "CO"
+    }
+
+    fixed-selection "MATURITY.REVIEW" {
+        Equals "\"\""
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.LINK" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Matches
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 1
+        }
+
+        operation: constant "\"Docs Pending for Payment/Acceptance/Rejection\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LC.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "PRESENTOR.CUST" {
+        label {
+            en = "Presentor"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 75
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "DRAWING.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 20
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        column-width: 20
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Doc Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        column-width: 75
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Received On"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "VERSION" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NEW.DRAW.SET"
+        conversion: replace {
+            oldData: "SP"
+            newData: "IMPSP"
+        }
+
+        conversion: replace {
+            oldData: "AC"
+            newData: "IMPAC"
+        }
+
+        conversion: replace {
+            oldData: "DP"
+            newData: "IMPAC"
+        }
+
+    }
+
+    field "DRAWINGS" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS,\""
+    }
+
+    field "SEL.VERSION" {
+        comma-separator: false
+        operation: calc "DRAWINGS":"VERSION"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: + 1
+        }
+
+        column-width: 100
+        operation: constant "\"No docs Pending Payment/Acceptance/Rejection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Payment"
+        }
+
+        label-field: "@ID"
+        image: "accept.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,IMPSP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Accept"
+        }
+
+        label-field: "@ID"
+        image: "accept.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,IMPAC"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reject"
+        }
+
+        label-field: "@ID"
+        image: "LCreject.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,IMREJ"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

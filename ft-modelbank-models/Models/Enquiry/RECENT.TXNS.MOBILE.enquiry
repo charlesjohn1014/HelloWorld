@@ -1,0 +1,385 @@
+Enquiry "RECENT.TXNS.MOBILE" for "name:/MO_ModelBank:NOFILE.RECENT.TXNS.MOB#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Mobile Account Statement"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 6
+    end-line: 99
+    custom-selection {
+
+        field "BOOKING.DATE" {
+            label {
+                en = "Booking Date"
+            }
+
+        }
+
+        AND
+
+        field "PROCESSING.DATE" {
+            label {
+                en = "Processing Date"
+            }
+
+        }
+
+        AND
+
+        field "EXPOSURE.DATE" {
+            label {
+                en = "Exposure Date"
+            }
+
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT" {
+            mandatory: true
+            label {
+                en = "Account"
+            }
+
+        }
+
+        AND
+
+        field "APPL.DRILLDOWN" {
+            label {
+                en = "Appl Drilldown"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "NO.OF.TXNS" {
+            label {
+                en = "Number of Txns"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULLVAR" {
+        label {
+            en = "ONCE"
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FILL.REC" {
+        comments:
+        "Read the entry record for the passe entry id. Will also return the narrative if not set to NO in SHOW NARRATIVE."
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MC.READ.STMT.ENTRY"
+    }
+
+    field "ACC" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ORIG.ACCT" {
+        comments: "The original account number"
+        comma-separator: false
+        operation: field-extract "ACC"
+        conversion: getFrom "ACCOUNT" "ORIGINAL.ACCT" false
+    }
+
+    field "AUTO.PAY.ACCT" {
+        comments: "Linked auto pay acct"
+        comma-separator: false
+        operation: field-extract "ACC"
+        conversion: getFrom "ACCOUNT" "AUTO.PAY.ACCT" false
+    }
+
+    field "B.ACC" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACC"
+    }
+
+    field "ACCSNM" {
+        label {
+            en = "Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ACC"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: field-number 12
+    }
+
+    field "FIX.CCY" {
+        comments: "The fixed currency"
+        comma-separator: false
+        operation: field-extract "CCY"
+        conversion: getFixedCcy "CCY"
+    }
+
+    field "LANG" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: language
+    }
+
+    field "TCODE" {
+        comma-separator: false
+        operation: field-number 4
+    }
+
+    field "CVDT" {
+        comma-separator: false
+        operation: field-number 11
+        conversion: julian
+        conversion: oconv "D2"
+        conversion: replace {
+            oldData: "--"
+        }
+
+    }
+
+    field "DESC" {
+        format: User
+        comma-separator: false
+        operation: field-number 4
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "NOREC" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*** NO ENT\""
+    }
+
+    field "NOREC1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"RIES FOR PERIOD ***\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DELIM" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\":\""
+    }
+
+    field "THEIR.REF" {
+        comma-separator: false
+        operation: field-number 5
+    }
+
+    field "VALDESC" {
+        label {
+            en = "Value date"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 44
+        }
+
+        operation: if "TCODE" NotEquals "NULL" process "CVDT" "NOREC"
+    }
+
+    field "PDESC" {
+        label {
+            en = "Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        operation: if "TCODE" NotEquals "NULL" process "DESC" "NOREC1"
+    }
+
+    field "FTNO" {
+        label {
+            en = "FT Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "REFNO" {
+        label {
+            en = "Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "REFID" {
+        label {
+            en = "ID Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 74
+        }
+
+        operation: if "FTNO" NotEquals "NULL" process "FTNO" "REFNO"
+    }
+
+    field "AMT" {
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "NOREC2" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"------------------\""
+    }
+
+    field "PAMT" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 99
+        }
+
+        operation: if "TCODE" NotEquals "NULL" process "AMT" "NOREC2"
+    }
+
+    field "PRIN.CCY" {
+        label {
+            en = "CCY"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        operation: field-extract "CCY"
+    }
+
+    field "ACCT.TO" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCT.TO.SNM" {
+        label {
+            en = "Other Party Acc"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 125
+        }
+
+        operation: field-extract "ACCT.TO"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "PAY.DETAILS" {
+        label {
+            en = "Payment Details"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 163
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+}

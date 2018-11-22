@@ -1,0 +1,261 @@
+Enquiry "FXBULK.AUTH.NAU" for "name:/FX_BulkOrder:FX.BULK.ORDER$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "List of Unauthorised Fx Bulk Order"
+    }
+
+    description {
+        en = "Unauthorised Fx Bulk Order"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "DEAL.TYPE" {
+            label {
+                en = "Deal Type"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.ID" {
+            label {
+                en = "Cutomer Id"
+            }
+
+        }
+
+        AND
+
+        field "SEC.ACC.NO" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised Fx Bulk Order\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DEAL.TYPE" {
+        label {
+            en = "Deal Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.TYPE"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "CUSTOMER.ID"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy Bought"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CURRENCY.BOUGHT"
+    }
+
+    field "CCY2" {
+        label {
+            en = "Ccy Sold"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY.SOLD"
+    }
+
+    field "AMOUNT.BOUGHT" {
+        label {
+            en = "Amount Bought"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT.BOUGHT"
+    }
+
+    field "AMOUNT.SOLD" {
+        label {
+            en = "Amount Sold"
+        }
+
+        format: Currency "CCY2" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT.SOLD"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "FX.BULK.ORDER,BULK"
+    }
+
+}

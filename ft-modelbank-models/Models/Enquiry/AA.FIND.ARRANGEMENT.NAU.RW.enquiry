@@ -1,0 +1,415 @@
+Enquiry "AA.FIND.ARRANGEMENT.NAU.RW" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorized Rewards Arrangements"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99 fixed-selection "ARR.STATUS" {
+        Equals "UNAUTH"
+    }
+
+    fixed-selection "PRODUCT.LINE" {
+        Equals "REWARDS"
+    }
+
+    fixed-sort: "PRODUCT.LINE" Null
+    fixed-sort: "ARR.STATUS" Null
+    fixed-sort: "PRODUCT.GROUP" Null
+    fixed-sort: "LINKED.APPL.ID" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement"
+            }
+
+        }
+
+        AND
+
+        field "PRODUCT.GROUP" {
+            label {
+                en = "Product Group"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        AND
+
+        field "PRODUCT" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        None
+    }
+
+    field "SP" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "ACCOUNT" {
+        label {
+            en = "Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: value 1
+    }
+
+    field "PRODUCT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT"
+        conversion: value 1 1
+    }
+
+    field "PRODUCT.DESC" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer #"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "PRODUCT.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "PRODUCT.CODE" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PRODUCT.LINE"
+        conversion: replace {
+            oldData: "ACCOUNTS"
+            newData: "AR"
+        }
+
+        conversion: replace {
+            oldData: "DEPOSITS"
+            newData: "AD"
+        }
+
+        conversion: replace {
+            oldData: "LENDING"
+            newData: "AL"
+        }
+
+        conversion: replace {
+            oldData: "BUNDLE"
+            newData: "AB"
+        }
+
+        conversion: replace {
+            oldData: "RELATIONSHIP.PRICING"
+            newData: "PR"
+        }
+
+        conversion: replace {
+            oldData: "INTERNET.SERVICES"
+            newData: "GEN"
+        }
+
+        conversion: replace {
+            oldData: "MOBILE.SERVICES"
+            newData: "GEN"
+        }
+
+        conversion: replace {
+            oldData: "PROXY.SERVICES"
+            newData: "GEN"
+        }
+
+        conversion: replace {
+            oldData: "AGENT"
+            newData: "AG"
+        }
+
+        conversion: replace {
+            oldData: "REWARDS"
+            newData: "RW"
+        }
+
+    }
+
+    field "ARR.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.STATUS"
+        conversion: replace {
+            oldData: "AUTH-FWD"
+            newData: "AUTH"
+        }
+
+    }
+
+    field "C.NAU" {
+        alignment: Left
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "\"UNAUTH\"" process "\"NAU.\"" "\"\""
+    }
+
+    field "ARR.STATUS.AD" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ARR.STATUS"
+        conversion: replace {
+            oldData: "AUTH"
+            newData: "Not Funded"
+        }
+
+    }
+
+    field "ARR.STATUS.AL" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ARR.STATUS"
+        conversion: replace {
+            oldData: "AUTH"
+            newData: "Not Disbursed"
+        }
+
+    }
+
+    field "ARR.STATUS.AR" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ARR.STATUS"
+        conversion: replace {
+            oldData: "AUTH"
+            newData: "Current"
+        }
+
+    }
+
+    field "ARR.STATUS1" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.CODE" Equals "AD" process "ARR.STATUS.AD" "ARR.STATUS.AR"
+        conversion: replace {
+            oldData: "CURRENT"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "EXPIRED"
+            newData: "Expired"
+        }
+
+        conversion: replace {
+            oldData: "PENDING.CLOSURE"
+            newData: "Pending Closure"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Unauthorised"
+        }
+
+    }
+
+    field "ARR.STATUS.02" {
+        label {
+            en = "Status"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: if "PRODUCT.CODE" Equals "AL" process "ARR.STATUS.AL" "ARR.STATUS1"
+        conversion: replace {
+            oldData: "AUTH"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "CURRENT"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "EXPIRED"
+            newData: "Expired"
+        }
+
+        conversion: replace {
+            oldData: "PENDING.CLOSURE"
+            newData: "Pending Closure"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Unauthorised"
+        }
+
+    }
+
+    field "C.COS" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"COS\""
+    }
+
+    field "C.GEN.OVER" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.OVERVIEW\""
+    }
+
+    field "C.PL.OVER1" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"AA.OVERVIEW.\""
+    }
+
+    field "C.PL.OVER" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "C.PL.OVER1":"C.NAU":"PRODUCT.CODE"
+    }
+
+    field "COS.NAME" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRODUCT.CODE" Equals "GEN" process "C.GEN.OVER" "C.PL.OVER"
+    }
+
+    field "DRILL.COS" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "C.COS":"SP":"COS.NAME":"SP":"ARRANGEMENT"
+    }
+
+    field "ZERORECORDS" {
+        break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Data to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Overview"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "view.gif"
+        from-field: "DRILL.COS"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

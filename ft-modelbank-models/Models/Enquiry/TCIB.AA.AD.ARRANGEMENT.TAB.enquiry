@@ -1,0 +1,292 @@
+Enquiry "TCIB.AA.AD.ARRANGEMENT.TAB" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Search"
+    }
+
+    start-line: 4
+    end-line: 5 fixed-selection "PRODUCT.LINE" {
+        Equals "\"DEPOSITS\"", "\"SAVINGS\""
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "UNAUTH", "CANCELLED", "MATURED", "CLOSE"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Deposit Reference"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "LINKED.APPL.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: value 1
+    }
+
+    field "D.ACCOUNT" {
+        label {
+            en = "Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "ACCT.NICK.NAME" {
+        label {
+            en = "Nick name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "ACCT.NAME" {
+        label {
+            en = "Account Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "D.TERM.AMOUNT" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.TC.TERM.DETAILS"
+    }
+
+    field "D.TERM" {
+        label {
+            en = "Term"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "D.TERM.AMOUNT"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "D.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "D.TERM.AMOUNT"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "VALUE.DATE" false
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "MATURITY.DATE" false
+    }
+
+    field "INT.ACCOUNT" {
+        label {
+            en = "Servicing Account Number"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "D.TERM.AMOUNT"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "INTEREST.RATE" {
+        label {
+            en = "Interest Rate"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-extract "D.TERM.AMOUNT"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Category"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+    }
+
+    field "CATEGORY.DESC" {
+        label {
+            en = "Category Description"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "PRODUCT.LINE" {
+        label {
+            en = "Product Line"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "PRODUCT.GROUP" {
+        label {
+            en = "Product Group"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.GROUP"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT"
+    }
+
+}

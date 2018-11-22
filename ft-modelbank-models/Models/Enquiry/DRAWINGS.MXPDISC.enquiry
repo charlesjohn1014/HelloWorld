@@ -1,0 +1,266 @@
+Enquiry "DRAWINGS.MXPDISC" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Discounting done for Acceptance"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99 fixed-selection "DRAWING.TYPE" {
+        Equals "MX"
+    }
+
+    fixed-selection "TRANS.TYPE" {
+        Equals "IMPORTS"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "DRAW.CURRENCY" {
+            label {
+                en = "Draw Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DOCUMENT.AMOUNT" {
+            label {
+                en = "Draw Amount"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Documents pending for discounting\""
+    }
+
+    field "LC.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "LC.OLD.NO" {
+        comma-separator: false
+        operation: field-extract "LC.NO"
+        conversion: getFrom "LETTER.OF.CREDIT" "OLD.LC.NUMBER" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LC.NO.DISPLAY" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: if "LC.OLD.NO" NotEquals "NULL" process "LC.OLD.NO" "LC.NO"
+    }
+
+    field "LC.CREDIT.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: getFrom "LC.TYPES" "DESCRIPTION" false
+    }
+
+    field "SETTLEMENT.TERMS" {
+        label {
+            en = "Settlement Terms"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.TERMS"
+    }
+
+    field "CUSTOMER.LINK" {
+        label {
+            en = "Applicant"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.LINK"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "PAYMENT.TYPE" {
+        label {
+            en = "Payment Terms"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.TYPE"
+    }
+
+    field "INST.PAY.AMT" {
+        label {
+            en = "Payment Portion"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INST.PAY.AMT"
+    }
+
+    field "ACPT.TM.BAND" {
+        label {
+            en = "Acpt Tm Band"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACPT.TM.BAND"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records pending for Discounting\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Accept"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,MXPDISC"
+    }
+
+    security {
+        abort: false
+    }
+
+}

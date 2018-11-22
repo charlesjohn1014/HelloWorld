@@ -1,0 +1,262 @@
+Enquiry "AA.BILLS.TAB" for "name:/AA_PaymentSchedule:AA.BILL.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Bills"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 15
+    fixed-sort: "PAYMENT.DATE" Descending
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+        }
+
+        None
+    }
+
+    field "CURRENCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "BILL.REFERENCE" {
+        label {
+            en = "Bill Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "BILL.REFERENCE"
+    }
+
+    field "PAYMENT.DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.DATE"
+    }
+
+    field "BILL.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BILL.TYPE"
+        conversion: value 1
+    }
+
+    field "D.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        format: Translate
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "BILL.TYPE"
+        conversion: replace {
+            oldData: "ACT.CHARGE"
+            newData: "Activity Charge"
+        }
+
+        conversion: replace {
+            oldData: "PAYMENT"
+            newData: "Scheduled Payment"
+        }
+
+        conversion: replace {
+            oldData: "PR.CHARGE"
+            newData: "Break Rule Charge"
+        }
+
+        conversion: replace {
+            oldData: "PAYOFF"
+            newData: "Payoff"
+        }
+
+    }
+
+    field "OR.TOTAL.AMOUNT" {
+        label {
+            en = "Billed Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OR.TOTAL.AMOUNT"
+    }
+
+    field "OS.TOTAL.AMOUNT" {
+        label {
+            en = "Outstanding"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OS.TOTAL.AMOUNT"
+    }
+
+    field "PROPERTY" {
+        comma-separator: false
+        operation: application-field-name "PROPERTY"
+    }
+
+    field "BILL.STATUS" {
+        format: Translate
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BILL.STATUS"
+        conversion: value 1
+        conversion: oconv "MCT"
+    }
+
+    field "BILL.ST.DT" {
+        format: Date
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BILL.ST.CHG.DT"
+        conversion: value 1
+    }
+
+    field "AGE.STATUS" {
+        format: Translate
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AGING.STATUS"
+        conversion: value 1
+    }
+
+    field "AGE.STATUS.ID" {
+        comma-separator: false
+        operation: calc "\"AA.OVERDUE.STATUS*\"":"AGE.STATUS"
+    }
+
+    field "D.AGE.STATUS" {
+        format: User
+        comma-separator: false
+        operation: field-extract "AGE.STATUS.ID"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "AGE.ST.DT" {
+        format: Date
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AGING.ST.CHG.DT"
+        conversion: value 1
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: if "D.AGE.STATUS" NotEquals "\"\"" process "D.AGE.STATUS" "BILL.STATUS"
+        conversion: replace {
+            oldData: "Capitalise"
+            newData: "Capitalize"
+        }
+
+    }
+
+    field "STATUS.DATE" {
+        label {
+            en = "Status Date"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: if "AGE.STATUS" NotEquals "\"\"" process "AGE.ST.DT" "BILL.ST.DT"
+    }
+
+    field "V.BILL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.BILL.DETAILS,AA S \""
+    }
+
+    field "C.PAYOFF" {
+        comma-separator: false
+        operation: constant "\"COS AA.PAYOFF.STATEMENT \""
+    }
+
+    field "COMMAND" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "BILL.TYPE" Equals "\"PAYOFF\"" process "C.PAYOFF" "V.BILL"
+    }
+
+    field "DRILLDOWN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "COMMAND":"BILL.REFERENCE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "BILL.REFERENCE"
+        image: "view.gif"
+        from-field: "DRILLDOWN"
+    }
+
+}

@@ -1,0 +1,686 @@
+Enquiry "CASH.FLOW.FORECAST.MUL.PORT" for "name:/AM_ModelBank:NOFILE.CASH.FLOW.MUL.PORT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cash Flow Projection"
+    }
+
+    description {
+        en = "Cash Flow Projection"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 6
+    end-line: 19 fixed-selection "SEL.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "PORT.ID" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "AM.CRITERIA" {
+            label {
+                en = "Criteria Group"
+            }
+
+        }
+
+        AND
+
+        field "CF.TYPE.1" {
+            label {
+                en = "Corp Action Type"
+            }
+
+        }
+
+        AND
+
+        field "LIM.DATE" {
+            label {
+                en = "Upto Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "PORT.ID" {
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: selection "PORT.ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Cash Flow Projection\""
+    }
+
+    field "AM.CRITERIA" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: selection "AM.CRITERIA"
+    }
+
+    field "PORT.LABEL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Portfolio/Criteria:\""
+    }
+
+    field "NL.VALUE" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PORT.VALUE" {
+        label {
+            en = "Portfolio:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: if "PORT.ID" NotEquals "NL.VALUE" process "PORT.ID" "AM.CRITERIA"
+    }
+
+    field "DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Current Date:\""
+    }
+
+    field "DATE1" {
+        label {
+            en = "Current Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: today
+    }
+
+    field "UPTO.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Projection For:\""
+    }
+
+    field "DATE.90" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Next 90 Days\""
+    }
+
+    field "LIMT.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: selection "LIM.DATE"
+    }
+
+    field "LIMIT.DATE" {
+        label {
+            en = "Projection For:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        operation: if "LIMT.DATE" Equals "NL.VALUE" process "DATE.90" "LIMT.DATE"
+    }
+
+    field "VAL.CCY" {
+        comma-separator: false
+        operation: constant "\"Valuation CCY:\""
+    }
+
+    field "VALU.CCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: if "PORT.ID" NotEquals "NL.VALUE" process "VAL.CCY" "NL.VALUE"
+    }
+
+    field "PORTF.ID" {
+        format: User
+        comma-separator: false
+        operation: selection "PORT.ID"
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.CURRENCY" false
+    }
+
+    field "PORT.VAL.CCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 4
+        }
+
+        operation: if "PORT.ID" NotEquals "NL.VALUE" process "PORTF.ID" "NL.VALUE"
+    }
+
+    field "PORTFOLIO ID" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "PORT CURR" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "INSTR-ID" {
+        label {
+            en = "Instrument Ref"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "INST DESC" {
+        label {
+            en = "Instrument"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "NOMINAL" {
+        label {
+            en = "Quantity"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "CF.TYPE" {
+        label {
+            en = "Corp Action"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "CCY"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CASH ACCT" {
+        label {
+            en = "Account"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        operation: field-number 0
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "BRK.CCY" {
+        comma-separator: false
+        operation: break-change "CURRENCY"
+    }
+
+    field "CF.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 180
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "NA" {
+        comma-separator: false
+        operation: constant "\"Not Applicable\""
+    }
+
+    field "FX.RATE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "FX.RATE.DISP" {
+        label {
+            en = "FX Rate"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 200
+        }
+
+        hidden: true
+        operation: if "VALU.CCY" NotEquals "NL.VALUE" process "FX.RATE" "NA"
+    }
+
+    field "AMOUNT.R.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "AMT.R.CCY" {
+        label {
+            en = "Amt in Val Ccy"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 220
+        }
+
+        hidden: true
+        operation: if "VALU.CCY" NotEquals "NL.VALUE" process "AMOUNT.R.CCY" "NA"
+    }
+
+    field "VAL.TOTAL" {
+        comma-separator: false
+        operation: field-extract "VALUE.DATE"
+        conversion: extract from 4 to 7
+    }
+
+    field "VAL.CHANGE" {
+        comma-separator: false
+        operation: break-change "VAL.TOTAL"
+    }
+
+    field "LINE.AMOUNT" {
+        break-condition {
+            field: "BRK.CCY"
+        }
+
+        length: 180
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 180
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "TOTAL.TEXT" {
+        display-type: "CLASS-BOLD" break-condition {
+            field: "BRK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\"Total for Ccy \""
+    }
+
+    field "TOT.CNTN" {
+        label {
+            en = "Total for the Currency"
+        }
+
+        display-type: "CLASS-FDLB" break-condition {
+            field: "BRK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        operation: field-extract "CURRENCY"
+    }
+
+    field "TOT.AMOUNT" {
+        display-type: "CLASS-FDLB" break-condition {
+            field: "BRK.CCY"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 180
+            line: + 1
+        }
+
+        operation: total "CF.AMOUNT"
+    }
+
+    field "BLANC.LINE" {
+        break-condition {
+            field: "BRK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 180
+            line: + 2
+        }
+
+        operation: constant "\"----------------------\""
+    }
+
+    field "YREND.TOTAL" {
+        comma-separator: false
+        operation: field-extract "VALUE.DATE"
+        conversion: extract from 8 to 12
+    }
+
+    field "YREND.CHANGE" {
+        comma-separator: false
+        operation: break-change "YREND.TOTAL"
+    }
+
+    field "VALYR.CHANGE" {
+        display-type: "CLASS-FDLB" break-condition {
+            field: "YREND.CHANGE"
+        }
+
+        comma-separator: false
+        operation: constant "\"Total for the Year:\""
+    }
+
+    field "LINEYR.AMOUNT" {
+        break-condition {
+            field: "YREND.CHANGE"
+        }
+
+        comma-separator: false
+        operation: constant "\"-------------------\""
+    }
+
+    field "TOTYR.AMOUNT" {
+        display-type: "CLASS-FDLB" break-condition {
+            field: "YREND.CHANGE"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: total "CF.AMOUNT"
+    }
+
+    field "BLANC.LINE.02" {
+        break-condition {
+            field: "YREND.CHANGE"
+        }
+
+        comma-separator: false
+        position {
+            column: 180
+            line: + 3
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "GRAND.TOTAL" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        operation: constant "\"Grand Total:\""
+    }
+
+    field "GRAND.CHANGE" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: End
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: total "AMOUNT.R.CCY"
+    }
+
+    field "NOTE" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        operation: constant "\"Note: \""
+    }
+
+    field "DESC1" {
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 5
+        }
+
+        operation: constant "\"For Fixed Income instruments, only the next sche\""
+    }
+
+    field "DESC2" {
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 180
+            line: 5
+        }
+
+        operation: constant "\"duled coupon payments are show in this report\""
+    }
+
+    field "DDOWN1" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "*"
+        conversion: call
+        jBC: "@ E.SC.VAL.SELECTION"
+    }
+
+    field "SYSTEM.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Cash Flows expected for this Portfolio\""
+    }
+
+    field "ZERONOREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: constant "\"or Criteria or Extend the date\""
+    }
+
+}

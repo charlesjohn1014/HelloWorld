@@ -1,0 +1,263 @@
+Enquiry "AA.PROPERTY.CONDITIONS-LIST" for "name:/AA_ProductFramework:NOFILE.AA.PROPERTY.CONDITIONS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Property Conditions"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "GET.LIST" {
+        NotEquals "NULL"
+    }
+
+    custom-selection {
+
+        field "PROPERTY" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Defined Properties\""
+    }
+
+    field "N.TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Defined Properties\""
+    }
+
+    field "L.CLASS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: constant "\"Available for: \""
+    }
+
+    field "N.L.CLASS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: constant "\"Available for: \""
+    }
+
+    field "PROPERTY" {
+        label {
+            en = "Available for:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 20
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        operation: selection "PROPERTY"
+    }
+
+    field "N.PROPERTY" {
+        label {
+            en = "Available for:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            break: None
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        operation: selection "PROPERTY"
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "FILE" {
+        comma-separator: false
+        hidden: true
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "_"
+    }
+
+    field "RECORD" {
+        comma-separator: false
+        hidden: true
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "BASE" {
+        label {
+            en = "Base"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "RECORD"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ID.PART.2" {
+        comma-separator: false
+        operation: field-extract "RECORD"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "ID.PART.3" {
+        comma-separator: false
+        operation: field-extract "RECORD"
+        conversion: extract from 3 to 1 delimited by "-"
+    }
+
+    field "ID.PART.2.8" {
+        comma-separator: false
+        operation: field-extract "ID.PART.2"
+        conversion: extract from 8 to 1
+    }
+
+    field "CCY" {
+        label {
+            en = "Ccy."
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: if "ID.PART.2.8" Equals "NULL" process "ID.PART.2" "NULL"
+    }
+
+    field "EFF.DATE" {
+        label {
+            en = "Effective"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: if "CCY" Equals "NULL" process "ID.PART.2" "ID.PART.3"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.AA.GET.RECORD"
+        conversion: extract from 1 to 1 delimited by ">"
+    }
+
+    field "BASE.KEY" {
+        comma-separator: false
+        operation: field-extract "RECORD"
+        conversion: extract from 1 to 2 delimited by "-"
+    }
+
+    field "VERSION" {
+        comma-separator: false
+        hidden: true
+        operation: calc "FILE":"\",AA\""
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"There are no Defined Property records.\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "EFF.DATE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "RECORD"
+        }
+
+        from-field: "VERSION"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

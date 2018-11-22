@@ -1,0 +1,94 @@
+Enquiry "FT.UNAUTH.GRAPH.PAYMENTS.UXP" for "name:/FT_ModelBank:NOFILE.FT.UNAUTH.GRAPH#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "FT.LIST" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        Matches "OT...", "EQ", "\'AC\'", "\'IT\'", "\'OD\'", "\'OD10\'"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        NotEquals "\'OTTC\'"
+    }
+
+    field "AMT.TEXT" {
+        label {
+            en = "Amount"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "AMT.TEXT.1" {
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "AMT.TEXT"
+    }
+
+    field "CREDIT.AMT" {
+        label {
+            en = "Credit Amount"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CREDIT.AMT1" {
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "CREDIT.AMT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task Pending\""
+    }
+
+    tool FT.UNAUTH.GRAPH.UXP {
+        label {
+            en = "Pending FT Txns"
+        }
+
+        command: "docommand(\"COS FT.AUTH.NAU.PS\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "AMT.TEXT.1"
+        image: "view.gif"
+        enquiry: "FT.AUTH.NAU"
+    }
+
+    enquiry-graph-id {
+        "FT.UNAUTH.GRAPH.UXP" "FT.UNAUTH.GRAPH.PO.UXP"
+    }
+
+    attributes: "ALLDATA" ; "NO.ENQUIRY.FAVOURITES"
+}

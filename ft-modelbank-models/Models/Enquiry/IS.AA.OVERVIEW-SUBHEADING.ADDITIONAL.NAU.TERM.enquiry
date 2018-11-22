@@ -1,0 +1,103 @@
+Enquiry "IS.AA.OVERVIEW-SUBHEADING.ADDITIONAL.NAU.TERM" for "name:/AA_PaymentSchedule:AA.ACCOUNT.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Further Arrangement Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "ARR" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "C.NULL" {
+        comma-separator: false
+        operation: constant "\"\'\'\""
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "C.COS.ACT.LOG" {
+        comma-separator: false
+        operation: constant "\"COS IS.AA.DETAILS.ACTIVITY.LOG.FIN \""
+    }
+
+    field "COS.ACT.LOG" {
+        comma-separator: false
+        operation: calc "C.COS.ACT.LOG":"ARR":"SP":"C.NULL":"SP":"C.NULL"
+    }
+
+    field "C.COS.AA.DETAILS.BILLS" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.BILLS \""
+    }
+
+    field "COS.AA.DETAILS.BILLS" {
+        label {
+            en = "\"COS AA.DETAILS.BILLS \""
+        }
+
+        comma-separator: false
+        operation: calc "C.COS.AA.DETAILS.BILLS":"ARR":"SP":"\"LIV\"":"SP":"C.NULL":"SP":"TODAY"
+    }
+
+    field "ADDITIONAL.DETAILS" {
+        display-type: "CLASS-COS.SUBHEADING"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 423
+        operation: constant "\"Additional Details\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Activity"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        from-field: "COS.ACT.LOG"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Bills"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        from-field: "COS.AA.DETAILS.BILLS"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Schedule"
+        }
+
+        label-field: "ADDITIONAL.DETAILS"
+        criteria: "ARRANGEMENT.ID" Equals "ARR"
+        enquiry: "IS.AA.DETAILS.SCHEDULE"
+    }
+
+    attributes: "HORIZONTAL.DRILLDOWNS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

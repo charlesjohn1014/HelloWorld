@@ -1,0 +1,427 @@
+Enquiry "CO.010.HP" for "name:/LI_Config:LIMIT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Details of collateral linked to limits"
+    }
+
+    description {
+        en = "COLLATERAL RIGHT DETAIL"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "COLLAT.RIGHT" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CREDIT.LINE.NO" {
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 27
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Collateral Right Detail\""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Credit Line\""
+    }
+
+    field "LIMIT.ID" {
+        length: 32
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "BK" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Single
+        operation: break-change "LIMIT.ID"
+    }
+
+    field "LIMIT.REF" {
+        label {
+            en = "Credit Line"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 13
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "LIMIT.ID"
+    }
+
+    field "LIMIT.REFERENCE.ID" {
+        break-condition {
+            field: "BK"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "LIMIT.ID"
+        conversion: extract from 2 to 1 delimited by "."
+        conversion: oconv "MD0"
+    }
+
+    field "LIMIT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 31
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "LIMIT.REFERENCE.ID"
+        conversion: getFrom "LIMIT.REFERENCE" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 47
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "FIXED.VARIABLE" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 51
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FIXED.VARIABLE"
+    }
+
+    field "EXPIRY.DATE" {
+        break-condition {
+            field: "BK"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "ONLINE.LIMIT.DATE" {
+        break-condition {
+            field: "BK"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ONLINE.LIMIT.DATE"
+    }
+
+    field "AVAILABLE.MARKER" {
+        break-condition {
+            field: "BK"
+        }
+
+        length: 1
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AVAILABLE.MARKER"
+    }
+
+    field "TEST1" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: if "EXPIRY.DATE" NotEquals "NULL" process "TEST2" "TEST3"
+    }
+
+    field "TEST2" {
+        break-condition {
+            field: "BK"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: if "EXPIRY.DATE" LessOrEquals "TODAY" process "EXPIRED" "TEST3"
+    }
+
+    field "TEST3" {
+        break-condition {
+            field: "BK"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: if "ONLINE.LIMIT.DATE" Greater "TODAY" process "NOT.YET.AVAIL" "TEST4"
+    }
+
+    field "TEST4" {
+        break-condition {
+            field: "BK"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: if "AVAILABLE.MARKER" NotEquals "Y" process "NOT.AVAILABLE" "NULL"
+    }
+
+    field "COLLAT.RIGHT" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "COLLAT.RIGHT"
+    }
+
+    field "COLLATERAL.CODE" {
+        label {
+            en = "Collateral code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: if "COLLAT.RIGHT" NotEquals "NULL" process "COLLAT.CODE" "LIMIT.CODE"
+    }
+
+    field "COLLAT.CODE" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "COLLAT.RIGHT"
+        conversion: getFrom "COLLATERAL.RIGHT" "COLLATERAL.CODE" false
+    }
+
+    field "LIMIT.CODE" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "COLLATERAL.CODE"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 31
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Multi
+        operation: field-extract "COLLATERAL.CODE"
+        conversion: getFrom "COLLATERAL.CODE" "DESCRIPTION" false
+    }
+
+    field "CCY1" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "MAXIMUM.SECURED" {
+        label {
+            en = "Max secured"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 33
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MAXIMUM.SECURED"
+    }
+
+    field "SECURED.AMT" {
+        label {
+            en = "Secured amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 43
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "SECURED.AMT"
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: today
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "Y" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Y\""
+    }
+
+    field "EXPIRED" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"(EXPIRED)\""
+    }
+
+    field "NOT.YET.AVAIL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"(NOT YET AVAIALBLE)\""
+    }
+
+    field "NOT.AVAILABLE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"(NOT AVAILABLE)\""
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Collateral Right Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Collateral Detail"
+        }
+
+        label-field: "COLLAT.RIGHT"
+        image: "view.gif"
+        criteria: "COLLATERAL.RIGHT" Equals "COLLAT.RIGHT"
+        enquiry: "CO.100.HP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Right"
+        }
+
+        label-field: "COLLAT.RIGHT"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "COLLAT.RIGHT"
+        }
+
+        application: "COLLATERAL.RIGHT"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

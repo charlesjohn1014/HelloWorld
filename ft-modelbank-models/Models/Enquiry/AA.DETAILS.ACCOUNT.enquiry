@@ -1,0 +1,271 @@
+Enquiry "AA.DETAILS.ACCOUNT" for "name:/AA_Account:AA.ARR.ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Static Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "FILE.VERSION" {
+        comma-separator: false
+        operation: application-field-name "!FILE.VERSION"
+    }
+
+    field "D.FILE.VERSION" {
+        display-type: "CLASS-BOLD.ITALIC"
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 160
+        operation: field-extract "FILE.VERSION"
+        conversion: replace {
+            oldData: "LIV"
+        }
+
+        conversion: replace {
+            oldData: "NAU"
+        }
+
+        conversion: replace {
+            oldData: "SIM"
+            newData: "Simulated"
+        }
+
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 130
+        operation: constant "\"Account Static\""
+    }
+
+    field "ACCOUNT.REFERENCE" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.REFERENCE"
+    }
+
+    field "TITLE" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 160
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.REFERENCE"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "MNEMONIC" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MNEMONIC"
+    }
+
+    field "SHORT.TITLE" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SHORT.TITLE"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.REFERENCE"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.OFFICER" false
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "L.TITLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 130
+        operation: constant "\"Title\""
+    }
+
+    field "C.SHORT.TITLE" {
+        comma-separator: false
+        operation: constant "\"Short Title\""
+    }
+
+    field "L.SHORT.TITLE1" {
+        comma-separator: false
+        operation: if "SHORT.TITLE" NotEquals "TITLE" process "C.SHORT.TITLE" "\"\""
+    }
+
+    field "L.SHORT.TITLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 130
+        operation: if "SHORT.TITLE" NotEquals "\"\"" process "L.SHORT.TITLE1" "\"\""
+    }
+
+    field "D.SHORT.TITLE1" {
+        comma-separator: false
+        operation: if "SHORT.TITLE" NotEquals "TITLE" process "SHORT.TITLE" "\"\""
+    }
+
+    field "D.SHORT.TITLE" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 160
+        operation: if "SHORT.TITLE" NotEquals "\"\"" process "D.SHORT.TITLE1" "\"\""
+    }
+
+    field "L.MNEMONIC" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 85
+        operation: constant "\"Mnemonic\""
+    }
+
+    field "D.MNEMONIC" {
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        column-width: 160
+        processing-mode: Single
+        operation: field-extract "MNEMONIC"
+    }
+
+    field "L.ACCOUNT.OFFICER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 3
+        }
+
+        column-width: 130
+        operation: constant "\"Primary Officer\""
+    }
+
+    field "D.ACCOUNT.OFFICER" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 3
+        }
+
+        column-width: 160
+        operation: field-extract "ACCOUNT.OFFICER"
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ACT.VALUE" {
+        comma-separator: false
+        operation: constant "\"-UPDATE-\""
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"ACT.VALUE":"PROPERTY"
+    }
+
+    field "ARRANGEMENT.ID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+    }
+
+    field "REFRESH.ACCOUNT" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.ACCOUNT\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refresh"
+        }
+
+        label-field: "TITLE"
+        image: "refresh.gif"
+        criteria: "ID.COMP.1" Equals "ARRANGEMENT.ID"
+        from-field: "REFRESH.ACCOUNT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "TITLE"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "DRILL.VER"
+    }
+
+    fileVersion: Live, Exception, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.BREADCRUMBS"
+}

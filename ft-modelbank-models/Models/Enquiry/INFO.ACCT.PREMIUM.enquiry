@@ -1,0 +1,202 @@
+Enquiry "INFO.ACCT.PREMIUM" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "PREMIUM AMOUNTS DUE ON"
+        }
+
+        column: 20
+        line: 0
+    }
+
+    header {
+        label {
+            en = "SAVINGS ACCOUNTS"
+        }
+
+        column: 43
+        line: 0
+    }
+
+    header {
+        label {
+            en = "ACCOUNT NUMBER"
+        }
+
+        column: 5
+        line: 2
+    }
+
+    header {
+        label {
+            en = "NAME"
+        }
+
+        column: 22
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CURRENCY"
+        }
+
+        column: 56
+        line: 2
+    }
+
+    header {
+        label {
+            en = "PREMIUM AMOUNT"
+        }
+
+        column: 65
+        line: 2
+    }
+
+    description {
+        en = "INFO.ACCT.PREMIUM"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "ACCOUNT.NUMBER" {
+            mandatory: true
+        }
+
+        AND
+
+        field "CAP.DATE" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ACCOUNT.NO" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "DETAIL" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.NO"
+        conversion: call
+        jBC: "@ E.BUILD.INFO.ACCT.PREMIUM"
+    }
+
+    field "TOTAL.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "DETAIL"
+        conversion: extract from 2 to 1 delimited by ">"
+    }
+
+    field "DISP.ACCT.NO" {
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "TOTAL.AMT" Greater "ZERO" process "ACCOUNT.NO" "NULL"
+    }
+
+    field "ACC.NAME" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ACCOUNT.TITLE.1"
+    }
+
+    field "DISP.ACC.NAME" {
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        operation: if "TOTAL.AMT" Greater "ZERO" process "ACC.NAME" "NULL"
+    }
+
+    field "DISP.CURRENCY" {
+        comma-separator: false
+        position {
+            column: 58
+        }
+
+        operation: if "TOTAL.AMT" Greater "ZERO" process "CURRENCY" "NULL"
+    }
+
+    field "DISP.AMT" {
+        comma-separator: false
+        position {
+            column: 64
+        }
+
+        operation: if "TOTAL.AMT" Greater "ZERO" process "TOTAL.AMT" "NULL"
+    }
+
+    field "NEXT.ENQ" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.NO"
+        conversion: call
+        jBC: "@ E.INFO.ACCT.PREM.NEXT.LEVEL"
+    }
+
+    field "NEXT.PRG" {
+        comma-separator: false
+        operation: field-extract "NEXT.ENQ"
+        conversion: extract from 1 to 1 delimited by ">"
+    }
+
+    field "NEXT.SEL1" {
+        comma-separator: false
+        operation: field-extract "NEXT.ENQ"
+        conversion: extract from 2 to 1 delimited by ">"
+    }
+
+    field "NEXT.SEL2" {
+        comma-separator: false
+        operation: field-extract "NEXT.ENQ"
+        conversion: extract from 3 to 1 delimited by ">"
+    }
+
+    drilldown "1" {
+        label-field: "DISP.ACCT.NO"
+        criteria: "NEXT.SEL1"
+        criteria: "NEXT.SEL2"
+        from-field: "NEXT.PRG"
+    }
+
+}

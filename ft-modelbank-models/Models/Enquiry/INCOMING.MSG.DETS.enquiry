@@ -1,0 +1,345 @@
+Enquiry "INCOMING.MSG.DETS" for "name:/DE_Config:DE.I.HISTORY#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "INCOMING       MESSAGE FROM  :"
+        }
+
+        column: 20
+        line: 0
+    }
+
+    header {
+        label {
+            en = "DELIVERY ID :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "MESSAGE.TYPE  :"
+        }
+
+        column: 38
+        line: 1
+    }
+
+    header {
+        label {
+            en = "DATE TIME RCVD :"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CARRIER SEQ   :"
+        }
+
+        column: 35
+        line: 2
+    }
+
+    description {
+        en = "INCOMING.MSG.DETS"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 19
+    custom-selection {
+
+        field "KEY" {
+        }
+
+        None
+    }
+
+    field "MSG" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.DISP.DE.I.MSG"
+    }
+
+    field "ID" {
+        break-condition {
+            break: NewPage
+        }
+
+        alignment: Right
+        comma-separator: false
+        fmtMask: "##############-#######"
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CAR" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        escapeSequence: UL
+        position {
+            column: 29
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: field-number 26
+        conversion: extract from 1 to 5
+    }
+
+    field "FSIC" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: field-number 39
+        conversion: getFrom "BC.SORT.CODE" "NAME" false
+    }
+
+    field "FSWI" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: field-number 39
+    }
+
+    field "SI" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: constant "\"SIC\""
+    }
+
+    field "SW" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: constant "\"SWIFT\""
+    }
+
+    field "DISP.FROM" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        escapeSequence: RV
+        position {
+            column: 51
+            line: 0
+        }
+
+        operation: if "CAR" Equals "SI" process "FSIC" "FSWI"
+    }
+
+    field "MSG.TYPE" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 51
+            line: 1
+        }
+
+        operation: field-number 2
+    }
+
+    field "MSG.DESC" {
+        format: Translate break-condition {
+            break: NewPage
+        }
+
+        length: 24
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 56
+            line: 1
+        }
+
+        operation: field-number 2
+        conversion: getFrom "DE.MESSAGE" "DESCRIPTION" false
+    }
+
+    field "SPACER" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "RCVD.DATE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 8
+    }
+
+    field "DISP.1" {
+        comma-separator: false
+        operation: calc "RCVD.DATE":"SPACER"
+    }
+
+    field "RCVD.TIME" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "DE.I.HEADER" "RECEIVED.STAMP" false
+    }
+
+    field "DISP.TIME" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 19
+            line: 2
+        }
+
+        operation: calc "DISP.1":"RCVD.TIME"
+    }
+
+    field "SEQ" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 51
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "DE.I.HEADER" "CARRIER.SEQ.NO" false
+    }
+
+    field "THEIR.REF" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 4
+        }
+
+        operation: constant "\"OTHER BANK REF :\""
+    }
+
+    field "TXN.REF" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 19
+            line: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "DE.I.HEADER" "TRANSACTION.REF" false
+    }
+
+    field "POINT1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\".1\""
+    }
+
+    field "RCID" {
+        comma-separator: false
+        operation: calc "ID":"POINT1"
+    }
+
+    field "OUR.REF" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 4
+        }
+
+        operation: constant "\"OUR REFERENCE :\""
+    }
+
+    field "OUR.REFERNCE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "DE.I.HEADER" "T24.INW.TRANS.REF" false
+    }
+
+    field "MSG.DETS" {
+        length: 76
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+    }
+
+    field "B.ID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ID"
+    }
+
+}

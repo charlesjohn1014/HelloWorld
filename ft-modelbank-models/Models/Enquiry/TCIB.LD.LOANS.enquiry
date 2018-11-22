@@ -1,0 +1,210 @@
+Enquiry "TCIB.LD.LOANS" for "name:/LD_Contract:LD.LOANS.AND.DEPOSITS#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.TCIB.BLD.GET.CAT.LIST"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.ID" {
+            mandatory: true
+            label {
+                en = "Customer ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CATEGORY" {
+            mandatory: true
+            label {
+                en = "Category"
+            }
+
+            operands: Between
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Loan Type"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "NEXT.PAY.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.TCIB.GET.LD.SCHEDULE.DATE"
+    }
+
+    field "LD.NEXT.PAY.DATE" {
+        label {
+            en = "Next Payment Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "NEXT.PAY.DATE"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMT.OUTSTANDING" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "NEXT.PAY.DATE"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "LOAN.AMOUNT" {
+        label {
+            en = "Loan Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "NEXT.PAY.DATE"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "AMOUNT.PAID" {
+        label {
+            en = "Amount paid out"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "NEXT.PAY.DATE"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "DEF.AMT" {
+        comma-separator: false
+        operation: constant "\"0.00\""
+    }
+
+    field "AMT.PAID" {
+        comma-separator: false
+        operation: if "AMOUNT.PAID" Equals "ZERO" process "DEF.AMT" "AMOUNT.PAID"
+    }
+
+    field "NEXT.PAY.AMT" {
+        label {
+            en = "Next Payment Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "NEXT.PAY.DATE"
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: value 1
+    }
+
+    field "Y.INTEREST.RATE" {
+        label {
+            en = "Interest Rate"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "NEXT.PAY.DATE"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "FREQ" {
+        label {
+            en = "Payment Frequency"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\" \""
+    }
+
+}

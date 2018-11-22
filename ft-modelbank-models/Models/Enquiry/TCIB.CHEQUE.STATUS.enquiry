@@ -1,0 +1,151 @@
+Enquiry "TCIB.CHEQUE.STATUS" for "name:/ST_ChqSubmit:CHEQUE.REGISTER.SUPPLEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Cheque Status"
+    }
+
+    start-line: 4
+    end-line: 10
+    build-routines {
+        jBC: "E.MB.BUILD.CHQ.NUM"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Cheque Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "RET.DATA" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "AC.NO" {
+        comma-separator: false
+        operation: field-extract "RET.DATA"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "AC.TYPE" {
+        comma-separator: false
+        operation: field-extract "AC.NO"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "CHEQUE.NO" {
+        label {
+            en = "Cheque No"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "DATE.TIME" {
+        label {
+            en = "Date and Time"
+        }
+
+        format: Date
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.TIME"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "DATE.TIME"
+        conversion: extract from 1 to 9
+        conversion: iconv "D2E"
+        conversion: oconv "D2E/"
+    }
+
+    field "REFERENCE" {
+        label {
+            en = "Reference"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGIN.REF"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    security {
+        abort: true
+    }
+
+}

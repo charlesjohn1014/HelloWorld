@@ -1,0 +1,348 @@
+Enquiry "SL.LOAN.CHARGE.SCHEDULES" for "name:/SL_Reports:NOFILE.SL.LOAN.CHARGE.SCHEDULES#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "SL Loan Charge Details"
+    }
+
+    description {
+        en = "Loan Charge Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "LOAN.ID" {
+            mandatory: true
+            label {
+                en = "Loan Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "RET.DATA" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"SL Loan Charge Details\""
+    }
+
+    field "LOAN.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Loan ID : \""
+    }
+
+    field "LOAN.ID" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: selection "LOAN.ID"
+    }
+
+    field "CUST.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 1
+        }
+
+        operation: constant "\"Customer : \""
+    }
+
+    field "CUSTOMER" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 1
+        }
+
+        operation: field-extract "LOAN.ID"
+        conversion: getFrom "SL.LOANS" "CUSTOMER" false
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: constant "\"Currency :\""
+    }
+
+    field "CURRENCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: field-extract "LOAN.ID"
+        conversion: getFrom "SL.LOANS" "DEAL.CURRENCY" false
+    }
+
+    field "START.DATE.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Start Date : \""
+    }
+
+    field "START.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 2
+        }
+
+        operation: field-extract "LOAN.ID"
+        conversion: getFrom "SL.LOANS" "VALUE.DATE" false
+    }
+
+    field "MAT.DATE.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 2
+        }
+
+        operation: constant "\"Maturity Date : \""
+    }
+
+    field "MAT.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 2
+        }
+
+        operation: field-extract "LOAN.ID"
+        conversion: getFrom "SL.LOANS" "MATURITY.DATE" false
+    }
+
+    field "AMT.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 2
+        }
+
+        operation: constant "\"Amount : \""
+    }
+
+    field "AMOUNT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 2
+        }
+
+        operation: field-extract "LOAN.ID"
+        conversion: getFrom "SL.LOANS" "AMOUNT" false
+    }
+
+    field "SL.CHARGE.ID" {
+        label {
+            en = "Charge Id"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "RET.DATA"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CHG.START.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "RET.DATA"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CHG.CODE" {
+        label {
+            en = "Charge Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "CHARGE.DATE" {
+        label {
+            en = "Schedule Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "RET.DATA"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "CHG.CURR" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: field-extract "RET.DATA"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CHG.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "PART.ID" {
+        label {
+            en = "Participant"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "PART.SHARE" {
+        label {
+            en = "Participant Share"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Charge schedules available\""
+    }
+
+    attributes: "PAGE"
+}

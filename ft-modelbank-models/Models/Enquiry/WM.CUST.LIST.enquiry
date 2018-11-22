@@ -1,0 +1,88 @@
+Enquiry "WM.CUST.LIST" for "name:/SC_ModelBank:NOFILE.SC.TOP.TEN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Top 10 Pvt Clients"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "CUST.LIST" {
+        NotEquals "\"\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Customer"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"My Customers\""
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "NO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No portfolio linked to your ID\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Products"
+        }
+
+        label-field: "@ID"
+        image: "right.arrow.gif"
+        criteria: "CUSTOMER.NUMBER" Equals "@ID"
+        criteria: "CURRENT.SELECTED.CUSTOMER" > "@ID"
+        enquiry: "WM.PORTFOLIO.DETS"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

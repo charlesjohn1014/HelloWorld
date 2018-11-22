@@ -1,0 +1,168 @@
+Enquiry "CUST.REVIEW" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "CUST.REVIEW"
+    }
+
+    start-line: 4
+    end-line: 99
+    fixed-sort: "ACCOUNT.OFFICER" Null
+    fixed-sort: "REVIEW.FREQUENCY" Null
+    custom-selection {
+
+        field "REVIEW.FREQUENCY" {
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+        }
+
+        None
+    }
+
+    field "CUST.NO" {
+        label {
+            en = "Customer No."
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Customer Review\""
+    }
+
+    field "SH.NAM" {
+        label {
+            en = "Short Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "LIAB" {
+        label {
+            en = "Cust Liability"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "CUSTOMER.LIABILITY"
+    }
+
+    field "OTH.OFF" {
+        label {
+            en = "Other Officer"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OTHER.OFFICER"
+    }
+
+    field "ACC.OFF" {
+        comma-separator: false
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "OFF.NAM" {
+        comma-separator: false
+        operation: field-extract "ACC.OFF"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "REV.DT" {
+        comma-separator: false
+        operation: application-field-name "REVIEW.FREQUENCY"
+    }
+
+    field "OFFDT" {
+        comma-separator: false
+        operation: calc "ACC.OFF":"REV.DT"
+    }
+
+    field "B.OFFDT" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "OFFDT"
+    }
+
+    field "D.REVDT" {
+        format: Date break-condition {
+            field: "B.OFFDT"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "REV.DT"
+    }
+
+    field "D.ACCOFF" {
+        break-condition {
+            field: "B.OFFDT"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "ACC.OFF"
+    }
+
+    field "D.OFFNM" {
+        break-condition {
+            field: "B.OFFDT"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "OFF.NAM"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CUST.NO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CUST.NO"
+        }
+
+        application: "CUSTOMER"
+    }
+
+}

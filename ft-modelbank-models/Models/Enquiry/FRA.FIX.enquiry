@@ -1,0 +1,130 @@
+Enquiry "FRA.FIX" for "name:/FR_Contract:FRA.DEAL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Fix FRA Deal"
+    }
+
+    description {
+        en = "Fix FRA Deal"
+    }
+
+    start-line: 4
+    end-line: 16 fixed-selection "RATE.FIXING.DATE" {
+        LessOrEquals "!TODAY"
+    }
+
+    fixed-selection "SETTLEMENT.RATE" {
+        Equals "\'\'"
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.NO" {
+        comma-separator: false
+        operation: i-desc "CUSTOMER.NO"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PURCHASE.SALE" {
+        label {
+            en = "Purchase Sale"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "PURCHASE.SALE"
+    }
+
+    field "FRA.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "FRA.TYPE"
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: application-field-name "START.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Fix FRA Deal"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "FRA.DEAL,FIX.DEAL"
+    }
+
+}

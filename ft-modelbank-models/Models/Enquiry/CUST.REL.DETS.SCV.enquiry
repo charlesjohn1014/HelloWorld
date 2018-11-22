@@ -1,0 +1,313 @@
+Enquiry "CUST.REL.DETS.SCV" for "name:/SC_ModelBank:NOFILE.CUS.REL.DETS#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CUSTOMER" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "FIN.ARRAY" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "FIN.ARRAY" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer Relationships\""
+    }
+
+    field "ID" {
+        length: 200
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+    }
+
+    field "TYPE" {
+        label {
+            en = "Type"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "START.TYPE" {
+        label {
+            en = "Relationships"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "TYPE"
+    }
+
+    field "RELATIONSHIP.ID" {
+        label {
+            en = "Relationship ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "RELATION.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "PORTFOLIO.ID" {
+        label {
+            en = "Portfolio ID"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "Group ID" {
+        label {
+            en = "Group ID"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "GROUP.NAME" {
+        label {
+            en = "Group Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "NAME.CUST" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NAME.ENT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "PERSON.ENTITY" "NAME" false
+    }
+
+    field "Name" {
+        label {
+            en = "Name"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: calc "NAME.CUST":"NAME.ENT"
+    }
+
+    field "ORIG/REL" {
+        label {
+            en = "Orig/Rel"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "ROLE" {
+        label {
+            en = "Role"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "ROLE NAME" {
+        label {
+            en = "Role Description"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "ROLE"
+        conversion: getFrom "EB.ROLE" "DESCRIPTION" false
+    }
+
+    field "PERCENT" {
+        label {
+            en = "Owning Percent"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 21
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "view"
+        }
+
+        label-field: "RELATION.TYPE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "RELATIONSHIP.ID"
+        }
+
+        application: "CUSTOMER.RELATIONSHIP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Portfolio"
+        }
+
+        label-field: "RELATION.TYPE"
+        image: "details.gif" parameters {
+            function:  See
+            field: "PORTFOLIO.ID"
+        }
+
+        screen: "SEC.ACC.MASTER,INP"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

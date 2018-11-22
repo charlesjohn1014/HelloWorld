@@ -1,0 +1,192 @@
+Enquiry "AI.CUST.DD.MANDATES1" for "name:/DD_Contract:DD.DDI#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of Direct Debits Issued"
+    }
+
+    zero-records-display: true
+    show-all-books: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.AI.ACCT.LIST"
+    }
+
+    fixed-selection "STATUS" {
+        Equals "\'ACTIVE\'", "OR", "STATUS", "EQ", "\'NEW\'"
+    }
+
+    fixed-selection "CUSTOMER.NO" {
+        Equals "!EXT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "ID"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "DEST.ACCT.NAME" {
+            label {
+                en = "Destination Acct"
+            }
+
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Your Direct Debits\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CYCLE.FREQUENCY" {
+        label {
+            en = "Frequency"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CYCLE.FREQUENCY"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "DIRECTION" {
+        label {
+            en = "Direction"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DIRECTION"
+    }
+
+    field "DEST.ACCT.NO" {
+        label {
+            en = "Destination"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEST.ACCT.NO"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"There are no records to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "DD processed"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "MANDATE.REF" Equals "@ID"
+        enquiry: "AI.DD.ITEM.DISPLAY"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Cancel DD Mandates"
+        }
+
+        image: "delete.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DD.DDI,STANDALONE.CANCEL"
+    }
+
+    attributes: "UNDERLINE.HEADER.ROW" ; "DISABLE.NO.SORT.OPTIONS"
+}

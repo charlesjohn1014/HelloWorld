@@ -1,0 +1,172 @@
+Enquiry "FOREX.UNMATCH" for "name:/CM_Contract:CM.MESSAGE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "List of Unmatched Confirmation Messages"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "TXN.REF" {
+        Matches "FX..."
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "MAT", "WOF"
+    }
+
+    fixed-selection "@ID" {
+        Matches "D..."
+    }
+
+    fixed-selection "@ID" {
+        Matches "D..."
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unmatched messages and manual matching\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Delivery Reference"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "MESSAGE.TYPE" {
+        label {
+            en = "Message Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MESSAGE.TYPE"
+    }
+
+    field "SENDER" {
+        label {
+            en = "Originator"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SENDER"
+    }
+
+    field "RECEIVER" {
+        label {
+            en = "Receiver"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECEIVER"
+    }
+
+    field "TXN.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 31
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TXN.REF"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Match Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 92
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unmatched Messages Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Tag Details"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "MESSAGE.KEY" Equals "@ID"
+        enquiry: "CM.MSG.VIEW.DETAILS.OUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Manually Match"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "CM.MESSAGE,MATCH.ITEM"
+    }
+
+}

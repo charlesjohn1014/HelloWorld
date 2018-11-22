@@ -1,0 +1,643 @@
+Enquiry "FWD.CASH.SETTLEMENTS" for "name:/SC_ModelBank:NOFILE.E.NOF.FR.OFFICE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Forward Account Statement"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 90
+    build-routines {
+        jBC: "E.MB.BLD.SETTLEMENT"
+    }
+
+    fixed-selection "FR.DATA" {
+    }
+
+    fixed-sort: "CURRENCY" Null
+    custom-selection {
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        AND
+
+        field "RM.CODE" {
+            label {
+                en = "Account Officer"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Client No"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        AND
+
+        field "ACCOUNT.NOS" {
+            label {
+                en = "Account No"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Upcoming Cash Settlements\""
+    }
+
+    field "H.CURRENCY" {
+        label {
+            en = "Currency:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 2
+        }
+
+        operation: selection "CURRENCY"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Currency:\""
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Relation Manager:\""
+    }
+
+    field "H.CURRENCY.02" {
+        label {
+            en = "Relation Manager:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 4
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: selection "RM.CODE"
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Client:\""
+    }
+
+    field "H.CUSTOMER" {
+        label {
+            en = "Client"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 4
+        }
+
+        operation: selection "CUSTOMER.NO"
+    }
+
+    field "CURRENCY" {
+        break-condition {
+            break: Once
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CURRENCY"
+        conversion: oconv "D2E"
+        conversion: convert {
+        }
+
+    }
+
+    field "PREVIOUS.DATE" {
+        comma-separator: false
+        operation: field-extract "VALUE.DATE"
+    }
+
+    field "VALUE.DATE" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "D.VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "PREVIOUS.DATE" Equals "VALUE.DATE" process "NULL" "VALUE.DATE"
+        conversion: julian
+        conversion: oconv "D2E"
+        conversion: convert {
+        }
+
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        hidden: true
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "TRANS.REFERENCE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "COMPANY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "TRANS.REFERENCE"
+        conversion: extract from 2 to 1 delimited by "\\"
+    }
+
+    field "D.TRANS.REFERENCE" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 63
+        }
+
+        processing-mode: Single
+        operation: calc "COMPANY":"TRANS.REFERENCE"
+    }
+
+    field "ACCOUNT.NUMBER" {
+        label {
+            en = "Acc No"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Account Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 111
+        }
+
+        hidden: true
+        operation: field-extract "ACCOUNT.NUMBER"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "AC.CCY" {
+        label {
+            en = "Acc Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 148
+        }
+
+        operation: field-extract "ACCOUNT.NUMBER"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "ACC.CCY" {
+        label {
+            en = "Acc Ccy"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "PORTFOLIO.NUMBER" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 153
+        }
+
+        operation: field-extract "ACCOUNT.NUMBER"
+        conversion: getFrom "SC.REF.ACCOUNT" "SEC.ACC.NO" false
+    }
+
+    field "PORTFOLIO.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 165
+        }
+
+        hidden: true
+        operation: field-extract "PORTFOLIO.NUMBER"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Trans Type"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 197
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "SETT.AMT" {
+        label {
+            en = "Sett Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "AC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 229
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "CUST.CCY" {
+        comma-separator: false
+        operation: calc "CUSTOMER":"ACC.CCY"
+    }
+
+    field "B.C.CUST.CCY" {
+        comma-separator: false
+        operation: break-change "CUST.CCY"
+    }
+
+    field "B.C.CUST" {
+        comma-separator: false
+        operation: break-change "CUSTOMER"
+    }
+
+    field "TOT.CCY" {
+        display-type: "CLASS-FDLB"
+        format: Currency "AC.CCY" negative-pattern -# break-condition {
+            field: "B.C.CUST.CCY"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 229
+            line: + 1
+        }
+
+        operation: total "SETT.AMT"
+    }
+
+    field "BLANK.LINE" {
+        break-condition {
+            field: "B.C.CUST"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+            line: + 2
+        }
+
+        operation: constant "\"\""
+    }
+
+    field "DATE.TEST" {
+        comma-separator: false
+        operation: if "VALUE.DATE" LessThan "TODAY" process "BACK.DATED" "VALUE.DATE"
+    }
+
+    field "B.VALUE.DATE" {
+        comma-separator: false
+        operation: break-change "DATE.TEST"
+    }
+
+    field "@ID" {
+        length: 31
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "SYSTEM.ID" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "STMT.ENTRY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"STMT.ENTRY\""
+    }
+
+    field "FILE" {
+        comma-separator: false
+        operation: field-extract "SYSTEM.ID"
+        conversion: call
+        jBC: "@ E.READ.EB.SYSTEM.ID"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TRN.CHK" {
+        comma-separator: false
+        operation: field-extract "TRANS.REFERENCE"
+        conversion: extract from 1 to 4
+    }
+
+    field "SC.ORD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"OPOD\""
+    }
+
+    field "APP.ORD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"SEC.OPEN.ORDER\""
+    }
+
+    field "FILE1" {
+        comma-separator: false
+        operation: if "TRN.CHK" Equals "SC.ORD" process "APP.ORD" "FILE"
+    }
+
+    field "APPLICATION" {
+        comma-separator: false
+        operation: if "FILE1" Equals "NULL" process "STMT.ENTRY" "FILE1"
+    }
+
+    field "TRAN1" {
+        comma-separator: false
+        operation: field-extract "TRANS.REFERENCE"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "TRAN2" {
+        comma-separator: false
+        operation: field-extract "TRANS.REFERENCE"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "YR.MONTH" {
+        comma-separator: false
+        operation: field-extract "TRAN2"
+        conversion: extract from 1 to 6
+    }
+
+    field "MINUS" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "TRAN3" {
+        comma-separator: false
+        operation: calc "TRAN1":"MINUS"
+    }
+
+    field "TRAN.REF" {
+        comma-separator: false
+        operation: calc "TRAN3":"YR.MONTH"
+    }
+
+    field "TXN.REF" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "STMT.ENTRY" process "@ID" "TRANS.REFERENCE"
+    }
+
+    field "STMT.ACCT" {
+        comma-separator: false
+        operation: constant "\"STMT.ACCT.CH\""
+    }
+
+    field "PASS.TXN.REF" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "STMT.ACCT" process "TRAN.REF" "TXN.REF"
+    }
+
+    field "NO.DETAILS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+            line: 10
+        }
+
+        operation: constant "\"No Forward Movements for Account\""
+    }
+
+    field "TXN.REF.02" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "STMT.ENTRY" process "@ID" "TRANS.REFERENCE"
+    }
+
+    field "STMT.ACCT.02" {
+        comma-separator: false
+        operation: constant "\"STMT.ACCT.CH\""
+    }
+
+    field "PASS.TXN.REF.02" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "STMT.ACCT" process "TRAN.REF" "TXN.REF"
+    }
+
+    field "NO.DETAILS.02" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+            line: 10
+        }
+
+        operation: constant "\"No Forward Movements for Account\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "D.TRANS.REFERENCE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "PASS.TXN.REF"
+        }
+
+        from-field: "APPLICATION"
+    }
+
+}

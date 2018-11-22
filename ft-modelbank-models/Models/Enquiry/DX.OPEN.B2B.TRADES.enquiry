@@ -1,0 +1,584 @@
+Enquiry "DX.OPEN.B2B.TRADES" for "name:/DX_Trade:DX.TRADE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Open B2B Trades"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99 fixed-selection "B2B.REFERENCE" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "B2B.REFERENCE" {
+            mandatory: true
+            label {
+                en = "B2B Reference"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.CODE" {
+            label {
+                en = "Contract Code"
+            }
+
+        }
+
+        AND
+
+        field "TRADE.TYPE" {
+            label {
+                en = "Trade Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "ID" {
+        label {
+            en = "Trade Reference"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Open Back to Back Trades\""
+    }
+
+    field "B2B.REF" {
+        label {
+            en = "B2B Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "B2B.REFERENCE"
+    }
+
+    field "BC" {
+        alignment: Left
+        comma-separator: false
+        operation: break-change "B2B.REF"
+    }
+
+    field "CONTRACT.CODE" {
+        label {
+            en = "Contract Code"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CODE"
+    }
+
+    field "SQ.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STRIKE.QUOTE.CCY"
+    }
+
+    field "CONT.NAME" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CONTRACT.CODE"
+        conversion: getFrom "DX.CONTRACT.MASTER" "SHORT.NAME" false
+    }
+
+    field "TCCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "SP" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "DCCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DLV.CCY"
+    }
+
+    field "OPT" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Option\""
+    }
+
+    field "CNAME1" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "TCCY":"SP":"DCCY":"SP"
+    }
+
+    field "CNAME" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "CNAME1":"OPT"
+    }
+
+    field "NU" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CONTRACT.NAME" {
+        label {
+            en = "Contract Name"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        hidden: true
+        operation: if "SQ.CCY" NotEquals "NU" process "CNAME" "CONT.NAME"
+    }
+
+    field "TRADE.TYPE" {
+        label {
+            en = "Future/Option"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.TYPE"
+    }
+
+    field "OPTION.TYPE" {
+        label {
+            en = "Call/Put"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPTION.TYPE"
+    }
+
+    field "PRI.BS" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRI.BUY.SELL"
+    }
+
+    field "SEC.BS" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SEC.BUY.SELL"
+    }
+
+    field "PRI.CUST" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRI.CUST.TYPE"
+    }
+
+    field "SEC.CUST" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SEC.CUST.TYPE"
+    }
+
+    field "C" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"CUSTOMER\""
+    }
+
+    field "D" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"DEALER\""
+    }
+
+    field "BS" {
+        alignment: Left
+        comma-separator: false
+        operation: if "SEC.CUST" Equals "D" process "SEC.BS" "BS1"
+    }
+
+    field "BS1" {
+        alignment: Left
+        comma-separator: false
+        operation: if "PRI.CUST" Equals "D" process "PRI.BS" "NU"
+    }
+
+    field "BUY.SELL" {
+        alignment: Left
+        comma-separator: false
+        operation: if "BS" NotEquals "NU" process "BS" "BS1"
+    }
+
+    field "FIN.BS" {
+        label {
+            en = "Dealer Buy/Sell"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: field-extract "BUY.SELL"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "PRI.CUST.NO" {
+        label {
+            en = "Customer No"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.CUST.NO"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-extract "PRI.CUST.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "TOT" {
+        display-type: "CLASS-BOLD.RED" break-condition {
+            field: "BC"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+            line: + 1
+        }
+
+        operation: constant "\"Difference\""
+    }
+
+    field "Y" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "COUNT.TRADE" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COUNTERPARTY.TRADE"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "B2B.TRADE" {
+        label {
+            en = "B2B Trade?"
+        }
+
+        display-type: "CLASS-BOLD"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: if "COUNT.TRADE" Equals "Y" process "Y" "NU"
+    }
+
+    field "EXOTIC.TYPE" {
+        label {
+            en = "Exotic Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "EXOTIC.TYPE"
+    }
+
+    field "EXOTIC.DATE" {
+        label {
+            en = "Exotic Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "EXOTIC.DATE"
+    }
+
+    field "EXOTIC.TIME" {
+        label {
+            en = "Exotic Time"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "EXOTIC.TIME"
+    }
+
+    field "PRI.LOTS" {
+        label {
+            en = "Lots"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 18
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.LOTS"
+    }
+
+    field "S" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"SELL\""
+    }
+
+    field "MI" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "PLOTS" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRI.LOTS"
+    }
+
+    field "SLOTS" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "MI" * "PLOTS"
+    }
+
+    field "LOTS1" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FIN.BS" Equals "S" process "SLOTS" "PLOTS"
+    }
+
+    field "COUNT.LOTS" {
+        display-type: "NUMERIC" break-condition {
+            field: "BC"
+        }
+
+        alignment: Left
+        comma-separator: false
+        operation: total "LOTS1"
+    }
+
+    field "FIN.LOTS" {
+        display-type: "CLASS-BOLD.RED" break-condition {
+            field: "BC"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 18
+            line: + 1
+        }
+
+        operation: field-extract "COUNT.LOTS"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no open trades\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "DX.TRADE,INPUT"
+    }
+
+}

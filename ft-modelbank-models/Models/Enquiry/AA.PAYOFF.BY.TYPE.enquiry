@@ -1,0 +1,208 @@
+Enquiry "AA.PAYOFF.BY.TYPE" for "name:/AA_PaymentSchedule:AA.BILL.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Payoff by Type"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "BILL.TYPE" {
+        Equals "PAYOFF"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 170
+        operation: constant "\"Itemised by Type - \""
+    }
+
+    field "DATE" {
+        label {
+            en = "Itemised by Type -"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        column-width: 75
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.DATE"
+        conversion: value 1
+    }
+
+    field "L.TYPE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 170
+        processing-mode: Single
+        operation: constant "\"Type\""
+    }
+
+    field "L.AMOUNT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 75
+        processing-mode: Single
+        operation: constant "\"Amount\""
+    }
+
+    field "*" {
+        comma-separator: false
+        operation: field-extract "*"
+        conversion: call
+        jBC: "@ E.MB.ADD.PAY.AMT"
+    }
+
+    field "PAYMENT.TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.TYPE"
+        conversion: extract from 2 to 2 delimited by "$"
+    }
+
+    field "D.PAYMENT.TYPE" {
+        display-type: "CLASS-BOLD"
+        format: Translate
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 170
+        processing-mode: Multi
+        operation: field-extract "PAYMENT.TYPE"
+        conversion: oconv "MCT"
+        conversion: replace {
+            oldData: "Pay"
+            newData: "Offset"
+        }
+
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "PAYMENT.AMOUNT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 75
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.AMOUNT"
+    }
+
+    field "C.CREDIT" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Credit Balance\""
+    }
+
+    field "INFO.PAY.TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INFO.PAY.TYPE"
+    }
+
+    field "UNC" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "INFO.PAY.TYPE"
+        conversion: call
+        jBC: "@ E.AA.GET.BILL.UNC.AMT"
+    }
+
+    field "MINUS" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "L.CREDIT" {
+        display-type: "CLASS-BOLD"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 170
+        operation: if "UNC" NotEquals "\"\"" process "C.CREDIT" "\"\""
+    }
+
+    field "D.UNC" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: calc "UNC" * "MINUS"
+    }
+
+    field "L.ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "F.UNC" {
+        format: Currency "CURRENCY" negative-pattern <#>
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 75
+        operation: if "D.UNC" NotEquals "L.ZERO" process "D.UNC" "\"\""
+    }
+
+    fileVersion: Simulation
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.TOOLBAR"
+}

@@ -1,0 +1,203 @@
+Enquiry "TCIB.LD.DEPOSITS" for "name:/LD_Contract:LD.LOANS.AND.DEPOSITS#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.TCIB.BLD.GET.CAT.LIST"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.ID" {
+            mandatory: true
+            label {
+                en = "Customer ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CATEGORY" {
+            mandatory: true
+            label {
+                en = "Category"
+            }
+
+            operands: Between
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Deposit Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Deposit Type"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "FIN.MAT.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FIN.MAT.DATE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Deposit Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: application-field-name "AMOUNT"
+        conversion: value 1
+    }
+
+    field "Y.DEPO.AMT.INT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.TCIB.GET.LD.SCHEDULE.DATE"
+    }
+
+    field "Y.INT.RATE" {
+        label {
+            en = "Interest Rate"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-extract "Y.DEPO.AMT.INT"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TOT.INTEREST.AMT" {
+        label {
+            en = "Interest Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.INTEREST.AMT"
+        conversion: value 1
+    }
+
+    field "DRAWDOWN.ACCOUNT" {
+        label {
+            en = "Debit Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAWDOWN.ACCOUNT"
+    }
+
+    field "Y.TOT.INT.AMT" {
+        comma-separator: false
+        operation: field-extract "Y.DEPO.AMT.INT"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "MAT.AMT" {
+        label {
+            en = "Maturity Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: calc "AMOUNT" + "Y.TOT.INT.AMT"
+        conversion: value 1
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Deposit Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+}

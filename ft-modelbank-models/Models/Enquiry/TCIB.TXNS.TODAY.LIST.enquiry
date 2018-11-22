@@ -1,0 +1,271 @@
+Enquiry "TCIB.TXNS.TODAY.LIST" for "name:/AC_EntryCreation:STMT.ENTRY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Today\'s Transactions - List"
+    }
+
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.STMT.TODAY.BUILD"
+    }
+
+    fixed-sort: "DATE.TIME" Null
+    custom-selection {
+
+        field "ACCT.ID" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "RMB1.ACCOUNT" {
+        format: User
+        comma-separator: false
+        operation: selection "ACCT.ID"
+    }
+
+    field "OPENING.BALANCE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NUMBER"
+        conversion: call
+        jBC: "@ E.CALC.OPEN.BALANCE"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"0\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "EXTRA.NARR" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.NARRATIVE"
+    }
+
+    field "VALID.NARR" {
+        comma-separator: false
+        operation: if "@ID" Equals "EXTRA.NARR" process "NULL" "EXTRA.NARR"
+    }
+
+    field "BOOKING.DATE" {
+        label {
+            en = "Booking Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BOOKING.DATE"
+    }
+
+    field "TRANS.REFERENCE" {
+        label {
+            en = "Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.REFERENCE"
+        conversion: call
+        jBC: "@ GET.TRANS.REFERENCE"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Narrative"
+        }
+
+        format: User
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "TR.CODE" {
+        comma-separator: false
+        operation: calc "TRANSACTION.CODE":"SPACE"
+    }
+
+    field "NARRATIVE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NARRATIVE"
+        conversion: value 1
+    }
+
+    field "NARRATIVE.CODE" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: calc "TR.CODE":"NARRATIVE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "AMOUNT.LCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LCY"
+    }
+
+    field "AMOUNT.FCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.FCY"
+    }
+
+    field "ENTRY.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "LCY" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "ENTRY.AMOUNT" {
+        comma-separator: false
+        operation: if "ENTRY.CCY" Equals "LCY" process "AMOUNT.LCY" "AMOUNT.FCY"
+    }
+
+    field "ABS.DR.AMT" {
+        comma-separator: false
+        operation: field-extract "ENTRY.AMOUNT"
+        conversion: abs
+    }
+
+    field "ENTRY.BAL" {
+        comma-separator: false
+        operation: calc "ENTRY.AMOUNT" + "ENTRY.BAL"
+    }
+
+    field "TOT.RUN.BAL" {
+        comma-separator: false
+        operation: calc "OPENING.BALANCE" + "ENTRY.BAL"
+    }
+
+    field "ENTRY.ACCUMULATOR" {
+        comma-separator: false
+        operation: calc "ENTRY.ACCUMULATOR" - "PREV.ENTRY.AMOUNT"
+    }
+
+    field "RUNNING.BALANCE" {
+        comma-separator: false
+        operation: calc "CLOSING.BALANCE" + "ENTRY.ACCUMULATOR"
+    }
+
+    field "CREDIT.AMOUNT" {
+        comma-separator: false
+        operation: if "ENTRY.AMOUNT" Greater "ZERO" process "ENTRY.AMOUNT" "NULL"
+    }
+
+    field "DEBIT.AMOUNT" {
+        comma-separator: false
+        operation: if "ENTRY.AMOUNT" LessThan "ZERO" process "ABS.DR.AMT" "NULL"
+    }
+
+    field "PAID.OUT" {
+        label {
+            en = "Withdrawals"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "ENTRY.CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: field-extract "DEBIT.AMOUNT"
+    }
+
+    field "PAID.IN" {
+        label {
+            en = "Deposits"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "ENTRY.CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: field-extract "CREDIT.AMOUNT"
+    }
+
+    field "R.BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        format: Currency "ENTRY.CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: field-extract "TOT.RUN.BAL"
+    }
+
+    field "PREV.ENTRY.AMOUNT" {
+        comma-separator: false
+        operation: field-extract "ENTRY.AMOUNT"
+    }
+
+}

@@ -1,0 +1,140 @@
+Enquiry "AM.DYNAMIC.PORT.LIST" for "name:/AM_DynamicModelling:AM.VIRTUAL.CUSTOMER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Dynamic Portfolio List"
+    }
+
+    description {
+        en = "Dynamic Portfolio List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "PORTFOLIO" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "PORTFOLIO" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Customer"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Dynamic Portfolio List \""
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PORTFOLIO"
+    }
+
+    field "PORT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "DYN.NODE.NAME" {
+        label {
+            en = "Node Name"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DYN.NODE.NAME"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Dyanamic Portfolios available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Portfolio Performance"
+        }
+
+        label-field: "PORTFOLIO"
+        image: "view.gif"
+        criteria: "PORTFOLIO.ID" Equals "PORTFOLIO"
+        enquiry: "AM.DYNAMIC.MODEL.PERF"
+    }
+
+}

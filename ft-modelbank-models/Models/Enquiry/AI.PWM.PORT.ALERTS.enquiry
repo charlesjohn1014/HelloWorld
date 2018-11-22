@@ -1,0 +1,142 @@
+Enquiry "AI.PWM.PORT.ALERTS" for "name:/BE_ModelBank:NOFILE.PWM.PORT.ALERT.LIST#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Portfolio Alerts"
+    }
+
+    description {
+        en = "Portfolio Alerts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "SEL.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "ALERT" {
+            label {
+                en = "Alert"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO.NO" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Event Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "ALERT" {
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: selection "ALERT"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        operation: constant "\"Portfolio Alerts\""
+    }
+
+    field "P1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: constant "\"Portfolio.No :\""
+    }
+
+    field "PORTFOLIO.NO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: selection "PORTFOLIO.NO"
+    }
+
+    field "ACCT.NO" {
+        format: User
+        length: 15
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NOS" false
+    }
+
+    field "TEC.ITEM" {
+        label {
+            en = "Event ID"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: replace {
+        }
+
+    }
+
+    field "@ID" {
+        comma-separator: false
+        operation: field-extract "TEC.ITEM"
+    }
+
+    field "TEC.DESCRIPTION" {
+        label {
+            en = "Alerts"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "TEC.ITEM"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Subscribe"
+        }
+
+        label-field: "TEC.DESCRIPTION"
+        image: "edit.gif"
+        criteria: "CURRENT.ACCOUNT" > "ACCT.NO"
+        criteria: "TEC.ITEMS" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.ALERT.REQUEST,AI.PF"
+    }
+
+}

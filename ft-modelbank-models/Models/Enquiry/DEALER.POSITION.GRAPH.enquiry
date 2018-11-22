@@ -1,0 +1,105 @@
+Enquiry "DEALER.POSITION.GRAPH" for "name:/FX_ModelBank:NOFILE.MAIN.FX.POS.OPEN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Currency position for dealer desk"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.FX.OPEN.ALL"
+    }
+
+    fixed-selection "DATA.ARR" {
+    }
+
+    fixed-sort: "CCY.SELECT" Null
+    custom-selection {
+
+        field "CCY.SELECT" {
+            label {
+                en = "Ccy Select"
+            }
+
+        }
+
+        None
+    }
+
+    field "POS.IN.ARR" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "POS.IN.ARR"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "NET.POSITION" {
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: field-extract "POS.IN.ARR"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    graph {
+        type: "BAR.ORDINAL"
+        label {
+            en = "Dealer Currency Position" x: 120 y: 30
+        }
+
+        dimension {
+            width: 600 height: 300
+        }
+
+        margins {
+            top: 50 bottom: 50 left: 100 right: 140
+        }
+
+        scale {
+            x: 100 y: 500000
+        }
+
+        legend {
+            x: 480 y: 10
+        }
+
+        x-axis {
+            field: "CURRENCY"
+            display-legend: true
+            show-grid: true
+        }
+
+        y-axis {
+            field: "NET.POSITION"
+            display-legend: true
+            show-grid: true
+        }
+
+    }
+
+    enquiry-graph-id {
+        "DEALER.POSITION.GRAPH"
+    }
+
+    attributes: "ALLDATA" ; "NO.ENQUIRY.FAVOURITES"
+}

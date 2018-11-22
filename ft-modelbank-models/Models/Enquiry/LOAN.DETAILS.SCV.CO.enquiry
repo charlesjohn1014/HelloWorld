@@ -1,0 +1,603 @@
+Enquiry "LOAN.DETAILS.SCV.CO" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Search"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 20 fixed-selection "CUSTOMER" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "PRODUCT.LINE" {
+        Equals "\"LENDING\""
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "UNAUTH", "CANCELLED", "MATURED", "CLOSE"
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "PENDING.CLOSURE"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "PRODUCT.LINE" {
+            label {
+                en = "Product Line"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.DISPLAY" {
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Loans & Mortgages\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DL" {
+        comma-separator: false
+        operation: constant "\"~\""
+    }
+
+    field "NOT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"-\""
+    }
+
+    field "D.NO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"No\""
+    }
+
+    field "@ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "LINKED.APPL" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL"
+        conversion: value 1
+    }
+
+    field "LINKED.APPL.ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "D.ACCOUNT" {
+        label {
+            en = "Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "LINKED.APPL" Equals "\"ACCOUNT\"" process "LINKED.APPL.ID" "\"\""
+    }
+
+    field "PRODUCT" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT"
+        conversion: value 1 1
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "ACCOUNT.DESC" {
+        format: User
+        comma-separator: false
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Product"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: if "ACCOUNT.DESC" NotEquals "NULL" process "ACCOUNT.DESC" "PRODUCT"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "D.DATE" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PROD.EFF.DATE"
+    }
+
+    field "D.STRING" {
+        comma-separator: false
+        operation: constant "\".1\""
+    }
+
+    field "D.PROP" {
+        comma-separator: false
+        operation: constant "\"-COMMITMENT-\""
+    }
+
+    field "D.CONCATE" {
+        comma-separator: false
+        operation: calc "D.PROP":"D.DATE":"D.STRING"
+    }
+
+    field "D.VALUE" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 40
+        }
+
+        operation: calc "ARRANGEMENT":"D.CONCATE"
+        conversion: getFrom "AA.ARR.TERM.AMOUNT" "AMOUNT" false
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 50
+        }
+
+        operation: calc "LINKED.APPL.ID":"\"*\"":"\"CURACCOUNT\""
+        conversion: call
+        jBC: "@ E.GET.ACCOUNT.BALANCE"
+        conversion: abs
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "WORKING.BALANCE" false
+    }
+
+    field "SIMULATION.REF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.SIMULATIONS"
+    }
+
+    field "VALUE DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "VALUE.DATE" false
+    }
+
+    field "NEXT.PAY.DATE" {
+        label {
+            en = "Next Pay date"
+        }
+
+        format: Date
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.NEXT.PAYMENT"
+    }
+
+    field "MATURITY DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "MATURITY.DATE" false
+    }
+
+    field "C.GEN.OVER" {
+        comma-separator: false
+        operation: constant "\"COS AA.ARRANGEMENT.OVERVIEW \""
+    }
+
+    field "PRODUCT.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "C.LEN" {
+        comma-separator: false
+        operation: constant "\"LENDING\""
+    }
+
+    field "C.LEN.OVERVIEW" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.AL \""
+    }
+
+    field "C.LOVER" {
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "C.LEN" process "C.LEN.OVERVIEW" "C.GEN.OVER"
+    }
+
+    field "C.OVERVIEW" {
+        comma-separator: false
+        operation: calc "C.LOVER":"ARRANGEMENT"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ROLE" {
+        label {
+            en = "Role"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.ROLE"
+        conversion: getFrom "AA.CUSTOMER.ROLE" "DESCRIPTION" false
+    }
+
+    field "CUS.PR" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER\""
+    }
+
+    field "JS.FLD" {
+        comma-separator: false
+        operation: constant "\"JS.LIABLE\""
+    }
+
+    field "R.INPUT" {
+        comma-separator: false
+        operation: calc "ARRANGEMENT":"DL":"CUS.PR":"DL":"NULL":"DL":"NULL":"DL":"JS.FLD"
+    }
+
+    field "JS.FLAG" {
+        label {
+            en = "JS Flag"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "R.INPUT"
+        conversion: call
+        jBC: "@ E.AA.CONV.GET.PROPERTY.RECORD"
+    }
+
+    field "FLAG.JS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "JS.FLAG"
+        conversion: repeat-when-null
+    }
+
+    field "LMT.CUS" {
+        label {
+            en = "Limit Cust"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.ROLE"
+        conversion: getFrom "AA.CUSTOMER.ROLE" "LIMIT.CUSTOMER" false
+    }
+
+    field "YES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"YES\""
+    }
+
+    field "D.YES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Yes\""
+    }
+
+    field "JS.CHK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LMT.CUS" Equals "YES" process "D.YES" "D.NO"
+    }
+
+    field "CHK.LMT.CUS" {
+        label {
+            en = "Jointly Liable"
+        }
+
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Multi
+        operation: if "FLAG.JS" NotEquals "NULL" process "JS.CHK" "NOT"
+    }
+
+    field "DEL.CHK" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "ARR.AGE.STATUS" false
+    }
+
+    field "DELIQUENT" {
+        comma-separator: false
+        operation: constant "\"DEL\""
+    }
+
+    field "IMG" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/tools/delinquent.gif\""
+    }
+
+    field "CHK" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        no-header: true
+        operation: if "DEL.CHK" Equals "DELIQUENT" process "IMG" "NULL"
+    }
+
+    field "ZERO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No Loans for this Customer\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Loan Overview"
+        }
+
+        label-field: "D.ACCOUNT"
+        from-field: "C.OVERVIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Disburse Loan(Transfer)"
+        }
+
+        label-field: "D.ACCOUNT"
+        criteria: "CURRENT.ACCOUNT" > "D.ACCOUNT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "FUNDS.TRANSFER,AA.ACDI"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Repay Loan(Transfer)"
+        }
+
+        label-field: "D.ACCOUNT"
+        criteria: "CURRENT.ACCOUNT" > "D.ACCOUNT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "FUNDS.TRANSFER,AA.ACRP"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Payoff Loan(Transfer)"
+        }
+
+        label-field: "D.ACCOUNT"
+        criteria: "CURRENT.ACCOUNT" > "D.ACCOUNT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "FUNDS.TRANSFER,AA.ACPO"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Credit Arrangement(Transfer)"
+        }
+
+        label-field: "D.ACCOUNT"
+        criteria: "CURRENT.ACCOUNT" > "D.ACCOUNT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "FUNDS.TRANSFER,AA.ACCR"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Register DD Mandate"
+        }
+
+        label-field: "D.ACCOUNT"
+        criteria: "CURRENT.ARR" > "ARRANGEMENT"
+        pw-process: "PW.LOAN.PROCESS"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Loan Report"
+        }
+
+        label-field: "D.ACCOUNT"
+        criteria: "ARRANGEMENT.ID" Equals "D.ACCOUNT"
+        enquiry: "AA.REPORT.LOAN"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "ALLDATA"
+}

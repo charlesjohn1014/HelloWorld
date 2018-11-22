@@ -1,0 +1,164 @@
+Enquiry "PW.PENDING.PROCESS.CR.MGR" for "name:/PW_Foundation:PW.PROCESS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Pending Tasks"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 9
+    build-routines {
+        jBC: "E.PW.PENDING.PROCESS.CR.MGR"
+    }
+
+    fixed-selection "PROCESS.STATUS" {
+        Equals "RUNNING"
+    }
+
+    fixed-sort: "PROCESS.DEFINITION" Null
+    custom-selection {
+
+        field "OWNER" {
+            label {
+                en = "Owner"
+            }
+
+        }
+
+        None
+    }
+
+    field "SINGLE.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        no-header: true
+        operation: application-field-name "@ID"
+    }
+
+    field "PR.DEF.ORIG" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        no-header: true
+        operation: application-field-name "PROCESS.DEFINITION"
+    }
+
+    field "PR.DEF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        no-header: true
+        operation: field-extract "PR.DEF.ORIG"
+        conversion: getFrom "PW.PROCESS.DEFINITION" "SHORT.DESC" false
+    }
+
+    field "BRK.PR.DEF" {
+        comma-separator: false
+        operation: break-change "PR.DEF.ORIG"
+    }
+
+    field "ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CNT.REC" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.MB.CNT.PEND.PROCESS"
+    }
+
+    field "PEND.HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        no-header: true
+        operation: constant "\"Pending Processes\""
+    }
+
+    field "PR.DEF.DISP" {
+        break-condition {
+            field: "BRK.PR.DEF"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: field-extract "PR.DEF"
+    }
+
+    field "TOT" {
+        display-type: "BAR" break-condition {
+            field: "BRK.PR.DEF"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        no-header: true
+        operation: total "CNT.REC"
+    }
+
+    field "DISP.CNT" {
+        break-condition {
+            field: "BRK.PR.DEF"
+        }
+
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        no-header: true
+        operation: total "CNT.REC"
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Pending Process\""
+    }
+
+    field "OWNER.DATA" {
+        comma-separator: false
+        operation: constant "\"RETAIL.CREDIT.OFFICER RETAIL.CREDIT.MANAGER\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Activities"
+        }
+
+        label-field: "PR.DEF.DISP"
+        image: "action.gif"
+        criteria: "@ID" Equals "PR.DEF.ORIG"
+        criteria: "OWNER" Equals "OWNER.DATA"
+        enquiry: "PW.ACTIVITIES.LIST.CR.MGR"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

@@ -1,0 +1,215 @@
+Enquiry "ACCTMANDATE.NAU" for "name:/AC_AccountOpening:ACCOUNT$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Mandate Record"
+    }
+
+    description {
+        en = "Unauthorised Mandate Record"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "AC.BUILD.ACCT.MANDATE.NAU"
+    }
+
+    field "CUSTOMERID" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised Mandate Record\""
+    }
+
+    field "SHORT.TITLE" {
+        label {
+            en = "Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.TITLE"
+    }
+
+    field "ACCT.OFFICER" {
+        label {
+            en = "Acct Officer"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "ACCT.OFF.NAME" {
+        label {
+            en = "Relationship Officer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "ACCT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "MANDATE.APPL" {
+        label {
+            en = "Mandate Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MANDATE.APPL"
+    }
+
+    field "MANDATE.REG" {
+        label {
+            en = "Mandate Reg"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "MANDATE.REG"
+    }
+
+    field "MANDATE.RECORD" {
+        label {
+            en = "Mandate Record"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MANDATE.RECORD"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Mandate Record\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "CUSTOMERID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "CUSTOMERID"
+        }
+
+        screen: "ACCOUNT,CA.OPEN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "CUSTOMERID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "CUSTOMERID"
+        }
+
+        screen: "ACCOUNT,CA.OPEN"
+    }
+
+}

@@ -1,0 +1,272 @@
+Enquiry "AGENT.ARRANGEMENT.LIST.CLS.SCV" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Closed Agent Arrangement"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 10 fixed-selection "CUSTOMER" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "PRODUCT.LINE" {
+        Equals "AGENT"
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "CURRENT", "AUTH", "UNAUTH"
+    }
+
+    fixed-sort: "PRODUCT" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "CUSTOMER"
+            }
+
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Past Arrangements\""
+    }
+
+    field "@ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "PRODUCT.DESCRIPTION" {
+        label {
+            en = "Product"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "ARR.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARR.STATUS"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "LINKED.APPL" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL"
+        conversion: value 1
+    }
+
+    field "LINKED.APPL.ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: value 1
+    }
+
+    field "TOTPAYCOMM" {
+        label {
+            en = "Payable Commission"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: calc "LINKED.APPL.ID":"\"*\"":"\"TOTALPAYCOMMISSION\""
+        conversion: call
+        jBC: "@ E.GET.ACCOUNT.BALANCE"
+    }
+
+    field "TOTDUECOMM" {
+        label {
+            en = "Due Commission"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: calc "LINKED.APPL.ID":"\"*\"":"\"TOTALDUECOMMISSION\""
+        conversion: call
+        jBC: "@ E.GET.ACCOUNT.BALANCE"
+    }
+
+    field "DUE.FEE" {
+        label {
+            en = "Fees Due"
+        }
+
+        display-type: "AMOUNT"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: calc "LINKED.APPL.ID":"\"*\"":"\"DUENEWAGENTFEE\""
+        conversion: call
+        jBC: "@ E.GET.ACCOUNT.BALANCE"
+        conversion: abs
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Arrangement Overview"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "view.gif" parameters {
+            field: "@ID"
+        }
+
+        composite-screen: "AA.OVERVIEW.AG"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Pay Out Commission"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "transferout.gif"
+        criteria: "AA.ARRANGEMENT" > "@ID"
+        criteria: "CURRENT.PAYCOMM" > "TOTPAYCOMM" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "FUNDS.TRANSFER,AA.ACAP.AG"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Funding Agent"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "transferin.gif"
+        criteria: "AA.ARRANGEMENT" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "FUNDS.TRANSFER,AA.AG.PAYIN.AG"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Financial Arrangements"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "records.gif"
+        criteria: "AGENT.ARR.ID" Equals "ARRANGEMENT"
+        enquiry: "ARRANGEMENTS.LIST.AGENT.ARRANGEMENT"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "ALLDATA" ; "NO.TOOLBAR"
+}

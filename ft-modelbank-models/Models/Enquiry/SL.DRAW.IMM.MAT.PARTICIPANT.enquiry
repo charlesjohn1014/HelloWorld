@@ -1,0 +1,412 @@
+Enquiry "SL.DRAW.IMM.MAT.PARTICIPANT" for "name:/SL_Loans:SL.LOANS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "DETAILS OF LOANS"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "MATURING WITHIN"
+        }
+
+        column: 42
+        line: 0
+    }
+
+    header {
+        label {
+            en = "30 DAYS "
+        }
+
+        column: 58
+        line: 0
+    }
+
+    header {
+        label {
+            en = "OFFICER:"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "DATE :"
+        }
+
+        column: 88
+        line: 1
+    }
+
+    header {
+        label {
+            en = "FACILITY.ID"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CLIENT.REF"
+        }
+
+        column: 16
+        line: 2
+    }
+
+    header {
+        label {
+            en = "SL.LOAN.ID"
+        }
+
+        column: 34
+        line: 2
+    }
+
+    header {
+        label {
+            en = "SL.CCY"
+        }
+
+        column: 62
+        line: 2
+    }
+
+    header {
+        label {
+            en = "AMOUNT"
+        }
+
+        column: 78
+        line: 2
+    }
+
+    header {
+        label {
+            en = "VALUE.DATE"
+        }
+
+        column: 91
+        line: 2
+    }
+
+    header {
+        label {
+            en = "MAT.DATE"
+        }
+
+        column: 105
+        line: 2
+    }
+
+    header {
+        label {
+            en = "INT.RATE"
+        }
+
+        column: 118
+        line: 2
+    }
+
+    header {
+        label {
+            en = "TOTAL.INT.AMT"
+        }
+
+        column: 129
+        line: 2
+    }
+
+    description {
+        en = "SL Loans Maturity as Participant"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.CALC.FREQ.DATES"
+        jBC: "E.MB.BUILD.SL.LOANS"
+    }
+
+    fixed-sort: "DEAL.CURRENCY" Null
+
+    field "NULLVAR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "@ID" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCT.OFFICER" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MIS.ACCT.OFFICER"
+    }
+
+    field "ACC.OFF" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACCT.OFFICER"
+    }
+
+    field "ACCT.DESC" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        operation: field-extract "ACCT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "TODAY" {
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 96
+            line: 1
+        }
+
+        operation: today
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "FACILITY.ID" {
+        label {
+            en = "NO.OPERATION"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 14
+    }
+
+    field "CUSTOMER" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CUST.INFO" {
+        comma-separator: false
+        operation: field-extract "FACILITY.ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "CUST.NO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CUST.INFO"
+        conversion: getFrom "PRE.SYNDICATION.FILE" "CUSTOMER" false
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "TITULAR"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUST.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ID" {
+        label {
+            en = "N.DISPOS"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 32
+            line: + 1
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "CCY" {
+        label {
+            en = "DIVISA"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 64
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.CURRENCY"
+    }
+
+    field "AMT" {
+        label {
+            en = "IMPORTE PENDIENTE"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 70
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "VAL.DATE" {
+        label {
+            en = "F.INICIO"
+        }
+
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 91
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "F.FINAL"
+        }
+
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 105
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "INT.RATE" {
+        label {
+            en = "% APPLICADO"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 118
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INTEREST.RATE"
+    }
+
+    field "TOT.INT.AMT" {
+        label {
+            en = "IMP.LIQ.INTERESES"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 126
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.INT.AMOUNT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records to display\""
+    }
+
+}

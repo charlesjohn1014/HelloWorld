@@ -1,0 +1,80 @@
+Enquiry "AA.BUNDLE.HIERARCHY.CURRENT.HIS.HEADER" for "name:/AA_BundleHierarchy:AA.BUNDLE.HIERARCHY.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    companies:
+    all: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.GET.BUNDLE.HIERARCHY.ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-COS.SUBHEADING"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 200
+        operation: constant "\"Hierarchy Details\""
+    }
+
+    field "ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "BN.ARR.ID" {
+        comma-separator: false
+        operation: field-extract "ID"
+    }
+
+    field "DOTS" {
+        comma-separator: false
+        operation: constant "\"...\""
+    }
+
+    field "LK.BN.ARR.ID" {
+        comma-separator: false
+        operation: calc "DOTS":"BN.ARR.ID":"DOTS"
+    }
+
+    field "CURRENT.DRILL" {
+        comma-separator: false
+        operation: constant "\"AA.CURRENT.HIERARCHY.DETAILS\""
+    }
+
+    field "HISTORY.DRILL" {
+        comma-separator: false
+        operation: constant "\"AA.HISTORY.HIERARCHY.LIST.DATES\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Current"
+        }
+
+        label-field: "HEADER"
+        criteria: "@ID" Equals "BN.ARR.ID"
+        from-field: "CURRENT.DRILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "History"
+        }
+
+        label-field: "HEADER"
+        criteria: "@ID" Matches "LK.BN.ARR.ID"
+        from-field: "HISTORY.DRILL"
+    }
+
+    attributes: "HORIZONTAL.DRILLDOWNS" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.COLUMN.HEADER" ;
+    "NO.TOOLBAR" ; "ALLDATA"
+}

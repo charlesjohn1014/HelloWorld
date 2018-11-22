@@ -1,0 +1,261 @@
+Enquiry "TF.IMPLCBACK" for "name:/LC_Contract:LETTER.OF.CREDIT$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Back to Back Import LCs"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.IMPLCNAU"
+    }
+
+    fixed-selection "RELATED.LC.NO" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "IHLD"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "OLD.LC.NUMBER" {
+            label {
+                en = "LC Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "APPLICANT.CUSTNO" {
+            label {
+                en = "Applicant Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "LC Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "LC.AMOUNT" {
+            label {
+                en = "LC Amount"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Back to Back Import LCs\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "OLD.LC.NUMBER" {
+        label {
+            en = "LC Number"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OLD.LC.NUMBER"
+    }
+
+    field "APPLICANT" {
+        label {
+            en = "Applicant"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICANT.CUSTNO"
+        conversion: getFrom "CUSTOMER" "1" false
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "Import LC Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.TYPE"
+        conversion: getFrom "LC.TYPES" "1" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 63
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "RELATED.LC.NO" {
+        label {
+            en = "Export LC Ref"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RELATED.LC.NO"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 94
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INPUTTER"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify Import LC"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "LETTER.OF.CREDIT,IMPSPBCK"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Export LC"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "RELATED.LC.NO"
+        }
+
+        screen: "LETTER.OF.CREDIT,EXPSPBCK"
+    }
+
+}

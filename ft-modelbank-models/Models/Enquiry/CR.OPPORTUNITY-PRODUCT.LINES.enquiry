@@ -1,0 +1,92 @@
+Enquiry "CR.OPPORTUNITY-PRODUCT.LINES" for "name:/AA_ProductFramework:AA.PRODUCT.LINE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Lines"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        NotEquals "INTERNET.SERVICES", "MOBILE.SERVICES"
+    }
+
+    fixed-selection "@ID" {
+        NotEquals "PROXY.SERVICES"
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Product Lines\""
+    }
+
+    field "PRODUCT.LINE.ID" {
+        label {
+            en = "Line"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PRODUCT.LINE.ID"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "LINE" {
+        comma-separator: false
+        operation: constant "\"OTHER\""
+    }
+
+    field "PROCESS" {
+        comma-separator: false
+        operation: constant "\"CR.OPPORTUNITY-PRODUCT.GROUPS.PROCESS\""
+    }
+
+    field "OTHER" {
+        comma-separator: false
+        operation: constant "\"CR.OPPORTUNITY-PRODUCT.GROUPS\""
+    }
+
+    field "E.AA.PRODUCT.GROUP" {
+        comma-separator: false
+        operation: if "PRODUCT.LINE.ID" Equals "LINE" process "PROCESS" "OTHER"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Product Groups"
+        }
+
+        label-field: "PRODUCT.LINE.ID"
+        image: "right.arrow.gif"
+        criteria: "PRODUCT.LINE" Equals "PRODUCT.LINE.ID"
+        from-field: "E.AA.PRODUCT.GROUP"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

@@ -1,0 +1,235 @@
+Enquiry "MM.UNCONF.CPARTY" for "name:/MM_Contract:MM.MONEY.MARKET#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "MM Counterparty Confirmation"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CONF.BY.CUST" {
+        Equals "NULL"
+    }
+
+    fixed-selection "CATEGORY" {
+        LessOrEquals "21100"
+    }
+
+    fixed-selection "SY.ID" {
+        Equals "\"\""
+    }
+
+    fixed-sort: "CUSTOMER.ID" Null
+    custom-selection {
+
+        field "CUSTOMER.ID" {
+            label {
+                en = "Customer ID"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Category"
+            }
+
+        }
+
+        AND
+
+        field "DEAL.DATE" {
+            label {
+                en = "Deal Date"
+            }
+
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+        }
+
+        AND
+
+        field "PRINCIPAL" {
+            label {
+                en = "Principal"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"MM-Counterparty Confirmation to be Received\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "DEAL.DATE" {
+        label {
+            en = "Deal date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.DATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "PRINCIPAL" {
+        label {
+            en = "Principal"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 14
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 58
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRINCIPAL"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 73
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No deals available for Counterparty Confirmation\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Verify"
+        }
+
+        label-field: "@ID"
+        image: "../../tools\\txnverify.gif" parameters {
+            function:  Verify
+            field: "@ID"
+        }
+
+        application: "MM.MONEY.MARKET"
+    }
+
+}

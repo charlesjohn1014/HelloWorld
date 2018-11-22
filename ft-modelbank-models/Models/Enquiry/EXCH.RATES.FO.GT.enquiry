@@ -1,0 +1,238 @@
+Enquiry "EXCH.RATES.FO.GT" for "name:/ST_CurrencyConfig:CURRENCY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Latest Exchange Rates"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 25 fixed-selection "CURRENCY.CODE" {
+        Equals "USD", "GBP", "EUR", "CHF", "JPY"
+    }
+
+    custom-selection {
+
+        field "CURRENCY.MARKET" {
+            label {
+                en = "Market"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY.CODE" {
+            label {
+                en = "Currency Code"
+            }
+
+        }
+
+        None
+    }
+
+    field "ID" {
+        label {
+            en = "Currency Code"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY.CODE"
+    }
+
+    field "IHDR1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Private Client Exchange Rates for Transactionsabove 100000\""
+    }
+
+    field "CCY.NAME" {
+        label {
+            en = "Currency Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CCY.NAME"
+    }
+
+    field "CURRENCY.MARKET" {
+        label {
+            en = "Market"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CURRENCY.MARKET"
+        conversion: getFrom "CURRENCY.MARKET" "DESCRIPTION" false
+        conversion: replace {
+            oldData: "Currency Market"
+            newData: "Transaction Rate"
+        }
+
+        conversion: replace {
+            oldData: "Cash"
+            newData: "Teller Rate"
+        }
+
+    }
+
+    field "BUY.RATE" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BUY.RATE"
+    }
+
+    field "SELL.RATE" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SELL.RATE"
+    }
+
+    field "NEGOTIABLE.AMT" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NEGOTIABLE.AMT"
+    }
+
+    field "TRSY.MED.SPREAD" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRSY.MED.SPREAD"
+    }
+
+    field "CUST.MED.SPREAD" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CUST.MED.SPREAD"
+    }
+
+    field "TRSY.BUY.MRGN" {
+        comma-separator: false
+        operation: calc "BUY.RATE" - "TRSY.MED.SPREAD"
+    }
+
+    field "BUY.RATE.NG" {
+        label {
+            en = "Buy Rate"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        processing-mode: Multi
+        operation: calc "TRSY.BUY.MRGN" - "CUST.MED.SPREAD"
+    }
+
+    field "TRSY.SELL.MRGN" {
+        comma-separator: false
+        operation: calc "SELL.RATE" + "TRSY.MED.SPREAD"
+    }
+
+    field "SELL.RATE.NG" {
+        label {
+            en = "Sell Rate"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        processing-mode: Multi
+        operation: calc "TRSY.SELL.MRGN" + "CUST.MED.SPREAD"
+    }
+
+    field "BUY.RATE.ALL" {
+        label {
+            en = "Buy Rate"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: calc "BUY.RATE" - "CUST.MED.SPREAD"
+    }
+
+    field "SELL.RATE.ALL" {
+        label {
+            en = "Sell Rate"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: calc "SELL.RATE" + "CUST.MED.SPREAD"
+    }
+
+    field "MID.REVAL.RATE" {
+        label {
+            en = "Mid Rate"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MID.REVAL.RATE"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.ENQUIRY.FAVOURITES"
+}

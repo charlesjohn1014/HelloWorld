@@ -1,0 +1,301 @@
+Enquiry "MF.PLANS.OUTSTANDING" for "name:/MF_PreOrders:MF.ORDER.BY.CUST#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "MF Outstanding Plans to be Executed"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "PLAN.TYPE" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "PLAN.END.DATE" {
+        Greater "!TODAY"
+    }
+
+    fixed-sort: "CUSTOMER.ID" Null
+    fixed-sort: "PARTICIPATION.ACC" Null
+    fixed-sort: "FUND.ID" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "PLAN.TYPE" {
+            label {
+                en = "Plan Type"
+            }
+
+        }
+
+        AND
+
+        field "FUND.ID" {
+            label {
+                en = "Fund Id"
+            }
+
+        }
+
+        AND
+
+        field "PARTICIPATION.ACC" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"List of plans outstanding for execution\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "PARTICIPATION.ACC" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "PARTICIPATION.ACC"
+    }
+
+    field "FUND.ID" {
+        label {
+            en = "Fund Id"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FUND.ID"
+    }
+
+    field "FUND.NAME" {
+        label {
+            en = "Fund Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        hidden: true
+        operation: field-extract "FUND.ID"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "TRANS.TYPE.CR" {
+        label {
+            en = "Trans Type Cr"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TRANS.TYPE.CR"
+    }
+
+    field "TRANS.TYPE.DR" {
+        label {
+            en = "Trans Type Dr"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TRANS.TYPE.DR"
+    }
+
+    field "ORDER.CCY" {
+        label {
+            en = "Order Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.CCY"
+    }
+
+    field "UNIT.AMOUNT" {
+        label {
+            en = "Unit Amount"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "UNIT.AMOUNT"
+    }
+
+    field "PLAN.TYPE" {
+        label {
+            en = "Plan Type"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PLAN.TYPE"
+    }
+
+    field "PLAN.AMT" {
+        label {
+            en = "Plan Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "ORDER.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PLAN.AMT"
+    }
+
+    field "PLAN.START.DATE" {
+        label {
+            en = "Plan Start Dt"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PLAN.START.DATE"
+    }
+
+    field "PLAN.END.DATE" {
+        label {
+            en = "Plan End Dt"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PLAN.END.DATE"
+    }
+
+    field "PLAN.FREQUENCY" {
+        label {
+            en = "Plan Frequency"
+        }
+
+        format: Date
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PLAN.FREQUENCY"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "MF.ORDER.BY.CUST,VIEW"
+    }
+
+}

@@ -1,0 +1,108 @@
+Enquiry "PBO.ADMIN.MARGIN.DETAILS" for "name:/EB_Template:EB.LOOKUP#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        Matches "PBO.MARGIN..."
+    }
+
+    field "IHDR" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Margin Reports\""
+    }
+
+    field "DESC" {
+        label {
+            en = "."
+        }
+
+        display-type: "CLASS-TITLE"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "TOPUP" {
+        comma-separator: false
+        operation: constant "\"PBO.MARGIN.TOPUP\""
+    }
+
+    field "SELLOUT" {
+        comma-separator: false
+        operation: constant "\"PBO.MARGIN.SELLOUT\""
+    }
+
+    field "MARGIN" {
+        comma-separator: false
+        operation: constant "\"PBO.MARGIN.CALL\""
+    }
+
+    field "DESC1" {
+        comma-separator: false
+        operation: constant "\"Top Up Margin Call\""
+    }
+
+    field "DESC2" {
+        comma-separator: false
+        operation: constant "\"Sell Out Margin Call\""
+    }
+
+    field "DESC3" {
+        comma-separator: false
+        operation: constant "\"Margin Call\""
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ENQ1" {
+        comma-separator: false
+        operation: if "DESC" Equals "DESC1" process "TOPUP" "NUL"
+    }
+
+    field "ENQ2" {
+        comma-separator: false
+        operation: if "DESC" Equals "DESC2" process "SELLOUT" "NUL"
+    }
+
+    field "ENQ3" {
+        comma-separator: false
+        operation: if "DESC" Equals "DESC3" process "MARGIN" "NUL"
+    }
+
+    field "ENQD1" {
+        comma-separator: false
+        operation: calc "ENQ1":"ENQ2":"ENQ3"
+    }
+
+    field "ENQD" {
+        comma-separator: false
+        operation: field-extract "ENQD1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "DESC"
+        image: "view.gif"
+        from-field: "ENQD"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

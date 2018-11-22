@@ -1,0 +1,281 @@
+Enquiry "TCIB.AM.BM.PERF.CHART" for "name:/AM_ModelBank:NOFILE.PERF.VS.BENCHMARK#" {
+    metamodelVersion: "1.30.6"
+    start-line: 6
+    end-line: 97
+    build-routines {
+        jBC: "E.CTRL.PERF.1D"
+    }
+
+    fixed-selection "E.CALC.PERF.DESC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            mandatory: true
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "END.DATE" {
+            label {
+                en = "End Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CALC.METHOD" {
+            label {
+                en = "Calc Method"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DECIMAL.RANGE" {
+            label {
+                en = "Decimal Range"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BENCHMARK" {
+            label {
+                en = "Benchmark"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PERF.TYPE" {
+            label {
+                en = "Perf Type"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "END.DEFAULT" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "GET.DETAIL" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "ID"
+    }
+
+    field "DISP.COMPANY" {
+        comma-separator: false
+        operation: company
+        conversion: getFrom "COMPANY" "COMPANY.NAME" false
+    }
+
+    field "DISP.PORTFOLIO" {
+        format: User
+        comma-separator: false
+        operation: selection "SAM.NO"
+    }
+
+    field "DISP.PORT.NAME" {
+        comma-separator: false
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "DISP.OPEND.DATE" {
+        comma-separator: false
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "START.DATE" false
+    }
+
+    field "DISP.CLOSED.DATE" {
+        comma-separator: false
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "CLOSURE.DATE" false
+    }
+
+    field "DISP.CCY" {
+        comma-separator: false
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "S.DATE1" {
+        comma-separator: false
+        operation: selection "START.DATE"
+    }
+
+    field "SDATE1" {
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "DISP.SDATE" {
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "S.DATE2" {
+        comma-separator: false
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "START.DATE" false
+    }
+
+    field "S.DATE3" {
+        comma-separator: false
+        operation: if "S.DATE1" Equals "NUL" process "S.DATE2" "S.DATE1"
+    }
+
+    field "DISP.END.DATE" {
+        comma-separator: false
+        operation: selection "END.DATE"
+    }
+
+    field "DISP.END.DATE1" {
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "DISP.PERF.DATE" {
+        comma-separator: false
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "START.PERFORM" false
+    }
+
+    field "DATE.TODAY" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "CALC.DATE" {
+        comma-separator: false
+        operation: field-extract "SDATE1"
+        conversion: extract from 1 to 6
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "CALC1.DATE" {
+        comma-separator: false
+        operation: calc "DISP.PORTFOLIO":"DOT"
+    }
+
+    field "DATE" {
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUM.RETURN" {
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "BENCH.RETURN" {
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "CUM.BENCH.RETURN" {
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    graph {
+        type: "BAR.LINE.ORDINAL"
+        label {
+            en = "Portfolio vs Benchmark" x: 150 y: 15
+        }
+
+        dimension {
+            width: 500 height: 200
+        }
+
+        margins {
+            top: 20 bottom: 70 left: 50 right: 20
+        }
+
+        scale {
+            x: 100 y: 100
+        }
+
+        legend {
+            x: 400 y: 50
+        }
+
+        x-axis {
+            field: "CUM.RETURN"
+            display-legend: true
+            show-grid: true
+        }
+
+        y-axis {
+            field: "CUM.BENCH.RETURN"
+            display-legend: true
+            show-grid: true
+        }
+
+        z-axis {
+            field: "DATE"
+            display-legend: true
+        }
+
+    }
+
+    enquiry-graph-id {
+        "AM.BM.PERF.CHART"
+    }
+
+}

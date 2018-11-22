@@ -1,0 +1,526 @@
+Enquiry "DEPSEC.BY.PF" for "name:/SC_ModelBank:NOFILE.E.NOF.GET.DETAILS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Position as on Trade/Value Date"
+    }
+
+    description {
+        en = "Position as on Trade/Value Date"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "DEP.POSITIONS" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "SECURITY.ACCOUNT" {
+            mandatory: true
+            label {
+                en = "Portfolio No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SECURITY.NUMBER" {
+            label {
+                en = "Security Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DEPOSITORY" {
+            label {
+                en = "Depository"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TRADE.DATE" {
+            label {
+                en = "Trade Date"
+            }
+
+            operands: Equals, NotEquals, LessThan, Greater, LessOrEquals, GreaterOrEquals, Between
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+            operands: Equals, NotEquals, LessThan, Greater, LessOrEquals, GreaterOrEquals, Between
+        }
+
+        None
+    }
+
+    field "TD.HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Position Details \""
+    }
+
+    field "S.TRADE.DATE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        length: 80
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        operation: selection "TRADE.DATE"
+        conversion: call
+        jBC: "@ E.MB.CNV.SEL.OPER.HDR"
+    }
+
+    field "SAM" {
+        label {
+            en = "Portfolio No"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SAM.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "RM"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.OFFICER" false
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "ISIN" {
+        label {
+            en = "ISIN"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "TELEKURS" {
+        label {
+            en = "Telekurs"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Security No"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SEC.NO.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "DEPO" {
+        label {
+            en = "Depository No"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "DEPO.NAME" {
+        label {
+            en = "Depository Name"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "NOMINAL" {
+        label {
+            en = "Tot Nom/Qty"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "UNSETT.IN" {
+        label {
+            en = "Tot Unsett In"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 11
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "UNSETT.OUT" {
+        label {
+            en = "Tot Unsett Out"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 12
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "NET.POSN" {
+        label {
+            en = "Net Position"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 13
+        }
+
+        operation: field-number 0
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "AVG.NET.COST" {
+        label {
+            en = "Avg Net Price"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 14
+        }
+
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "AVG.GR.PRICE" {
+        label {
+            en = "Avg Gross Price"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 15
+        }
+
+        operation: field-number 0
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    field "SEL1" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "SEL2" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LCCY" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "SEL.SEC.NO" {
+        comma-separator: false
+        operation: selection "SECURITY.NUMBER"
+    }
+
+    field "TOT.NOM" {
+        comma-separator: false
+        operation: total "NOMINAL"
+    }
+
+    field "TOT.UNSETT.IN" {
+        comma-separator: false
+        operation: total "UNSETT.IN"
+    }
+
+    field "TOT.UNSETT.OUT" {
+        comma-separator: false
+        operation: total "UNSETT.OUT"
+    }
+
+    field "TOT.NET.POSN" {
+        comma-separator: false
+        operation: total "NET.POSN"
+    }
+
+    field "D.TOTAL.TEXT" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+            line: + 1
+        }
+
+        operation: if "SEL.SEC.NO" NotEquals "NULL" process "\"Total\"" "NULL"
+    }
+
+    field "D.TOTAL.NOM" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        operation: if "SEL.SEC.NO" NotEquals "NULL" process "TOT.NOM" "NULL"
+    }
+
+    field "D.TOT.UNSETT.IN" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+            line: + 1
+        }
+
+        operation: if "SEL.SEC.NO" NotEquals "NULL" process "TOT.UNSETT.IN" "NULL"
+    }
+
+    field "D.TOT.UNSETT.OUT" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+            line: + 1
+        }
+
+        operation: if "SEL.SEC.NO" NotEquals "NULL" process "TOT.UNSETT.OUT" "NULL"
+    }
+
+    field "D.TOT.NET.POSN" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+            line: + 1
+        }
+
+        operation: if "SEL.SEC.NO" NotEquals "NULL" process "TOT.NET.POSN" "NULL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Transaction Details"
+        }
+
+        label-field: "SAM"
+        criteria: "SECURITY.ACCOUNT" Equals "SAM"
+        criteria: "DEPOSITORY" Equals "DEPO"
+        criteria: "SECURITY.NUMBER" Equals "SEC.NO"
+        criteria: "SEL1"
+        criteria: "SEL2"
+        enquiry: "SEC.SECNO"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Security Details"
+        }
+
+        label-field: "SAM" parameters {
+            function:  See
+            field: "SEC.NO"
+        }
+
+        screen: "SECURITY.MASTER,INP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Depository Details"
+        }
+
+        label-field: "SAM" parameters {
+            function:  See
+            field: "DEPO"
+        }
+
+        screen: "CUSTOMER.SECURITY,DEPOT"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View Portfolio Details"
+        }
+
+        label-field: "SAM" parameters {
+            function:  See
+            field: "SAM"
+        }
+
+        screen: "SEC.ACC.MASTER,INP.CUS"
+    }
+
+}

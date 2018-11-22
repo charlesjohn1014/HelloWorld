@@ -1,0 +1,500 @@
+Enquiry "PM.FXPROF.CCY" for "name:/PM_Reports:NOFILE.PM.RE.ENQ#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "FOREX PROFIT BY CCY FOR"
+        }
+
+        column: 28
+        line: 0
+    }
+
+    header {
+        label {
+            en = "AMOUNTs IN"
+        }
+
+        column: 65
+        line: 0
+    }
+
+    header {
+        label {
+            en = "CCY"
+        }
+
+        column: 4
+        line: 2
+    }
+
+    header {
+        label {
+            en = "SPOT REVAL"
+        }
+
+        column: 14
+        line: 2
+    }
+
+    header {
+        label {
+            en = "FWD REVAL"
+        }
+
+        column: 33
+        line: 2
+    }
+
+    header {
+        label {
+            en = "MKTG PROFIT"
+        }
+
+        column: 49
+        line: 2
+    }
+
+    header {
+        label {
+            en = "DAILY"
+        }
+
+        column: 73
+        line: 2
+    }
+
+    header {
+        label {
+            en = "------------------------------------"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "-----------------------------------"
+        }
+
+        column: 36
+        line: 1
+    }
+
+    header {
+        label {
+            en = "--------"
+        }
+
+        column: 71
+        line: 1
+    }
+
+    description {
+        en = "PM.FXPROF.CCY"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "LINE.1" {
+        Equals "PMPL-0001"
+    }
+
+    fixed-selection "LINE.2" {
+        Equals "PMPL-0002"
+    }
+
+    fixed-selection "LINE.3" {
+        Equals "PMPL-0003"
+    }
+
+    fixed-sort: "RANK" Null
+    custom-selection {
+
+        field "PM.ENQ.PARAM" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "RANK" {
+        }
+
+        AND
+
+        field "CCY" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "DATE.START" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "DATE.END" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "INIT.COMMON" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "BUILD.DATA" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.RE.ENQ"
+    }
+
+    field "NULL.STR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"FULL\""
+    }
+
+    field "PM.AMT.FMT" {
+        format: User break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: selection "PM.ENQ.PARAM"
+        conversion: getFrom "PM.ENQ.PARAM" "AMOUNT.FORMAT" false
+    }
+
+    field "AMT.FMT.DSPL" {
+        break-condition {
+            break: Once
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 76
+            line: 0
+        }
+
+        operation: if "PM.AMT.FMT" Equals "NULL.STR" process "FULL" "PM.AMT.FMT"
+    }
+
+    field "DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DATE"
+    }
+
+    field "PM.CCY" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "AMT.1" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMT.1"
+    }
+
+    field "AMT.2" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMT.2"
+    }
+
+    field "AMT.3" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMT.3"
+    }
+
+    field "DSPL.AMT.1" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: field-extract "AMT.1"
+        conversion: call
+        jBC: "@ E.PM.FMT.LCY.AMT"
+    }
+
+    field "DSPL.AMT.2" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Multi
+        operation: field-extract "AMT.2"
+        conversion: call
+        jBC: "@ E.PM.FMT.LCY.AMT"
+    }
+
+    field "DSPL.AMT.3" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        processing-mode: Multi
+        operation: field-extract "AMT.3"
+        conversion: call
+        jBC: "@ E.PM.FMT.LCY.AMT"
+    }
+
+    field "TEMP.SUM" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "AMT.1" + "AMT.2"
+    }
+
+    field "DAILY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "TEMP.SUM" + "AMT.3"
+    }
+
+    field "DSPL.DAILY" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DAILY"
+        conversion: call
+        jBC: "@ E.PM.FMT.LCY.AMT"
+    }
+
+    field "TOT.LINE.1" {
+        break-condition {
+            field: "B.DATE"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: constant "\"================\""
+    }
+
+    field "TOT.LINE.2" {
+        break-condition {
+            field: "B.DATE"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 27
+        }
+
+        operation: constant "\"================\""
+    }
+
+    field "TOT.LINE.3" {
+        break-condition {
+            field: "B.DATE"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        operation: constant "\"================\""
+    }
+
+    field "TOT.LINE.4" {
+        break-condition {
+            field: "B.DATE"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 63
+        }
+
+        operation: constant "\"================\""
+    }
+
+    field "T.AMT.1" {
+        break-condition {
+            field: "B.DATE"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+            line: + 1
+        }
+
+        operation: total "AMT.1"
+        conversion: call
+        jBC: "@ E.PM.FMT.LCY.AMT"
+    }
+
+    field "T.AMT.2" {
+        break-condition {
+            field: "B.DATE"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 1
+        }
+
+        operation: total "AMT.2"
+        conversion: call
+        jBC: "@ E.PM.FMT.LCY.AMT"
+    }
+
+    field "T.AMT.3" {
+        break-condition {
+            field: "B.DATE"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 43
+            line: + 1
+        }
+
+        operation: total "AMT.3"
+        conversion: call
+        jBC: "@ E.PM.FMT.LCY.AMT"
+    }
+
+    field "T.DAILY" {
+        break-condition {
+            field: "B.DATE"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 61
+            line: + 1
+        }
+
+        operation: total "DAILY"
+        conversion: call
+        jBC: "@ E.PM.FMT.LCY.AMT"
+    }
+
+    field "T.DATE" {
+        format: Date break-condition {
+            break: NewPage
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: 0
+        }
+
+        operation: field-extract "DATE"
+    }
+
+    field "B.DATE" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Multi
+        operation: break-change "DATE"
+    }
+
+    field "PM.ENQ.P" {
+        comma-separator: false
+        operation: selection "PM.ENQ.PARAM"
+    }
+
+    field "DD.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DATE"
+    }
+
+    drilldown "1" {
+        label-field: "PM.CCY"
+        criteria: "PM.ENQ.PARAM" Equals "PM.ENQ.P"
+        criteria: "CCY" Equals "PM.CCY"
+        criteria: "DATE.START" Equals "DD.DATE"
+        criteria: "DATE.END" Equals "DD.DATE"
+        enquiry: "PM.FXPROF.CE"
+    }
+
+}

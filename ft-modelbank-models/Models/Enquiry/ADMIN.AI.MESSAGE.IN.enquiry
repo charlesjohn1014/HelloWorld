@@ -1,0 +1,242 @@
+Enquiry "ADMIN.AI.MESSAGE.IN" for "name:/EB_ARC:EB.SECURE.MESSAGE#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    start-line: 4
+    end-line: 19
+    fixed-sort: "DATE.SENT" Null
+    fixed-sort: "TIME.SENT" Null
+
+    field "TO.STATUS" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TO.STATUS"
+    }
+
+    field "MSG.ID" {
+        label {
+            en = "Message ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "UNREAD" {
+        comma-separator: false
+        operation: constant "\"UNREAD\""
+    }
+
+    field "READ" {
+        comma-separator: false
+        operation: constant "\"READ\""
+    }
+
+    field "DATE.SENT" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.SENT"
+    }
+
+    field "DATE.SENT.DISP" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "TO.STATUS" Equals "READ" process "DATE.SENT"
+    }
+
+    field "DATE.SENT.BOLD" {
+        label {
+            en = "Date"
+        }
+
+        display-type: "CLASS-FDLB"
+        format: Date
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "TO.STATUS" Equals "UNREAD" process "DATE.SENT"
+    }
+
+    field "TIME.SENT" {
+        label {
+            en = "Time"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TIME.SENT"
+    }
+
+    field "TIME.SENT.DISP" {
+        label {
+            en = "Time"
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: if "TO.STATUS" Equals "READ" process "TIME.SENT"
+    }
+
+    field "TIME.SENT.BOLD" {
+        label {
+            en = "Time"
+        }
+
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: if "TO.STATUS" Equals "UNREAD" process "TIME.SENT"
+    }
+
+    field "FROM.DAO" {
+        label {
+            en = "From"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FROM.DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "FROM.DAO.DISP" {
+        label {
+            en = "From"
+        }
+
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        operation: if "TO.STATUS" Equals "READ" process "FROM.DAO"
+    }
+
+    field "FROM.DAO.BOLD" {
+        label {
+            en = "From"
+        }
+
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        operation: if "TO.STATUS" Equals "UNREAD" process "FROM.DAO"
+    }
+
+    field "DAO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "FROM.DAO"
+    }
+
+    field "SUBJECT" {
+        label {
+            en = "Subject"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SUBJECT"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"You have no messages from the bank\""
+    }
+
+    field "SUBJECT.DISP" {
+        label {
+            en = "Subject"
+        }
+
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        operation: if "TO.STATUS" Equals "READ" process "SUBJECT"
+    }
+
+    field "SUBJECT.DISP.1" {
+        label {
+            en = "Subject"
+        }
+
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Single
+        operation: if "TO.STATUS" Equals "UNREAD" process "SUBJECT"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Read"
+        }
+
+        label-field: "MSG.ID"
+        criteria: "@ID" Equals "MSG.ID"
+        enquiry: "AI.MESSAGE.READ.IN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reply"
+        }
+
+        label-field: "MSG.ID"
+        criteria: "EB.SECURE.MESSAGE" > "MSG.ID"
+        criteria: "EB.SECURE.MESSAGE" > "DAO"
+        criteria: "EB.SECURE.MESSAGE" > "RE.SUBJECT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.SECURE.MESSAGE,UPDATES.CLIENT"
+    }
+
+}

@@ -1,0 +1,206 @@
+Enquiry "WM.MONTHLY.PERFORMANCE.REPORT" for "name:/AM_ModelBank:NOFILE.WM.MONTHLY.PERF#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Monthly Perfomance"
+    }
+
+    description {
+        en = "Monthly Perfomance"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "PERF.TYPE" {
+        Equals "NET-OF-FEES"
+    }
+
+    custom-selection {
+
+        field "PORTFOLIO.ID" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "VAL.CCY" {
+            label {
+                en = "Valuation Ccy"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "FROM.DATE" {
+            label {
+                en = "From Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TO.DATE" {
+            label {
+                en = "To Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "START.D" {
+        label {
+            en = "Start Date"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Monthly Time Weighted Performance\""
+    }
+
+    field "PF.TXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Portfolio No: \""
+    }
+
+    field "PF.ID" {
+        label {
+            en = "Portfolio"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "PF.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: calc "PF.TXT":"PF.ID"
+    }
+
+    field "VAL.CCY.TXT" {
+        format: User
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Valuation CCY: \""
+    }
+
+    field "VAL.CCY" {
+        label {
+            en = "Valuation Ccy"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "VAL.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: calc "VAL.CCY.TXT":"VAL.CCY"
+    }
+
+    field "END.D" {
+        label {
+            en = "Month"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PERF" {
+        label {
+            en = "Monthly Performance%"
+        }
+
+        format: Currency "VAL.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "CUM.PERF" {
+        label {
+            en = "Cumulative Perf %"
+        }
+
+        format: Currency "VAL.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "PORTF.ID" {
+        format: User
+        comma-separator: false
+        operation: selection "PORTFOLIO.ID"
+    }
+
+    security {
+        abort: false
+    }
+
+    attributes: "NO.MORE.OPTIONS" ; "DISABLE.NO.SORT.OPTIONS" ; "NO.ENQUIRY.FAVOURITES" ; "ALLDATA"
+}

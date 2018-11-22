@@ -1,0 +1,515 @@
+Enquiry "SYS.POS.ACCOUNT.SUMMARY.RPT" for "name:/RE_ReportGeneration:EB.SYSTEM.SUMMARY#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "System Summary of Lcl Ccy and Position"
+    }
+
+    description {
+        en = "System Sum of Lcl Ccy & Position"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 19
+    build-routines {
+        jBC: "E.SELECT.LASTWDAY.SUMMARY"
+    }
+
+    fixed-sort: "SYSTEM.DATE" Descending
+    custom-selection {
+
+        field "SYSTEM.DATE" {
+            label {
+                en = "System Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Summary of\""
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 0
+        }
+
+        operation: constant "\" Assets and\""
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 0
+        }
+
+        operation: constant "\" Liabilities in Local Currency and Position\""
+    }
+
+    field "HEADER2.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"System Date:\""
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "MINUS" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "NIB" {
+        comma-separator: false
+        operation: constant "\"NOT IN BALANCE\""
+    }
+
+    field "SOB" {
+        comma-separator: false
+        operation: constant "\"SYSTEM IS OUT OF BALANCE\""
+    }
+
+    field "COMP.SYSTEM.DATE" {
+        length: 24
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COMP.SYSTEM.DATE"
+    }
+
+    field "SYSTEM.DATE" {
+        label {
+            en = "System Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 13
+            line: 1
+        }
+
+        operation: i-desc "SYSTEM.DATE"
+    }
+
+    field "COMPANY.ID" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 9
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 1
+        }
+
+        operation: i-desc "COMPANY.ID"
+    }
+
+    field "HEADER3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"CcyMarket\""
+    }
+
+    field "HEADER3.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 16
+        alignment: Right
+        comma-separator: true
+        display-section: Header
+        position {
+            column: 12
+            line: 3
+        }
+
+        operation: constant "\"CurrencyAmount\""
+    }
+
+    field "HEADER3.03" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 16
+        alignment: Right
+        comma-separator: true
+        display-section: Header
+        position {
+            column: 31
+            line: 3
+        }
+
+        operation: constant "\"LocalAmount\""
+    }
+
+    field "HEADER3.04" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 3
+        }
+
+        operation: constant "\"ExceptinDescpn\""
+    }
+
+    field "HEADER3.05" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 92
+            line: 3
+        }
+
+        operation: constant "\"Id\""
+    }
+
+    field "ESS.ID.1" {
+        comma-separator: false
+        operation: calc "COMPANY.ID":"MINUS"
+    }
+
+    field "LCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "AL.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AL.CCY"
+    }
+
+    field "AL.CCY.MKT" {
+        label {
+            en = "Ccy Market"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AL.CCY.MKT"
+    }
+
+    field "AL.CCY.BAL.AMT" {
+        label {
+            en = "Currency Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AL.CCY.BAL.AMT"
+    }
+
+    field "AL.LCL.BAL" {
+        label {
+            en = "Local Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "LCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 31
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AL.LCL.BAL"
+    }
+
+    field "EXCEP.DESC" {
+        label {
+            en = "Exceptin Descpn"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-extract "NULL"
+        conversion: call
+        jBC: "@ E.CHECK.CCY.EXCEPTION"
+    }
+
+    field "ESS.ID.2" {
+        comma-separator: false
+        operation: calc "ESS.ID.1":"SYSTEM.DATE"
+    }
+
+    field "ESS.ID.3" {
+        comma-separator: false
+        operation: calc "ESS.ID.2":"MINUS"
+    }
+
+    field "POS.TYPE" {
+        comma-separator: false
+        operation: field-extract "AL.CCY.MKT"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "ESS.ID.4" {
+        comma-separator: false
+        operation: calc "ESS.ID.3":"POS.TYPE"
+    }
+
+    field "ESS.ID" {
+        comma-separator: false
+        operation: field-extract "ESS.ID.4"
+    }
+
+    field "ESS.ID.5" {
+        label {
+            en = "Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 92
+        }
+
+        operation: field-extract "ESS.ID"
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "ESS.ID.6" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ESS.ID.5"
+    }
+
+    field "POS.TYP" {
+        comma-separator: false
+        operation: field-extract "ESS.ID"
+        conversion: extract from 3 to 1 delimited by "-"
+    }
+
+    field "POS.NAME" {
+        comma-separator: false
+        operation: constant "\" Postion\""
+    }
+
+    field "POSITION.NAME" {
+        break-condition {
+            field: "ESS.ID.6"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 2
+        }
+
+        operation: calc "POS.TYP":"POS.NAME"
+    }
+
+    field "TOT.AL" {
+        break-condition {
+            field: "ESS.ID.6"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 3
+        }
+
+        operation: constant "\"Total Local Equiv A/L :\""
+    }
+
+    field "AL.TOTAL.LCY" {
+        display-type: "CLASS-POSNEG" break-condition {
+            field: "ESS.ID.6"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: true
+        display-section: Footer
+        position {
+            column: 30
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AL.TOTAL.LCY"
+    }
+
+    field "TOT.PL" {
+        break-condition {
+            field: "ESS.ID.6"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 4
+        }
+
+        operation: constant "\"Total Local Equiv P/L :\""
+    }
+
+    field "PL.TOTAL.LCY" {
+        display-type: "CLASS-POSNEG" break-condition {
+            field: "ESS.ID.6"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: true
+        display-section: Footer
+        position {
+            column: 30
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PL.TOTAL.LCY"
+    }
+
+    field "LOCAL.EXCEP" {
+        break-condition {
+            field: "ESS.ID.6"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: constant "\"Exception Amount Lcy :\""
+    }
+
+    field "EXCEPT.AMT.LCY" {
+        display-type: "CLASS-POSNEG" break-condition {
+            field: "ESS.ID.6"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: true
+        display-section: Footer
+        position {
+            column: 30
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXCEPT.AMT.LCY"
+    }
+
+    field "EXCEP.AMT.DESC" {
+        break-condition {
+            field: "ESS.ID.6"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 56
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: if "EXCEPT.AMT.LCY" NotEquals "ZERO" process "SOB" "NULL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ESS.ID.5"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ESS.ID.5"
+        }
+
+        screen: "EB.SYSTEM.SUMMARY,VIEW"
+    }
+
+}

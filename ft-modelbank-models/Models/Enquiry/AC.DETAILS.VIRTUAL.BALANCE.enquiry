@@ -1,0 +1,124 @@
+Enquiry "AC.DETAILS.VIRTUAL.BALANCE" for "name:/AA_Framework:NOFILE.AA.FIN.SUMMARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "AA Virtual Balance Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "BAL.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BAL.AMOUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "VIRTUAL.BALANCES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "PROPERTY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "PROPERTY.CLASS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ARRANGEMENT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "VIRT.BAL" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 125
+        processing-mode: Single
+        operation: selection "BALANCE.TYPE"
+        conversion: getFrom "AC.BALANCE.TYPE" "DESCRIPTION" false
+    }
+
+    field "D.BALANCE.TYPE" {
+        label {
+            en = "Balance Type"
+        }
+
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 125
+        processing-mode: Single
+        operation: field-extract "BAL.TYPE"
+        conversion: getFrom "AC.BALANCE.TYPE" "DESCRIPTION" false
+    }
+
+    field "D.BALANCE.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: field-extract "BAL.AMOUNT"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

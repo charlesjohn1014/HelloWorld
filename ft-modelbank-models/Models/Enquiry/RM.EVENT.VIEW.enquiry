@@ -1,0 +1,234 @@
+Enquiry "RM.EVENT.VIEW" for "name:/EB_AlertProcessing:EVENT.LOG#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Alerts Of Customers"
+    }
+
+    zero-records-display: true
+    start-line: 2
+    end-line: 3
+    build-routines {
+        jBC: "E.BUILD.DAO.EVENT.VIEW"
+    }
+
+    fixed-selection "APPLICATION" {
+        Matches "...SC.PRICE...", "...RECOM..."
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Alerts-Price and Market Rating Change\""
+    }
+
+    field "ID" {
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "TOUCH.POINT.REF" {
+        label {
+            en = "Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "TOUCH.POINT.REF"
+    }
+
+    field "RECOM.ID" {
+        label {
+            en = "S.ID1"
+        }
+
+        comma-separator: false
+        operation: field-extract "TOUCH.POINT.REF"
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "RECOM.SC" {
+        comma-separator: false
+        operation: field-extract "TOUCH.POINT.REF"
+        conversion: extract from 1 to 0 delimited by "."
+    }
+
+    field "PRICE.ID" {
+        comma-separator: false
+        operation: field-extract "TOUCH.POINT.REF"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "SEC.ID" {
+        label {
+            en = "Security"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "APPLICATION" Matches "...PRICE..." process "PRICE.ID" "RECOM.SC"
+    }
+
+    field "SM.NAME" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "SEC.ID"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "EVENT" {
+        label {
+            en = "Event"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: application-field-name "TEC.ITEM"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "CUR.RECOM" {
+        comma-separator: false
+        operation: field-extract "RECOM.ID"
+        conversion: getFrom "AM.RECOMMENDATION" "RATING" false
+    }
+
+    field "RECOM.DETS" {
+        comma-separator: false
+        operation: field-extract "RECOM.ID"
+        conversion: getFrom "AM.RECOMMENDATION" "NARRATIVE" false
+    }
+
+    field "RECOM.DISP" {
+        comma-separator: false
+        operation: calc "CUR.RECOM":"\"-\"":"RECOM.DETS"
+    }
+
+    field "CP" {
+        comma-separator: false
+        operation: field-extract "PRICE.ID"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    field "DLP" {
+        comma-separator: false
+        operation: field-extract "PRICE.ID"
+        conversion: getFrom "SECURITY.MASTER" "DATE.LAST.PRICE" false
+    }
+
+    field "SCP.ID" {
+        comma-separator: false
+        operation: calc "PRICE.ID":"\".\"":"DLP"
+    }
+
+    field "OLD.PRICE" {
+        comma-separator: false
+        operation: field-extract "SCP.ID"
+        conversion: getFrom "SC.PRICE.CHANGE" "OLD.PRICE" false
+        conversion: call
+        jBC: "@ E.MB.SCPRICE.OLD"
+    }
+
+    field "OP" {
+        comma-separator: false
+        operation: field-extract "OLD.PRICE"
+    }
+
+    field "CUR.PR" {
+        comma-separator: false
+        operation: constant "\"Current Price - \""
+    }
+
+    field "OLD.PR" {
+        comma-separator: false
+        operation: constant "\" Old Price - \""
+    }
+
+    field "PRICE.DETS" {
+        comma-separator: false
+        operation: calc "CUR.PR":"CP":"OLD.PR":"OP"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FINAL.DISP" {
+        label {
+            en = "Details"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: if "RECOM.DISP" Equals "\"-\"" process "PRICE.DETS" "RECOM.DISP"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Alerts triggered\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "EVENT"
+        image: "edit.gif"
+        criteria: "SECURITY.NUMBER" Equals "SEC.ID"
+        enquiry: "SC.HOLD.SUM.BY.RM"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

@@ -1,0 +1,140 @@
+Enquiry "RM.CUSTOMER.FOR.ALERT" for "name:/ST_Config:DEPT.ACCT.OFFICER#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.BUILD.SEL.DAO"
+    }
+
+    fixed-selection "CUSTOMER.ID" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "AREA" {
+            label {
+                en = "Area"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Account Officer"
+            }
+
+        }
+
+        None
+    }
+
+    field "NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NAME"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer ID"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+    }
+
+    field "EMAIL" {
+        label {
+            en = "Email"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "EMAIL.1" false
+    }
+
+    field "SMS" {
+        label {
+            en = "Mobile"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SMS.1" false
+    }
+
+    field "ZERONORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Please create Customer\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit "
+        }
+
+        label-field: "CUSTOMER.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "CUSTOMER.ID"
+        }
+
+        screen: "CUSTOMER,ADDRESS.PWMALERTS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "New "
+        }
+
+        label-field: "ZERONORECS"
+        image: "new.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "CUSTOMER,INPUT"
+    }
+
+}

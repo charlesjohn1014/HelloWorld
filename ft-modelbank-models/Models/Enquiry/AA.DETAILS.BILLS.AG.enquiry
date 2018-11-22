@@ -1,0 +1,435 @@
+Enquiry "AA.DETAILS.BILLS.AG" for "name:/AA_PaymentSchedule:AA.ACCOUNT.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Bills"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "@ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.AA.GET.BILLS.CONVERSION"
+    }
+
+    field "ARRANGEMENT.ID" {
+        comma-separator: false
+        operation: selection "@ID"
+    }
+
+    field "CHK.HIST" {
+        comma-separator: false
+        operation: selection "@ID"
+        conversion: getFrom "AA.ACCOUNT.DETAILS.HIST" "BILL.ID" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TITLE1" {
+        comma-separator: false
+        operation: constant "\"Bills\""
+    }
+
+    field "TITLE2" {
+        comma-separator: false
+        operation: constant "\"Bills - Recent\""
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 68
+        operation: if "CHK.HIST" Equals "NULL" process "TITLE1" "TITLE2"
+    }
+
+    field "BILL.REFERENCE" {
+        label {
+            en = "Bill Reference"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "BILL.ID"
+    }
+
+    field "PAYMENT.DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 68
+        processing-mode: Multi
+        operation: application-field-name "BILL.PAY.DATE"
+    }
+
+    field "BILL.TYPE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BILL.TYPE"
+    }
+
+    field "D.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 109
+        processing-mode: Multi
+        operation: field-extract "BILL.TYPE"
+        conversion: replace {
+            oldData: "ACT.CHARGE"
+            newData: "Activity Charge"
+        }
+
+        conversion: replace {
+            oldData: "PAYMENT"
+            newData: "Scheduled Payment"
+        }
+
+        conversion: replace {
+            oldData: "PR.CHARGE"
+            newData: "Break Rule Charge"
+        }
+
+        conversion: replace {
+            oldData: "PAYOFF"
+            newData: "Payoff"
+        }
+
+        conversion: replace {
+            oldData: "EXPECTED"
+            newData: "Expected"
+        }
+
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT.ID"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "BILL.DETAILS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.REFERENCE"
+        conversion: call
+        jBC: "@ E.AA.GET.BILL.DETAILS"
+    }
+
+    field "OR.TOTAL.AMOUNT" {
+        label {
+            en = "Billed"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.DETAILS"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BILL.MSG" {
+        comma-separator: false
+        operation: constant "\"No Bills\""
+    }
+
+    field "AMOUNT.DISP" {
+        label {
+            en = "Billed"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 52
+        processing-mode: Multi
+        operation: if "PAYMENT.DATE" Equals "\"\"" process "BILL.MSG" "OR.TOTAL.AMOUNT"
+    }
+
+    field "OS.TOTAL.AMOUNT" {
+        label {
+            en = "Outstanding"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 35
+        processing-mode: Multi
+        operation: field-extract "BILL.DETAILS"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BILL.STATUS" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BILL.STATUS"
+        conversion: oconv "MCT"
+    }
+
+    field "BILL.STAT.DATE" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.DETAILS"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "AGING.STATUS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AGING.STATUS"
+    }
+
+    field "AGE.STATUS.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "\"AA.OVERDUE.STATUS*\"":"AGING.STATUS"
+    }
+
+    field "D.AGE.STATUS" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "AGE.STATUS.ID"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "AGE.ST.CHG.DT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.DETAILS"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 40
+        processing-mode: Multi
+        operation: if "D.AGE.STATUS" NotEquals "\"\"" process "D.AGE.STATUS" "BILL.STATUS"
+    }
+
+    field "STATUS.DATE" {
+        label {
+            en = "Status Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        column-width: 60
+        processing-mode: Multi
+        operation: if "AGING.STATUS" NotEquals "\"\"" process "AGE.ST.CHG.DT" "BILL.STAT.DATE"
+    }
+
+    field "BILL.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "BILL.REFERENCE"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "V.BILL1" {
+        comma-separator: false
+        operation: constant "\"AA.BILL.DETAILS,AA S \""
+    }
+
+    field "V.BILL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "V.BILL1":"BILL.REFERENCE"
+    }
+
+    field "C.PAYOFF.SIM" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"COS AA.PAYOFF.STATEMENT.SIM \""
+    }
+
+    field "C.PAYOFF.LIV" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"COS AA.PAYOFF.STATEMENT \""
+    }
+
+    field "FV" {
+        comma-separator: false
+        operation: selection "FILE.VERSION"
+    }
+
+    field "SIM.REF" {
+        comma-separator: false
+        operation: selection "SIMULATION.REF"
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "C.PAYOFF2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SIM.REF" Equals "NULL" process "C.PAYOFF.LIV" "C.PAYOFF.SIM"
+    }
+
+    field "C.SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "C.PAYOFF1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "C.PAYOFF2":"BILL.REFERENCE":"C.SP"
+    }
+
+    field "C.PAYOFF" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "C.PAYOFF1":"FV":"C.SP":"SIM.REF"
+    }
+
+    field "OD" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "OD.DAYS" {
+        label {
+            en = "Days OD"
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PAYMENT.DATE":"OD":"STATUS.DATE":"OD":"STATUS"
+        conversion: call
+        jBC: "@ E.GET.OVERDUE.DAYS"
+    }
+
+    field "OD.DAYS.CHK" {
+        label {
+            en = "Days OD"
+        }
+
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Multi
+        operation: if "PAYMENT.DATE" Equals "\"\"" process "\"\"" "OD.DAYS"
+    }
+
+    field "BILL.DRILLDOWN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "BILL.TYPE" Equals "\"PAYOFF\"" process "C.PAYOFF" "V.BILL"
+    }
+
+    field "ERR.MSG" {
+        display-type: "CLASS-ENQ.NORECS"
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 52
+        no-header: true
+        operation: if "AMOUNT.DISP" Equals "BILL.MSG" process "BILL.MSG"
+    }
+
+    field "AGENT.STATUS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"ENQ AA.DETAILS.AGENT.COMMISSION BILL.ID EQ \""
+    }
+
+    field "AGENT.DRILLDOWN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "AGENT.STATUS":"BILL.REFERENCE"
+    }
+
+    toolbar: "ENQUIRY.SELECTION.PRINT" drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "PAYMENT.DATE"
+        image: "view.gif"
+        from-field: "BILL.DRILLDOWN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Commission"
+        }
+
+        label-field: "BILL.REFERENCE"
+        image: "view.gif"
+        from-field: "AGENT.DRILLDOWN"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.BREADCRUMBS" ; "NO.ENQUIRY.FAVOURITES" ; "SINGLE.BACKGROUND.COLOUR"
+}

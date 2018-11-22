@@ -1,0 +1,214 @@
+Enquiry "SC.PORT.INITIAL.MARGIN" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Portfolios with MM/AM"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "MARGIN.LENDING" {
+        Equals "\"YES\""
+    }
+
+    fixed-selection "INITIAL.MARGIN" {
+        NotEquals "\"\""
+    }
+
+    field "SAM" {
+        label {
+            en = "Portfolio No"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Portfolios with Maintenance/Additional Margins\""
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "ACCOUNT.NOS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NOS"
+        conversion: value 1
+    }
+
+    field "REFERENCE.CURRENCY" {
+        label {
+            en = "Ref Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 58
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.CURRENCY"
+    }
+
+    field "VALUATION.CURRENCY" {
+        label {
+            en = "Valuation Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUATION.CURRENCY"
+    }
+
+    field "INVESTMENT.PROGRAM" {
+        label {
+            en = "Investment Program"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INVESTMENT.PROGRAM"
+        conversion: getFrom "INVESTMENT.PROGRAM" "DESCRIPTION" false
+    }
+
+    field "MANAGED.ACCOUNT" {
+        label {
+            en = "Managed Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 76
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MANAGED.ACCOUNT"
+        conversion: getFrom "MANAGED.ACCOUNT" "DESCRIPTION" false
+    }
+
+    field "YE" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "NO" {
+        comma-separator: false
+        operation: constant "\"NO\""
+    }
+
+    field "DIV" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DIVERSIFICATION"
+    }
+
+    field "DIVER" {
+        label {
+            en = "Diversified?"
+        }
+
+        display-type: "CLASS-BOLD"
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        operation: if "DIVE" Equals "\"Y\"" process "YE" "NO"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Portfolio Margin Status"
+        }
+
+        label-field: "SAM"
+        criteria: "SECURITY.ACC" Equals "SAM"
+        enquiry: "SC.MAINT.MARGIN.DETS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Margin Call Tracker"
+        }
+
+        label-field: "SAM"
+        criteria: "@ID" Equals "SAM"
+        enquiry: "MARGIN.CALL.TRACKER.MM.AM"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Eligibility Calculator"
+        }
+
+        label-field: "SAM"
+        criteria: "CURRENT.PORT" > "SAM"
+        criteria: "CURRENT.ACC" > "ACCOUNT.NOS" parameters {
+            field: "SAM"
+        }
+
+        composite-screen: "SC.CAL.BUY.POWER"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View Portfolio Details"
+        }
+
+        label-field: "SAM" parameters {
+            function:  See
+            field: "SAM"
+        }
+
+        screen: "SEC.ACC.MASTER,INP.CUS"
+    }
+
+}

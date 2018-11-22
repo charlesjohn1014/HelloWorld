@@ -1,0 +1,122 @@
+Enquiry "CR.OPPORTUNITY-PRODUCT.GROUPS.PROCESS" for "name:/AA_ProductFramework:AA.PRODUCT.GROUP#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Groups"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        Equals "PROCESS"
+    }
+
+    custom-selection {
+
+        field "PRODUCT.LINE" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "LINE" {
+        display-type: "CLASS-ENQ.H.ID"
+        format: User break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "PRODUCT.LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "N.LINE" {
+        display-type: "CLASS-ENQ.H.ID"
+        format: User break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "PRODUCT.LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "GROUP" {
+        label {
+            en = "Group"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PRODUCT.GROUP"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "NO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No Product Groups defined.\""
+    }
+
+    field "E.AA.PRODUCTS" {
+        comma-separator: false
+        operation: constant "\"CR.OPPORTUNITY-PRODUCTS\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Products"
+        }
+
+        label-field: "DESCRIPTION"
+        image: "right.arrow.gif"
+        criteria: "PRODUCT.GROUP" Equals "GROUP"
+        from-field: "E.AA.PRODUCTS"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

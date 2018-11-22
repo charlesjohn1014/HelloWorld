@@ -1,0 +1,343 @@
+Enquiry "WITHDRAWAL.AVAILABLE.CHECK" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "PENALTY CHARGES"
+        }
+
+        column: 32
+        line: 0
+    }
+
+    header {
+        label {
+            en = "ACCOUNT NO."
+        }
+
+        column: 5
+        line: 1
+    }
+
+    header {
+        label {
+            en = "VALUE DATE"
+        }
+
+        column: 5
+        line: 2
+    }
+
+    header {
+        label {
+            en = "TRN AMT"
+        }
+
+        column: 30
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CODE"
+        }
+
+        column: 56
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CHARGE CODE"
+        }
+
+        column: 1
+        line: 3
+    }
+
+    header {
+        label {
+            en = "   TYPE"
+        }
+
+        column: 12
+        line: 3
+    }
+
+    header {
+        label {
+            en = "  POSTED TO"
+        }
+
+        column: 19
+        line: 3
+    }
+
+    header {
+        label {
+            en = "     LOCAL CHG [   ]     FGN CHG ["
+        }
+
+        column: 30
+        line: 3
+    }
+
+    header {
+        label {
+            en = "   ]"
+        }
+
+        column: 64
+        line: 3
+    }
+
+    header {
+        label {
+            en = "      EXCHANGE RATE"
+        }
+
+        column: 68
+        line: 3
+    }
+
+    header {
+        label {
+            en = "------------------------------------"
+        }
+
+        column: 0
+        line: 4
+    }
+
+    header {
+        label {
+            en = "-----------------------------------"
+        }
+
+        column: 36
+        line: 4
+    }
+
+    header {
+        label {
+            en = "------------------------"
+        }
+
+        column: 62
+        line: 4
+    }
+
+    description {
+        en = "WITHDRAWAL.AVAILABLE.CHECK"
+    }
+
+    start-line: 5
+    end-line: 19
+    custom-selection {
+
+        field "ACCOUNT.NUMBER" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "VAL.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "TXN.AMT" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "TXN.CODE" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "BUILD.PENALTY" {
+        format: User
+        length: 16
+        alignment: Right
+        comma-separator: false
+        operation: i-desc "ACCOUNT.NO"
+        conversion: call
+        jBC: "@ E.BUILD.PENALTY.INFO"
+    }
+
+    field "LOCAL.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 46
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 7
+    }
+
+    field "FOREIGN.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 64
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 8
+    }
+
+    field "ACCOUNT.NO" {
+        format: User
+        length: 16
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 1
+        }
+
+        operation: i-desc "ACCOUNT.NO"
+    }
+
+    field "ACCOUNT.NAME" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 1
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "VAL.DTE" {
+        format: User
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 2
+        }
+
+        operation: field-number 9
+    }
+
+    field "TXN.AMT" {
+        format: Currency "LOCAL.CCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 38
+            line: 2
+        }
+
+        operation: selection "TXN.AMT"
+    }
+
+    field "TXN.CODE" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 62
+            line: 2
+        }
+
+        operation: selection "TXN.CODE"
+    }
+
+    field "CHARGE.CODE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+    }
+
+    field "CHARGE.TYPE" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: field-number 2
+    }
+
+    field "POST.TO" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Multi
+        operation: field-number 3
+    }
+
+    field "LCY.CHARGE" {
+        format: Currency "LOCAL.CCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Multi
+        operation: field-number 4
+    }
+
+    field "FCY.CHARGE" {
+        format: Currency "FOREIGN.CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 56
+        }
+
+        processing-mode: Multi
+        operation: field-number 5
+    }
+
+    field "EXCH.RATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 74
+        }
+
+        processing-mode: Multi
+        operation: field-number 6
+    }
+
+}

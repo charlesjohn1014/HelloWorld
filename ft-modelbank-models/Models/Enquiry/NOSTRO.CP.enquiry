@@ -1,0 +1,155 @@
+Enquiry "NOSTRO.CP" for "name:/ST_Config:AGENCY#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 6
+    end-line: 99 fixed-selection "AGENCY" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "NOSTRO.ACCT.NO" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "AGENCY" {
+            label {
+                en = "Counterparty"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "PK.NOSTRO.ACCT.NO" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Nostro Account\""
+    }
+
+    field "NOSTRO.ACCT.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NOSTRO.ACCT.NO"
+    }
+
+    field "PK.OUR.EXT.ACCT.NO" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Our Account Number\""
+    }
+
+    field "OUR.EXT.ACCT.NO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUR.EXT.ACCT.NO"
+    }
+
+    field "PK.IBAN.OUR.EX.ACC" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Multi
+        operation: constant "\"IBAN\""
+    }
+
+    field "IBAN.OUR.EX.ACC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 94
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "IBAN.OUR.EX.ACC"
+    }
+
+    field "NOSTRO.CCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "NOSTRO.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "PK.NOSTRO.ONLINE.BAL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Nostro Online Balance\""
+    }
+
+    field "NOSTRO.ONLINE.BAL" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "NOSTRO.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 154
+        }
+
+        processing-mode: Multi
+        operation: field-extract "NOSTRO.ACCT.NO"
+        conversion: getFrom "EB.CONTRACT.BALANCES" "ONLINE.ACTUAL.BAL" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Nostro Accounts Found For Counterparty\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Forward Movements"
+        }
+
+        label-field: "NOSTRO.ACCT.NO"
+        image: "view.gif"
+        criteria: "ACCOUNT.ID" Equals "NOSTRO.ACCT.NO"
+        enquiry: "NOSTRO.FWD.BAL"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS"
+}

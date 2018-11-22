@@ -1,0 +1,263 @@
+Enquiry "CHQ.ISSUES.SCV" for "name:/ST_ChqIssue:CHEQUE.ISSUE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cheques Issued"
+    }
+
+    description {
+        en = "Cheques Issued"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "ACCOUNT.NO" Null
+    fixed-sort: "CHQ.TYPE" Null
+    fixed-sort: "SEQ.NO" Null
+    custom-selection {
+
+        field "CHEQUE.TYPE.NO" {
+            label {
+                en = "Account No"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Cheque Type"
+            }
+
+            operands: BeginsWith
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 27
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ MB.CHQ.CHARGE.UPDATE"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Cheques Issued\""
+    }
+
+    field "ACCOUNT NUMBER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Account No :\""
+    }
+
+    field "ACCOUNT.NO" {
+        format: User
+        length: 19
+        alignment: Left
+        comma-separator: false
+        operation: i-desc "ACCOUNT.NO"
+    }
+
+    field "ACC.NO.BRK" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACCOUNT.NO"
+    }
+
+    field "ACC.NO.DISP" {
+        label {
+            en = "Account No"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            field: "ACC.NO.BRK"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "ACCOUNT.NO"
+    }
+
+    field "ACC.NAME" {
+        label {
+            en = "Name"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "ACC.NO.BRK"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CHQ.TYPE" {
+        label {
+            en = "Cheque Type"
+        }
+
+        format: User
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: i-desc "CHQ.TYPE"
+    }
+
+    field "SEQ.NO" {
+        label {
+            en = "Sequence No"
+        }
+
+        format: User
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        operation: i-desc "SEQ.NO"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 24
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "NUMBER.ISSUED" {
+        label {
+            en = "Issued"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NUMBER.ISSUED"
+    }
+
+    field "CHQ.NO.START" {
+        label {
+            en = "Start No"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 36
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHQ.NO.START"
+    }
+
+    field "CHARGE.DATE" {
+        label {
+            en = "Charge Date"
+        }
+
+        format: Date
+        length: 27
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "CHEQUE.CHARGE.BAL" "STATUS.DATE" false
+    }
+
+    field "CHARGES" {
+        label {
+            en = "Charge Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+        }
+
+        processing-mode: Single
+        operation: field-number 50
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Cheques have been issued\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CHQ.TYPE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "CHEQUE.ISSUE,INPUT"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

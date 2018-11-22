@@ -1,0 +1,80 @@
+Enquiry "GB.VAL.MATRIX.HDR" for "name:/AM_ValuationFrameWork:AM.VAL.EXTRACT.WRK#" {
+    metamodelVersion: "1.30.6"
+    show-all-books: false
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "SAM.NO" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "ONLINE.YNO" {
+            label {
+                en = "Online YNo"
+            }
+
+        }
+
+        AND
+
+        field "VALUATION.CCY" {
+            label {
+                en = "Val Ccy"
+            }
+
+        }
+
+        None
+    }
+
+    field "PORT" {
+        label {
+            en = "Portfolio:"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: selection "SAM.NO"
+    }
+
+    field "VAL.CCY" {
+        label {
+            en = "Valuation Ccy:"
+        }
+
+        comma-separator: false
+        operation: selection "VALUATION.CCY"
+    }
+
+    field "SAM.REF" {
+        comma-separator: false
+        operation: field-extract "PORT"
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.CURRENCY" false
+    }
+
+    field "DISP.VAL.CCY" {
+        label {
+            en = "Valuation Ccy:"
+        }
+
+        comma-separator: false
+        operation: if "VAL.CCY" Equals "\"\"" process "SAM.REF" "VAL.CCY"
+    }
+
+    security {
+        abort: false
+    }
+
+}

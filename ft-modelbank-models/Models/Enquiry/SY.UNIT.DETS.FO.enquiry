@@ -1,0 +1,279 @@
+Enquiry "SY.UNIT.DETS.FO" for "name:/SY_Unit:SY.UNIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Units"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "T24.APPLICATION" {
+        NotEquals "SY.EVENT"
+    }
+
+    fixed-selection "T24.APP.ID" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "SY.TRANSACTION" {
+        }
+
+        None
+    }
+
+    field "EHEAD" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Underlying Units\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Unit ID"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "SHORT.DESC" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "CLASS-DESCR"
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.DESC"
+    }
+
+    field "T24.APP.ID" {
+        label {
+            en = "Deal No."
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "T24.APP.ID"
+    }
+
+    field "T24.APP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "T24.APPLICATION"
+    }
+
+    field "PROD.DEF" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.DEFINITION"
+    }
+
+    field "D" {
+        comma-separator: false
+        operation: constant "\"DCD\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "X1" {
+        comma-separator: false
+        operation: constant "\"DX\""
+    }
+
+    field "X2" {
+        comma-separator: false
+        operation: constant "\"MM\""
+    }
+
+    field "X3" {
+        comma-separator: false
+        operation: constant "\"DX.TRADE\""
+    }
+
+    field "X4" {
+        comma-separator: false
+        operation: constant "\"MM.MONEY.MARKET\""
+    }
+
+    field "X5" {
+        comma-separator: false
+        operation: constant "\"SEC.TRADE\""
+    }
+
+    field "X6" {
+        comma-separator: false
+        operation: constant "\"FOREX\""
+    }
+
+    field "UNIT" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "UNIT.NAME"
+    }
+
+    field "C1" {
+        comma-separator: false
+        operation: if "PROD.DEF" Equals "D" process "C2"
+    }
+
+    field "C2" {
+        comma-separator: false
+        operation: if "UNIT" Equals "X1" process "X3" "C3"
+    }
+
+    field "C3" {
+        comma-separator: false
+        operation: if "UNIT" Equals "X2" process "X4" "T24.APP"
+    }
+
+    field "T24" {
+        comma-separator: false
+        operation: if "C2" NotEquals "NULL" process "C2" "C3"
+    }
+
+    field "DD.SEE" {
+        label {
+            en = "Application"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "T24"
+    }
+
+    field "CHILD.ID" {
+        label {
+            en = "Child Trade"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: field-extract "T24.APP.ID"
+        conversion: getFrom "DX.TRADE" "CHILD.REF" false
+    }
+
+    field "CHILD.APP1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CHILD.ID" Matches "\"SC...\"" process "X5" "X6"
+    }
+
+    field "CHILD.APP" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CHILD.ID" NotEquals "NULL" process "CHILD.APP1" "NULL"
+    }
+
+    field "EVENT.ID" {
+        length: 52
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "VER" {
+        comma-separator: false
+        operation: constant "\",INPUT\""
+    }
+
+    field "LOG.ID" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 4 delimited by "."
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Unit"
+        }
+
+        label-field: "SHORT.DESC"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SY.UNIT,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Deal"
+        }
+
+        label-field: "SHORT.DESC"
+        image: "details.gif" parameters {
+            function:  See
+            field: "T24.APP.ID"
+        }
+
+        from-field: "DD.SEE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Child"
+        }
+
+        label-field: "CHILD.ID"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "CHILD.ID"
+        }
+
+        from-field: "CHILD.APP"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

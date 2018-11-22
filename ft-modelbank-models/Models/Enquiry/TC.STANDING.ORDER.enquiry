@@ -1,0 +1,468 @@
+Enquiry "TC.STANDING.ORDER" for "name:/AC_StandingOrders:STANDING.ORDER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Standing Orders List"
+    }
+
+    description {
+        en = "Standing Orders List"
+    }
+
+    start-line: 4
+    end-line: 10 fixed-selection "K.TYPE" {
+        NotEquals "DD"
+    }
+
+    fixed-sort: "CURRENCY" Null
+    custom-selection {
+
+        field "DEBIT.CUSTOMER" {
+            label {
+                en = "Debit Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "TRANSACTION.REFERENCE" {
+        label {
+            en = "Transaction Reference"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STANDING.ORDER"
+    }
+
+    field "PAY.METHOD" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PAY.METHOD"
+    }
+
+    field "HYPEN" {
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "BEN.ACCT.NO" {
+        label {
+            en = "Ben Acct No"
+        }
+
+        length: 34
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BEN.ACCT.NO"
+    }
+
+    field "BENEFICIARY" {
+        label {
+            en = "Beneficiary"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY"
+    }
+
+    field "BENEFICIARY.ID" {
+        label {
+            en = "Beneficiary Id"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY.ID"
+    }
+
+    field "PAY.TO.ACCT" {
+        label {
+            en = "Pay To Acct"
+        }
+
+        comma-separator: false
+        operation: field-extract "BENEFICIARY.ID"
+        conversion: getFrom "BENEFICIARY" "BEN.ACCT.NO" false
+    }
+
+    field "CPTY.ACCT.NO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CPTY.ACCT.NO"
+    }
+
+    field "ACCT.DESC" {
+        label {
+            en = "Acct Desc"
+        }
+
+        comma-separator: false
+        operation: field-extract "CPTY.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "BEN.NOSTRO" {
+        comma-separator: false
+        operation: field-extract "BENEFICIARY"
+    }
+
+    field "ACCT" {
+        label {
+            en = "Acct"
+        }
+
+        format: User
+        comma-separator: false
+        operation: calc "CPTY.ACCT.NO":"HYPEN":"ACCT.DESC"
+    }
+
+    field "PAY.TO" {
+        label {
+            en = "Pay To"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "PAY.METHOD" Matches "\"BC...\"" process "BEN.NOSTRO" "NOS.TYPE"
+    }
+
+    field "NOS.TYPE" {
+        label {
+            en = "Nos Type"
+        }
+
+        comma-separator: false
+        operation: if "PAY.METHOD" Matches "\"OT...\"" process "BEN.NOSTRO" "ACCT"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "CURRENT.AMOUNT.BAL" {
+        label {
+            en = "Current Amount Bal"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.AMOUNT.BAL"
+    }
+
+    field "CURR.FREQ.DATE" {
+        label {
+            en = "Curr Freq Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURR.FREQ.DATE"
+    }
+
+    field "FREQUENCY" {
+        label {
+            en = "Frequency"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: i-desc "FREQUENCY"
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: i-desc "START.DATE"
+    }
+
+    field "CURRENT.END.DATE" {
+        label {
+            en = "Current End Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.END.DATE"
+    }
+
+    field "PAYMENT.DETAILS" {
+        label {
+            en = "Payment Details"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.DETAILS"
+        conversion: call
+        jBC: "@ E.TC.CONV.MULTI.DELIMIT"
+    }
+
+    field "FUTURE.NOTICE" {
+        label {
+            en = "Future Notice"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: i-desc "FUTURE.NOTICE"
+    }
+
+    field "TO.ACCT.NO" {
+        label {
+            en = "To Acct No"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: if "PAY.TO.ACCT" NotEquals "\"\"" process "PAY.TO.ACCT" "BEN.ACCOUNT.NO"
+    }
+
+    field "BEN.ACCOUNT.NO" {
+        label {
+            en = "Beneficiary Account Number"
+        }
+
+        comma-separator: false
+        operation: if "BEN.ACCT.NO" NotEquals "\"\"" process "BEN.ACCT.NO" "CPTY.ACCT.NO"
+    }
+
+    field "TO.ACCT.NAME" {
+        label {
+            en = "To Acct Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: if "BENEFICIARY" NotEquals "\"\"" process "BENEFICIARY" "ACCT.DESC"
+    }
+
+    field "BEN.SORTCODE" {
+        label {
+            en = "Ben Sortcode"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BANK.SORT.CODE"
+    }
+
+    field "AC.SORTCODE" {
+        comma-separator: false
+        operation: field-extract "CPTY.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "CO.CODE" false
+        conversion: getFrom "COMPANY" "IBAN.BRANCH.ID" false
+    }
+
+    field "SORTCODE" {
+        label {
+            en = "Sortcode"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: if "BEN.SORTCODE" NotEquals "\"\"" process "BEN.SORTCODE" "AC.SORTCODE"
+    }
+
+    field "LAST.RUN.DATE" {
+        label {
+            en = "Last Run Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LAST.RUN.DATE"
+    }
+
+    field "STO.ST.DATE" {
+        comma-separator: false
+        operation: if "START.DATE" NotEquals "\"\"" process "START.DATE" "LAST.RUN.DATE"
+    }
+
+    field "STO.START.DATE" {
+        label {
+            en = "Sto Start date"
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: if "STO.ST.DATE" NotEquals "\"\"" process "STO.ST.DATE" "CURR.FREQ.DATE"
+    }
+
+    field "ACCT.WITH.BANK" {
+        label {
+            en = "Acct With Bank"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCT.WITH.BANK"
+        conversion: call
+        jBC: "@ E.TC.CONV.MULTI.DELIMIT"
+    }
+
+    field "IBAN.BEN" {
+        label {
+            en = "Iban Ben"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: application-field-name "IBAN.BEN"
+    }
+
+    field "BEN.OUR.CHARGES" {
+        label {
+            en = "Ben Our Charges"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BEN.OUR.CHARGES"
+    }
+
+    field "PO.PRD.NAME" {
+        label {
+            en = "PO Prd Name"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PO.PRD.NAME"
+    }
+
+    field "BEN.COUNTRY" {
+        label {
+            en = "Ben Country"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BEN.COUNTRY"
+    }
+
+}

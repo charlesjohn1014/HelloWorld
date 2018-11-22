@@ -1,0 +1,283 @@
+Enquiry "OUTSTATION.CHQS.OS" for "name:/ST_ChqSubmit:CHEQUE.COLLECTION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Outstanding Outstation Cheques"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99 fixed-selection "BANK.SORT.CODE" {
+        Equals "COLL"
+    }
+
+    fixed-selection "CHQ.STATUS" {
+        NotEquals "\"CLEARED\"", "\"RETURNED\""
+    }
+
+    custom-selection {
+
+        field "TXN.ID" {
+            label {
+                en = "Trans Ref"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Ccy"
+            }
+
+        }
+
+        AND
+
+        field "CHQ.STATUS" {
+            label {
+                en = "Cheque Status"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.ACC.NO" {
+            label {
+                en = "Credit Acct"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT" {
+            label {
+                en = "Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "CHQ.TXN.ID" {
+        label {
+            en = "Chq Colln Id"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHQ.TXN.ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Pay / Return Outstation Cheques\""
+    }
+
+    field "TXN.ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TXN.ID"
+    }
+
+    field "CREDIT.ACC.NO" {
+        label {
+            en = "Credit Acct"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 39
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CREDIT.ACC.NO"
+    }
+
+    field "SHORT.TITLE" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CREDIT.ACC.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 65
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "SUSP.POSTED.TO" {
+        label {
+            en = "Susp Posted To"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SUSP.POSTED.TO"
+    }
+
+    field "ORIG.VALUE.DATE" {
+        label {
+            en = "Orig Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORIG.VALUE.DATE"
+    }
+
+    field "EXPOSURE.DATE" {
+        label {
+            en = "Exposure Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPOSURE.DATE"
+    }
+
+    field "CHQ.STATUS" {
+        label {
+            en = "Chq Status"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 96
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHQ.STATUS"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Outstanding Outstation Cheques for Collection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Cheque Realised"
+        }
+
+        label-field: "CHQ.TXN.ID" parameters {
+            function:  Input
+            field: "CHQ.TXN.ID"
+        }
+
+        screen: "CHEQUE.COLLECTION,OSCHEQUE.REALISED"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Cheque Returned"
+        }
+
+        label-field: "CHQ.TXN.ID" parameters {
+            function:  Input
+            field: "CHQ.TXN.ID"
+        }
+
+        screen: "CHEQUE.COLLECTION,OSCHEQUE.RETURNED"
+    }
+
+}

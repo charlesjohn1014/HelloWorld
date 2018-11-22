@@ -1,0 +1,352 @@
+Enquiry "AA.ACCOUNTING.SCHEMA.SUMMARY" for "name:/AA_Accounting:NOFILE.AA.SCHEMA#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "AA Accounting Schema"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "PRODUCT" {
+            mandatory: true
+            label {
+                en = "Product"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ACTIVITY" {
+            label {
+                en = "Activity"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "EFFECTIVE.DATE" {
+            label {
+                en = "Effective Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Product Currency"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Accounting Schema\""
+    }
+
+    field "L.PRODUCT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Product\""
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        operation: selection "PRODUCT"
+    }
+
+    field "ID" {
+        comments: "Build an entry layout from this"
+        comma-separator: false
+        operation: field-number 0
+        conversion: call
+        jBC: "@ E.AA.SCHEMA.RECORD"
+    }
+
+    field "AA.REF.DETAILS" {
+        comma-separator: false
+        operation: application-field-name "AA.REF.DETAILS"
+    }
+
+    field "P.ACTIVITY" {
+        comma-separator: false
+        operation: field-extract "ARR.ACTIVITY"
+    }
+
+    field "ARR.ACTIVITY" {
+        comma-separator: false
+        operation: field-extract "AA.REF.DETAILS"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "D.ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "ARR.ACTIVITY" NotEquals "P.ACTIVITY" process "ARR.ACTIVITY" "\"\""
+    }
+
+    field "P.PROP.ACT" {
+        comma-separator: false
+        operation: field-extract "PROP.ACT"
+    }
+
+    field "PROPERTY" {
+        comma-separator: false
+        operation: field-extract "AA.REF.DETAILS"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "ACTION" {
+        comma-separator: false
+        operation: field-extract "AA.REF.DETAILS"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PROP.ACT" {
+        comma-separator: false
+        operation: calc "PROPERTY":"\"*\"":"ACTION"
+    }
+
+    field "ACTION.02" {
+        comma-separator: false
+        operation: field-extract "AA.REF.DETAILS"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "D.PROPERTY1" {
+        comma-separator: false
+        operation: if "PROP.ACT" NotEquals "P.PROP.ACT" process "PROPERTY" "\"\""
+    }
+
+    field "D.PROPERTY" {
+        label {
+            en = "Property"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: if "D.ACTIVITY" NotEquals "\"\"" process "PROPERTY" "D.PROPERTY1"
+    }
+
+    field "D.ACTION1" {
+        comma-separator: false
+        operation: if "PROP.ACT" NotEquals "P.PROP.ACT" process "ACTION" "\"\""
+    }
+
+    field "D.ACTION" {
+        label {
+            en = "Action"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: if "D.ACTIVITY" NotEquals "\"\"" process "ACTION" "D.ACTION1"
+    }
+
+    field "RULE" {
+        comma-separator: false
+        operation: field-extract "AA.REF.DETAILS"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "D.RULE" {
+        label {
+            en = "Allocation Rule"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: if "D.ACTION" NotEquals "\"\"" process "RULE" "\"\""
+    }
+
+    field "P.EVENT" {
+        comma-separator: false
+        operation: field-extract "EVENT.TYPE"
+    }
+
+    field "EVENT.TYPE" {
+        comma-separator: false
+        operation: field-extract "AA.REF.DETAILS"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "D.EVENT1" {
+        comma-separator: false
+        operation: if "EVENT.TYPE" NotEquals "P.EVENT" process "EVENT.TYPE" "\"\""
+    }
+
+    field "D.EVENT" {
+        label {
+            en = "Event Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: if "D.ACTION" NotEquals "\"\"" process "EVENT.TYPE" "D.EVENT1"
+    }
+
+    field "TXN.CODE" {
+        label {
+            en = "Txn"
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: field-extract "AA.REF.DETAILS"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "CONTINGENT" {
+        label {
+            en = "C"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: application-field-name "BALANCE.TYPE"
+        conversion: getFrom "AC.BALANCE.TYPE" "REPORTING.TYPE" false
+        conversion: replace {
+            oldData: "CONTINGENT"
+            newData: "*"
+        }
+
+        conversion: replace {
+            oldData: "NON-CONTINGENT"
+        }
+
+        conversion: replace {
+            oldData: "REPORTING"
+            newData: "M"
+        }
+
+    }
+
+    field "CREDIT.TYPE" {
+        label {
+            en = "Credit Movement"
+        }
+
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        operation: field-extract "AA.REF.DETAILS"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "DEBIT.MVMT" {
+        label {
+            en = "Debit Movement"
+        }
+
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        operation: field-extract "AA.REF.DETAILS"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "See Allocation Rule"
+        }
+
+        label-field: "D.RULE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "RULE"
+        }
+
+        application: "AC.ALLOCATION.RULE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "See Activity"
+        }
+
+        label-field: "D.ACTIVITY"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "ARR.ACTIVITY"
+        }
+
+        application: "AA.ACTIVITY"
+    }
+
+    attributes: "ALLDATA"
+}

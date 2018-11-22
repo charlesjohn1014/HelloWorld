@@ -1,0 +1,547 @@
+Enquiry "PPT.UNCONFIRMED.INSTANTS.PAYMENTS.ALL" for "name:/PP_PaymentWorkflowDASService:POR.TRANSACTION#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Uncfrmed Ins Pymnts-All"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    full-description {
+        en = "Uncfrmed Ins Pymnts-All"
+    }
+
+    description {
+        en = "Uncfrmed Ins Pymnts-All"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "PP.BUILD.GET.RECID.INVEST.ALL"
+    }
+
+    fixed-sort: "EntryDateTime" Null
+    custom-selection {
+
+        field "FTNumber" {
+            label {
+                en = "FTNumber"
+            }
+
+        }
+
+        AND
+
+        field "IncomingMessageType" {
+            label {
+                en = "Message Type"
+            }
+
+        }
+
+        AND
+
+        field "SendersReferenceIncoming" {
+            label {
+                en = "SendersReference"
+            }
+
+        }
+
+        AND
+
+        field "CustomerSpecifiedReference" {
+            label {
+                en = "Cust Specified Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "Company" {
+        label {
+            en = "Company"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "FTnumber" {
+        label {
+            en = "FT Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FTNumber"
+    }
+
+    field "TXN.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TransactionCurrencyCode"
+    }
+
+    field "TransactionAmount" {
+        label {
+            en = "Amt"
+        }
+
+        format: Currency "TXN.CCY" negative-pattern -#
+        length: 17
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TransactionAmount"
+    }
+
+    field "Direction" {
+        label {
+            en = "Direction"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PaymentDirection"
+    }
+
+    field "DEBIT.ACC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DebitMainAccount"
+    }
+
+    field "CREDIT.ACC" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CreditMainAccount"
+    }
+
+    field "CREDIT.COMPANY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CreditMainAccountCompanyID"
+    }
+
+    field "DEBIT.COMPANY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DebitMainAccountCompanyID"
+    }
+
+    field "ACCT.COMPANY" {
+        label {
+            en = "Acc Comp"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: if "Direction" Equals "I" process "CREDIT.COMPANY" "DEBIT.COMPANY"
+    }
+
+    field "DR.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DebitMainAccountCurrencyCode"
+    }
+
+    field "CR.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CreditMainAccountCurrencyCode"
+    }
+
+    field "ACCT.SELECT" {
+        label {
+            en = "Acc Num"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: if "Direction" Equals "I" process "CREDIT.ACC" "DEBIT.ACC"
+    }
+
+    field "CCY.SELECT" {
+        label {
+            en = "Acc Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: if "Direction" Equals "I" process "CR.CCY" "DR.CCY"
+    }
+
+    field "CTRBTRIndicator" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CTRBTRIndicator"
+    }
+
+    field "ProcessingDate" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ProcessingDate"
+    }
+
+    field "CSR" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CustomerSpecifiedReference"
+    }
+
+    field "TRI" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TransactionReferenceIncoming"
+    }
+
+    field "Customer Reference" {
+        label {
+            en = "Cust Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: if "CSR" NotEquals "\"\"" process "CSR" "TRI"
+    }
+
+    field "SendersReferenceIncoming" {
+        label {
+            en = "Sender Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SendersReferenceIncoming"
+    }
+
+    field "StatusCode" {
+        label {
+            en = "Status Code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StatusCode"
+    }
+
+    field "StatusDescription" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "StatusCode"
+        conversion: getFrom "PP.STATUS.CODE" "StatusDescription" false
+    }
+
+    field "EntryDateTime" {
+        label {
+            en = "Entry Date Time"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "EntryDateTime"
+        conversion: call
+        jBC: "@ PP.CONV.LOCALTIMESTAMP"
+    }
+
+    field "ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "BA" {
+        comma-separator: false
+        operation: constant "\"BeneficiaryAccount\""
+    }
+
+    field "BB" {
+        comma-separator: false
+        operation: constant "\"BeneficiaryBank\""
+    }
+
+    field "OA" {
+        comma-separator: false
+        operation: constant "\"OrderingAccount\""
+    }
+
+    field "OB" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"OrderingBank\""
+    }
+
+    field "star" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "TOT.VAL.BA" {
+        label {
+            en = "TOT.VAL.BA"
+        }
+
+        comma-separator: false
+        operation: calc "Company":"star":"FTnumber":"star":"BA"
+    }
+
+    field "FIN.BA" {
+        label {
+            en = "Beneficiary Account"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: field-extract "TOT.VAL.BA"
+        conversion: call
+        jBC: "@ PP.CONV.GET.PAYMENT.DETS"
+    }
+
+    field "TOT.VAL.BB" {
+        label {
+            en = "TOT.VAL.BB"
+        }
+
+        comma-separator: false
+        operation: calc "Company":"star":"FTnumber":"star":"BB"
+    }
+
+    field "FIN.BB" {
+        label {
+            en = "Beneficiary Bank"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        operation: field-extract "TOT.VAL.BB"
+        conversion: call
+        jBC: "@ PP.CONV.GET.PAYMENT.DETS"
+    }
+
+    field "TOT.VAL.OA" {
+        label {
+            en = "TOT.VAL.OA"
+        }
+
+        comma-separator: false
+        operation: calc "Company":"star":"FTnumber":"star":"OA"
+    }
+
+    field "FIN.OA" {
+        label {
+            en = "Ordering Account"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        operation: field-extract "TOT.VAL.OA"
+        conversion: call
+        jBC: "@ PP.CONV.GET.PAYMENT.DETS"
+    }
+
+    field "TOT.VAL.OB" {
+        label {
+            en = "TOT.VAL.OB"
+        }
+
+        comma-separator: false
+        operation: calc "Company":"star":"FTnumber":"star":"OB"
+    }
+
+    field "FIN.OB" {
+        label {
+            en = "Ordering Bank"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        operation: field-extract "TOT.VAL.OB"
+        conversion: call
+        jBC: "@ PP.CONV.GET.PAYMENT.DETS"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\" No records found to display\""
+    }
+
+    field "VIEW" {
+        comma-separator: false
+        operation: constant "\"VIEW\""
+    }
+
+    field "VIEW.VERSION" {
+        comma-separator: false
+        operation: constant "\"VIEW.VERSION\""
+        conversion: call
+        jBC: "@ PP.ALL.AUTH.VIEW.CONV"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Payments Details"
+        }
+
+        label-field: "FTnumber"
+        image: "drill.gif" parameters {
+            field: "Company"
+            field: "FTnumber"
+        }
+
+        composite-screen: "PP.PAYMENT.REPAIR.MAIN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Investigations"
+        }
+
+        label-field: "FTnumber"
+        image: "view.gif"
+        criteria: "CompanyID" Equals "Company"
+        criteria: "FTNumber" Equals "FTnumber"
+        enquiry: "PP.PSM.BLOB.VIEWINV"
+    }
+
+}

@@ -1,0 +1,415 @@
+Enquiry "PM.CAS.UXP" for "name:/PM_Reports:NOFILE.PM.CAS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Cash Flow Position"
+    }
+
+    zero-records-display: true
+    start-line: 5
+    end-line: 98 fixed-selection "PM.ENQ.PARAM" {
+        Equals "CAS"
+    }
+
+    custom-selection {
+
+        field "CCY" {
+            mandatory: true
+            label {
+                en = "Ccy"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DEALER.DESK" {
+            label {
+                en = "Dealer Desk"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CCY.MARKET" {
+            label {
+                en = "Ccy Market"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 0
+        }
+
+        operation: constant "\"Cash Flow\""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency:\""
+    }
+
+    field "INIT.COMMON" {
+        break-condition {
+            break: Once
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "BUILD.DATA" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.CASH.FLOW"
+    }
+
+    field "CURRENCY" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "PM.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "PM.CCY.02" {
+        label {
+            en = "Currency:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 65
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "D.PAGE" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "PM.CCY"
+    }
+
+    field "SPACE1" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "DESK" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 85
+            line: 1
+        }
+
+        operation: constant "\"Dealer Desk : \""
+    }
+
+    field "DEALER.DESK" {
+        format: User
+        length: 6
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: selection "DEALER.DESK"
+    }
+
+    field "ALL.DEAL" {
+        comma-separator: false
+        operation: constant "\"All\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SELECTION.DEAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 1
+        }
+
+        operation: if "DEALER.DESK" NotEquals "NULL" process "DEALER.DESK" "ALL.DEAL"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE"
+    }
+
+    field "BC.SAUT" {
+        comma-separator: false
+        operation: break-change "DATE"
+    }
+
+    field "LINE1" {
+        break-condition {
+            field: "BC.SAUT"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"---------------------------------------\""
+    }
+
+    field "LINE2" {
+        break-condition {
+            field: "BC.SAUT"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"----------------------------------------\""
+    }
+
+    field "PLACINGS" {
+        label {
+            en = "Amount in"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        processing-mode: Multi
+        operation: application-field-name "PLACINGS"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.PLACINGS1" {
+        label {
+            en = "Amount in"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 18
+        }
+
+        processing-mode: Multi
+        operation: field-extract "PLACINGS"
+    }
+
+    field "TAKINGS" {
+        label {
+            en = "Amount out"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        position {
+            column: 55
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TAKINGS"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.TAKINGS" {
+        label {
+            en = "Amount Out"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+        }
+
+        processing-mode: Multi
+        operation: field-extract "TAKINGS"
+    }
+
+    field "NET.MOVEMENT" {
+        label {
+            en = "Amount net"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 35
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        processing-mode: Multi
+        operation: application-field-name "NET.MOVEMENT"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.NET.MOVEMENT" {
+        label {
+            en = "Amount Net"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 92
+        }
+
+        processing-mode: Multi
+        operation: field-extract "NET.MOVEMENT"
+    }
+
+    field "AMT.CF" {
+        label {
+            en = "Amt Carry Fwd"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        position {
+            column: 129
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMT.CF"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.AMT.CF" {
+        label {
+            en = "Amt Carry Fwd"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 129
+        }
+
+        processing-mode: Multi
+        operation: field-extract "AMT.CF"
+    }
+
+    field "TXN.IDS" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.IDS"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Cash Flows Found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transactions "
+        }
+
+        label-field: "DATE"
+        image: "view.gif"
+        criteria: "ID2" Equals "TXN.IDS"
+        enquiry: "DPC.TXNS"
+    }
+
+}

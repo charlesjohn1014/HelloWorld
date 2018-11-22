@@ -1,0 +1,198 @@
+Enquiry "SC.SAFE.ADV.CHARGES" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "SAFECUSTODY & MANAGEMENT FEES"
+        }
+
+        column: 11
+        line: 0
+    }
+
+    header {
+        label {
+            en = "PORTFOLIO"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "SAFEKEEPING FEES"
+        }
+
+        column: 14
+        line: 2
+    }
+
+    header {
+        label {
+            en = "STATUS"
+        }
+
+        column: 35
+        line: 2
+    }
+
+    header {
+        label {
+            en = "MANAGEMENT FEES"
+        }
+
+        column: 49
+        line: 2
+    }
+
+    header {
+        label {
+            en = "STATUS"
+        }
+
+        column: 69
+        line: 2
+    }
+
+    description {
+        en = "SC.SAFE.ADV.CHARGES"
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "ACCOUNT.OFFICER" Null
+    fixed-sort: "CUSTOMER.NUMBER" Null
+    custom-selection {
+
+        field "ACCOUNT.OFFICER" {
+        }
+
+        None
+    }
+
+    field "LOCAL.CCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "ACCOUNT.OFFICER" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "ACCT.OFFICER" {
+        break-condition {
+            field: "NEW.PAGE"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.OFFICER"
+    }
+
+    field "ACCT.OFFICER.NAME" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 24
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 55
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "SECURITIES.ACC.No" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SAFE.FEES" {
+        format: Currency "LOCAL.CCY" negative-pattern -#
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "SAFEKEEP.HOLDING" "LOCAL.CHG.LCY" false
+    }
+
+    field "SAFE.STATUS" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "SAFEKEEP.HOLDING" "PROCESS.STAGE" false
+    }
+
+    field "ADV.CHGS" {
+        format: Currency "LOCAL.CCY" negative-pattern -#
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "SC.ADVISORY.CHG" "LOCAL.FEES.LCY" false
+    }
+
+    field "ADV.STAGE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 69
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "SC.ADVISORY.CHG" "PROCESS.STAGE" false
+    }
+
+    field "BREAK.AO" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACCOUNT.OFFICER"
+    }
+
+}

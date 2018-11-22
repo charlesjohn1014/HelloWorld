@@ -1,0 +1,231 @@
+Enquiry "EB.MCI.CURRENT.USER" for "name:/EB_MCI:EB.MASS.CHANGE.INSTRUCTION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of MCI for Current User"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "CREATED.BY" {
+        Contains "!USER"
+    }
+
+    fixed-selection "STATUS" {
+        Matches "\"Completed...\"", "\"Processin...\""
+    }
+
+    fixed-selection "TASK" {
+        NotEquals "UNDO"
+    }
+
+    field "HEADER" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Pending Mass Change Instructions\""
+    }
+
+    field "@ID" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ENQ.ID" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+    }
+
+    field "DESCRIPTION" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TASK" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TASK"
+    }
+
+    field "STATUS" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "C.LIST" {
+        comma-separator: false
+        operation: constant "\"CREATE.LIST\""
+    }
+
+    field "V.LIST" {
+        comma-separator: false
+        operation: constant "\"VERIFY\""
+    }
+
+    field "E.LIST" {
+        comma-separator: false
+        operation: constant "\"EXECUTE\""
+    }
+
+    field "U.LIST" {
+        comma-separator: false
+        operation: constant "\"UNDO\""
+    }
+
+    field "S.NAME.3" {
+        comma-separator: false
+        operation: if "TASK" Equals "EXECUTE" process "U.LIST" "NULL"
+    }
+
+    field "S.NAME.2" {
+        comma-separator: false
+        operation: if "TASK" Equals "VERIFY" process "E.LIST" "S.NAME.3"
+    }
+
+    field "S.NAME.1" {
+        comma-separator: false
+        operation: if "TASK" Equals "EDIT-LIST" process "V.LIST" "S.NAME.2"
+    }
+
+    field "S.NAME" {
+        comma-separator: false
+        operation: if "TASK" Equals "PREVIEW" process "C.LIST" "S.NAME.1"
+    }
+
+    field "VER.NAME" {
+        comma-separator: false
+        operation: constant "\"EB.MASS.CHANGE.INSTRUCTION,\""
+    }
+
+    field "C.VER.NAME" {
+        comma-separator: false
+        operation: calc "VER.NAME":"S.NAME"
+    }
+
+    field "INPUTT" {
+        comma-separator: false
+        operation: constant "\"I\""
+    }
+
+    field "VER.DRILL" {
+        comma-separator: false
+        operation: calc "C.VER.NAME":"SP":"INPUTT":"SP":"@ID"
+    }
+
+    field "ZER.TXT" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: constant "\"No Pending Instructions for \""
+    }
+
+    field "USER" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: user
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "E.TASK" {
+        comma-separator: false
+        operation: constant "\"EDIT.LIST\""
+    }
+
+    field "ZERORECS" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: calc "ZER.TXT":"USER"
+    }
+
+    field "MON.TASK" {
+        comma-separator: false
+        operation: if "TASK" Equals "E.TASK" process "C.LIST" "TASK"
+    }
+
+    field "ENQ.NAME" {
+        comma-separator: false
+        operation: constant "\"EB.MCI.MONITOR.\""
+    }
+
+    field "DRILL.MONITOR" {
+        comma-separator: false
+        operation: calc "ENQ.NAME":"MON.TASK"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View MCI Monitor"
+        }
+
+        label-field: "DESCRIPTION"
+        image: "view.gif"
+        criteria: "EB.MCI.ID" Equals "ENQ.ID"
+        from-field: "DRILL.MONITOR"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Manage MCI\'s"
+        }
+
+        label-field: "DESCRIPTION"
+        image: "action.gif"
+        from-field: "VER.DRILL"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.CLEAR.SELECTION" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ;
+    "SINGLE.BACKGROUND.COLOUR"
+}

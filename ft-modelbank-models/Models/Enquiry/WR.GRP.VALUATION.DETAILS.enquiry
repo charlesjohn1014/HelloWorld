@@ -1,0 +1,787 @@
+Enquiry "WR.GRP.VALUATION.DETAILS" for "name:/AM_Group:AM.VALUATION.EXT.GRP.CONS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "GrpValuationDetails"
+    }
+
+    description {
+        en = "GrpValuationDetails"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.GRP.ID"
+    }
+
+    fixed-selection "SHORT.NAME" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "GRP.ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "GROUPID" {
+        label {
+            en = "GroupId"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AVE.GRP.CON.KEY"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "GROUPNAME" {
+        label {
+            en = "GroupName"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: field-extract "GROUPID"
+        conversion: getFrom "AM.GROUP.PORT" "MNEMONIC" false
+    }
+
+    field "INSTRUMENT" {
+        label {
+            en = "AssetId"
+        }
+
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: i-desc "SECURITY.NO"
+    }
+
+    field "SC.EXCHANGE" {
+        comma-separator: false
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "STOCK.EXCHANGE" false
+    }
+
+    field "BID.PRICE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "BID.PRICE" false
+    }
+
+    field "MID.PRICE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    field "OFFER.PRICE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "OFFER.PRICE" false
+    }
+
+    field "HIGH.BM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "BID.PRICE" Greater "MID.PRICE" process "BID.PRICE" "MID.PRICE"
+    }
+
+    field "LOW.BM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "BID.PRICE" LessOrEquals "MID.PRICE" process "BID.PRICE" "MID.PRICE"
+    }
+
+    field "BOND.OR.SHARE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "BOND.OR.SHARE" false
+    }
+
+    field "ESTIMATED.INCOME" {
+        label {
+            en = "ForcastIncome"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ESTIMATED.INCOME"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "AssetName"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "PORTFOLIO.NO" {
+        label {
+            en = "PortfolioId"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO.NO"
+    }
+
+    field "INSTRUMENT.TYPE" {
+        label {
+            en = "InstrumentType"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: i-desc "ASSET.TYPE"
+        conversion: getFrom "ASSET.TYPE" "SHORT.DESC" false
+    }
+
+    field "SECURITY.CCY" {
+        label {
+            en = "LocalCurrencyIsoCode"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Single
+        operation: i-desc "SECURITY.CCY"
+    }
+
+    field "SECURITY.CCY.ID" {
+        label {
+            en = "LocalCurrencyCode"
+        }
+
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.CCY"
+        conversion: getFrom "CURRENCY" "NUMERIC.CCY.CODE" false
+    }
+
+    field "SECURITY.CCY.NAME" {
+        label {
+            en = "LocalCurrency"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.CCY"
+        conversion: getFrom "CURRENCY" "CCY.NAME" false
+    }
+
+    field "ACCRUED.INT" {
+        label {
+            en = "LocalInterest"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCRUED.INT"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "MaturityDate"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "NO.OF.PAYMENTS" {
+        label {
+            en = "DividendsPerYear"
+        }
+
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "NO.OF.PAYMENTS" false
+    }
+
+    field "MODIFIED.DURATION" {
+        label {
+            en = "ModifiedDuration"
+        }
+
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.SUPP" "DURATION" false
+    }
+
+    field "LOCATION.NAME" {
+        label {
+            en = "LocationName"
+        }
+
+        comma-separator: false
+        position {
+            column: 170
+        }
+
+        processing-mode: Single
+        operation: field-extract "SC.EXCHANGE"
+        conversion: getFrom "STOCK.EXCHANGE" "DESCRIPTION" false
+    }
+
+    field "YIELD" {
+        label {
+            en = "Yield"
+        }
+
+        comma-separator: false
+        position {
+            column: 180
+        }
+
+        processing-mode: Single
+        operation: application-field-name "YIELD"
+    }
+
+    field "DEFAULT.DDEPOSITRY" {
+        label {
+            en = "Custodian"
+        }
+
+        comma-separator: false
+        position {
+            column: 190
+        }
+
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "DEFAULT.DEPOSITORY" false
+    }
+
+    field "DURATION" {
+        label {
+            en = "Duration"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 200
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DURATION"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "PositionAmount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 210
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "GRP.VAL.CCY" {
+        label {
+            en = "GrpValuationCCy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 220
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GRP.VAL.CURRENCY"
+    }
+
+    field "PRICING.FACTOR" {
+        label {
+            en = "PricingFactor"
+        }
+
+        comma-separator: false
+        position {
+            column: 230
+        }
+
+        processing-mode: Single
+        operation: if "BOND.OR.SHARE" Equals "\"B\"" process "100" "1"
+    }
+
+    field "LOW.PRICE" {
+        label {
+            en = "LowPrice"
+        }
+
+        comma-separator: false
+        position {
+            column: 240
+        }
+
+        processing-mode: Single
+        operation: if "LOW.BM" LessThan "OFFER.PRICE" process "LOW.BM" "OFFER.PRICE"
+    }
+
+    field "HIGH.PRICE" {
+        label {
+            en = "HighPrice"
+        }
+
+        comma-separator: false
+        position {
+            column: 250
+        }
+
+        processing-mode: Single
+        operation: if "HIGH.BM" Greater "OFFER.PRICE" process "HIGH.BM" "OFFER.PRICE"
+    }
+
+    field "SUB.ASSET.TYPE" {
+        label {
+            en = "InstSubClassRef"
+        }
+
+        format: User
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 260
+        }
+
+        processing-mode: Single
+        operation: i-desc "SUB.ASSET.TYPE"
+    }
+
+    field "SUB.ASSET.DESC" {
+        label {
+            en = "InstSubClassName"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 270
+        }
+
+        processing-mode: Single
+        operation: field-extract "SUB.ASSET.TYPE"
+        conversion: getFrom "SUB.ASSET.TYPE" "DESCRIPTION" false
+    }
+
+    field "GUARANTOR" {
+        label {
+            en = "Gurantor"
+        }
+
+        comma-separator: false
+        position {
+            column: 280
+        }
+
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "GUARANTEE.FLAG" false
+    }
+
+    field "TOTAL.ISSUED" {
+        label {
+            en = "AmountIssued"
+        }
+
+        comma-separator: false
+        position {
+            column: 290
+        }
+
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.SUPP" "TOTAL.ISSUED" false
+    }
+
+    field "ASSET.BLOCKED.FROM" {
+        label {
+            en = "AssetBlockedFrom"
+        }
+
+        comma-separator: false
+        position {
+            column: 300
+        }
+
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "BLOCKING.DATE" false
+    }
+
+    field "ASS.BLK.DATE.NUM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "ASSET.BLOCKED.FROM" + "0"
+    }
+
+    field "COR.ASS.BLK.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "ASS.BLK.DATE.NUM" Equals "0" process "TODAY" "ASS.BLK.DATE.NUM"
+    }
+
+    field "ASSET.BLOCK.TEST" {
+        label {
+            en = "AssetBlocked"
+        }
+
+        comma-separator: false
+        position {
+            column: 310
+        }
+
+        processing-mode: Single
+        operation: if "ASSET.BLOCK.TEST" Greater "0" process "1" "0"
+    }
+
+    field "RATING" {
+        label {
+            en = "InHouseRatingCode"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 320
+        }
+
+        processing-mode: Single
+        operation: field-extract "INSTRUMENT"
+        conversion: getFrom "SECURITY.MASTER" "RATING" false
+    }
+
+    field "S.AND.P" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"_S and P\""
+    }
+
+    field "MOODY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"_MOODY\""
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: today
+    }
+
+    field "SP.RATING.CODE" {
+        label {
+            en = "SpRatingCode"
+        }
+
+        comma-separator: false
+        position {
+            column: 340
+        }
+
+        processing-mode: Single
+        operation: calc "RATING":"S.AND.P"
+        conversion: call
+        jBC: "@ E.WR.GET.RATING"
+    }
+
+    field "MARKET.PRICE" {
+        label {
+            en = "Price"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 350
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MARKET.PRICE"
+    }
+
+    field "ESTIMATION" {
+        label {
+            en = "ValuationTotalValue"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 360
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ESTIMATION"
+    }
+
+    field "COST.PRICE" {
+        label {
+            en = "BookCost"
+        }
+
+        format: Currency "GRP.VAL.CCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 370
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COST.PRICE"
+    }
+
+    field "MOODY.RATING.CODE" {
+        label {
+            en = "MoodyRatingCode"
+        }
+
+        comma-separator: false
+        position {
+            column: 380
+        }
+
+        processing-mode: Single
+        operation: calc "RATING":"MOODY"
+        conversion: call
+        jBC: "@ E.WR.GET.RATING"
+    }
+
+    field "MOODY.FACTOR" {
+        label {
+            en = "MoodyRatingFactor"
+        }
+
+        comma-separator: false
+        position {
+            column: 390
+        }
+
+        processing-mode: Single
+        operation: field-extract "MOODY.RATING.CODE"
+    }
+
+    field "BRKDOWNID1" {
+        label {
+            en = "BreakDownId1"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 400
+        }
+
+        processing-mode: Single
+        operation: constant "\"GroupId\""
+    }
+
+    field "BRKDOWNDES1" {
+        label {
+            en = "BreakDownDes1"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 410
+        }
+
+        processing-mode: Single
+        operation: constant "\"GroupName\""
+    }
+
+    field "BRKDOWNVALUE1" {
+        label {
+            en = "BreakDownValue1"
+        }
+
+        length: 80
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 420
+        }
+
+        processing-mode: Single
+        operation: field-extract "GROUPID"
+    }
+
+    field "BRKDOWNVALDES1" {
+        label {
+            en = "BreakDownValueDes1"
+        }
+
+        comma-separator: false
+        position {
+            column: 430
+        }
+
+        processing-mode: Single
+        operation: field-extract "GROUPNAME"
+    }
+
+    field "PERIOD.END.DATE" {
+        label {
+            en = "PeriodEndDate"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 440
+        }
+
+        processing-mode: Single
+        operation: last-working-day
+        conversion: call
+        jBC: "@ E.WR.LBD.DATE"
+    }
+
+    field "PERIOD.START" {
+        length: 8
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PERIOD.END.DATE"
+        conversion: extract from 1 to 6
+    }
+
+    field "PERIOD.START.02" {
+        length: 8
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PERIOD.END.DATE"
+        conversion: extract from 1 to 6
+    }
+
+    field "PERIOD.START.DATE" {
+        label {
+            en = "PeriodStartDate"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 450
+        }
+
+        processing-mode: Single
+        operation: field-extract "PERIOD.START"
+        conversion: call
+        jBC: "@ E.WR.START.DATE"
+    }
+
+    attributes: "ALLDATA"
+}

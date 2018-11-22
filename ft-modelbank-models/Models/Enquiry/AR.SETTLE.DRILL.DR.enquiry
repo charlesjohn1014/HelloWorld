@@ -1,0 +1,151 @@
+Enquiry "AR.SETTLE.DRILL.DR" for "name:/AA_PaymentSchedule:AA.BILL.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Drill down for A/c Closure"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "BILL.TYPE" {
+        Equals "PAYOFF"
+    }
+
+    field "USER.PROMPT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: constant "\"Choose Closure Method\""
+    }
+
+    field "ARR.ID" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+    }
+
+    field "ARR.CCY" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "LOCAL.CCY" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "PAYT.INDIC" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.INDICATOR"
+    }
+
+    field "TOT.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OS.TOTAL.AMOUNT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LCY.TOT.AMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "LOCAL.CCY" Equals "ARR.CCY" process "TOT.AMT" "NULL"
+    }
+
+    field "FCY.TOT.AMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "LOCAL.CCY" NotEquals "ARR.CCY" process "TOT.AMT" "NULL"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "PL.ACC" {
+        comma-separator: false
+        operation: constant "\"PL52015\""
+    }
+
+    field "FT.DRILL" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,AA.ACDS I F3\""
+    }
+
+    field "TT.DRILL" {
+        comma-separator: false
+        operation: constant "\"TELLER,AR.PAYIN I F3\""
+    }
+
+    field "PL.DRILL" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,AA.PCDS I F3\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Settle by Funds Transfer"
+        }
+
+        label-field: "USER.PROMPT"
+        criteria: "ARRANGEMENT.ID" Equals "CVR.CURRENT.ARRANGEMENT", "ARR.ID"
+        criteria: "CURRENT.CREDIT.ACCT" > "ARR.ID"
+        criteria: "CURRENT.CR.CCY" > "CURRENCY"
+        criteria: "CURRENT.CREDIT.AMOUNT" > "TOT.AMT"
+        from-field: "FT.DRILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Settle by Cash Remittance"
+        }
+
+        label-field: "USER.PROMPT"
+        criteria: "ARRANGEMENT.ID" Equals "CVR.CURRENT.ARRANGEMENT", "ARR.ID"
+        criteria: "CURRENT.CREDIT.ACCT" > "ARR.ID"
+        criteria: "CURRENT.CR.CCY" > "CURRENCY"
+        criteria: "CURRENT.CREDIT.LCY.AMT" > "LCY.TOT.AMT"
+        criteria: "CURRENT.CREDIT.FCY.AMT" > "FCY.TOT.AMT"
+        from-field: "TT.DRILL"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Write-Off to P&L"
+        }
+
+        label-field: "USER.PROMPT"
+        criteria: "ARRANGEMENT.ID" Equals "CVR.CURRENT.ARRANGEMENT", "ARR.ID"
+        criteria: "CURRENT.CREDIT.ACCT" > "ARR.ID"
+        criteria: "CURRENT.CR.CCY" > "CURRENCY"
+        criteria: "CURRENT.CREDIT.AMOUNT" > "TOT.AMT"
+        criteria: "CURRENT.PL.ACC" > "PL.ACC"
+        from-field: "PL.DRILL"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.MORE.OPTIONS" ; "NO.TOOLBAR"
+}

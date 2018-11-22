@@ -1,0 +1,452 @@
+Enquiry "AI.FT.FWD" for "name:/AI_ModelBank:NOFILE.AI.FT.FWD#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Your Upcoming Payments"
+    }
+
+    zero-records-display: true
+    show-all-books: true
+    start-line: 4
+    end-line: 10 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "RET.DATA" {
+            label {
+                en = "RET.DATA"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "RET.DATA" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "REF.NO" {
+        label {
+            en = "Account"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "RET.DATA"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TT" {
+        comma-separator: false
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "TRANSACTION.TYPE" false
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Your Upcoming Payments\""
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Transaction type"
+        }
+
+        comments: "5"
+        format: User
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "TT"
+        conversion: getFrom "FT.TXN.TYPE.CONDITION" "1" false
+    }
+
+    field "REFERENCE" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        operation: calc "CR.REF":"DR.REF":"HYPHEN":"PAYMENT.DETAILS"
+    }
+
+    field "PROC.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "DEBIT.VALUE.DATE" false
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "Debit Acct"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "DEBIT.ACCT.NO" false
+    }
+
+    field "DT.CCY" {
+        label {
+            en = "Debit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "DEBIT.CURRENCY" false
+    }
+
+    field "DT.AMOUNT" {
+        label {
+            en = "Debit Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "DT.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "AMOUNT.DEBITED" false
+        conversion: extract from 4 to 20
+    }
+
+    field "DR.REF" {
+        label {
+            en = "Debit Their Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "DEBIT.THEIR.REF" false
+    }
+
+    field "CR.REF" {
+        length: 27
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "CREDIT.THEIR.REF" false
+    }
+
+    field "PAYMENT.DETAILS" {
+        label {
+            en = "Payment Details"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "PAYMENT.DETAILS" false
+    }
+
+    field "HYPHEN" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit Acct"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "CREDIT.ACCT.NO" false
+    }
+
+    field "BEN.ACCT" {
+        length: 34
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "BEN.ACCT.NO" false
+    }
+
+    field "BEN.DETAILS" {
+        comma-separator: false
+        operation: calc "BEN.ACCT":"HYPHEN"
+    }
+
+    field "CREDIT.ACCOUNT" {
+        label {
+            en = "Credit Acct"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: if "BEN.ACCT" NotEquals "\"\"" process "BEN.DETAILS" "CREDIT.ACCT.NO"
+    }
+
+    field "CR.CCY" {
+        label {
+            en = "Credit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "CREDIT.CURRENCY" false
+    }
+
+    field "DEF.RATE" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"1.00\""
+    }
+
+    field "CREDIT.AMOUNT" {
+        label {
+            en = "Credit Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "AMOUNT.CREDITED" false
+        conversion: extract from 4 to 20
+    }
+
+    field "AMOUNT.DEBITED" {
+        label {
+            en = "Dr Amt (Inc charges)"
+        }
+
+        format: Currency "DT.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "AMOUNT.DEBITED" false
+    }
+
+    field "AMOUNT.CREDITED" {
+        label {
+            en = "Cr Amt (Inc Charges)"
+        }
+
+        format: Currency "CR.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "AMOUNT.CREDITED" false
+    }
+
+    field "BEN.CUST" {
+        label {
+            en = "Beneficiary"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "BENEFICIARY.ID" false
+        conversion: getFrom "BENEFICIARY" "NICKNAME" false
+    }
+
+    field "REFERENCE.NO" {
+        label {
+            en = "Reference"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "REF.NO"
+    }
+
+    field "TRANS.TYPE" {
+        label {
+            en = "TRANSTYPE"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "TRANSACTION.TYPE" false
+    }
+
+    field "Y.VER" {
+        comma-separator: false
+        operation: field-extract "TRANS.TYPE"
+        conversion: replace {
+            oldData: "ACIB"
+            newData: "AI.AC.VIEW"
+        }
+
+        conversion: replace {
+            oldData: "BC"
+            newData: "AI.BENEFICIARY.OTHERBANK.VIEW"
+        }
+
+        conversion: replace {
+            oldData: "AC"
+            newData: "AI.BENEFICIARY.VIEW"
+        }
+
+        conversion: replace {
+            oldData: "OT03"
+            newData: "AI.BENEFICIARY.INTERNATIONAL.VIEW"
+        }
+
+    }
+
+    field "Y.APPL" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,\""
+    }
+
+    field "Y.VAL" {
+        comma-separator: false
+        operation: calc "Y.APPL":"Y.VER"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"You have no Forward dated payments\""
+    }
+
+    field "ZERO.RECORD.HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Your Upcoming Payments\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Transaction"
+        }
+
+        label-field: "TRANSACTION.TYPE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "REFERENCE.NO"
+        }
+
+        from-field: "Y.VAL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Cancel this Payment"
+        }
+
+        label-field: "TRANSACTION.TYPE"
+        image: "delete.gif" parameters {
+            function:  Reverse
+            field: "REF.NO"
+        }
+
+        screen: "FUNDS.TRANSFER,AI.FWD.CANCEL"
+    }
+
+    security {
+        application: "FUNDS.TRANSFER"
+        field: "DEBIT.ACCT.NO"
+        abort: true
+    }
+
+    attributes: "UNDERLINE.HEADER.ROW"
+}

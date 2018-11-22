@@ -1,0 +1,271 @@
+Enquiry "IS.PAYMENT.REV" for "name:/IS_Payment:IS.PAYMENT.SCHEDULES#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Payment Reversal"
+    }
+
+    description {
+        en = "Payment Reversal"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "TRANSACTION.TYPE" {
+        NotEquals "\"DOWNPAYMENT\""
+    }
+
+    fixed-selection "PAYMENT.METHOD" {
+        NotEquals "\"DD\"", "\"CASH\"", "\"EXTERNAL\""
+    }
+
+    custom-selection {
+
+        field "PAYMENT.REF" {
+            label {
+                en = "Payment Reference"
+            }
+
+        }
+
+        AND
+
+        field "PURCHASE.REF" {
+            label {
+                en = "Purchase Reference"
+            }
+
+        }
+
+        None
+    }
+
+    field "PAYMENT.REF" {
+        label {
+            en = "Payment Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.REF"
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Transaction Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "PURCHASE.REF" {
+        label {
+            en = "Purchase Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PURCHASE.REF"
+    }
+
+    field "TRANSACTION.REF" {
+        label {
+            en = "Transaction Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.REF"
+    }
+
+    field "DATE" {
+        label {
+            en = "Payment Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE"
+    }
+
+    field "PAYMENT.AMT" {
+        label {
+            en = "Payment Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.AMT"
+    }
+
+    field "RETENTION.AMT" {
+        label {
+            en = "Retention Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RETENTION.AMT"
+    }
+
+    field "PAYMENT.METHOD" {
+        label {
+            en = "Payment Method"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.METHOD"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Reverse Payment Transaction\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Payment records available for Reversal\""
+    }
+
+    field "TXN.TYPE" {
+        comma-separator: false
+        operation: field-extract "TRANSACTION.TYPE"
+    }
+
+    field "DR.VENDOR" {
+        comma-separator: false
+        operation: constant "\"IS.PAYMENT,VENDOR.REV\""
+    }
+
+    field "DR.COST" {
+        comma-separator: false
+        operation: constant "\"IS.PAYMENT,COST.REV\""
+    }
+
+    field "DR.RETN" {
+        comma-separator: false
+        operation: constant "\"IS.PAYMENT,RETN.REV\""
+    }
+
+    field "DR.REVW" {
+        comma-separator: false
+        operation: constant "\"IS.PAYMENT,REVIEW.REV\""
+    }
+
+    field "DR.BRO" {
+        comma-separator: false
+        operation: constant "\"IS.PAYMENT,BROKER.REV\""
+    }
+
+    field "DRILL1" {
+        comma-separator: false
+        operation: if "TXN.TYPE" Equals "\"VENDOR\"" process "DR.VENDOR" "NONE"
+    }
+
+    field "DRILL2" {
+        comma-separator: false
+        operation: if "TXN.TYPE" Equals "\"COST\"" process "DR.COST" "DRILL1"
+    }
+
+    field "DRILL3" {
+        comma-separator: false
+        operation: if "TXN.TYPE" Equals "\"RETENTION\"" process "DR.RETN" "DRILL2"
+    }
+
+    field "DRILL4" {
+        comma-separator: false
+        operation: if "TXN.TYPE" Equals "\"REVIEW\"" process "DR.REVW" "DRILL3"
+    }
+
+    field "DRILL.ID" {
+        comma-separator: false
+        operation: if "TXN.TYPE" Equals "\"BROKER\"" process "DR.BRO" "DRILL4"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Reverse Payment"
+        }
+
+        label-field: "PAYMENT.REF"
+        image: "reject.gif"
+        criteria: "IS.PAYMENT" > "PAYMENT.REF" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        from-field: "DRILL.ID"
+    }
+
+}

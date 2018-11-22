@@ -1,0 +1,399 @@
+Enquiry "ALL.PORT.COMPARE" for "name:/SC_ScvValuationUpdates:ALL.PORTFOLIO.COMPARE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "ALL PORTFOLIO ENQUIRY"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "---------------------"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "ACCOUNT"
+        }
+
+        column: 1
+        line: 4
+    }
+
+    header {
+        label {
+            en = "PORTFOLIO"
+        }
+
+        column: 17
+        line: 4
+    }
+
+    header {
+        label {
+            en = "NAME"
+        }
+
+        column: 27
+        line: 4
+    }
+
+    header {
+        label {
+            en = "MODEL"
+        }
+
+        column: 38
+        line: 4
+    }
+
+    header {
+        label {
+            en = "MODEL"
+        }
+
+        column: 47
+        line: 4
+    }
+
+    header {
+        label {
+            en = "VARIANCE"
+        }
+
+        column: 60
+        line: 4
+    }
+
+    header {
+        label {
+            en = "OFFICER"
+        }
+
+        column: 1
+        line: 5
+    }
+
+    header {
+        label {
+            en = "ELEMENTS"
+        }
+
+        column: 47
+        line: 5
+    }
+
+    header {
+        label {
+            en = "------------------------------"
+        }
+
+        column: 1
+        line: 6
+    }
+
+    header {
+        label {
+            en = "-----------------------------"
+        }
+
+        column: 31
+        line: 6
+    }
+
+    header {
+        label {
+            en = "----------------------"
+        }
+
+        column: 60
+        line: 6
+    }
+
+    description {
+        en = "ALL.PORT.COMPARE"
+    }
+
+    start-line: 7
+    end-line: 18
+
+    field "@ID" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Account Officer"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 2 delimited by "."
+    }
+
+    field "PORT.SHORT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 27
+        }
+
+        processing-mode: Single
+        operation: field-extract "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "MODEL" {
+        label {
+            en = "Model"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 38
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MODEL"
+    }
+
+    field "ASSET.DETAIL" {
+        label {
+            en = "Asset Detail"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 47
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ASSET.DETAIL"
+        conversion: replace {
+            oldData: "0"
+            newData: "Cash"
+        }
+
+    }
+
+    field "VARIATION" {
+        label {
+            en = "Variation"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "VARIATION"
+    }
+
+    field "NO.OF.PORTFOLIOS" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Total number of portfolios reviewed :\""
+    }
+
+    field "TOTAL.RECS" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 69
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "VARIATION"
+        conversion: call
+        jBC: "@ E.SC.PORT.MODEL.REC.COUNT"
+    }
+
+    field "PORT.COUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "PORTFOLIO" Equals "\"A\"" process "NULL" "ONE"
+    }
+
+    field "A" {
+        comma-separator: false
+        operation: constant "\"A\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "1" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"1\""
+    }
+
+    field "ONE" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 69
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: calc "ONE" + "1"
+    }
+
+    field "PRINT.PORT.COUNT" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        operation: constant "\"Total number of portfolios at variance :\""
+    }
+
+    field "B.ACC.OFF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: break-change "ACCOUNT.OFFICER"
+    }
+
+    field "TEXT2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\" - number of portfolios at variance\""
+    }
+
+    field "TEXT3" {
+        break-condition {
+            field: "B.ACC.OFF"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: calc "ACCOUNT.OFFICER":"TEXT2"
+    }
+
+    field "BLANKS" {
+        break-condition {
+            field: "B.ACC.OFF"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: constant "\" \""
+    }
+
+    field "ACC.OFF.PORT.COUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "PORTFOLIO" Equals "\"A\"" process "NULL" "1"
+    }
+
+    field "ACC.PORT.COUNT" {
+        break-condition {
+            field: "B.ACC.OFF"
+        }
+
+        comma-separator: false
+        position {
+            column: 69
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: total "ACC.OFF.PORT.COUNT"
+    }
+
+    field "LINE" {
+        break-condition {
+            field: "B.ACC.OFF"
+        }
+
+        comma-separator: false
+        position {
+            column: 27
+        }
+
+        operation: constant "\"---------------------------------------------\""
+    }
+
+}

@@ -1,0 +1,213 @@
+Enquiry "EB.MCI.T.P.INTEREST" for "name:/AA_Interest:AA.ARR.INTEREST#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.MCI.BUILD.PREVIEW.IDS"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "PREVIEW ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TARGET" {
+        length: 100
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ARR.ID" {
+        label {
+            en = "Arrangement"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "TARGET"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ARR.PRD" {
+        label {
+            en = "Product"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "PROPERTY" {
+        label {
+            en = "Property"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "TARGET"
+        conversion: extract from 2 to 1 delimited by "-"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "EFF.DATE" {
+        comma-separator: false
+        operation: field-extract "TARGET"
+        conversion: extract from 3 to 1 delimited by "-"
+    }
+
+    field "EFF.DATE.TR" {
+        label {
+            en = "Effective"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "EFF.DATE"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "FLOATING.INDEX" {
+        label {
+            en = "Floating Index"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FLOATING.INDEX"
+    }
+
+    field "FLOATING.DESC" {
+        label {
+            en = "Index Desc"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: field-extract "FLOATING.INDEX"
+        conversion: getFrom "BASIC.RATE.TEXT" "DESCRIPTION" false
+    }
+
+    field "MARGIN.OPER" {
+        label {
+            en = "Margin Operand"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MARGIN.OPER"
+    }
+
+    field "MARGIN.RATE" {
+        label {
+            en = "Margin Rate"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MARGIN.RATE"
+    }
+
+    field "AA.PL" {
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+        conversion: replace {
+            oldData: "LENDING"
+            newData: "AL"
+        }
+
+        conversion: replace {
+            oldData: "DPEOSITS"
+            newData: "AD"
+        }
+
+        conversion: replace {
+            oldData: "ACCOUNTS"
+            newData: "AR"
+        }
+
+    }
+
+    field "COS.STEM" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.\""
+    }
+
+    field "COS.PL" {
+        comma-separator: false
+        operation: calc "COS.STEM":"AA.PL"
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "COS.CMD" {
+        comma-separator: false
+        operation: calc "COS.PL":"SPACE":"ARR.ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Overview"
+        }
+
+        label-field: "ARR.ID"
+        image: "view.gif"
+        from-field: "COS.CMD"
+    }
+
+    attributes: "ALLDATA" ; "NO.BREADCRUMBS" ; "NO.CLEAR.SELECTION" ; "NO.ENQUIRY.FAVOURITES" ;
+    "SINGLE.BACKGROUND.COLOUR"
+}

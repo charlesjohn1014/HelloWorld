@@ -1,0 +1,321 @@
+Enquiry "IFRS9.ASSET.AMC" for "name:/IA_Config:EB.CASHFLOW#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Financial Asset based on AMC"
+    }
+
+    description {
+        en = "Financial Asset based on AMC"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "ASSET.LIAB.IND" {
+        Equals "A"
+    }
+
+    fixed-selection "IAS.CLASSIFICATION" {
+        Contains "AMC"
+    }
+
+    fixed-selection "IAS.CLASSIFICATION" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "STATUS" {
+        Equals "\"\""
+    }
+
+    fixed-sort: "IAS.CLASSIFICATION" Null
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Financial Assets based on AMC\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Contract Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 36
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "INSTRUMENT" {
+        label {
+            en = "Financial Instrument"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ASSET.LIAB.IND"
+        conversion: replace {
+            oldData: "A"
+            newData: "Financial Asset"
+        }
+
+        conversion: replace {
+            oldData: "L"
+            newData: "Financial Liability"
+        }
+
+    }
+
+    field "PRODUCT.CATEGORY" {
+        label {
+            en = "Category"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 93
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.CATEGORY"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 99
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "AMORT" {
+        label {
+            en = "Amort"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "IFRS.ACCT.BALANCES" "NPV.CON.CF.AMORT" false
+    }
+
+    field "FAIRVAL" {
+        label {
+            en = "FairVal"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "IFRS.ACCT.BALANCES" "NPV.CON.CF.FV" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 135
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "GROSS" {
+        label {
+            en = "Gross Carrying Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        operation: if "FAIRVAL" NotEquals "NULL" process "FAIRVAL" "AMORT"
+    }
+
+    field "ECL" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "IFRS.ACCT.BALANCES" "ECL" false
+    }
+
+    field "STAGE" {
+        length: 1
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STAGE"
+    }
+
+    field "STAGE1" {
+        label {
+            en = "Stage 1"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 176
+        }
+
+        operation: if "STAGE" Equals "1" process "ECL" "NULL"
+    }
+
+    field "STAGE2" {
+        label {
+            en = "Stage 2"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 211
+        }
+
+        operation: if "STAGE" Equals "2" process "ECL" "NULL"
+    }
+
+    field "STAGE3" {
+        label {
+            en = "Stage 3"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: if "STAGE" Equals "3" process "ECL" "NULL"
+    }
+
+    field "NET" {
+        label {
+            en = "Net Carrying Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 286
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "IFRS.ACCT.BALANCES" "IFRS9.CONTRACT.BAL" false
+    }
+
+    field "CONSTANT" {
+        display-type: "CLASS-BOLD.RED" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Total of Business Model - AMC ::: \""
+    }
+
+    field "TOTAL" {
+        display-type: "CLASS-BOLD.RED"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 85
+        }
+
+        operation: total "NET"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records matched the selection criteria\""
+    }
+
+}

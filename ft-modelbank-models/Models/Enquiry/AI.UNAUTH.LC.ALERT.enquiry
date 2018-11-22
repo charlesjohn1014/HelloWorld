@@ -1,0 +1,94 @@
+Enquiry "AI.UNAUTH.LC.ALERT" for "name:/LC_Contract:LETTER.OF.CREDIT$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Letter of Credit for approval"
+    }
+
+    zero-records-display: true
+    show-all-books: true
+    start-line: 4
+    end-line: 19 fixed-selection "APPLICANT.CUSTNO" {
+        Equals "!EXT.SMS.CUSTOMERS"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "AC" {
+        comma-separator: false
+        operation: constant "\"1\""
+    }
+
+    field "TOT.VAL" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        operation: total "AC"
+    }
+
+    field "TEXT.1" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"You have\""
+    }
+
+    field "TXN.COUNT" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "TOT.VAL"
+    }
+
+    field "TEXT.2" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: constant "\"LC transactions to authorise.\""
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"You have no LC records to authorise.\""
+    }
+
+    attributes: "NO.COLUMN.HEADER"
+}

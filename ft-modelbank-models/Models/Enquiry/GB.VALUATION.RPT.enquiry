@@ -1,0 +1,1127 @@
+Enquiry "GB.VALUATION.RPT" for "name:/AM_ValuationFrameWork:AM.VAL.EXTRACT.WRK#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Valuation Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AM.BUILD.VEX.WRK"
+    }
+
+    fixed-sort: "GROUP.ORDER" Null
+    fixed-sort: "SECURITY.CCY" Null
+    custom-selection {
+
+        field "SAM.NO" {
+            mandatory: true
+            label {
+                en = "Portfolio No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "EXTRACT.DATE" {
+            label {
+                en = "Extract Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SUB.ASSET.SA" {
+            label {
+                en = "Segment"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "HIDE.ZERO.POS" {
+            label {
+                en = "Hide Zero Pos"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ONLINE.YNO" {
+            label {
+                en = "Online Y or No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "OPEN.ORDERS" {
+            label {
+                en = "Include Open Orders?"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "VALUATION.CCY" {
+            label {
+                en = "Valuation Ccy"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "SA.DELIM" {
+        comma-separator: false
+        operation: constant "\"/\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SPC" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "INCLUDE.OO" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: selection "OPEN.ORDERS"
+        conversion: convert {
+            oldData: "y"
+            newData: "Y"
+        }
+
+    }
+
+    field "T.INCLUDE.OO" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"* Open Orders Included *\""
+    }
+
+    field "OO.FLAG" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        operation: if "INCLUDE.OO" Matches "\"Y...\"" process "T.INCLUDE.OO" "SPC"
+    }
+
+    field "SUB.ASSET.SA" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: selection "SUB.ASSET.SA"
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"Y\""
+    }
+
+    field "PRC" {
+        comma-separator: false
+        operation: constant "\" %\""
+    }
+
+    field "T.GROUP" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "GROUP.CODE"
+    }
+
+    field "T.SA.GRP0" {
+        comma-separator: false
+        operation: calc "T.GROUP":"SA.DELIM"
+    }
+
+    field "GVAL.DELIM" {
+        comma-separator: false
+        operation: constant "\"!\""
+    }
+
+    field "PORTFOLIO.NO" {
+        comma-separator: false
+        operation: selection "SAM.NO"
+    }
+
+    field "T.EXTRACT.DATE" {
+        comma-separator: false
+        operation: selection "EXTRACT.DATE"
+    }
+
+    field "GVALPORT" {
+        comma-separator: false
+        operation: calc "PORTFOLIO.NO":"GVAL.DELIM":"T.EXTRACT.DATE"
+    }
+
+    field "T.SA.GRP" {
+        comma-separator: false
+        operation: calc "T.SA.GRP0":"SUB.ASSET.SA"
+    }
+
+    field "T.ASSET" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "GROUP.NAME"
+    }
+
+    field "LCCY" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "PNOT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Portfolio No.\""
+    }
+
+    field "PORTNO" {
+        label {
+            en = "\"Portfolio No.\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 0
+        }
+
+        operation: i-desc "SAM.NO"
+    }
+
+    field "PNAMET" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 0
+        }
+
+        operation: constant "\"Name\""
+    }
+
+    field "PNAME" {
+        label {
+            en = "\"Name\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 0
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "VDATET" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 0
+        }
+
+        operation: constant "\"Valuation Date\""
+    }
+
+    field "VDATE" {
+        label {
+            en = "\"Valuation Date\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 6
+            line: 0
+        }
+
+        operation: selection "EXTRACT.DATE"
+    }
+
+    field "ONLINET" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 0
+        }
+
+        operation: constant "\"Online\""
+    }
+
+    field "ONLINE" {
+        label {
+            en = "\"Online\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 8
+            line: 0
+        }
+
+        operation: selection "ONLINE.YNO"
+    }
+
+    field "CUSTT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer No.\""
+    }
+
+    field "CUST" {
+        label {
+            en = "\"Customer No.\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "CUSTOMER.NUMBER" false
+    }
+
+    field "CNAMET" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 1
+        }
+
+        operation: constant "\"Name\""
+    }
+
+    field "CNAME" {
+        label {
+            en = "\"Name\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 1
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "CUSTOMER.NUMBER" false
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "RCCYT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 1
+        }
+
+        operation: constant "\"Reference CCY\""
+    }
+
+    field "RCCY" {
+        label {
+            en = "\"Reference CCY\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 6
+            line: 1
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "MACCT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 1
+        }
+
+        operation: constant "\"Managed Account\""
+    }
+
+    field "MACC" {
+        label {
+            en = "\"Managed Account\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 8
+            line: 1
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "MANAGED.ACCOUNT" false
+        conversion: getFrom "MANAGED.ACCOUNT" "SHORT.DESCR" false
+    }
+
+    field "SPACE1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "SPACE2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "ACOFFT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 2
+        }
+
+        operation: constant "\"Account Officer\""
+    }
+
+    field "ACOFF" {
+        label {
+            en = "\"Account Officer\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 2
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.OFFICER" false
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "VCCYT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 2
+        }
+
+        operation: constant "\"Valuation CCY\""
+    }
+
+    field "VCCY" {
+        label {
+            en = "\"Valuation CCY\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 6
+            line: 2
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "IPROGT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 2
+        }
+
+        operation: constant "\"Investment Program\""
+    }
+
+    field "IPROG" {
+        label {
+            en = "\"Investment Program\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 8
+            line: 2
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "INVESTMENT.PROGRAM" false
+        conversion: getFrom "INVESTMENT.PROGRAM" "DESCRIPTION" false
+    }
+
+    field "S.OO.FLAG" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: field-extract "OO.FLAG"
+    }
+
+    field "SPACE4" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 3
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "VAMTT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 3
+        }
+
+        operation: constant "\"Valuation Amt\""
+    }
+
+    field "VAMT" {
+        label {
+            en = "\"Valuation Amt\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 22
+        alignment: Left
+        comma-separator: true
+        decimals: 2
+        display-section: Header
+        position {
+            column: 4
+            line: 3
+        }
+
+        operation: field-extract "GVALPORT"
+        conversion: call
+        jBC: "@ E.AM.GET.VAL.AMT"
+    }
+
+    field "MVALT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 3
+        }
+
+        operation: constant "\"Margin Value\""
+    }
+
+    field "MVAL" {
+        label {
+            en = "\"Margin Value\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 22
+        alignment: Left
+        comma-separator: true
+        decimals: 2
+        display-section: Header
+        position {
+            column: 6
+            line: 3
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "MARGIN.VALUE" false
+    }
+
+    field "STDTT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 3
+        }
+
+        operation: constant "\"Start Date\""
+    }
+
+    field "STDT" {
+        label {
+            en = "\"Start Date\""
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 8
+            line: 3
+        }
+
+        operation: i-desc "SAM.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "START.DATE" false
+    }
+
+    field "ASSET.GRP" {
+        label {
+            en = "Asset Group"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GROUP.NAME"
+    }
+
+    field "ASSET.TXT" {
+        label {
+            en = "Group"
+        }
+
+        format: User
+        length: 32
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "T.ASSET"
+    }
+
+    field "SECURITY.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CCY"
+    }
+
+    field "SEC.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CCY"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "Quantity"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "SECURITY.NO" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "DESIGNATION" {
+        label {
+            en = "Designation"
+        }
+
+        display-type: "CLASS-DESCR"
+        format: User
+        length: 75
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DESIGNATION"
+    }
+
+    field "COST.PRICE" {
+        label {
+            en = "Cost Price"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COST.PRICE"
+    }
+
+    field "MARKET.PRICE" {
+        label {
+            en = "Market Price"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MARKET.PRICE"
+    }
+
+    field "VALUE.REF.CCY" {
+        label {
+            en = "Amount In Val CCY"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.REF.CCY"
+    }
+
+    field "COST.REF.CCY" {
+        label {
+            en = "Cost In Ref CCY"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 24
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COST.REF.CCY"
+    }
+
+    field "TVALRCCT" {
+        format: Currency "LCCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: total "VALUE.REF.CCY"
+    }
+
+    field "APP" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "SCT" {
+        comma-separator: false
+        operation: constant "\"SC\""
+    }
+
+    field "INT.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INTEREST.DATE"
+    }
+
+    field "INT.DT" {
+        comma-separator: false
+        operation: if "APP" Equals "SCT" process "INT.DATE" "NULL"
+    }
+
+    field "INTEREST.DATE" {
+        label {
+            en = "Coupon Date"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "INT.DT"
+        conversion: call
+        jBC: "@ E.AM.DATE"
+    }
+
+    field "T.RATE" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FORWARD.RATE"
+    }
+
+    field "D.RATE" {
+        comma-separator: false
+        operation: calc "T.RATE":"PRC"
+    }
+
+    field "X.RATE" {
+        comma-separator: false
+        operation: if "T.RATE" Equals "NULL" process "NULL" "D.RATE"
+    }
+
+    field "FORWARD.RATE" {
+        label {
+            en = "Interest Rate"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: if "APP" Equals "SCT" process "X.RATE" "NULL"
+    }
+
+    field "RATING" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "RATING"
+    }
+
+    field "D.YIELD" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "YIELD"
+    }
+
+    field "YIELD" {
+        label {
+            en = "Yield"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: if "APP" Equals "SCT" process "D.YIELD" "NULL"
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DEPOSITORY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ESTIMATION" {
+        label {
+            en = "Est. Valuation"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 33
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ESTIMATION"
+    }
+
+    field "B.AG" {
+        comma-separator: false
+        operation: break-change "T.ASSET"
+    }
+
+    field "TOTAL.FLD" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            field: "B.AG"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "T.ASSET"
+    }
+
+    field "TOT.FLD.DISP" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "B.AG"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "T.ASSET"
+    }
+
+    field "TOTAL.NO" {
+        display-type: "CLASS-TAMNUM"
+        format: Currency "LCCY" negative-pattern -# break-condition {
+            field: "B.AG"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: total "NO.NOMINAL"
+    }
+
+    field "TOTAL.RCCY" {
+        display-type: "CLASS-TAMNUM"
+        format: Currency "LCCY" negative-pattern -# break-condition {
+            field: "B.AG"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        operation: total "VALUE.REF.CCY"
+    }
+
+    field "TOTAL.RCCCY" {
+        display-type: "CLASS-TAMNUM"
+        format: Currency "LCCY" negative-pattern -# break-condition {
+            field: "B.AG"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 24
+        }
+
+        processing-mode: Single
+        operation: total "COST.REF.CCY"
+    }
+
+    field "TOTAL.AMT" {
+        display-type: "CLASS-TAMNUM"
+        format: Currency "LCCY" negative-pattern -# break-condition {
+            field: "B.AG"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 33
+        }
+
+        processing-mode: Single
+        operation: total "ESTIMATION"
+    }
+
+    attributes: "ALLDATA"
+}

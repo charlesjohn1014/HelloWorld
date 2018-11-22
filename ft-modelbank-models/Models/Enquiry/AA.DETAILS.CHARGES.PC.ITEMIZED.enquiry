@@ -1,0 +1,453 @@
+Enquiry "AA.DETAILS.CHARGES.PC.ITEMIZED" for "name:/AA_ModelBank:NOFILE.AA.CHARGE.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Itemized Details of Periodic Charge"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 140
+        operation: constant "\"\""
+    }
+
+    field "C.NULL" {
+        comma-separator: false
+        operation: constant "\"\'\'\""
+    }
+
+    field "SIM.REF" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "SIM.REF"
+    }
+
+    field "SIM" {
+        comma-separator: false
+        operation: if "SIM.REF" Equals "NULL" process "C.NULL" "SIM.REF"
+    }
+
+    field "ARR.CHARGE.ID" {
+        length: 200
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ARR.CHARGE.ID"
+        conversion: call
+        jBC: "@ E.AA.FORMAT.ENQUIRY.DATA"
+    }
+
+    field "ARR" {
+        comma-separator: false
+        operation: field-extract "ARR.CHARGE.ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "PROP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARR.CHARGE.ID"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "ARR.CCY" {
+        comma-separator: false
+        operation: field-extract "ARR"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "L.TYPE" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Description\""
+    }
+
+    field "TYPE" {
+        label {
+            en = "Fee Type"
+        }
+
+        display-type: "CLASS-BOLD"
+        format: User
+        length: 50
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 140
+        operation: field-extract "PROP"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "BILL" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "BILL.ID"
+    }
+
+    field "CALC.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "CHG.CALC.TYPE"
+        conversion: oconv "MCT"
+    }
+
+    field "CHG.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "CHG.AMT"
+    }
+
+    field "FINAL.CHG.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "FINAL.CHG.AMT"
+    }
+
+    field "L.TIER.SOURCE" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 90
+        operation: constant "\"Amount\""
+    }
+
+    field "TIER.SOURCE" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 90
+        processing-mode: Multi
+        operation: application-field-name "TIER.BALANCE"
+    }
+
+    field "L.CALC.METHOD" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 100
+        operation: constant "\"Calculation\""
+    }
+
+    field "CALCULATION" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.CALC.VALUE"
+    }
+
+    field "CALC.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALCULATION"
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "F.CALC.AMOUNT" {
+        format: Currency "ARR.CCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALC.AMOUNT"
+    }
+
+    field "CALC.AMT.DEC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALC.AMOUNT"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "D.CALC.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CALC.AMT.DEC" Greater "0" process "CALC.AMOUNT" "F.CALC.AMOUNT"
+    }
+
+    field "CALC.METHOD" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALCULATION"
+        conversion: extract from 2 to 1 delimited by "#"
+        conversion: replace {
+            oldData: "%"
+            newData: " %"
+        }
+
+        conversion: replace {
+            oldData: "Units"
+            newData: " each"
+        }
+
+        conversion: replace {
+            newData: " flat"
+        }
+
+    }
+
+    field "D.CALCULATION" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 100
+        processing-mode: Multi
+        operation: calc "D.CALC.AMOUNT":"CALC.METHOD"
+    }
+
+    field "TIER.CALC.AMT" {
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 75
+        processing-mode: Multi
+        operation: application-field-name "TIER.CALC.AMT"
+    }
+
+    field "TIER.MAX.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.MAX.AMT"
+    }
+
+    field "TIER.MIN.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.MIN.AMT"
+    }
+
+    field "CALC.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CALC.AMT"
+    }
+
+    field "L.AMOUNT" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 75
+        operation: constant "\"Charge\""
+    }
+
+    field "AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "NEG.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "\"-\"":"AMOUNT"
+    }
+
+    field "CHARGE.TYPE" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        column-width: 25
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.TYPE"
+        conversion: replace {
+            oldData: "DEBIT"
+        }
+
+        conversion: replace {
+            oldData: "CREDIT"
+            newData: "CR"
+        }
+
+    }
+
+    field "CHG.CALC.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHG.CALC.TYPE"
+    }
+
+    field "C.TIER.MAX" {
+        comma-separator: false
+        operation: constant "\"Tier Maximum\""
+    }
+
+    field "C.TIER.MIN" {
+        comma-separator: false
+        operation: constant "\"Tier Minimum\""
+    }
+
+    field "TIER.ADJ1" {
+        comma-separator: false
+        operation: if "TIER.CALC.AMT" LessThan "CALC.AMT" process "C.TIER.MAX"
+    }
+
+    field "TIER.ADJ" {
+        comma-separator: false
+        operation: if "TIER.CALC.AMT" Greater "CALC.AMT" process "C.TIER.MIN" "TIER.ADJ1"
+    }
+
+    field "D.TIER.ADJ" {
+        display-type: "CLASS-ITALIC"
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: if "CHG.CALC.TYPE" NotEquals "\"FIXED\"" process "TIER.ADJ"
+    }
+
+    field "SIGNED.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CHARGE.TYPE" Equals "\"CR\"" process "AMOUNT" "NEG.AMOUNT"
+    }
+
+    field "L.TOTAL.AMOUNT" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 100
+        operation: constant "\"Total\""
+    }
+
+    field "TOTAL.AMOUNT" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        operation: total "SIGNED.AMOUNT"
+    }
+
+    field "D.TOTAL.AMOUNT" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 75
+        operation: field-extract "TOTAL.AMOUNT"
+        conversion: abs
+    }
+
+    field "TOTAL.TYPE" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        column-width: 25
+        operation: if "TOTAL.AMOUNT" Greater "0" process "\"CR\""
+    }
+
+    field "PAD" {
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        column-width: 31
+        operation: constant "\"\""
+    }
+
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

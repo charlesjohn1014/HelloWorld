@@ -1,0 +1,1077 @@
+Enquiry "NR.TOT.SUMMARY" for "name:/NR_Contract:NR.ITEMS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Reconciliation Totals"
+        }
+
+        column: 30
+        line: 0
+    }
+
+    description {
+        en = "Total summary"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 16
+    build-routines {
+        jBC: "E.MB.BUILD.NR.ACCT.NO"
+    }
+
+    fixed-sort: "@ID" Null
+    fixed-sort: "MATCHED.ID" Descending
+    custom-selection {
+
+        field "NR.ITEM" {
+            label {
+                en = "Account No"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ACCOUNT.NO" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 0
+        }
+
+        operation: constant "\"Reconciliation Totals\""
+    }
+
+    field "BR.ACCT" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACCOUNT.NO"
+    }
+
+    field "STAR" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ACCOUNT.TEXT" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 1
+        }
+
+        operation: constant "\"Account No.\""
+    }
+
+    field "CURRENCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 2
+        }
+
+        operation: constant "\"Currency\""
+    }
+
+    field "TODAY.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 3
+        }
+
+        operation: constant "\"Date\""
+    }
+
+    field "ACC.NO" {
+        label {
+            en = "Account No."
+        }
+
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+    }
+
+    field "ACCOUNT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 39
+            line: 1
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "CURR" {
+        label {
+            en = "Currency"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "CURRENCY.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 39
+            line: 2
+        }
+
+        operation: field-extract "CURR"
+        conversion: getFrom "CURRENCY" "CCY.NAME" false
+    }
+
+    field "TODAY.DATE.02" {
+        label {
+            en = "Date"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 3
+        }
+
+        operation: today
+    }
+
+    field "CCY" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.CURRENCY"
+    }
+
+    field "ORIGINAL.AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+    }
+
+    field "PROCESSING.CALL" {
+        comma-separator: false
+        operation: field-extract "ACC.NO"
+        conversion: call
+        jBC: "@ E.NR.DECISION"
+    }
+
+    field "STATEMENT.TEXT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+            line: + 3
+        }
+
+        operation: constant "\"Statement\""
+    }
+
+    field "LEDGER.TEXT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+            line: + 3
+        }
+
+        operation: constant "\"Ledger\""
+    }
+
+    field "HISTORY.TEXT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 4
+        }
+
+        operation: constant "\"Matched Total History\""
+    }
+
+    field "MATCHED.TEXT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 5
+        }
+
+        operation: constant "\"Matched Amount\""
+    }
+
+    field "UNMATCHED.TEXT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 7
+        }
+
+        operation: constant "\"Unmatched Amount\""
+    }
+
+    field "MTEXT.STMT.DR" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 45
+            line: + 5
+        }
+
+        operation: constant "\"DR\""
+    }
+
+    field "MTEXT.LEDG.CR" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+            line: + 5
+        }
+
+        operation: constant "\"CR\""
+    }
+
+    field "MTEXT.STMT.CR" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 45
+            line: + 6
+        }
+
+        operation: constant "\"CR\""
+    }
+
+    field "MTEXT.LEDG.DR" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+            line: + 6
+        }
+
+        operation: constant "\"DR\""
+    }
+
+    field "UTEXT.STMT.DR" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 45
+            line: + 7
+        }
+
+        operation: constant "\"DR\""
+    }
+
+    field "UTEXT.LEDG.CR" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+            line: + 7
+        }
+
+        operation: constant "\"CR\""
+    }
+
+    field "UTEXT.STMT.CR" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 45
+            line: + 8
+        }
+
+        operation: constant "\"CR\""
+    }
+
+    field "UTEXT.LEDG.DR" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+            line: + 8
+        }
+
+        operation: constant "\"DR\""
+    }
+
+    field "TOTAL.S.START" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 9
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "TOTAL.L.TEXT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 9
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "TOTAL.TEXT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 10
+        }
+
+        operation: constant "\"Totals\""
+    }
+
+    field "TOTAL.S.END" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 11
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "TOTAL.L.END" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 11
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "LATEST.BAL.TEXT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 12
+        }
+
+        operation: constant "\"Latest Balance\""
+    }
+
+    field "LATE.BAL.TEXT.S" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 13
+        }
+
+        operation: constant "\"===================\""
+    }
+
+    field "LATE.BAL.TEXT.L" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 13
+        }
+
+        operation: constant "\"===================\""
+    }
+
+    field "DIFF.TEXT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+            line: + 14
+        }
+
+        operation: constant "\"Difference\""
+    }
+
+    field "DIFF.TEXT.S" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 15
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "DIFF.TEXT.L" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 15
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "HISTORY.STATEMENT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 9
+    }
+
+    field "HISTORY.LEDGER" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 10
+    }
+
+    field "MATCH.STMT.DR" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 1
+    }
+
+    field "MATCH.STMT.CR" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 2
+    }
+
+    field "MATCH.LEDG.CR" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 3
+    }
+
+    field "MATCH.LEDG.DR" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 4
+    }
+
+    field "UNMATCH.STMT.DR" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 5
+    }
+
+    field "UNMATCH.STMT.CR" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 6
+    }
+
+    field "UNMATCH.LEDG.CR" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 7
+    }
+
+    field "UNMATCH.LEDG.DR" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 8
+    }
+
+    field "GRAND.TOT.STMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 11
+    }
+
+    field "GRAND.TOT.LEDG" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 12
+    }
+
+    field "PROCESS.STMT" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        operation: field-extract "ACC.NO"
+        conversion: call
+        jBC: "@ E.NR.TOT.SUMMARY"
+    }
+
+    field "LATEST.BAL.S" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 1
+    }
+
+    field "LATEST.BAL.L" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ORIGINAL.AMOUNT"
+        conversion: value 2
+    }
+
+    field "LATE.BAL.AMT.S" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 12
+        }
+
+        processing-mode: Single
+        operation: field-extract "LATEST.BAL.S"
+    }
+
+    field "LATE.BAL.AMT.L" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 12
+        }
+
+        processing-mode: Single
+        operation: field-extract "LATEST.BAL.L"
+    }
+
+    field "DIFF.S" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 14
+        }
+
+        processing-mode: Single
+        operation: calc "GRANDTOT.STMT" - "LATEST.BAL.S"
+    }
+
+    field "DIFF.L" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 14
+        }
+
+        processing-mode: Single
+        operation: calc "GRANDTOT.LEDG" - "LATEST.BAL.L"
+    }
+
+    field "TOT.STMT.HIST" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: total "HISTORY.STATEMENT"
+    }
+
+    field "TOT.LEDG.HIST" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 4
+        }
+
+        operation: total "HISTORY.LEDGER"
+    }
+
+    field "TOT.STMT.HIST1" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        operation: field-extract "TOT.STMT.HIST"
+        conversion: abs
+    }
+
+    field "TOT.LEDG.HIST1" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        operation: field-extract "TOT.LEDG.HIST"
+        conversion: abs
+    }
+
+    field "WARN.HIST" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 77
+            line: + 4
+        }
+
+        operation: if "TOT.STMT.HIST1" Equals "TOT.LEDG.HIST1" process "NULL" "STAR"
+    }
+
+    field "TOTM.STMT.DR" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 5
+        }
+
+        operation: total "MATCH.STMT.DR"
+    }
+
+    field "TOTM.LEDG.CR" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 5
+        }
+
+        operation: total "MATCH.LEDG.CR"
+    }
+
+    field "WARN.1" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 77
+            line: + 5
+        }
+
+        operation: if "TOTM.STMT.DR" Equals "TOTM.LEDG.CR" process "NULL" "STAR"
+    }
+
+    field "TOTM.STMT.CR" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 6
+        }
+
+        operation: total "MATCH.STMT.CR"
+    }
+
+    field "TOTM.LEDG.DR" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 6
+        }
+
+        operation: total "MATCH.LEDG.DR"
+    }
+
+    field "WARN.2" {
+        break-condition {
+            field: "BR.ACCT"
+        }
+
+        comma-separator: false
+        position {
+            column: 77
+            line: + 6
+        }
+
+        operation: if "TOTM.STMT.CR" Equals "TOTM.LEDG.DR" process "NULL" "STAR"
+    }
+
+    field "TOTU.STMT.DR" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 7
+        }
+
+        operation: total "UNMATCH.STMT.DR"
+    }
+
+    field "TOTU.LEDG.CR" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 7
+        }
+
+        operation: total "UNMATCH.LEDG.CR"
+    }
+
+    field "TOTU.STMT.CR" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 8
+        }
+
+        operation: total "UNMATCH.STMT.CR"
+    }
+
+    field "TOTU.LEDG.DR" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 8
+        }
+
+        operation: total "UNMATCH.LEDG.DR"
+    }
+
+    field "GRANDTOT.STMT" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+            line: + 10
+        }
+
+        operation: total "GRAND.TOT.STMT"
+    }
+
+    field "GRANDTOT.LEDG" {
+        format: Currency "CCY" negative-pattern -# break-condition {
+            field: "BR.ACCT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 10
+        }
+
+        operation: total "GRAND.TOT.LEDG"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records Available\""
+    }
+
+}

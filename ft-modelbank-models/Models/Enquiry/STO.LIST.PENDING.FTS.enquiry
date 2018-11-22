@@ -1,0 +1,336 @@
+Enquiry "STO.LIST.PENDING.FTS" for "name:/FT_Contract:FUNDS.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "STOs outstanding payments"
+    }
+
+    description {
+        en = "STOs outstanding payments"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.FETCH.FT.PENDING.LIST"
+    }
+
+    fixed-selection "INWARD.PAY.TYPE" {
+        Matches "\"STO\"..."
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "\'IHLD\'", "\'INAU\'", "\'RNAU\'"
+    }
+
+    fixed-sort: "PROCESSING.DATE" Null
+    custom-selection {
+
+        field "INWARD.PAY.TYPE" {
+            label {
+                en = "Sto ID"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT.DEBITED" {
+            label {
+                en = "Debit Amount"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT.CREDITED" {
+            label {
+                en = "Credit Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "INWARD.PAY.TYPE" {
+        length: 55
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INWARD.PAY.TYPE"
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Txn Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"STOs outstanding payments\""
+    }
+
+    field "CUST.ID" {
+        length: 55
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INWARD.PAY.TYPE"
+        conversion: extract from 3 to 1 delimited by "-"
+    }
+
+    field "REF.NO" {
+        length: 55
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INWARD.PAY.TYPE"
+        conversion: extract from 4 to 1 delimited by "-"
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "STO.ID" {
+        comma-separator: false
+        operation: calc "CUST.ID":"DOT":"REF.NO"
+    }
+
+    field "F.STO.ID" {
+        label {
+            en = "STO Ref"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: field-extract "STO.ID"
+    }
+
+    field "VERSION" {
+        comma-separator: false
+        operation: field-extract "STO.ID"
+        conversion: getFrom "STANDING.ORDER" "FT.VERSION" false
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "Debit Account"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Debit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 47
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.CURRENCY"
+    }
+
+    field "AMOUNT.DEBITED" {
+        label {
+            en = "Debit Amount"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.DEBITED"
+        conversion: extract from 4 to 19
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit Account"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "CCY2" {
+        label {
+            en = "Credit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 88
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.CURRENCY"
+    }
+
+    field "AMOUNT.CREDITED" {
+        label {
+            en = "Credit Amount"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 91
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.CREDITED"
+        conversion: extract from 4 to 19
+    }
+
+    field "NON.STP" {
+        label {
+            en = "Non STP"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 113
+        }
+
+        processing-mode: Single
+        operation: field-extract "STO.ID"
+        conversion: getFrom "STANDING.ORDER" "NON.STP" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DEFAULT.VERSION" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,\""
+    }
+
+    field "VERSION.NAME" {
+        comma-separator: false
+        operation: if "VERSION" Equals "NULL" process "DEFAULT.VERSION" "VERSION"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transactions Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Pending FT"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "VERSION.NAME"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Pending FT"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "VERSION.NAME"
+    }
+
+}

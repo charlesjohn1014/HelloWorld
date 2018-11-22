@@ -1,0 +1,677 @@
+Enquiry "ACCT.ENTRY.STMT" for "name:/AC_EntryCreation:STMT.ENTRY#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "STATEMENT OF ACCOUNT"
+        }
+
+        column: 56
+        line: 1
+    }
+
+    header {
+        label {
+            en = "********************"
+        }
+
+        column: 56
+        line: 2
+    }
+
+    header {
+        label {
+            en = "FROM"
+        }
+
+        column: 3
+        line: 5
+    }
+
+    header {
+        label {
+            en = "TO"
+        }
+
+        column: 20
+        line: 5
+    }
+
+    header {
+        label {
+            en = "ACCOUNT NUMBER "
+        }
+
+        column: 3
+        line: 7
+    }
+
+    header {
+        label {
+            en = "CUSTOMER"
+        }
+
+        column: 3
+        line: 10
+    }
+
+    header {
+        label {
+            en = "BOOK DATE             TRANSACTION"
+        }
+
+        column: 3
+        line: 13
+    }
+
+    header {
+        label {
+            en = "=========             ==========="
+        }
+
+        column: 3
+        line: 14
+    }
+
+    header {
+        label {
+            en = "REFERENCE"
+        }
+
+        column: 45
+        line: 13
+    }
+
+    header {
+        label {
+            en = "========="
+        }
+
+        column: 45
+        line: 14
+    }
+
+    header {
+        label {
+            en = "VALUE DTE          DEBIT"
+        }
+
+        column: 69
+        line: 13
+    }
+
+    header {
+        label {
+            en = "=========          ====="
+        }
+
+        column: 69
+        line: 14
+    }
+
+    header {
+        label {
+            en = "CREDIT           BALANCE"
+        }
+
+        column: 101
+        line: 13
+    }
+
+    header {
+        label {
+            en = "======           ======="
+        }
+
+        column: 101
+        line: 14
+    }
+
+    full-description {
+        en =
+        "This Enquiry is designed to be run from theapplication ACCT.ENTRY.STMT using the V function.This provides the Enquiry with the relevant datato produce the statements."
+    }
+
+    description {
+        en = "ACCT.ENTRY.STMT"
+    }
+
+    start-line: 16
+    end-line: 55
+    fixed-sort: "BOOKING.DATE" Null
+    fixed-sort: "VALUE.DATE" Null
+
+    field "CALLSUB" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.ACCT.ENTRY.STMT"
+    }
+
+    field "NUL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "THEIR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"THEIR\""
+    }
+
+    field "OUR" {
+        comma-separator: false
+        operation: constant "\"OUR\""
+    }
+
+    field "TRANS" {
+        comma-separator: false
+        operation: constant "\"TRANS\""
+    }
+
+    field "B.PAGE" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACCOUNT.NUMBER"
+    }
+
+    field "OPEN.BAL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "CALLSUB"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "OB.LABEL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"***OPENING BALANCE***\""
+    }
+
+    field "BBF.LABEL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*** BALANCE BOUGHT FORWARD ***\""
+    }
+
+    field "FROM.DATE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: field-extract "CALLSUB"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "TO.DATE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: field-extract "CALLSUB"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TRANS.CODE" {
+        comma-separator: false
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: getFrom "TRANSACTION" "STMT.NARR.REF" false
+    }
+
+    field "THEIR.REFERENCE" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "THEIR.REFERENCE"
+    }
+
+    field "OUR.REFERENCE" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUR.REFERENCE"
+    }
+
+    field "TRANS.REFERENCE" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANS.REFERENCE"
+    }
+
+    field "THEIR.REF" {
+        comma-separator: false
+        operation: if "TRANS.CODE" Equals "THEIR" process "THEIR.REFERENCE" "NUL"
+    }
+
+    field "OUR.REF" {
+        comma-separator: false
+        operation: if "TRANS.CODE" Equals "OUR" process "OUR.REFERENCE" "NUL"
+    }
+
+    field "TRANS.REF" {
+        comma-separator: false
+        operation: if "TRANS.CODE" Equals "TRANS" process "TRANS.REFERENCE" "NUL"
+    }
+
+    field "ACCOUNT.NUMBER" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NUMBER"
+    }
+
+    field "ACCT.CATEG" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.NUMBER"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+    }
+
+    field "ACCT.CATEG.DESC" {
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 41
+            line: 7
+        }
+
+        operation: field-extract "ACCT.CATEG"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "ACCT.TITLE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 8
+        }
+
+        operation: field-extract "ACCOUNT.NUMBER"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 37
+            line: 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NUMBER"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "CUSTOMER.ID" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NUMBER"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "CUST.DESC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 11
+        }
+
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BOOK.DATE" {
+        label {
+            en = "Booking Date"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BOOKING.DATE"
+        conversion: iconv "D"
+        conversion: oconv "D2E."
+    }
+
+    field "REF1" {
+        comma-separator: false
+        operation: calc "THEIR.REF":"OUR.REF"
+    }
+
+    field "REFERENCE" {
+        label {
+            en = "Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: calc "REF1":"TRANS.REF"
+    }
+
+    field "TRANS.02" {
+        label {
+            en = "Narrative"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 68
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+        conversion: iconv "D"
+        conversion: oconv "D2E."
+    }
+
+    field "AMOUNT.LCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LCY"
+    }
+
+    field "AMOUNT.FCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.FCY"
+    }
+
+    field "AMOUNT" {
+        comma-separator: false
+        operation: if "AMOUNT.FCY" Equals "NUL" process "AMOUNT.LCY" "AMOUNT.FCY"
+    }
+
+    field "DISP.DB" {
+        label {
+            en = "Debit"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 79
+        }
+
+        operation: if "AMOUNT" LessThan "ZE" process "AMOUNT" "NUL"
+        conversion: abs
+    }
+
+    field "DISP.CR" {
+        label {
+            en = "Credit"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        operation: if "AMOUNT" GreaterOrEquals "ZE" process "AMOUNT" "NUL"
+    }
+
+    field "T.AMT" {
+        comma-separator: false
+        operation: total "AMOUNT"
+    }
+
+    field "ADD1" {
+        comma-separator: false
+        operation: calc "T.AMT" + "OPEN.BAL"
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Closing Balance"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 112
+        }
+
+        operation: calc "ADD1" + "AMOUNT"
+    }
+
+    field "BCF.LABEL" {
+        break-condition {
+            field: "B.PAGE"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        operation: constant "\"***** BALANCE CARRIED FORWARD ****\""
+    }
+
+    field "BALANCE.CFWD" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.PAGE"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 112
+            line: + 2
+        }
+
+        operation: field-extract "BALANCE"
+    }
+
+    field "DISP.LABEL" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 15
+        }
+
+        operation: if "T.AMT" NotEquals "NUL" process "BBF.LABEL" "OB.LABEL"
+    }
+
+    field "BALANCE.FWD" {
+        comma-separator: false
+        operation: field-extract "BALANCE.CFWD"
+    }
+
+    field "DISP.CRFWD" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: Page
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 112
+            line: 15
+        }
+
+        operation: if "T.AMT" NotEquals "NUL" process "BALANCE.FWD" "OPEN.BAL"
+    }
+
+    field "LABEL.END" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        operation: constant "\"*** CLOSING BALANCE ***\""
+    }
+
+    field "F.DATE" {
+        format: Date break-condition {
+            break: Page
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 8
+            line: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "FROM.DATE"
+    }
+
+    field "T.DATE" {
+        format: Date break-condition {
+            break: Page
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "TO.DATE"
+    }
+
+    field "CLOSE.BAL" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 112
+            line: + 2
+        }
+
+        operation: field-extract "BALANCE"
+    }
+
+}

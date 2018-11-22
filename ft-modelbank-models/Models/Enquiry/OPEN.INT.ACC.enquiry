@@ -1,0 +1,222 @@
+Enquiry "OPEN.INT.ACC" for "name:/EB_ModelBank:NOFILE.OPEN.INT.ACC#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Open Internal Account"
+    }
+
+    description {
+        en = "Open Internal Account"
+    }
+
+    start-line: 4
+    end-line: 21 fixed-selection "ACC.DATA" {
+    }
+
+    custom-selection {
+
+        field "CURRENCY.CODE" {
+            mandatory: true
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CATEGORY.CODE" {
+            mandatory: true
+            label {
+                en = "Category Code"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SEQUENCE.CODE" {
+            label {
+                en = "Sequence No"
+            }
+
+        }
+
+        None
+    }
+
+    field "CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CCY.NAME" {
+        label {
+            en = "Ccy Name"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "CCY"
+        conversion: getFrom "CURRENCY" "CCY.NAME" false
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Category"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CAT.NAME" {
+        label {
+            en = "Category Name"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: field-extract "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "SEQUENCE" {
+        label {
+            en = "Sequence"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "BOOK" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: company
+        conversion: getFrom "COMPANY" "BOOK" false
+    }
+
+    field "SUB.CODE" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        operation: company
+        conversion: getFrom "COMPANY" "SUB.DIVISION.CODE" false
+    }
+
+    field "INT.ACC.1" {
+        comma-separator: false
+        operation: calc "CCY":"CATEGORY":"SEQUENCE"
+    }
+
+    field "INT.ACC.2" {
+        comma-separator: false
+        operation: calc "CCY":"CATEGORY":"SEQUENCE":"SUB.CODE"
+    }
+
+    field "INT.ACCT" {
+        label {
+            en = "Account Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: if "BOOK" Equals "\"1\"" process "INT.ACC.2" "INT.ACC.1"
+    }
+
+    field "AVAILABLE" {
+        comma-separator: false
+        operation: field-extract "INT.ACCT"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+    }
+
+    field "ACTION" {
+        label {
+            en = "Action"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        operation: if "AVAILABLE" Greater "1" process "\"Amend\"" "\"Open\""
+    }
+
+    field "HEADER" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Open Internal Account\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Open Internal Account"
+        }
+
+        label-field: "CCY"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "INT.ACCT"
+        }
+
+        screen: "ACCOUNT,INT.AC1"
+    }
+
+}

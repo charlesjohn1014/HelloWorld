@@ -1,0 +1,331 @@
+Enquiry "TELLER.TC.POSITION" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "TC Stock Position by Currency"
+    }
+
+    description {
+        en = "TC Stock Position by Currency"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "TELLER.ENQ.GET.ACCTS"
+        jBC: "E.MB.TELLER.POSITION"
+    }
+
+    fixed-selection "CATEGORY" {
+        Equals "10905"
+    }
+
+    fixed-sort: "CURRENCY" Null
+    fixed-sort: "CATEGORY" Null
+    fixed-sort: "TELLER.ID" Null
+    custom-selection {
+
+        field "TELLER.ID" {
+            label {
+                en = "Teller ID"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Category"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "TELLER.ID" {
+        label {
+            en = "Teller"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 9 to 4
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 0
+        }
+
+        operation: constant "\"TC Stock Position by Currency\""
+    }
+
+    field "USER" {
+        label {
+            en = "User"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "TELLER.ID"
+        conversion: getFrom "TELLER.ID" "USER" false
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        processing-mode: Single
+        operation: field-extract "TELLER.ID"
+        conversion: getFrom "TELLER.ID" "STATUS" false
+    }
+
+    field "CATEGORY" {
+        format: User
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "SHORT.NAME" false
+    }
+
+    field "K.CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 51
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "K.CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "DISP.X" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"<XS>\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "EXCESS" {
+        label {
+            en = "Excess"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        operation: if "BALANCE" Greater "ZERO" process "DISP.X" "NULL"
+    }
+
+    field "B.CCY" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "K.CURRENCY"
+    }
+
+    field "LINE" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "T.BALANCE" {
+        format: Currency "K.CURRENCY" negative-pattern -# break-condition {
+            field: "B.CCY"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+            line: + 1
+        }
+
+        operation: total "BALANCE"
+    }
+
+    field "LINE.02" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+            line: + 2
+        }
+
+        operation: constant "\"-------------------\""
+    }
+
+    field "BLANK.LINE" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 55
+            line: + 3
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Stock available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Trans of Stock-Oth Branch"
+        }
+
+        label-field: "TELLER.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "TELLER,TC.STOCK.TFR"
+    }
+
+    drilldown "2" {
+        description {
+            en = "TC Vault to Till"
+        }
+
+        label-field: "TELLER.ID"
+        image: "new.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "TELLER,TC.TILL.TFR"
+    }
+
+    drilldown "3" {
+        description {
+            en = "TC Till to Vault"
+        }
+
+        label-field: "TELLER.ID"
+        image: "right.arrow.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "TELLER,TC.VAULT.TFR"
+    }
+
+}

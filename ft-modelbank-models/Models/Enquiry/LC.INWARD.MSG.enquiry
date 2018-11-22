@@ -1,0 +1,489 @@
+Enquiry "LC.INWARD.MSG" for "name:/DE_Config:DE.I.HEADER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Inward Delivery Header"
+    }
+
+    description {
+        en = "Inward Delivery Header"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "DISPOSITION" {
+        NotEquals "REPAIR"
+    }
+
+    fixed-selection "T24.INW.TRANS.REF" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "CARRIER.ADDR.NO" {
+        Equals "SWIFT"
+    }
+
+    fixed-selection "MESSAGE.TYPE" {
+        Matches "\'7...\'", "\'4...\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+        }
+
+        AND
+
+        field "MESSAGE.TYPE" {
+            label {
+                en = "Message Type"
+            }
+
+        }
+
+        AND
+
+        field "TRANSACTION.REF" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "APPLICATION.FORMAT" {
+            label {
+                en = "Application Format"
+            }
+
+        }
+
+        AND
+
+        field "APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        AND
+
+        field "DISPOSITION" {
+            label {
+                en = "Disposition"
+            }
+
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        AND
+
+        field "STP.STATUS" {
+            label {
+                en = "STP Status"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.NUMBER" {
+            label {
+                en = "Account Number"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NUMBER" {
+            label {
+                en = "Customer Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Inward Trade Finance Swift Messages\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Delivery ID"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "FROM.ADDRESS" {
+        label {
+            en = "Received From"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FROM.ADDRESS"
+        conversion: extract from 1 to 8
+        conversion: getFrom "DE.BIC" "INSTITUTION" false
+    }
+
+    field "MESSAGE.TYPE" {
+        label {
+            en = "Msg Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MESSAGE.TYPE"
+    }
+
+    field "MSG.TYPE" {
+        label {
+            en = "Message Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MESSAGE.TYPE"
+        conversion: getFrom "DE.MESSAGE" "DESCRIPTION" false
+    }
+
+    field "BANK.DATE" {
+        label {
+            en = "Received Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BANK.DATE"
+    }
+
+    field "RECEIVED.STAMP" {
+        label {
+            en = "Received Time"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "RECEIVED.STAMP"
+    }
+
+    field "DISPOSITION" {
+        label {
+            en = "Disposition"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DISPOSITION"
+    }
+
+    field "TEXT.1" {
+        comma-separator: false
+        operation: constant "\"Record created\""
+    }
+
+    field "TEXT.2" {
+        comma-separator: false
+        operation: constant "\"Record not created\""
+    }
+
+    field "REPAIR" {
+        comma-separator: false
+        operation: constant "\"REPAIR\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "STP.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: if "DISPOSITION" NotEquals "REPAIR" process "TEXT.1" "TEXT.2"
+    }
+
+    field "ERROR.CODE" {
+        label {
+            en = "Error"
+        }
+
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ERROR.CODE"
+    }
+
+    field "INW.TRANS.REF" {
+        length: 65
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "T24.INW.TRANS.REF"
+    }
+
+    field "TXNS" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: if "DISPOSITION" NotEquals "REPAIR" process "INW.TRANS.REF" "NULL"
+    }
+
+    field "TRANSACTION.REF" {
+        label {
+            en = "Txn Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.REF"
+        conversion: extract from 1 to 1 delimited by "<"
+    }
+
+    field "Y.VER" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\",INW\""
+    }
+
+    field "Y.APP1" {
+        comma-separator: false
+        operation: field-extract "TXNS"
+        conversion: extract from 1 to 2
+    }
+
+    field "Y.APP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "Y.APP1"
+        conversion: replace {
+            oldData: "TF"
+            newData: "DRAWINGS"
+        }
+
+    }
+
+    field "Y.VAL" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "Y.APP":"Y.VER"
+    }
+
+    field "APPL.CHK" {
+        comma-separator: false
+        operation: field-extract "TXNS"
+        conversion: extract from 1 to 2
+    }
+
+    field "ID.LEN" {
+        comma-separator: false
+        operation: field-extract "TXNS"
+        conversion: extract from 14 to 2
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "A.TEXT" {
+        comma-separator: false
+        operation: constant "\"A\""
+    }
+
+    field "TEXT.DR" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS\""
+    }
+
+    field "TEXT.NO.RECORDS" {
+        comma-separator: false
+        operation: constant "\"ENQ EB.NO.DRILLDOWN NONE\""
+    }
+
+    field "TEXT.S" {
+        comma-separator: false
+        operation: constant "\"SEE\""
+    }
+
+    field "TEXT.LC" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT\""
+    }
+
+    field "TEXT.MD" {
+        comma-separator: false
+        operation: constant "\"MD.DEAL\""
+    }
+
+    field "MD" {
+        comma-separator: false
+        operation: constant "\"MD\""
+    }
+
+    field "LC.MD" {
+        comma-separator: false
+        operation: if "APPL.CHK" Equals "MD" process "TEXT.MD" "TEXT.LC"
+    }
+
+    field "LC.AMD" {
+        comma-separator: false
+        operation: field-extract "TXNS"
+        conversion: extract from 13 to 1
+    }
+
+    field "NULL.CHK" {
+        comma-separator: false
+        operation: field-extract "TXNS"
+        conversion: extract from 3 to 1
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PRE.APPL" {
+        comma-separator: false
+        operation: if "ID.LEN" GreaterOrEquals "ZERO" process "TEXT.DR" "LC.MD"
+    }
+
+    field "LC.AMD.TEXT" {
+        comma-separator: false
+        operation: constant "\"LC.AMENDMENTS\""
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: if "LC.AMD" Equals "A.TEXT" process "LC.AMD.TEXT" "PRE.APPL"
+    }
+
+    field "SPC" {
+        comments: "SPACE"
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "APPL.ID" {
+        comma-separator: false
+        operation: calc "APPL":"SPC":"TEXT.S":"SPC":"INW.TRANS.REF"
+    }
+
+    field "DISPLAY.APPL" {
+        comma-separator: false
+        operation: if "NULL.CHK" GreaterOrEquals "0" process "APPL.ID" "TEXT.NO.RECORDS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View SWIFT message"
+        }
+
+        label-field: "MESSAGE.TYPE"
+        image: "view.gif"
+        criteria: "KEY" Equals "@ID"
+        enquiry: "INC.MSG.DETS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Contract"
+        }
+
+        label-field: "MESSAGE.TYPE"
+        image: "view.gif"
+        from-field: "DISPLAY.APPL"
+    }
+
+}

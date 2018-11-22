@@ -1,0 +1,280 @@
+Enquiry "REFUND.CHARGES" for "name:/LC_Foundation:LC.ACCOUNT.BALANCES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Refund of LC charges"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 9 fixed-selection "CHRG.STATUS" {
+        Equals "\'2\'", "\'8\'", "\'9\'", "\'14\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: constant "\"Refund of LC Charges\""
+    }
+
+    field "CHRG.CODE" {
+        label {
+            en = "Charge Code"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.CODE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Charge Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.CCY"
+    }
+
+    field "AMT.REC" {
+        label {
+            en = "Charge Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMT.REC"
+    }
+
+    field "CHRG.STATUS" {
+        label {
+            en = "Charge Status"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.STATUS"
+        conversion: getFrom "LC.ENRICHMENT" "CHRG.STATUS" false
+    }
+
+    field "YES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"YES\""
+    }
+
+    field "NO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"NO\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "AMORT.MTHLY.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMORT.AMOUNT"
+    }
+
+    field "AMORT" {
+        label {
+            en = "Amortised"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: if "AMORT.MTHLY.AMT" NotEquals "NULL" process "YES" "NO"
+    }
+
+    field "CHG.PAID.IN.ADV" {
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHG.PAID.IN.ADV"
+    }
+
+    field "AMORT.AMT.TO.DT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMORT.AMT.TO.DT"
+    }
+
+    field "UNAMORT.CAL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CHG.PAID.IN.ADV" - "AMORT.AMT.TO.DT"
+    }
+
+    field "UNAMORT.AMT" {
+        label {
+            en = "Unrealised"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: if "AMORT" Equals "YES" process "UNAMORT.CAL" "NULL"
+    }
+
+    field "AMORT.AMT.TO.DT.02" {
+        label {
+            en = "Realised"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMORT.AMT.TO.DT"
+    }
+
+    field "REAL.RF.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "REAL.RF.AMT"
+    }
+
+    field "UNREAL.RF.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "UNREAL.RF.AMT"
+    }
+
+    field "AMT.RETURNED" {
+        label {
+            en = "Amount Refunded"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: calc "REAL.RF.AMT" + "UNREAL.RF.AMT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Charges available for Refund\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refund Charge"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "LC.ACCOUNT.BALANCES,REFUND"
+    }
+
+}

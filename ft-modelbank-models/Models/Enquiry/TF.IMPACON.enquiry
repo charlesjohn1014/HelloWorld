@@ -1,0 +1,266 @@
+Enquiry "TF.IMPACON" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "O/S Bills Accepted Under Import LC"
+    }
+
+    description {
+        en = "O/S Bills Accepted Under Import LC"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "DISCOUNT.AMT" {
+        Equals "\'\'"
+    }
+
+    fixed-selection "LC.TYPE.EXP" {
+        Equals "I"
+    }
+
+    fixed-selection "LC.TYPE.DOC" {
+        NotEquals "YES"
+    }
+
+    fixed-selection "LC.TYPE.CL.CR" {
+        NotEquals "YES"
+    }
+
+    fixed-selection "LC.TYPE.CL.COL" {
+        NotEquals "YES"
+    }
+
+    fixed-selection "DRAWING.TYPE" {
+        Equals "AC", "DP"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.LINK" {
+            label {
+                en = "Applicant"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.REVIEW" {
+            label {
+                en = "Accepted Due Date"
+            }
+
+        }
+
+        AND
+
+        field "DRAWING.TYPE" {
+            label {
+                en = "Draw Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Drawing Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: constant "\"O/S Bills Accepted under Import LC\""
+    }
+
+    field "LC.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "LC.OLD.NO" {
+        comma-separator: false
+        operation: field-extract "LC.NO"
+        conversion: getFrom "LETTER.OF.CREDIT" "OLD.LC.NUMBER" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LC.NO.DISPLAY" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "LC.OLD.NO" NotEquals "NULL" process "LC.OLD.NO" "LC.NO"
+    }
+
+    field "LC.CREDIT.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: getFrom "LC.TYPES" "DESCRIPTION" false
+    }
+
+    field "CUSTOMER.LINK" {
+        label {
+            en = "Applicant"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.LINK"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "DRAWING.TYPE" {
+        label {
+            en = "Draw Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "DRAW.CURRENCY" {
+        label {
+            en = "Doc CCY"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Doc Amount"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Recd/Accepted On"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "MATURITY.REVIEW" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.REVIEW"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Online Maturity"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,IMPMAT"
+    }
+
+}

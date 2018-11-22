@@ -1,0 +1,662 @@
+Enquiry "EU.DX.POSITIONS.TO.CLOSE" for "name:/DX_Position:DX.REP.POSITION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Derivatives Positions to Close"
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "CUSTOMER" Null
+    fixed-sort: "PORTFOLIO" Null
+    fixed-sort: "POSITION.TYPE" Null
+    fixed-sort: "OPTION.TYPE" Null
+    fixed-sort: "CONTRACT" Null
+    fixed-sort: "MATURITY.DATE" Null
+    fixed-sort: "STRIKE.PRICE" Null
+    custom-selection {
+
+        field "CURRENCY" {
+            mandatory: true
+            popup-dropdown: true
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals
+        }
+
+        OR
+
+        field "DELIVERY.CURRENCY" {
+            mandatory: true
+            label {
+                en = "Delivery Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "PORTFOLIO" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT" {
+            label {
+                en = "Contract"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        AND
+
+        field "EXT.STRIKE.PRI" {
+            label {
+                en = "Strike Price"
+            }
+
+        }
+
+        AND
+
+        field "CALL.PUT" {
+            label {
+                en = "Call or Put"
+            }
+
+        }
+
+        AND
+
+        field "EXCHANGE.CODE" {
+            label {
+                en = "Exchange"
+            }
+
+        }
+
+        None
+    }
+
+    field "KEY" {
+        length: 68
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REP.POSITION.KEY"
+    }
+
+    field "E.CUST" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "E.PORT" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO"
+    }
+
+    field "CUSTPORT" {
+        comma-separator: false
+        operation: calc "E.CUST":"E.PORT"
+    }
+
+    field "B.CUSTPORT" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "CUSTPORT"
+    }
+
+    field "F.CUSTOMER" {
+        display-type: "CLASS-FDLB" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer \""
+    }
+
+    field "E.CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        display-type: "CLASS-FDCT"
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "E.CUST"
+    }
+
+    field "T.CUSTOMER" {
+        label {
+            en = "Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 31
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "E.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "F.PORT" {
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Portfolio\""
+    }
+
+    field "PORT" {
+        label {
+            en = "Portfolio"
+        }
+
+        display-type: "CLASS-FDCT"
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "E.PORT"
+    }
+
+    field "T.PORT" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 31
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "E.PORT"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "CONT" {
+        label {
+            en = "Contract"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT"
+    }
+
+    field "T.CONTRACT" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT"
+        conversion: getFrom "DX.CONTRACT.MASTER" "DESCRIPT" false
+    }
+
+    field "T.C.TYPE" {
+        label {
+            en = "Future/Option"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT"
+        conversion: getFrom "DX.CONTRACT.MASTER" "CONTRACT.TYPE" false
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "E.STRIKE" {
+        label {
+            en = "Strike Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXT.STRIKE.PRI"
+    }
+
+    field "CALLPUT" {
+        label {
+            en = "Call Put"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CALL.PUT"
+    }
+
+    field "OPTION.TYPE" {
+        label {
+            en = "Option Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OPTION.TYPE"
+    }
+
+    field "T.OPTION.TYPE" {
+        label {
+            en = "Exotic Type"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 39
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPTION.TYPE"
+        conversion: getFrom "DX.OPTION.TYPE" "DESCRIPTION" false
+    }
+
+    field "BUY.LOTS" {
+        label {
+            en = "Bought"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BUY.LOTS"
+    }
+
+    field "SELL.LOTS" {
+        label {
+            en = "Sold"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 92
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SELL.LOTS"
+    }
+
+    field "NET.LOTS" {
+        label {
+            en = "Net"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 103
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NET.LOTS"
+    }
+
+    field "AVG.PRICE" {
+        label {
+            en = "Trade Price"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 111
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AVG.PRICE"
+    }
+
+    field "KEY.2" {
+        length: 68
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REP.POSITION.KEY"
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "KEY.3" {
+        length: 68
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REP.POSITION.KEY"
+        conversion: extract from 3 to 0 delimited by "*"
+    }
+
+    field "DELIM" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "PARAM" {
+        comma-separator: false
+        operation: constant "\"SYSTEM\""
+    }
+
+    field "PRICE.SET" {
+        comma-separator: false
+        operation: field-extract "PARAM"
+        conversion: getFrom "DX.PARAMETER" "EOE.PRICE.SET" false
+    }
+
+    field "PRE.KEY1" {
+        comma-separator: false
+        operation: calc "PRICE.SET":"DELIM"
+    }
+
+    field "PRE.KEY2" {
+        comma-separator: false
+        operation: calc "PRE.KEY1":"KEY.2"
+    }
+
+    field "PRE.KEY3" {
+        comma-separator: false
+        operation: calc "PRE.KEY2":"DELIM"
+    }
+
+    field "MKT.PR.KEY" {
+        comma-separator: false
+        operation: calc "PRE.KEY3":"KEY.3"
+    }
+
+    field "MKT.PRICE" {
+        label {
+            en = "Market Price"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 136
+        }
+
+        operation: field-extract "MKT.PR.KEY"
+        conversion: getFrom "DX.MARKET.PRICE" "PRICE" false
+    }
+
+    field "E.CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "CURRENCY"
+    }
+
+    field "E.DLV.CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "DELIVERY.CURRENCY"
+    }
+
+    field "NUL.VALUE" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "EMPTY" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DD.STRIKE" {
+        comma-separator: false
+        operation: if "E.STRIKE" Equals "EMPTY" process "NUL.VALUE" "E.STRIKE"
+    }
+
+    field "DD.CALLPUT" {
+        comma-separator: false
+        operation: if "CALLPUT" Equals "EMPTY" process "NUL.VALUE" "CALLPUT"
+    }
+
+    field "DD.PORT" {
+        comma-separator: false
+        operation: if "PORT" Equals "EMPTY" process "NUL.VALUE" "PORT"
+    }
+
+    field "DRILLDOWN" {
+        comma-separator: false
+        operation: constant "\"EU.DX.TRADES.TO.CLOSE\""
+    }
+
+    field "SEL1" {
+        comma-separator: false
+        operation: constant "\"CURRENCY EQ \""
+    }
+
+    field "DDSEL1" {
+        comma-separator: false
+        operation: calc "SEL1":"E.CURRENCY"
+    }
+
+    field "SEL2" {
+        comma-separator: false
+        operation: constant "\"DELIVERY.CURRENCY EQ  : DELIVERY.CURRENCY EQ \""
+    }
+
+    field "DDSEL2" {
+        comma-separator: false
+        operation: calc "SEL2":"E.DLV.CURRENCY"
+    }
+
+    field "SEL3" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER EQ \""
+    }
+
+    field "DDSEL3" {
+        comma-separator: false
+        operation: calc "SEL3":"E.CUSTOMER"
+    }
+
+    field "SEL4" {
+        comma-separator: false
+        operation: constant "\"PORT.CUST.ID EQ \""
+    }
+
+    field "DDSEL4" {
+        comma-separator: false
+        operation: calc "SEL4":"DD.PORT"
+    }
+
+    field "SEL5" {
+        comma-separator: false
+        operation: constant "\"CONTRACT.CODE EQ \""
+    }
+
+    field "DDSEL5" {
+        comma-separator: false
+        operation: calc "SEL5":"CONT"
+    }
+
+    field "SEL6" {
+        comma-separator: false
+        operation: constant "\"MATURITY.DATE EQ \""
+    }
+
+    field "DDSEL6" {
+        comma-separator: false
+        operation: calc "SEL6":"MAT.DATE"
+    }
+
+    field "SEL7" {
+        comma-separator: false
+        operation: constant "\"CALL.PUT EQ \""
+    }
+
+    field "DDSEL7" {
+        comma-separator: false
+        operation: calc "SEL7":"DD.CALLPUT"
+    }
+
+    field "SEL8" {
+        comma-separator: false
+        operation: constant "\"STRIKE EQ \""
+    }
+
+    field "DDSEL8" {
+        comma-separator: false
+        operation: calc "SEL8":"DD.STRIKE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Transactions"
+        }
+
+        label-field: "CONT"
+        criteria: "DDSEL1"
+        criteria: "DDSEL2"
+        criteria: "DDSEL3"
+        criteria: "DDSEL4"
+        criteria: "DDSEL5"
+        criteria: "DDSEL6"
+        criteria: "DDSEL7"
+        criteria: "DDSEL8"
+        from-field: "DRILLDOWN"
+    }
+
+    attributes: "PAGE"
+}

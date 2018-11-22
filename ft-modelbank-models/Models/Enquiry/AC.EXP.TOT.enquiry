@@ -1,0 +1,327 @@
+Enquiry "AC.EXP.TOT" for "name:/AC_ExpectedReceipts:AC.EXPECTED.RECS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Expected Balance Projection as at"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Account"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Actual bal"
+        }
+
+        column: 50
+        line: 1
+    }
+
+    description {
+        en = "Expected Balance Projection"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "FUNDS.TYPE" {
+        Equals "ER"
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "EXP"
+    }
+
+    fixed-sort: "VALUE.DATE" Null
+    fixed-sort: "AMOUNT" Null
+    custom-selection {
+
+        field "ACCOUNT.ID" {
+        }
+
+        AND
+
+        field "ORD.CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Contract"
+        }
+
+        comments: "ID for first column"
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCOUNT.ID" {
+        comments: "Account number for header"
+        length: 8
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 9
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.ID"
+    }
+
+    field "ACCOUNT.NAME" {
+        comments: "Display Account title"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "ACCOUNT.CCY" {
+        comments: "Currency for display & formatting"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 62
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.CCY"
+    }
+
+    field "CLEARED" {
+        comments:
+        "Uses Online Actual balance because if CLEARED balance was used forward received funds would not be included in projection."
+        format: Currency "ACCOUNT.CCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 65
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.ID"
+        conversion: getFrom "EB.CONTRACT.BALANCES" "ONLINE.ACTUAL.BAL" false
+    }
+
+    field "TODAY" {
+        comments: "Todays date"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 59
+            line: 0
+        }
+
+        operation: today
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        comments: "Date funds expected"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "FUNDS.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        comments: "Show type is EXPECTED"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FUNDS.TYPE"
+    }
+
+    field "RECVD" {
+        comma-separator: false
+        operation: constant "\"RECEIPT\""
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        comments: "Amount expected"
+        format: Currency "ACCOUNT.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comments: "Status enrichment"
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+        conversion: getFrom "AC.ENRICHMENT" "ENRICHMENT" false
+    }
+
+    field "TRAN.REFERENCE" {
+        label {
+            en = "Trans Ref"
+        }
+
+        comments: "FT id is used"
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRAN.REFERENCE"
+    }
+
+    field "MATCHED.WITH" {
+        label {
+            en = "Matched With"
+        }
+
+        comments: "Contract matched with"
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MATCHED.WITH"
+    }
+
+    field "MATCHED" {
+        label {
+            en = "Received Amt"
+        }
+
+        comments: "Matched amount (can differ)"
+        format: Currency "ACCOUNT.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.MATCHED"
+    }
+
+    field "NET.AMT" {
+        comments: "temp total"
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "AMOUNT" - "MATCHED"
+    }
+
+    field "TOT.AMT" {
+        comments: "temp total"
+        comma-separator: false
+        operation: total "NET.AMT"
+    }
+
+    field "TMP.AMT" {
+        comments: "temp total"
+        comma-separator: false
+        operation: calc "TOT.AMT" + "NET.AMT"
+    }
+
+    field "DISP.TOT" {
+        label {
+            en = "Running Total"
+        }
+
+        comments: "Running Total"
+        format: Currency "ACCOUNT.CCY" negative-pattern -#
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: calc "TMP.AMT" + "CLEARED"
+    }
+
+    drilldown "1" {
+        label-field: "@ID"
+        quit-SEE: "@ID"
+    }
+
+}

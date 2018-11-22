@@ -1,0 +1,184 @@
+Enquiry "SC.PFO.ACCOUNT.BLOCK" for "name:/SC_ScoPortfolioMaintenance:SC.REF.ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Block Account"
+    }
+
+    description {
+        en = "Amend Account"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 5
+    custom-selection {
+
+        field "KEY" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "SEC.ACC.NO" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "ACCT.OFF" {
+            label {
+                en = "Account Officer"
+            }
+
+        }
+
+        AND
+
+        field "ACC.CCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        format: User
+        length: 12
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "KEY"
+    }
+
+    field "KEY" {
+        label {
+            en = "Account No"
+        }
+
+        format: User
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "KEY"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Block Account Balance\""
+    }
+
+    field "CUS" {
+        label {
+            en = "Client "
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "KEY"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "ACCNAME" {
+        label {
+            en = "Account Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "KEY"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CATEG" {
+        label {
+            en = "Product"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "KEY"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+    }
+
+    field "ACC.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: i-desc "ACC.CCY"
+    }
+
+    field "ACCT.OFF" {
+        label {
+            en = "Account Officer"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: i-desc "ACCT.OFF"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Block Account"
+        }
+
+        label-field: "KEY"
+        image: "lock.gif"
+        criteria: "ACCOUNT" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "AC.LOCKED.EVENTS,INPUT"
+    }
+
+}

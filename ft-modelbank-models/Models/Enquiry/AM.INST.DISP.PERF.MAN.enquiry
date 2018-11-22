@@ -1,0 +1,403 @@
+Enquiry "AM.INST.DISP.PERF.MAN" for "name:/AM_Instrument:AM.INST.PERF.DETAIL#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Manually corrected performance"
+        }
+
+        column: 40
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Bank:"
+        }
+
+        column: 40
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Portfolio:"
+        }
+
+        column: 0
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Security code:"
+        }
+
+        column: 0
+        line: 1
+    }
+
+    header {
+        label {
+            en = " Portfolio opened:"
+        }
+
+        column: 80
+        line: 0
+    }
+
+    header {
+        label {
+            en = " Portfolio closed:"
+        }
+
+        column: 80
+        line: 1
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "STATUS" {
+        Equals "\'M\'"
+    }
+
+    custom-selection {
+
+        field "PORTFOLIO" {
+            operands: Equals
+        }
+
+        AND
+
+        field "INSTRUMENT" {
+            operands: Equals
+        }
+
+        AND
+
+        field "MONTH" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "COMPANY.NAME" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 46
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: company
+        conversion: getFrom "COMPANY" "COMPANY.NAME" false
+    }
+
+    field "SEL.PORT.ID" {
+        comma-separator: false
+        operation: selection "PORTFOLIO"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ALL" {
+        comma-separator: false
+        operation: constant "\"ALL\""
+    }
+
+    field "PORT.HEADER" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+            line: 0
+        }
+
+        operation: if "SEL.PORT.ID" Equals "NULL" process "ALL" "SEL.PORT.ID"
+    }
+
+    field "PORTFOLIO.OPENED" {
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 98
+            line: 0
+        }
+
+        operation: field-extract "PORT.HEADER"
+        conversion: getFrom "SEC.ACC.MASTER" "START.DATE" false
+    }
+
+    field "PORTFOLIO.CLOSED" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 98
+            line: 1
+        }
+
+        operation: field-extract "PORT.HEADER"
+        conversion: getFrom "SEC.ACC.MASTER" "CLOSURE.DATE" false
+    }
+
+    field "SEL.INSTR.ID" {
+        comma-separator: false
+        operation: selection "INSTRUMENT"
+    }
+
+    field "INSTR.HEADER" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: if "SEL.INSTR.ID" Equals "NULL" process "ALL" "SEL.INSTR.ID"
+    }
+
+    field "PERF.DATE" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "MV.RC.SOD" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "MV.RC.INFLOW" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "MV.RC.OUTFLOW" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "MV.RC.AICINFLOW" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "MV.RC.AICOUTFLOW" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "MV.RC.EOD" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "CAPITAL.PL.RC" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "INCOME.PL.RC" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "FOREX.PL.RC" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "FEES.PL.RC" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "TOTAL.PL.RC" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "TOT.INDEX" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CONV.GET.STATUS.MV"
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "PORT.ID" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "INSTR.ID" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    drilldown "1" {
+        label-field: "PERF.DATE"
+        criteria: "PORTFOLIO" Equals "PORT.ID"
+        criteria: "DATE" Equals "PERF.DATE"
+        criteria: "INSTRUMENT" Equals "INSTR.ID"
+        enquiry: "AM.DISP.PERF.CORR.TOOL"
+    }
+
+}

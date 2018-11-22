@@ -1,0 +1,471 @@
+Enquiry "MARGIN.CALL.REPORT" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Margin Call Report"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "MARGIN.LENDING" {
+        Equals "YES"
+    }
+
+    fixed-selection "@ID" {
+        NotMatches "...-9..."
+    }
+
+    fixed-selection "DEALER.BOOK" {
+        Equals "\"\""
+    }
+
+    fixed-selection "MGN.CALL.EFF.DATE" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "REFERENCE.CURRENCY" {
+            label {
+                en = "Reference Ccy"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Margin Call Report\""
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "REFERENCE.CURRENCY" {
+        label {
+            en = "Ref Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.CURRENCY"
+    }
+
+    field "VALAMT" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "VALUATION.AMT"
+    }
+
+    field "LMA" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOAN.MARGIN.AMT"
+    }
+
+    field "ONE" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "LNAT" {
+        comma-separator: false
+        operation: calc "ONE" * "LMA"
+    }
+
+    field "TPV" {
+        label {
+            en = "Total Port Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: calc "VALAMT" + "LNAT"
+    }
+
+    field "MAR" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MARGIN.VALUE"
+    }
+
+    field "MV" {
+        label {
+            en = "Margin Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        operation: calc "LNAT" + "MAR"
+    }
+
+    field "OOUT" {
+        label {
+            en = "Open Ord(Outflow)"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "NET.OPN.ORD.VAL"
+    }
+
+    field "PMAR" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PENDING.MARGIN.VAL"
+    }
+
+    field "OIN" {
+        label {
+            en = "Open Order(Inflow)"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        hidden: true
+        operation: calc "PMAR" + "OOUT"
+    }
+
+    field "M1" {
+        comma-separator: false
+        operation: calc "MV" - "OOUT"
+    }
+
+    field "M2" {
+        label {
+            en = "Margin Val(Adj)"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        operation: calc "M1" + "OIN"
+    }
+
+    field "LN" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOAN.MARGIN.AMT"
+    }
+
+    field "SPM" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SHORT.POS.MGN.AMT"
+    }
+
+    field "LOA" {
+        label {
+            en = "Loan"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: field-extract "LNAT"
+    }
+
+    field "CC" {
+        comma-separator: false
+        operation: company
+    }
+
+    field "BUFF" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "BUFFER" false
+    }
+
+    field "PER" {
+        comma-separator: false
+        operation: calc "BUFF" / "100"
+    }
+
+    field "MVB" {
+        comma-separator: false
+        operation: calc "M2" * "PER"
+    }
+
+    field "NMV" {
+        label {
+            en = "Margin Val(Incl Buff)"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 10
+        }
+
+        operation: calc "MVB" + "M2"
+    }
+
+    field "FC1" {
+        length: 9
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FACILITY"
+    }
+
+    field "FC2" {
+        comma-separator: false
+        operation: calc "FC1" / "100"
+    }
+
+    field "FC3" {
+        comma-separator: false
+        operation: calc "FC2" * "M2"
+    }
+
+    field "MAMOUNT" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "MARGIN.CALL.AMT"
+    }
+
+    field "FC4" {
+        comma-separator: false
+        operation: calc "FC3" + "M2"
+    }
+
+    field "EXS" {
+        label {
+            en = "Avail/Shortfall"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: field-extract "MAMOUNT"
+    }
+
+    field "MDAYS" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "MGN.CALL.EFF.DAYS" false
+    }
+
+    field "MD" {
+        format: Date
+        length: 8
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "MGN.CALL.EFF.DATE"
+        conversion: julian
+    }
+
+    field "MDD" {
+        format: Date
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "MDAYS" + "MD"
+        conversion: oconv "D"
+    }
+
+    field "MGN.CALL.EFF.DATE" {
+        label {
+            en = "Margin Call Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MGN.CALL.EFF.DATE"
+    }
+
+    field "DDATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: field-extract "MDD"
+    }
+
+    field "TDATE" {
+        label {
+            en = "TDate"
+        }
+
+        comma-separator: false
+        operation: today
+        conversion: julian
+    }
+
+    field "CALL.DATE" {
+        label {
+            en = "Call Date"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "MGN.CALL.EFF.DATE"
+        conversion: julian
+    }
+
+    field "Ageing Details" {
+        label {
+            en = "Ageing Details"
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: calc "TDATE" - "CALL.DATE"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Margin Call for Portfolios\""
+    }
+
+}

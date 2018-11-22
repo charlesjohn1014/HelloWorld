@@ -1,0 +1,273 @@
+Enquiry "TODO.LIST" for "name:/PW_Foundation:PW.ACTIVITY.TXN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Activity List"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    fixed-sort: "DATE.TIME" Null
+    custom-selection {
+
+        field "PW.ACTIVITY.TXN.ID" {
+            label {
+                en = "Activity Txn"
+            }
+
+        }
+
+        AND
+
+        field "USER" {
+        }
+
+        AND
+
+        field "TRANSACTION.REF" {
+        }
+
+        AND
+
+        field "PROCESS" {
+        }
+
+        AND
+
+        field "PW.ACTIVITY.STATUS" {
+        }
+
+        None
+    }
+
+    field "PW" {
+        label {
+            en = "ID"
+        }
+
+        display-type: "PWACTIVITY"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PW.ACTIVITY.TXN.ID"
+    }
+
+    field "PROCESS" {
+        label {
+            en = "Process ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PROCESS"
+    }
+
+    field "@ID" {
+        label {
+            en = "Activity ID"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "ACTIVITY" {
+        label {
+            en = "Activity Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY"
+        conversion: getFrom "PW.ACTIVITY" "SHORT.DESC" false
+    }
+
+    field "ENQUIRY.IMAGE.ID" {
+        comma-separator: false
+        operation: constant "\"ENQUIRY.IMAGES\""
+    }
+
+    field "H.IMAGE.PATH" {
+        comma-separator: false
+        operation: field-extract "ENQUIRY.IMAGE.ID"
+        conversion: getFrom "IM.IMAGE.TYPE" "PATH" false
+    }
+
+    field "IMAGE.PATH" {
+        comma-separator: false
+        operation: calc "\".\"":"H.IMAGE.PATH"
+    }
+
+    field "C.FLAG" {
+        comma-separator: false
+        operation: constant "\"../im.images/misc/flag.green.jpg\""
+    }
+
+    field "P.FLAG" {
+        comma-separator: false
+        operation: constant "\"../im.images/misc/flag.red.jpg\""
+    }
+
+    field "ACT.STATUS" {
+        label {
+            en = "Activity Status"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PW.ACTIVITY.STATUS"
+    }
+
+    field "COMPLETION.DATE" {
+        comma-separator: false
+        operation: application-field-name "COMPLETION.DATE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "STATUS.INDICATOR" {
+        label {
+            en = "Flag"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: if "COMPLETION.DATE" Equals "NULL" process "P.FLAG" "C.FLAG"
+    }
+
+    field "TXN.REF1" {
+        length: 99
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TARGET"
+        conversion: extract from 3 to 1 delimited by " "
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "F3" {
+        comma-separator: false
+        operation: constant "\"F3\""
+    }
+
+    field "DISP.REF" {
+        comma-separator: false
+        operation: if "TXN.REF1" Equals "F3" process "NULL" "TXN.REF1"
+    }
+
+    field "TRAN.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.REF"
+    }
+
+    field "TXN.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 68
+        }
+
+        processing-mode: Single
+        operation: if "TRAN.REF" Equals "NULL" process "DISP.REF" "TRAN.REF"
+    }
+
+    field "Launch" {
+        length: 99
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TARGET"
+    }
+
+    field "USER" {
+        label {
+            en = "Assigned To"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 82
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "USER"
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "OWNER" {
+        label {
+            en = "Owner"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OWNER"
+        conversion: getFrom "PW.PARTICIPANT" "DESCRIPTION" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Execute Activity"
+        }
+
+        label-field: "PROCESS"
+        image: "action.gif" parameters {
+            pw-activity: "PW"
+        }
+
+        from-field: "Launch"
+    }
+
+}

@@ -1,0 +1,263 @@
+Enquiry "TEC.TXN.SUMMARY" for "name:/EB_Logging:TEC.DISPLAY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "TEC Detail"
+    }
+
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "TEC.PRODUCE.DISPLAY"
+    }
+
+    fixed-selection "ITEM.TYPE" {
+        Equals "TXN.METRICS.COMMIT"
+    }
+
+    fixed-sort: "APPLICATION" Null
+    custom-selection {
+
+        field "ITEM.TYPE" {
+        }
+
+        AND
+
+        field "THRESHOLD" {
+        }
+
+        None
+    }
+
+    field "ITEM.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ITEM.TYPE"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "MY.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "THRESHOLD"
+    }
+
+    field "BLANK" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "INFO" {
+        comma-separator: false
+        operation: constant "\"info\""
+    }
+
+    field "THRESH" {
+        comma-separator: false
+        operation: if "MY.TYPE" Equals "BLANK" process "INFO" "MY.TYPE"
+    }
+
+    field "BASE.PATH" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "IMG.PATH":"THRESH"
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "BASE.PATH":"GIF.TXT"
+    }
+
+    field "DISP.TEXT" {
+        comma-separator: false
+        operation: field-extract "ITEM.TYPE"
+    }
+
+    field "THE.APP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "B.C.APP" {
+        comma-separator: false
+        operation: break-change "THE.APP"
+    }
+
+    field "APP" {
+        label {
+            en = "Application"
+        }
+
+        break-condition {
+            field: "B.C.APP"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "THE.APP"
+    }
+
+    field "TEST" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.COUNT" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "METRIC.COUNT"
+    }
+
+    field "METRIC.TOTAL" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "METRIC.TOTAL"
+    }
+
+    field "TOT.TOTAL" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "METRIC.TOTAL"
+    }
+
+    field "AVG" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "TOT.TOTAL" / "DISP.COUNT"
+    }
+
+    field "METRIC.AVG" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "AVG"
+    }
+
+    field "METRIC.HIGH" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "METRIC.HIGH"
+    }
+
+    field "WORK.HIGH" {
+        comma-separator: false
+        operation: if "METRIC.HIGH" Greater "HIGH.VAL" process "METRIC.HIGH" "HIGH.VAL"
+    }
+
+    field "HIGH.VAL" {
+        comma-separator: false
+        operation: field-extract "WORK.HIGH"
+    }
+
+    field "TXN.COUNT" {
+        comma-separator: false
+        operation: constant "\" \""
+        conversion: call
+        jBC: "@ E.TEC.TXN.COUNT"
+    }
+
+    field "TOT.TXN.COUNT" {
+        comma-separator: false
+        operation: total "TXN.COUNT"
+    }
+
+    field "TOT.METRIC" {
+        comma-separator: false
+        operation: total "DISP.COUNT"
+    }
+
+    field "DISP.METRIC" {
+        label {
+            en = "Total Count"
+        }
+
+        break-condition {
+            field: "B.C.APP"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "TOT.METRIC"
+    }
+
+    field "DISP.TOTAL" {
+        label {
+            en = "Recent Activity"
+        }
+
+        break-condition {
+            field: "B.C.APP"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-extract "TOT.TXN.COUNT"
+    }
+
+    field "FIVE.MIN.AVG" {
+        label {
+            en = "Rate (5 min avg)"
+        }
+
+        break-condition {
+            field: "B.C.APP"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: calc "TOT.TXN.COUNT" / "\"5\""
+    }
+
+    field "IMG.PATH" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"../components/tec/images/\""
+    }
+
+    field "GIF.TXT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\".gif\""
+    }
+
+    attributes: "ALLDATA"
+}

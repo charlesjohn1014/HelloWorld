@@ -1,0 +1,228 @@
+Enquiry "PP.REVERSE.PAYMENT" for "name:/PP_PaymentFrameworkService:POR.PAYMENTCURRENTSTATUS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Reverse Payments"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    description {
+        en = "Reverse Payments"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 19 fixed-selection "StatusCode" {
+        GreaterOrEquals "665"
+    }
+
+    fixed-selection "StatusCode" {
+        NotEquals "997"
+    }
+
+    fixed-selection "StatusCode" {
+        NotEquals "993"
+    }
+
+    fixed-selection "StatusCode" {
+        NotEquals "980"
+    }
+
+    fixed-selection "StatusCode" {
+        NotEquals "982"
+    }
+
+    fixed-selection "StatusCode" {
+        NotEquals "710"
+    }
+
+    fixed-selection "StatusCode" {
+        NotEquals "720"
+    }
+
+    fixed-selection "StatusCode" {
+        NotEquals "986"
+    }
+
+    fixed-selection "StatusCode" {
+        NotEquals "987"
+    }
+
+    fixed-sort: "CompanyID" Null
+    fixed-sort: "StatusCode" Null
+    custom-selection {
+
+        field "CompanyID" {
+            mandatory: true
+            label {
+                en = "Company"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "FTNumber" {
+            label {
+                en = "FT Number"
+            }
+
+        }
+
+        AND
+
+        field "StatusCode" {
+            label {
+                en = "Status Code"
+            }
+
+        }
+
+        AND
+
+        field "Timestamp" {
+            label {
+                en = "Time Stamp"
+            }
+
+        }
+
+        None
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "FTNumber" {
+        label {
+            en = "FT Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FTNumber"
+    }
+
+    field "StatusCode" {
+        label {
+            en = "Status Code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StatusCode"
+    }
+
+    field "Timestamp" {
+        label {
+            en = "Time Stamp"
+        }
+
+        length: 23
+        alignment: Left
+        comma-separator: false
+        fmtMask: "#### ## ## ##:##:##.###"
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "Timestamp"
+    }
+
+    field "POR.ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "CompanyID":"\"-\"":"FTNumber"
+    }
+
+    field "POR.STATUSID" {
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PmtStatusCodeID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No record selected\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "FTNumber"
+        image: "txnreverse.gif"
+        criteria: "CURRENT.PSCID" > "POR.STATUSID" parameters {
+            function:  Input
+            field: "POR.ID"
+        }
+
+        screen: "POR.POSTING.REVERSAL,REVERSE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View"
+        }
+
+        label-field: "FTNumber"
+        image: "view.gif" parameters {
+            function:  See
+            field: "POR.ID"
+        }
+
+        screen: "POR.POSTING.REVERSAL,SEE"
+    }
+
+}

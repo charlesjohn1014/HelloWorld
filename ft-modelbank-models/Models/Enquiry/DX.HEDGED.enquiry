@@ -1,0 +1,402 @@
+Enquiry "DX.HEDGED" for "name:/DX_Trade:DX.TRADE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Hedged Trades"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "PRI.HEDGE.TRADE" {
+        NotEquals "\"TRADE\""
+    }
+
+    fixed-selection "SEC.CUST.NO" {
+        Equals "999999"
+    }
+
+    fixed-sort: "CONTRACT.CODE" Null
+    fixed-sort: "MATURITY.DATE" Null
+    fixed-sort: "OPTION.TYPE" Null
+    fixed-sort: "STRIKE.PRICE" Null
+    custom-selection {
+
+        field "TRADE.ID" {
+            label {
+                en = "Trade Id"
+            }
+
+        }
+
+        AND
+
+        field "PRI.CUST.NO" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.CODE" {
+            label {
+                en = "Contract Code"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        AND
+
+        field "OPTION.TYPE" {
+            label {
+                en = "Call or Put"
+            }
+
+        }
+
+        AND
+
+        field "PRI.BUY.SELL" {
+            label {
+                en = "Buy or Sell"
+            }
+
+        }
+
+        AND
+
+        field "PRI.LOTS" {
+            label {
+                en = "Lots"
+            }
+
+        }
+
+        AND
+
+        field "PRI.HEDGE.TRADE" {
+            label {
+                en = "Hedge or Trade"
+            }
+
+        }
+
+        AND
+
+        field "PRI.LINK" {
+            label {
+                en = "Linked Trade"
+            }
+
+        }
+
+        None
+    }
+
+    field "Header1" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"DX Hedged Trades\""
+    }
+
+    field "TRADE.ID" {
+        label {
+            en = "Trade Id"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.ID"
+    }
+
+    field "PRI.CUST.NO" {
+        label {
+            en = "Customer No."
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.CUST.NO"
+    }
+
+    field "CONTRACT.CODE" {
+        label {
+            en = "Contract Code"
+        }
+
+        format: Date
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CODE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "OPTION.TYPE" {
+        label {
+            en = "Call or Put"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPTION.TYPE"
+    }
+
+    field "PRI.BUY.SELL" {
+        label {
+            en = "Buy or Sell"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRI.BUY.SELL"
+    }
+
+    field "MINUS" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "PRI.LOTS" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRI.LOTS"
+    }
+
+    field "CCL" {
+        label {
+            en = "Lots"
+        }
+
+        comma-separator: false
+        operation: calc "MINUS":"PRI.LOTS"
+    }
+
+    field "LOTS" {
+        label {
+            en = "Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: if "PRI.BUY.SELL" Equals "SELL" process "CCL" "PRI.LOTS"
+    }
+
+    field "STRIKE.PRICE" {
+        label {
+            en = "Strike Price"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STRIKE.PRICE"
+    }
+
+    field "PRI.PRICE" {
+        label {
+            en = "Price or Premium"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRI.PRICE"
+    }
+
+    field "PRI.TRADE.COST" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "AMOUNT"
+        length: 19
+        alignment: Left
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRI.TRADE.COST"
+    }
+
+    field "PRI.LINK" {
+        label {
+            en = "Hedged Trade"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.LINK"
+    }
+
+    field "BRK.CHG" {
+        comma-separator: false
+        operation: break-change "CONTRACT.CODE"
+    }
+
+    field "BRK.CHG.02" {
+        comma-separator: false
+        operation: break-change "MATURITY.DATE"
+    }
+
+    field "BRK.CHG.03" {
+        comma-separator: false
+        operation: break-change "OPTION.TYPE"
+    }
+
+    field "TEXT" {
+        display-type: "CLASS-BOLD.ITALIC" break-condition {
+            field: "BRK.CHG"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        operation: constant "\"Lots to be Hedged\""
+    }
+
+    field "NET LOTS" {
+        display-type: "CLASS-BOLD.ITALIC" break-condition {
+            field: "BRK.CHG"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: total "LOTS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "HEDGE"
+        }
+
+        label-field: "TRADE.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "TRADE.ID"
+        }
+
+        screen: "DX.TRADE,EXCHOPS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "New Trade"
+        }
+
+        label-field: "TRADE.ID"
+        image: "new.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "DX.TRADE,EXCHOPS"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "TRADE.ID"
+        image: "view.gif"
+        enquiry: "DX.COVERED.HEDGED"
+    }
+
+}

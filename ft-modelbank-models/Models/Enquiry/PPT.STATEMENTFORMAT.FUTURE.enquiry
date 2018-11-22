@@ -1,0 +1,301 @@
+Enquiry "PPT.STATEMENTFORMAT.FUTURE" for "name:/:PPT.STATEMENTFORMAT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Statement Format List - Future"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    description {
+        en = "Statement Format - future"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 3 fixed-selection "RSCStatementFormat" {
+        Equals "\'L\'"
+    }
+
+    fixed-selection "RACStatementFormat" {
+        Equals "\'F\'"
+    }
+
+    fixed-sort: "CompanyID" Null
+    custom-selection {
+
+        field "StatementFormatID" {
+            label {
+                en = "StatementFormat ID"
+            }
+
+        }
+
+        AND
+
+        field "CompanyID" {
+            label {
+                en = "Company"
+            }
+
+        }
+
+        AND
+
+        field "StatementFormatName" {
+            label {
+                en = "Statement Format"
+            }
+
+        }
+
+        AND
+
+        field "StartDateStatementFormat" {
+            label {
+                en = "Start Date"
+            }
+
+        }
+
+        AND
+
+        field "EndDateStatementFormat" {
+            label {
+                en = "End Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "StatementFormatID.val" {
+        label {
+            en = "StatementFormat ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "StatementFormatID"
+    }
+
+    field "ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "CompanyID.val" {
+        label {
+            en = "Company ID"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "StatementFormatName.val" {
+        label {
+            en = "Statement Format"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StatementFormatName"
+    }
+
+    field "StartDateStatementFormat" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StartDateStatementFormat"
+    }
+
+    field "EndDateStatementFormat" {
+        label {
+            en = "End Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EndDateStatementFormat"
+    }
+
+    field "RACStatementFormat" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "RACStatementFormat"
+    }
+
+    field "RSCStatementFormat" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "RSCStatementFormat"
+    }
+
+    field "CaptureID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ PP.GET.CAPTURE.TABLE.ID"
+    }
+
+    field "AMENDVERSION" {
+        comma-separator: false
+        operation: constant "\"PP.STATEMENT.FORMAT,FUTURE.AMEND I \""
+    }
+
+    field "REVERSEVERSION" {
+        comma-separator: false
+        operation: constant "\"PP.STATEMENT.FORMAT,FUTURE.REVERSE I \""
+    }
+
+    field "NEWID" {
+        comma-separator: false
+        operation: constant "\"F3\""
+    }
+
+    field "CAPNEWID" {
+        comma-separator: false
+        operation: calc "AMENDVERSION":"NEWID"
+    }
+
+    field "CAPOLDID" {
+        comma-separator: false
+        operation: calc "AMENDVERSION":"CaptureID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CAPTUREAMEND" {
+        comma-separator: false
+        operation: if "CaptureID" Equals "NULL" process "CAPNEWID" "CAPOLDID"
+    }
+
+    field "CAPREVNEWID" {
+        comma-separator: false
+        operation: calc "REVERSEVERSION":"NEWID"
+    }
+
+    field "CAPREVOLDID" {
+        comma-separator: false
+        operation: calc "REVERSEVERSION":"CaptureID"
+    }
+
+    field "REVERSECAPTURE" {
+        comma-separator: false
+        operation: if "CaptureID" Equals "NULL" process "CAPREVNEWID" "CAPREVOLDID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    tool AM.ENQ.DETAIL {
+        label {
+            en = "Create New Record"
+        }
+
+        command: "docommand(\"PP.STATEMENT.FORMAT,CREATE I F3\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "CompanyID.val"
+        image: "edit.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "CAPTUREAMEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "CompanyID.val"
+        image: "txnreverse.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "REVERSECAPTURE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Format"
+        }
+
+        label-field: "CompanyID.val"
+        image: "view.gif"
+        criteria: "CURRENT.IDVALUE" > "ID" parameters {
+            function:  See
+            parameter: "111"
+        }
+
+        screen: "PP.STATEMENT.FORMAT,VIEW.FORMAT"
+    }
+
+}

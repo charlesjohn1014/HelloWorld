@@ -1,0 +1,127 @@
+Enquiry "STO.HEADER.SCV.AR" for "name:/AA_Account:AA.ARR.ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Opening Process"
+    }
+
+    no-selection: true
+    start-line: 1
+    end-line: 10
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    custom-selection {
+
+        field "ID.COMP.1" {
+            label {
+                en = "Arrangement Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 365
+        no-header: true
+        operation: constant "\"Create New\""
+    }
+
+    field "ARR.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "C.COS" {
+        comma-separator: false
+        operation: constant "\"COS SWEEP.REGISTER.AR \""
+    }
+
+    field "TAB.COS" {
+        comma-separator: false
+        operation: constant "\"COS STO.REGISTER.AR \""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "P.FV" {
+        comma-separator: false
+        operation: if "FV" NotEquals "\"\"" process "FV" "\"\'\'\""
+    }
+
+    field "P.SIM" {
+        comma-separator: false
+        operation: if "SIM" NotEquals "\"\"" process "SIM" "\"\'\'\""
+    }
+
+    field "ACC.ID" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.REFERENCE"
+    }
+
+    field "D.COS" {
+        comma-separator: false
+        operation: calc "C.COS":"SP":"ACC.ID"
+    }
+
+    field "T.COS" {
+        comma-separator: false
+        operation: calc "TAB.COS":"SP":"ACC.ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Standing Order"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "ACC.ID"
+        }
+
+        screen: "STANDING.ORDER,NEW.AR"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Direct Debit"
+        }
+
+        label-field: "HEADER" parameters {
+            function:  Input
+            field: "ACC.ID"
+        }
+
+        screen: "DD.DDI,STANDALONE.AR"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Sweep"
+        }
+
+        label-field: "HEADER"
+        from-field: "D.COS"
+    }
+
+    attributes: "HORIZONTAL.DRILLDOWNS" ; "NO.TOOLBAR" ; "NO.COLUMN.HEADER" ; "NO.ENQUIRY.FAVOURITES" ;
+    "NO.BREADCRUMBS" ; "NO.MORE.OPTIONS" ; "SINGLE.BACKGROUND.COLOUR"
+}

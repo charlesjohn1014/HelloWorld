@@ -1,0 +1,234 @@
+Enquiry "ADVISORY.FEES.MODIFY" for "name:/SC_ScfAdvisoryFees:SC.ADVISORY.CHG#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Advisory Fees Modified"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99 fixed-selection "PROCESS.STAGE" {
+        Equals "CALCULATED"
+    }
+
+    fixed-selection "CURR.NO" {
+        Greater "1"
+    }
+
+    field "IHDR1" {
+        comma-separator: false
+        operation: constant "\"Details of Advisory Fee Changes - Amounts in\""
+    }
+
+    field "IHDR2" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "IHDR3" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: calc "IHDR1":"IHDR2":"IHDR3"
+    }
+
+    field "ID" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUR.AD.FEES" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CHARGES.LCY"
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "HIST.AD.FEES" NotEquals "CUR.AD.FEES" process "ID" "NUL"
+    }
+
+    field "HIST.FEE" {
+        label {
+            en = "Fee Before Modification"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z2"
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACT.CHARGES"
+    }
+
+    field "LOCAL.FEES.LCY" {
+        label {
+            en = "Local Fees"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z2"
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LOCAL.FEES.LCY"
+    }
+
+    field "DISC.AMOUNT.LCY" {
+        label {
+            en = "Disc Amt"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z2"
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DISC.AMOUNT.LCY"
+    }
+
+    field "CURRENT.FEE" {
+        label {
+            en = "Fee after Modification"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        fmtMask: "Z2"
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHARGES.LCY"
+    }
+
+    field "DIFF" {
+        label {
+            en = "Modified Amount"
+        }
+
+        display-type: "CLASS-TAMNUM"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        operation: calc "HIST.FEE" - "CURRENT.FEE"
+    }
+
+    field "REASON" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "REASON.NARR"
+    }
+
+    field "REA.NARR" {
+        label {
+            en = "Reason"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: if "HIST.AD.FEES" Equals "CUR.AD.FEES" process "NUL" "REASON"
+    }
+
+    field "INPUT" {
+        label {
+            en = "Modified by"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records found with modified advisory fees\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "PORTFOLIO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "PORTFOLIO"
+        }
+
+        screen: "SC.ADVISORY.CHG,INP"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

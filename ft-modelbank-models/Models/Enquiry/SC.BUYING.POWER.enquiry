@@ -1,0 +1,250 @@
+Enquiry "SC.BUYING.POWER" for "name:/SC_ModelBank:NOFILE.BUY.SELL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Buying Power"
+    }
+
+    description {
+        en = "Buying Power"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 5
+    end-line: 20 fixed-selection "ARR" {
+    }
+
+    custom-selection {
+
+        field "PORTFOLIO.NO" {
+            mandatory: true
+            label {
+                en = "Portfolio Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SEC.CODE" {
+            mandatory: true
+            label {
+                en = "Security Code"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ACC.NO" {
+            mandatory: true
+            label {
+                en = "Account Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BUY.SELL" {
+            mandatory: true
+            label {
+                en = "Buy/Transfer"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Buying Power\""
+    }
+
+    field "SAM" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        operation: selection "PORTFOLIO.NO"
+    }
+
+    field "SECNO" {
+        comma-separator: false
+        operation: selection "SEC.CODE"
+    }
+
+    field "ACCOUNT" {
+        comma-separator: false
+        operation: selection "ACC.NO"
+    }
+
+    field "BAL" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT"
+        conversion: getFrom "EB.CONTRACT.BALANCES" "WORKING.BALANCE" false
+    }
+
+    field "VA" {
+        comma-separator: false
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.AMT" false
+    }
+
+    field "LNA" {
+        comma-separator: false
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "LOAN.MARGIN.AMT" false
+    }
+
+    field "M" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "LNAT" {
+        comma-separator: false
+        operation: calc "M" * "LNA"
+    }
+
+    field "VAT" {
+        comma-separator: false
+        operation: calc "VA" + "LNAT"
+    }
+
+    field "MAR" {
+        comma-separator: false
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "MARGIN.VALUE" false
+    }
+
+    field "MV" {
+        comma-separator: false
+        operation: calc "MAR" + "LNAT"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Buying Power"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "LOAN" {
+        label {
+            en = "Loan"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 2
+        }
+
+        operation: field-extract "LNAT"
+    }
+
+    field "PRICE" {
+        label {
+            en = "Sec Price"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "NOMINALS" {
+        label {
+            en = "Buy Nominal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 0 delimited by "*"
+    }
+
+    field "ALN" {
+        comma-separator: false
+        operation: calc "AMOUNT" - "BAL"
+    }
+
+    field "Z" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "ADLN" {
+        label {
+            en = "Additional Loan"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        operation: if "BAL" LessOrEquals "Z" process "AMOUNT" "ALN"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Only Available for Buy Orders\""
+    }
+
+    attributes: "ALLDATA" ; "NO.ENQUIRY.FAVOURITES"
+}

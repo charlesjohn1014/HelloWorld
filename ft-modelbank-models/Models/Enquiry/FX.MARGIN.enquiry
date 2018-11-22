@@ -1,0 +1,525 @@
+Enquiry "FX.MARGIN" for "name:/FX_ModelBank:NOFILE.FX.MARGIN.DETAILS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Customer Margin Deals- Customer perspective"
+    }
+
+    description {
+        en = "Customer Perspective Margin Deals"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "FX.MARGIN.DETAILS" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        Equals "SPMT", "FWMT"
+    }
+
+    custom-selection {
+
+        field "COUNTERPARTY" {
+            label {
+                en = "Counterparty"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer Margin Deals - Customer perspective\""
+    }
+
+    field "COUNTERPARTY" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "FX.PARTY" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "COUNTERID" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 37
+        }
+
+        hidden: true
+        operation: field-extract "FX.PARTY"
+    }
+
+    field "ACT.BRK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: break-change "FX.PARTY"
+    }
+
+    field "FX.ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CCY2" {
+        label {
+            en = "Ccy Buy"
+        }
+
+        comments: "CURRENCY.SOLD"
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SELL.AMT" {
+        label {
+            en = "Amount Buy"
+        }
+
+        comments: "AMOUNT.SOLD"
+        format: Currency "CCY2" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 69
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "S.SELL.AMT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SELL.AMT"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy Sell"
+        }
+
+        comments: "CURRENCY.BOUGHT"
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "AMOUNT.BOUGHT" {
+        label {
+            en = "Amount Sell"
+        }
+
+        comments: "AMOUNT.BOUGHT"
+        format: Currency "CCY1" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "VALUE.DATE.SELL" {
+        label {
+            en = "Value Date Buy"
+        }
+
+        comments: "VALUE.DATE.SELL"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 135
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "VALUE.DATE.BUY" {
+        label {
+            en = "Value Date Sell"
+        }
+
+        comments: "VALUE.DATE.BUY"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "FWD.RATE" {
+        label {
+            en = "Deal Rate"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 165
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 185
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "LCCY" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "MTM.VALUE" {
+        label {
+            en = "Customer PL in LCY"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 200
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "TOT.MTM" {
+        format: Currency "CCY2" negative-pattern -#
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "MTM.VALUE"
+    }
+
+    field "T.TOT.MTM" {
+        format: Currency "CCY2" negative-pattern -# break-condition {
+            field: "ACT.BRK"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: total "TOT.MTM"
+    }
+
+    field "PARTY2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "COUNTERPARTY"
+    }
+
+    field "TOT.LINES11" {
+        break-condition {
+            field: "ACT.BRK"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 200
+            line: + 0
+        }
+
+        processing-mode: Multi
+        operation: constant "\"-------------------\""
+    }
+
+    field "TOTAL.TEXT" {
+        break-condition {
+            field: "ACT.BRK"
+        }
+
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 165
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Totals\""
+    }
+
+    field "DISP.LCCY" {
+        break-condition {
+            field: "ACT.BRK"
+        }
+
+        comma-separator: false
+        position {
+            column: 185
+            line: + 1
+        }
+
+        operation: field-extract "LCCY"
+    }
+
+    field "FIN.TOT" {
+        format: Currency "LCCY" negative-pattern -# break-condition {
+            field: "ACT.BRK"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 200
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "T.TOT.MTM"
+    }
+
+    field "TOT.LINES12" {
+        break-condition {
+            field: "ACT.BRK"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 200
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: constant "\"=============\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "APPL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"FOREX,\""
+    }
+
+    field "TXN.TYPE.NAU" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "FX.ID"
+        conversion: getFrom "FOREX$NAU" "TRANSACTION.TYPE" false
+        conversion: replace {
+            oldData: "SPMT"
+            newData: "SPOTMARGIN"
+        }
+
+        conversion: replace {
+            oldData: "FWMT"
+            newData: "FWDMARGIN"
+        }
+
+    }
+
+    field "TXN.TYPE.LIV" {
+        comma-separator: false
+        operation: field-extract "FX.ID"
+        conversion: getFrom "FOREX" "TRANSACTION.TYPE" false
+        conversion: replace {
+            oldData: "SPMT"
+            newData: "SPOTMARGIN"
+        }
+
+        conversion: replace {
+            oldData: "FWMT"
+            newData: "FWDMARGIN"
+        }
+
+    }
+
+    field "VER" {
+        comma-separator: false
+        operation: if "TXN.TYPE.NAU" Equals "NULL" process "TXN.TYPE.LIV" "TXN.TYPE.NAU"
+    }
+
+    field "DECIDE.VERSION" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TXN.TYPE.NAU" Equals "NULL" process "TXN.TYPE.LIV" "TXN.TYPE.NAU"
+    }
+
+    field "FX.VERSION" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "APPL":"DECIDE.VERSION"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Margin Deals available\""
+    }
+
+    field "TXN.DRILL1" {
+        comma-separator: false
+        operation: field-extract "VER"
+        conversion: replace {
+            oldData: "SPMT"
+            newData: "SPOTMARGIN"
+        }
+
+    }
+
+    field "TXN.DRILL2" {
+        comma-separator: false
+        operation: field-extract "VER"
+        conversion: replace {
+            oldData: "FWMT"
+            newData: "FWDMARGIN"
+        }
+
+    }
+
+    field "APPL.02" {
+        comma-separator: false
+        operation: constant "\"FOREX,\""
+    }
+
+    field "TXN.DROP1" {
+        comma-separator: false
+        operation: calc "APPL":"TXN.DRILL1"
+    }
+
+    field "TXN.DROP2" {
+        comma-separator: false
+        operation: calc "APPL":"TXN.DRILL2"
+    }
+
+    field "VER.DEC1" {
+        comma-separator: false
+        operation: if "FORWARD.RATE" NotEquals "NULL" process "TXN.DROP2" "TXN.DROP1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "FX.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "FX.ID"
+        }
+
+        from-field: "VER.DEC1"
+    }
+
+}

@@ -1,0 +1,284 @@
+Enquiry "TCIB.WEALTH.GB.VAL.MATRIX.SHORT" for "name:/AM_ValuationFrameWork:AM.VAL.EXTRACT.WRK#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AM.BUILD.VEX.WRK"
+    }
+
+    fixed-sort: "GROUP.ORDER" Null
+    fixed-sort: "SECURITY.CCY" Null
+    fixed-sort: "SAM.NO" Null
+    custom-selection {
+
+        field "SAM.NO" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUSTOMER.NUMBER" {
+            label {
+                en = "Client No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ONLINE.YNO" {
+            label {
+                en = "Online YNo"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "EXTRACT.DATE" {
+            label {
+                en = "Extract Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SUB.ASSET.SA" {
+            label {
+                en = "Sub Asset"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "HIDE.ZERO.POS" {
+            label {
+                en = "Hide Zero Position"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "OPEN.ORDERS" {
+            label {
+                en = "Open Orders"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "VALUATION.CCY" {
+            label {
+                en = "Valuation Ccy"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "CUS.NO" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NUMBER"
+    }
+
+    field "RCCY" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CUS.NO"
+        conversion: getFrom "AM.GROUP.PORT" "VAL.CURRENCY" false
+    }
+
+    field "LCCY" {
+        comma-separator: false
+        operation: field-extract "RCCY"
+    }
+
+    field "ASSET.TXT" {
+        label {
+            en = "Group"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GROUP.NAME"
+    }
+
+    field "DESIGNATION" {
+        label {
+            en = "Description"
+        }
+
+        length: 75
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DESIGNATION"
+    }
+
+    field "COST.PRICE" {
+        label {
+            en = "Cost Price"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COST.PRICE"
+    }
+
+    field "MARKET.PRICE" {
+        label {
+            en = "Market Price"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MARKET.PRICE"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "Quantity"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "V.DATE.COST.REF" {
+        label {
+            en = "Cost"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "V.DATE.COST.REF"
+    }
+
+    field "VALUE.REF.CCY" {
+        label {
+            en = "Value"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.REF.CCY"
+    }
+
+    field "PL" {
+        label {
+            en = "Estimated Returns"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        operation: calc "VALUE.REF.CCY" - "V.DATE.COST.REF"
+    }
+
+    field "SEC.CCY" {
+        label {
+            en = "Security Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CCY"
+    }
+
+    field "@ID" {
+        label {
+            en = "Portfolio Ref"
+        }
+
+        length: 77
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 0 delimited by "."
+    }
+
+}

@@ -1,0 +1,125 @@
+Enquiry "AP.CURRENCY.LIST" for "name:/AM_ModelBank:NOFILE.CURRENCY.LIST#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 4
+    end-line: 10 fixed-selection "SEL.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "BM.CCY" {
+        }
+
+        None
+    }
+
+    field "SEL.REC" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "SAM.NO" {
+        comma-separator: false
+        operation: field-extract "SEL.REC"
+        conversion: call
+        jBC: "@ E.MB.AP.GET.PORTFOLIO"
+    }
+
+    field "TEXT" {
+        comma-separator: false
+        operation: constant "\"Selected Portfolio : \""
+    }
+
+    field "HEADER.1" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: calc "TEXT":"SAM.NO"
+    }
+
+    field "TEXT.2" {
+        comma-separator: false
+        operation: constant "\"Current Valuation Currency :\""
+    }
+
+    field "VAL.CCY" {
+        comma-separator: false
+        operation: field-extract "SEL.REC"
+        conversion: call
+        jBC: "@ E.MB.AP.GET.VAL.CCY"
+    }
+
+    field "HEADER.2" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        operation: calc "TEXT.2":"VAL.CCY"
+    }
+
+    field "HEADER" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 3
+        }
+
+        operation: constant "\"Change Valuation Currency\""
+    }
+
+    field "BM.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SEL.REC"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DESC" {
+        label {
+            en = "Currency Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "SEL.REC"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Launch"
+        }
+
+        label-field: "BM.CCY"
+        image: "launch.gif"
+        criteria: "CURRENT.SELECTED.CCY" > "BM.CCY"
+        enquiry: "AP.REPORTS.LIST"
+    }
+
+    attributes: "NO.TOOLBAR" ; "ALLDATA"
+}

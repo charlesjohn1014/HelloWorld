@@ -1,0 +1,275 @@
+Enquiry "REAL.TIME.OPPORTUNITY" for "name:/CR_Operational:CR.OPPORTUNITY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Customer Opportunities"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.CR.REAL.TIME.OPPOR.UPDATE"
+    }
+
+    fixed-selection "OPPOR.STATUS" {
+        NotEquals "REJECTED"
+    }
+
+    fixed-selection "OPPOR.STATUS" {
+        NotEquals "SUPERCEDED"
+    }
+
+    fixed-selection "OPPOR.STATUS" {
+        NotMatches "No..."
+    }
+
+    fixed-selection "OPPOR.STATUS" {
+        NotEquals "ACCEPTED"
+    }
+
+    fixed-selection "PARENT.APPLICATION" {
+        NotEquals "NULL"
+    }
+
+    fixed-sort: "CUSTOMER" Null
+    fixed-sort: "PROB.SUCCESS" Descending
+
+    field "DESCRIPTION" {
+        label {
+            en = "Recommendations"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Recommendations\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"\""
+    }
+
+    field "PRODUCT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT"
+    }
+
+    field "OPPOR.DEF.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OPPOR.DEF.ID"
+    }
+
+    field "CATEG.DESC" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "AA.CATAL.DESC" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "PROD.DESC" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "CATEG.DESC" NotEquals "\"\"" process "CATEG.DESC" "AA.CATAL.DESC"
+    }
+
+    field "DETAIL.DESC" {
+        label {
+            en = "Advice"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 400
+        processing-mode: Multi
+        operation: field-extract "OPPOR.DEF.ID"
+        conversion: getFrom "CR.OPPORTUNITY.DEFINITION" "DESCRIPTION" false
+    }
+
+    field "PROB.SUCCESS" {
+        label {
+            en = "Score"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PROB.SUCCESS"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No opportunities for this customer\""
+    }
+
+    field "CR.OPPOR.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CR.OPPOR.ID"
+    }
+
+    field "COS" {
+        comma-separator: false
+        operation: constant "\"COS \""
+    }
+
+    field "INFO" {
+        comma-separator: false
+        operation: constant "\".INFO\""
+    }
+
+    field "COMP" {
+        comma-separator: false
+        operation: calc "COS":"OPPOR.DEF.ID":"INFO"
+    }
+
+    field "TXN.PARENT.REFERENCE" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PARENT.REFERENCE"
+    }
+
+    field "TXN.CUSTOMER" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "NO.THANKS" {
+        comma-separator: false
+        operation: constant "\"REJECTED\""
+    }
+
+    field "PARENT.APPLICATION" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PARENT.APPLICATION"
+    }
+
+    field "FLAG.APPLICATION" {
+        comma-separator: false
+        operation: calc "PARENT.APPLICATION":"\"-1\""
+    }
+
+    field "ASK.ME.LATER" {
+        comma-separator: false
+        operation: constant "\"ASK.ME.LATER\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Apply"
+        }
+
+        label-field: "PROD.DESC"
+        image: "ApplyNow.png"
+        criteria: "CURRENT.ID" > "CR.OPPOR.ID"
+        criteria: "CURRENT.FLAG" > "FLAG.APPLICATION"
+        pw-process: "ACCEPTED.OPPORTUNITY"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Pending"
+        }
+
+        label-field: "PROD.DESC"
+        image: "MaybeLater.png"
+        criteria: "PARENT.REFERENCE" Equals "TXN.PARENT.REFERENCE"
+        criteria: "@ID" Equals "CR.OPPOR.ID"
+        criteria: "OPPOR.STATUS" NotEquals "ASK.ME.LATER"
+        criteria: "CUSTOMER" Equals "TXN.CUSTOMER"
+        enquiry: "REAL.TIME.OPPORTUNITY"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reject"
+        }
+
+        label-field: "PROD.DESC"
+        image: "NoThanks.png"
+        criteria: "PARENT.REFERENCE" Equals "TXN.PARENT.REFERENCE"
+        criteria: "@ID" Equals "CR.OPPOR.ID"
+        criteria: "OPPOR.STATUS" NotEquals "NO.THANKS"
+        criteria: "CUSTOMER" Equals "TXN.CUSTOMER"
+        enquiry: "REAL.TIME.OPPORTUNITY"
+    }
+
+    drilldown "4" {
+        description {
+            en = "More Info"
+        }
+
+        label-field: "PROD.DESC"
+        from-field: "COMP"
+    }
+
+    attributes: "ALLDATA" ; "NO.BREADCRUMBS" ; "NO.TOOLBAR"
+}

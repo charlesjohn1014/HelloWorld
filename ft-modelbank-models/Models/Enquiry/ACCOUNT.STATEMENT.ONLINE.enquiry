@@ -1,0 +1,342 @@
+Enquiry "ACCOUNT.STATEMENT.ONLINE" for "name:/EB_Reports:HOLD.CONTROL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Account Statement"
+    }
+
+    description {
+        en = "Account Statement"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.MNE.CONV.RTN"
+    }
+
+    fixed-selection "REPORT.NAME" {
+        Equals "ACCOUNT.STATEMENT"
+    }
+
+    fixed-sort: "REPORT.NAME" Null
+    fixed-sort: "DATE.CREATED" Descending
+    fixed-sort: "BATCH.DATE.TIME" Descending
+    fixed-sort: "TIME.CREATED" Null
+    custom-selection {
+
+        field "REPORT.NAME" {
+            label {
+                en = "Report Name"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.NO" {
+            label {
+                en = "Account Number"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "INIT" {
+        break-condition {
+            break: Once
+        }
+
+        length: 32
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.HOLD.INIT"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Account \""
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 9
+            line: 0
+        }
+
+        operation: constant "\"Statement\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ID" {
+        length: 32
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "BATCHRUN" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BATCH.DATE.TIME"
+    }
+
+    field "OPER" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "K.USER"
+    }
+
+    field "CO" {
+        label {
+            en = "Company"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COMPANY.ID"
+        conversion: getFrom "COMPANY" "MNEMONIC" false
+    }
+
+    field "NAME" {
+        label {
+            en = "Report name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REPORT.NAME"
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NO"
+    }
+
+    field "ACCT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NO"
+    }
+
+    field "CDATE" {
+        label {
+            en = "Date Created"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.CREATED"
+    }
+
+    field "CTIME" {
+        label {
+            en = "Time Created"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        fmtMask: "##:##"
+        position {
+            column: 95
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TIME.CREATED"
+    }
+
+    field "INBATCH" {
+        label {
+            en = "Batch"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RUN.IN.BATCH"
+        conversion: replace {
+            oldData: "Y"
+            newData: "Yes"
+        }
+
+        conversion: replace {
+            oldData: "N"
+            newData: "No"
+        }
+
+    }
+
+    field "REQ.BY" {
+        label {
+            en = "Requested By"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 106
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "REPORT.NAME"
+        conversion: call
+        jBC: "@ E.HOLD.LIST"
+    }
+
+    field "B.BATCH" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "BATCHRUN"
+    }
+
+    field "R.OPER" {
+        comma-separator: false
+        operation: if "BATCHRUN" NotEquals "NULL" process "OPER" "NULL"
+    }
+
+    field "@ID" {
+        label {
+            en = "Hold ID"
+        }
+
+        length: 32
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "REPORT.FILE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"&HOLD&>\""
+    }
+
+    field "REPORT.ID" {
+        comma-separator: false
+        operation: calc "REPORT.FILE":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Report"
+        }
+
+        label-field: "NAME"
+        image: "view.gif"
+        view: "REPORT.ID"
+    }
+
+}

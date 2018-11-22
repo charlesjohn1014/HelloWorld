@@ -1,0 +1,729 @@
+Enquiry "TCIB.WEALTH.GB.VAL.MATRIX.SHORT.INT" for "name:/AM_ValuationFrameWork:AM.VAL.EXTRACT.WRK#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.TCIB.SET.CURR.CCY"
+        jBC: "E.AM.BUILD.VEX.WRK"
+    }
+
+    fixed-sort: "GROUP.ORDER" Null
+    fixed-sort: "SECURITY.CCY" Null
+    custom-selection {
+
+        field "SAM.NO" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUSTOMER.NUMBER" {
+            label {
+                en = "Client No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ONLINE.YNO" {
+            label {
+                en = "Online Y/No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "EXTRACT.DATE" {
+            label {
+                en = "Extract Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SUB.ASSET.SA" {
+            label {
+                en = "Sub Asset"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "HIDE.ZERO.POS" {
+            label {
+                en = "Hide Zero Position"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "OPEN.ORDERS" {
+            label {
+                en = "Open Orders"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "VALUATION.CCY" {
+            label {
+                en = "Valuation Ccy"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CUS.NO" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NUMBER"
+    }
+
+    field "RCCY" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CUS.NO"
+        conversion: getFrom "AM.GROUP.PORT" "VAL.CURRENCY" false
+    }
+
+    field "@ID" {
+        length: 77
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ASSET.TXT" {
+        label {
+            en = "Group"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GROUP.NAME"
+    }
+
+    field "SEC.CCY" {
+        label {
+            en = "CCY"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CCY"
+    }
+
+    field "LCCY" {
+        comma-separator: false
+        operation: field-extract "RCCY"
+    }
+
+    field "DESIGNATION" {
+        label {
+            en = "Description"
+        }
+
+        length: 75
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DESIGNATION"
+    }
+
+    field "ALTISIN" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "ALT.SECURITY.NO" false
+        conversion: value 2
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Account/SecNo"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "COST.PRICE" {
+        label {
+            en = "Cost Price"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COST.PRICE"
+    }
+
+    field "MARKET.PRICE" {
+        label {
+            en = "Market Price"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MARKET.PRICE"
+    }
+
+    field "MKT.PRICE.DTE" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MKT.PRICE.DTE"
+    }
+
+    field "MKT.PRICE.DATE" {
+        label {
+            en = "Market Price Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: field-extract "MKT.PRICE.DTE"
+    }
+
+    field "MK.PR.DT" {
+        comma-separator: false
+        operation: field-extract "MKT.PRICE.DTE"
+        conversion: extract from 7 to 2
+    }
+
+    field "MK.PR.MONTH" {
+        comma-separator: false
+        operation: field-extract "MKT.PRICE.DTE"
+        conversion: extract from 5 to 2
+    }
+
+    field "MK.PR.YR" {
+        comma-separator: false
+        operation: field-extract "MKT.PRICE.DTE"
+        conversion: extract from 1 to 4
+    }
+
+    field "MK.DATE" {
+        comments: "Market Price Date"
+        comma-separator: false
+        operation: calc "MK.PR.DT":"DOT":"MK.PR.MONTH":"DOT":"MK.PR.YR"
+    }
+
+    field "MK.PR.DTE" {
+        comments: "Market Price Date"
+        comma-separator: false
+        operation: if "MKT.PRICE.DTE" NotEquals "NULL" process "MK.DATE" "NULL"
+    }
+
+    field "EXCH.RATE" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CCY"
+        conversion: getFrom "CURRENCY" "MID.REVAL.RATE" false
+        conversion: value 1
+    }
+
+    field "D.EXCH.RATE" {
+        label {
+            en = "FX Rate"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: if "EXCH.RATE" Equals "NULL" process "ONE" "EXCH.RATE"
+        conversion: iconv "MD5"
+        conversion: oconv "MD5"
+    }
+
+    field "NO.UNREAL.GL" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "UNREAL.PL.REF.CCY"
+    }
+
+    field "PER" {
+        comma-separator: false
+        operation: constant "\"%\""
+    }
+
+    field "UNREAL.GL" {
+        length: 77
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.DEF.UNREAL"
+    }
+
+    field "D.UNREAL.GL" {
+        label {
+            en = "Unrealized PL in Val CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "NO.UNREAL.GL" Equals "NULL" process "NULL" "UNREAL.GL"
+        conversion: iconv "MD"
+        conversion: oconv "MD"
+    }
+
+    field "HUND" {
+        comma-separator: false
+        operation: constant "\"100\""
+    }
+
+    field "TOT.DIFF" {
+        comma-separator: false
+        operation: calc "MARKET.PRICE" - "COST.PRICE"
+    }
+
+    field "TOT.UNREAL.DIFF" {
+        comma-separator: false
+        operation: calc "TOT.DIFF" / "COST.PRICE"
+    }
+
+    field "CAL.UNREAL.DIFF" {
+        comma-separator: false
+        operation: calc "TOT.UNREAL.DIFF" * "HUND"
+    }
+
+    field "UNREAL.PERC" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CAL.UNREAL.DIFF"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "D.UNREAL.PERC" {
+        label {
+            en = "Unrealized PL in Per"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: calc "UNREAL.PERC":"PER"
+    }
+
+    field "MK.ACCR" {
+        length: 77
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.MK.ACR.VAL"
+    }
+
+    field "ACCR.MK" {
+        label {
+            en = "Value with AI in Val CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: field-extract "MK.ACCR"
+    }
+
+    field "RND.ACCRUED.INT" {
+        length: 77
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.RND.ACR.INT"
+    }
+
+    field "D.RND.ACCRUED.INT" {
+        label {
+            en = "Accr Int in ValCCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "RND.ACCRUED.INT"
+    }
+
+    field "RND.VALUE.REF.CCY" {
+        length: 77
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.MKT.VAL"
+    }
+
+    field "D.VALUE.REF.CCY" {
+        label {
+            en = "Value wo AI in Val CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: field-extract "RND.VALUE.REF.CCY"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "MK.TOT" {
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.MB.CALC.TOTAL"
+    }
+
+    field "TOT.MK" {
+        comma-separator: false
+        operation: calc "RND.VALUE.REF.CCY" / "MK.TOT"
+    }
+
+    field "PER.DIS" {
+        comma-separator: false
+        operation: calc "TOT.MK" * "100"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "TOT.DIS" {
+        label {
+            en = "Total Per"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: field-extract "PER.DIS"
+    }
+
+    field "APP" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "SCT" {
+        comma-separator: false
+        operation: constant "\"SC\""
+    }
+
+    field "FXT" {
+        comma-separator: false
+        operation: constant "\"FX\""
+    }
+
+    field "RATING" {
+        label {
+            en = "Rating"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RATING"
+    }
+
+    field "MAT.DATE" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "MATUR.DTE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: field-extract "MAT.DATE"
+    }
+
+    field "YIELD" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "YIELD"
+    }
+
+    field "D.YIELD" {
+        comma-separator: false
+        operation: calc "YIELD" * "100"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "DISP.YIELD" {
+        label {
+            en = "Yield to Maturity"
+        }
+
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        operation: if "APP" Equals "SCT" process "D.YIELD" "NULL"
+    }
+
+    field "START.DATE" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+        conversion: getFrom "FOREX" "DEAL.DATE" false
+    }
+
+    field "START.DT" {
+        label {
+            en = "Opening Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        operation: if "APP" Equals "FXT" process "START.DATE" "NULL"
+    }
+
+    field "FWD.RATE" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FORWARD.RATE"
+        conversion: iconv "MD5"
+        conversion: oconv "MD5"
+    }
+
+    field "INIT.FWD.RATE" {
+        label {
+            en = "Initial Fwd Rate"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: if "APP" Equals "FXT" process "FWD.RATE" "NULL"
+    }
+
+    field "CUR.FWD.RATE" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MARKET.PRICE"
+        conversion: iconv "MD5"
+        conversion: oconv "MD5"
+    }
+
+    field "D.CUR.FWD.RATE" {
+        label {
+            en = "Current Fwd Rate"
+        }
+
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        operation: if "APP" Equals "FXT" process "CUR.FWD.RATE" "NULL"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "Quantity"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "V.DATE.COST.REF" {
+        label {
+            en = "Cost"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        operation: application-field-name "V.DATE.COST.REF"
+    }
+
+    field "VALUE.REF.CCY" {
+        label {
+            en = "Value"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 24
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.REF.CCY"
+    }
+
+    field "PL" {
+        label {
+            en = "Estimated Returns"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 25
+        }
+
+        operation: calc "VALUE.REF.CCY" - "V.DATE.COST.REF"
+    }
+
+}

@@ -1,0 +1,251 @@
+Enquiry "AA.SCHEDULE.DETAILS" for "name:/AA_PaymentSchedule:NOFILE.AA.SCHED.DETS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Payment Details"
+    }
+
+    no-selection: true
+    start-line: 7
+    end-line: 19 fixed-selection "XID" {
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "DATE.DUE" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "L.ARR.ID" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Arrangement: \""
+    }
+
+    field "ARR.ID" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 0
+        }
+
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "PRODUCT" {
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+    }
+
+    field "PRODUCT.NAME" {
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT.DESIGNER" "DESCRIPTION" false
+    }
+
+    field "CUST.ID" {
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+    }
+
+    field "L.CUSTOMER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Customer: \""
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Customer:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "L.CURRENCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Currency: \""
+    }
+
+    field "ARR.CCY" {
+        label {
+            en = "Currency:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 3
+        }
+
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "L.DUE.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 3
+        }
+
+        operation: constant "\"Due Date: \""
+    }
+
+    field "DUE.DT" {
+        label {
+            en = "Due Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 3
+        }
+
+        operation: selection "DATE.DUE"
+    }
+
+    field "DUE.TYPE" {
+        label {
+            en = "Payment Type"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "AA.PAYMENT.TYPE" "DESCRIPTION" false
+    }
+
+    field "DUE.TYPE.AMT" {
+        label {
+            en = "Payment Amount"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "PROPERTIES" {
+        label {
+            en = "Property"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "PROP.AMT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

@@ -1,0 +1,238 @@
+Enquiry "CUSTOMER.CONDITIONS" for "name:/ST_ModelBank:NOFILE.CUSTOMER.CONDITIONS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Customer Charge Conditions"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RET.ARR" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "RET.ARR" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Customer Charge Conditions\""
+    }
+
+    field "HDR4" {
+        display-type: "CLASS-TITLE"
+        format: User
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "RET.ARR"
+        conversion: extract from 6 to 1 delimited by "*"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "HDR5" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        comma-separator: false
+        display-section: Header
+        operation: today
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product Condition"
+        }
+
+        length: 32
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "RET.ARR"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "RET.ARR"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "RET.ARR"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "CONDITION" {
+        label {
+            en = "Condition Group"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        column-width: 10
+        processing-mode: Multi
+        operation: field-extract "RET.ARR"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "SEL.CUS" {
+        comma-separator: false
+        operation: field-extract "RET.ARR"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "DRILL.APP.VER" {
+        comma-separator: false
+        operation: field-extract "RET.ARR"
+        conversion: extract from 6 to 1 delimited by "*"
+        conversion: replace {
+            oldData: "FT.GEN.CONDITION"
+            newData: "FT.GEN.CONDITION?ADMIN.INPUT"
+        }
+
+        conversion: replace {
+            oldData: "FD.GEN.CONDITION"
+            newData: "FD.GEN.CONDITION?INPUT"
+        }
+
+        conversion: replace {
+            oldData: "LC.GEN.CONDITION"
+            newData: "LC.GEN.CONDITION?ADMIN.INPUT"
+        }
+
+        conversion: replace {
+            oldData: "MD.GROUP.CONDITION"
+            newData: "MD.GROUP.CONDITION?INPUT"
+        }
+
+        conversion: replace {
+            oldData: "LD.GROUP.CONDITION"
+            newData: "LD.GROUP.CONDITION?INPUT"
+        }
+
+        conversion: replace {
+            oldData: "SCTR.GEN.CONDITION"
+            newData: "SCTR.GEN.CONDITION?INPUT"
+        }
+
+        conversion: replace {
+            oldData: "SCPM.GEN.CONDITION"
+            newData: "SCPM.GEN.CONDITION?INPUT"
+        }
+
+        conversion: replace {
+            oldData: "SCSK.GEN.CONDITION"
+            newData: "SCSK.GEN.CONDITION?INPUT"
+        }
+
+        conversion: replace {
+            oldData: "TAX.GEN.CONDITION"
+            newData: "TAX.GEN.CONDITION?ADMIN.INPUT"
+        }
+
+    }
+
+    field "MOD.DRILL.VER" {
+        comma-separator: false
+        operation: field-extract "DRILL.APP.VER"
+        conversion: oconv "MCC;?;,"
+    }
+
+    field "DRILL.REC" {
+        comma-separator: false
+        operation: field-extract "RET.ARR"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "SPACE.VL" {
+        comma-separator: false
+        operation: constant "\" S \""
+    }
+
+    field "CONC1" {
+        comma-separator: false
+        operation: calc "MOD.DRILL.VER":"SPACE.VL"
+    }
+
+    field "DRILL.DOWN" {
+        comma-separator: false
+        operation: calc "CONC1":"DRILL.REC"
+    }
+
+    field "ZERO.RECS" {
+        label {
+            en = "Zero Recs display"
+        }
+
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Customer Condition Set\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Condition"
+        }
+
+        label-field: "PRODUCT"
+        image: "view.gif"
+        from-field: "DRILL.DOWN"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES"
+}

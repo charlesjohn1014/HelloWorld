@@ -1,0 +1,283 @@
+Enquiry "DRAWINGS.IMUSANDISC" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Discounting Under Import LC"
+    }
+
+    description {
+        en = "Discounting Under Import LC"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.IMPDR"
+    }
+
+    fixed-selection "DRAWING.TYPE" {
+        Equals "AC", "DP"
+    }
+
+    fixed-selection "DISCOUNT.AMT" {
+        Equals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Drawing Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: constant "\"Accepted Documents Under Import LC\""
+    }
+
+    field "LC.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "LC.OLD.NO" {
+        comma-separator: false
+        operation: field-extract "LC.NO"
+        conversion: getFrom "LETTER.OF.CREDIT" "OLD.LC.NUMBER" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LC.NO.DISPLAY" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "LC.OLD.NO" NotEquals "NULL" process "LC.OLD.NO" "LC.NO"
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: getFrom "LC.TYPES" "PAY.TYPE" false
+    }
+
+    field "DRAWING.TYPE" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "ACCEPT" {
+        comma-separator: false
+        operation: constant "\"Acceptance\""
+    }
+
+    field "DEF" {
+        comma-separator: false
+        operation: constant "\"Deferred Payment\""
+    }
+
+    field "TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "DRAWING.TYPE" Equals "AC" process "ACCEPT" "DEF"
+    }
+
+    field "PRESENTOR" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRESENTOR"
+    }
+
+    field "PRESENTOR.CUST" {
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PRESENTOR.DISP" {
+        label {
+            en = "Presentor"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "PRESENTOR.CUST" NotEquals "NULL" process "PRESENTOR.CUST" "PRESENTOR"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "MATURITY.REVIEW" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.REVIEW"
+    }
+
+    field "TXN.DOWN" {
+        comma-separator: false
+        operation: field-extract "DRAWING.TYPE"
+        conversion: replace {
+            oldData: "AC"
+            newData: "IMUSANDISC"
+        }
+
+        conversion: replace {
+            oldData: "DP"
+            newData: "IMDPDISC"
+        }
+
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS,\""
+    }
+
+    field "TXN.DRILL1" {
+        comma-separator: false
+        operation: calc "APPL":"TXN.DOWN"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Documents pending for Discounting\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Discounting "
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "TXN.DRILL1"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

@@ -1,0 +1,212 @@
+Enquiry "TCIB.WEALTH.AM.STOCK.PICKS" for "name:/AM_ModelBank:AM.STOCK.PICK#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 10
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SECURITY1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY1"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "SEC NO"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY1"
+    }
+
+    field "ISIN" {
+        label {
+            en = "ISIN"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SECURITY1"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "NAME" {
+        label {
+            en = "Name"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SECURITY1"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "PRICE.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SECURITY1"
+        conversion: getFrom "SECURITY.MASTER" "PRICE.CURRENCY" false
+    }
+
+    field "NOTE1" {
+        label {
+            en = "My Notes"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NOTE1"
+    }
+
+    field "DATE.LAST.PRICE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SECURITY1"
+        conversion: getFrom "SECURITY.MASTER" "DATE.LAST.PRICE" false
+    }
+
+    field "DOT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\".\""
+    }
+
+    field "SC.PC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SECURITY1":"DOT":"DATE.LAST.PRICE"
+    }
+
+    field "OLDPRICE" {
+        label {
+            en = "Old Price"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SC.PC"
+        conversion: getFrom "SC.PRICE.CHANGE" "OLD.PRICE" false
+        conversion: call
+        jBC: "@ E.MB.SCPRICE.OLD"
+    }
+
+    field "LAST.PRICE" {
+        label {
+            en = "Current Price"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SECURITY1"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    field "RED" {
+        comma-separator: false
+        operation: constant "\"down\""
+    }
+
+    field "AMBER" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"flat\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "GREEN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"up\""
+    }
+
+    field "CHANGE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LAST.PRICE" Greater "OLDPRICE" process "GREEN" "RED"
+    }
+
+    field "CHANGE.DISP" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LAST.PRICE" Equals "OLDPRICE" process "AMBER" "CHANGE"
+    }
+
+    field "TREND" {
+        label {
+            en = "Trend"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: if "LAST.PRICE" Equals "NULL" process "NULL" "CHANGE.DISP"
+    }
+
+    field "MF" {
+        label {
+            en = "MF Flag"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY1"
+        conversion: getFrom "SECURITY.MASTER" "MUTUAL.FUND" false
+    }
+
+}

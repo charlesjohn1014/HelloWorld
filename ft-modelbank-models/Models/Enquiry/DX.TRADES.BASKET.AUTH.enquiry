@@ -1,0 +1,307 @@
+Enquiry "DX.TRADES.BASKET.AUTH" for "name:/DX_Trade:DX.TRADE$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Basket Options for Authorisation"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "BASKET.TYPE" {
+        NotEquals "\"\""
+    }
+
+    fixed-sort: "EXCHANGE.CODE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Trade Ref"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.CODE" {
+            label {
+                en = "Contract Code"
+            }
+
+        }
+
+        AND
+
+        field "PRI.SEC.ACC" {
+            label {
+                en = "Customer Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        AND
+
+        field "SEC.CUST.NO" {
+            label {
+                en = "Broker"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.TERMS" {
+            label {
+                en = "Contract Terms"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Trade Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"List of Basket Options\""
+    }
+
+    field "CONTRACT.CODE" {
+        label {
+            en = "Contract Code"
+        }
+
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CODE"
+    }
+
+    field "CONTRACT.TERMS" {
+        label {
+            en = "Contract Terms"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.TERMS"
+    }
+
+    field "PRI.CUST.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.CUST.NO"
+    }
+
+    field "CLIENT.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "PRI.CUST.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PRI.SEC.ACC" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "PRI.SEC.ACC"
+    }
+
+    field "OPTION.TYPE" {
+        label {
+            en = "Option Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPTION.TYPE"
+    }
+
+    field "BASKET.TYPE" {
+        label {
+            en = "Basket Type"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BASKET.TYPE"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "ULYING.ASSET.CLASS" {
+        label {
+            en = "Underlying Asset Class"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ULYING.ASSET.CLASS"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no Basket Options for Authorisation\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Exercise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif"
+        criteria: "@ID" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "DX.TRADE,BASKET"
+    }
+
+}

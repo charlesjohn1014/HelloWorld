@@ -1,0 +1,808 @@
+Enquiry "SC.VAL.REPO" for "name:/SC_ScvValuationUpdates:SC.POS.ASSET#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "SC.VAL.REPO"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.OL.VAL"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+        }
+
+        AND
+
+        field "SECURITY.ACC" {
+            mandatory: true
+        }
+
+        AND
+
+        field "ONLINE.YNO" {
+            mandatory: true
+        }
+
+        None
+    }
+
+    field "TITLE1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Portfolio Evaluation - Trade Date\""
+    }
+
+    field "PAGE" {
+        comma-separator: false
+        operation: break-line 0
+    }
+
+    field "PORTFOLIO.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"A/C\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "Z" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DASH" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "SPACE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "REF.CUR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.SC.VAL.PARAM"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Reference Ccy\""
+    }
+
+    field "REF.CCY" {
+        label {
+            en = "Reference Ccy"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 21
+            line: 2
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.CURRENCY" false
+    }
+
+    field "SEC.ACC" {
+        label {
+            en = "A/C"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 1
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "SEC.NME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 1
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: extract from 1 to 1 delimited by "-"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" true
+    }
+
+    field "BLANKS" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 24
+            line: 19
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.CCY"
+    }
+
+    field "SEC.CODE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "NOM.VAL" {
+        label {
+            en = "Nominal/Quantity"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "NAME.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NAME.DATE"
+    }
+
+    field "LQ.YEAR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "NAME.DATE"
+        conversion: extract from 1 to 4
+    }
+
+    field "LQ.MONTH" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "NAME.DATE"
+        conversion: extract from 5 to 2
+    }
+
+    field "DASH.DATEA" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "LQ.YEAR":"SPACE"
+    }
+
+    field "DASH.DATEB" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "DASH.DATEA":"LQ.MONTH"
+    }
+
+    field "SPACE.NAME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SPACE":"DASH.DATEB"
+    }
+
+    field "DESC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SEC.CODE"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" true
+    }
+
+    field "NM.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "DE.MN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "DESC":"SPACE.NAME"
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 24
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SEC.CODE"
+    }
+
+    field "DESC.NAM" {
+        comma-separator: false
+        position {
+            column: 24
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: if "NM.DATE" NotEquals "NULL" process "NM.DATE" "DE.MN"
+    }
+
+    field "COST" {
+        label {
+            en = "Cost Price"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 3
+        position {
+            column: 38
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "COST.PRICE"
+    }
+
+    field "MARKET" {
+        label {
+            en = "Market Price"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: true
+        decimals: 3
+        position {
+            column: 49
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MARKET.PRICE"
+    }
+
+    field "REF.CR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.CURRENCY" false
+    }
+
+    field "EST" {
+        label {
+            en = "Estimation"
+        }
+
+        format: Currency "REF.CR" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ESTIMATION"
+        conversion: call
+        jBC: "@ E.SC.VAL.RATE"
+    }
+
+    field "INT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACCRUED.INT"
+        conversion: call
+        jBC: "@ E.SC.VAL.RATE"
+    }
+
+    field "F.INT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "INT"
+    }
+
+    field "INT.LIT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"ACCRUED INTEREST SINCE\""
+    }
+
+    field "IN.LIT" {
+        comma-separator: false
+        position {
+            column: 24
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: if "INT" NotEquals "ZERO" process "INT.LIT" "NULL"
+    }
+
+    field "ACCRUAL.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INTEREST.DATE"
+        conversion: julian
+        conversion: oconv "D2/E"
+    }
+
+    field "D.ACCRUAL.DATE" {
+        comma-separator: false
+        position {
+            column: 48
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: if "INT" NotEquals "ZERO" process "ACCRUAL.DATE" "NULL"
+    }
+
+    field "D.INT" {
+        format: Currency "REF.CR" negative-pattern -#
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 67
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: field-extract "F.INT"
+        conversion: call
+        jBC: "@ E.SC.VAL.INTEREST"
+    }
+
+    field "MAT.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "HELD.SINCE"
+        conversion: extract from 11 to 8
+    }
+
+    field "MAT.DATEY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "MAT.DATE"
+        conversion: julian
+        conversion: oconv "D2/E"
+    }
+
+    field "MAT.LIT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"MATURITY DATE\""
+    }
+
+    field "D.MAT.LIT" {
+        comma-separator: false
+        position {
+            column: 24
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: if "MAT.DATE" NotEquals "NULL" process "MAT.LIT" "NULL"
+    }
+
+    field "D.MAT.DATE" {
+        comma-separator: false
+        position {
+            column: 48
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: if "MAT.DATE" NotEquals "NULL" process "MAT.DATEY" "NULL"
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "B.ID" {
+        comma-separator: false
+        operation: break-change "ID"
+    }
+
+    field "B.SEC" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "SEC.ACC"
+    }
+
+    field "TOT.LIT" {
+        break-condition {
+            field: "B.ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 24
+        }
+
+        operation: constant "\"TOTAL\""
+    }
+
+    field "CUST.GR" {
+        label {
+            en = "Cust Gr"
+        }
+
+        break-condition {
+            field: "B.ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "."
+        conversion: getFrom "SUB.ASSET.TYPE" "SHORT.DESCR" true
+    }
+
+    field "TOT.CUST" {
+        label {
+            en = "Tot Cust"
+        }
+
+        format: Currency "REF.CCY" negative-pattern -# break-condition {
+            field: "B.ID"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+        }
+
+        operation: total "EST"
+    }
+
+    field "BLANK" {
+        break-condition {
+            field: "B.ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "P.LIT1" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 26
+            line: 5
+        }
+
+        operation: constant "\"PORTFOLIO TOTAL\""
+    }
+
+    field "PORT.TOT" {
+        format: Currency "REF.CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+            line: 5
+        }
+
+        operation: total "EST"
+    }
+
+    field "P.LIT2" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 26
+            line: 6
+        }
+
+        operation: constant "\"ACCRUED INTEREST\""
+    }
+
+    field "TOT.INT" {
+        format: Currency "REF.CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 62
+            line: 6
+        }
+
+        operation: total "INT"
+    }
+
+    field "P.LIT3" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 26
+            line: 7
+        }
+
+        operation: constant "\"TOTAL INCL. ACCRUED INTEREST\""
+    }
+
+    field "ALL.TOT" {
+        format: Currency "REF.CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+            line: 7
+        }
+
+        operation: calc "PORT.TOT" + "TOT.INT"
+    }
+
+    field "SEC.ACC.SUFFIX" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: i-desc "SEC.ACC.SUFFIX"
+    }
+
+    field "MARGIN.PORT.TYPE" {
+        comments: "Returns REPO or RESO"
+        format: User break-condition {
+            break: End
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "SEC.ACC.SUFFIX"
+        conversion: call
+        jBC: "@ E.SC.DETERMINE.MRGN.PORT.TYPE"
+    }
+
+    field "SIGN.MARGIN.PORT" {
+        comments: "Sign according to repo or reso in order to determine margin call" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "MARGIN.PORT.TYPE"
+        conversion: replace {
+            oldData: "\"\""
+            newData: "0"
+        }
+
+        conversion: replace {
+            oldData: "REPO"
+            newData: "1"
+        }
+
+        conversion: replace {
+            oldData: "RESO"
+            newData: "-1"
+        }
+
+    }
+
+    field "MARGIN.CALL" {
+        comments: "If result GT 0 then call margin i.e. (if REPO and total GT 0) or (if RESO and total LT 0)"
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "SIGN.MARGIN.PORT" * "ALL.TOT"
+    }
+
+    field "WARNING.LIT" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"*** INSUFFICIENT COLLATERAL ***\""
+    }
+
+    field "D.WARNING.LIT" {
+        break-condition {
+            break: End
+        }
+
+        length: 34
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 26
+            line: 10
+        }
+
+        processing-mode: Single
+        operation: if "MARGIN.CALL" Greater "ZERO" process "WARNING.LIT" "NULL"
+    }
+
+    field "VAL.SEL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.NO"
+        conversion: call
+        jBC: "@ E.SC.VAL.SELECTION"
+    }
+
+    field "ENQ.NAME" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "VAL.SEL"
+        conversion: extract from 1 to 1 delimited by "~"
+    }
+
+    field "ENQ.SEL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "VAL.SEL"
+        conversion: extract from 2 to 1 delimited by "~"
+        conversion: extract from 1 to 1 delimited by "+"
+    }
+
+    field "ENQ.SEL2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "VAL.SEL"
+        conversion: extract from 2 to 1 delimited by "~"
+        conversion: extract from 2 to 1 delimited by "+"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transaction Details"
+        }
+
+        label-field: "CCY"
+        image: "view.gif"
+        criteria: "ENQ.SEL"
+        criteria: "ENQ.SEL2"
+        from-field: "ENQ.NAME"
+    }
+
+}

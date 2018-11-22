@@ -1,0 +1,147 @@
+Enquiry "AA.AB.ARRANGEMENT.NAU.TAB" for "name:/AA_Framework:AA.ARRANGEMENT.ACTIVITY$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Find Unauthorised Arrangements"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "ACTIVITY.CLASS" {
+        Matches "BUNDLE...NEW..."
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT" {
+            label {
+                en = "Arrangement ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Description"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+        conversion: value 1 1
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer #"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+    }
+
+    field "PRODUCT.LINE" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "C.OVER" {
+        comma-separator: false
+        operation: constant "\"COS AB.OVERVIEW.ARRANGEMENTS.NAU \""
+    }
+
+    field "C.OVERVIEW" {
+        comma-separator: false
+        operation: calc "C.OVER":"ARRANGEMENT"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Overview"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "view.gif"
+        from-field: "C.OVERVIEW"
+    }
+
+    attributes: "ALLDATA"
+}

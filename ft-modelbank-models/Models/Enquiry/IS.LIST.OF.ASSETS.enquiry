@@ -1,0 +1,82 @@
+Enquiry "IS.LIST.OF.ASSETS" for "name:/EB_Template:EB.LOOKUP#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of Asset Types"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        BeginsWith "IS.ASSET.TYPE..."
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"List of Assets\""
+    }
+
+    field "DESCRIPTION" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "DATA.VALUE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DATA.VALUE"
+    }
+
+    field "NEW.DEAL" {
+        comma-separator: false
+        operation: constant "\" I F3\""
+    }
+
+    field "CONCAT.NEW" {
+        comma-separator: false
+        operation: calc "DATA.VALUE":"NEW.DEAL"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Asset records available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "New"
+        }
+
+        label-field: "DESCRIPTION"
+        image: "new.gif"
+        from-field: "CONCAT.NEW"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

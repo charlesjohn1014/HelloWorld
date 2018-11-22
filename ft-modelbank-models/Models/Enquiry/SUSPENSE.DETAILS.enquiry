@@ -1,0 +1,339 @@
+Enquiry "SUSPENSE.DETAILS" for "name:/AC_ValueDatedProcess:SUSPENSE.HISTORY#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Suspense Movement Details"
+        }
+
+        column: 30
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Booked"
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Account/P&L"
+        }
+
+        column: 11
+        line: 2
+    }
+
+    header {
+        label {
+            en = "SYS"
+        }
+
+        column: 28
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Valued"
+        }
+
+        column: 33
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CCY"
+        }
+
+        column: 41
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Foreign"
+        }
+
+        column: 53
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Local"
+        }
+
+        column: 70
+        line: 2
+    }
+
+    description {
+        en = "SUSPENSE.DETAILS"
+    }
+
+    start-line: 4
+    end-line: 19
+
+    field "@ID" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LCCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "SYSTEM.ID" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SYSTEM.ID"
+    }
+
+    field "SUSPENSE.CATEGORY" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SUSPENSE.CATEGORY"
+    }
+
+    field "BOOKING.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BOOKING.DATE"
+    }
+
+    field "SUSPNSE.VALUE.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SUSPNSE.VALUE.DATE"
+    }
+
+    field "SUSPENSE.ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 13
+    }
+
+    field "B.SUSPENSE.ID" {
+        comma-separator: false
+        operation: break-change "SUSPENSE.ID"
+    }
+
+    field "B.SUSCAT" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "SUSPENSE.CATEGORY"
+    }
+
+    field "H.SUSCAT" {
+        break-condition {
+            break: Page
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: field-extract "SUSPENSE.CATEGORY"
+    }
+
+    field "H.DESC" {
+        break-condition {
+            break: Page
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 22
+            line: 1
+        }
+
+        operation: field-extract "SUSPENSE.CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" true
+    }
+
+    field "D.BOOKING.DATE" {
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "BOOKING.DATE"
+        conversion: julian
+        conversion: oconv "D2E"
+        conversion: convert {
+            oldData: " "
+        }
+
+    }
+
+    field "ACCOUNT.NUMBER" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NUMBER"
+    }
+
+    field "PL" {
+        length: 8
+        alignment: Left
+        comma-separator: false
+        fmtMask: "PL######"
+        processing-mode: Single
+        operation: application-field-name "PL.CATEGORY"
+    }
+
+    field "D.PL.CATEGORY" {
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: if "ACCOUNT.NUMBER" NotEquals "NULL" process "ACCOUNT.NUMBER" "PL"
+    }
+
+    field "SYSTEM.ID.02" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SYSTEM.ID"
+    }
+
+    field "VALUE.DATE" {
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 33
+        }
+
+        operation: application-field-name "VALUE.DATE"
+        conversion: julian
+        conversion: oconv "D2E"
+        conversion: convert {
+            oldData: " "
+        }
+
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT.FCY" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.FCY"
+    }
+
+    field "AMOUNT.LCY" {
+        format: Currency "LCCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LCY"
+    }
+
+    field "TEXT1" {
+        break-condition {
+            field: "B.SUSPENSE.ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: constant "\"Suspense movement\""
+    }
+
+    field "T.AMOUNT.LCY" {
+        format: Currency "LCCY" negative-pattern -# break-condition {
+            field: "B.SUSPENSE.ID"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        escapeSequence: RV
+        position {
+            column: 60
+        }
+
+        operation: total "AMOUNT.LCY"
+    }
+
+    drilldown "1" {
+        label-field: "D.BOOKING.DATE" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "SUSPENSE.HISTORY"
+    }
+
+}

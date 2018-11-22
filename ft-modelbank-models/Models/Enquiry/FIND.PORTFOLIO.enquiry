@@ -1,0 +1,314 @@
+Enquiry "FIND.PORTFOLIO" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Find Portfolio"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NUMBER" {
+            label {
+                en = "Client No"
+            }
+
+        }
+
+        AND
+
+        field "SUB.ACCOUNT" {
+            label {
+                en = "Sub Account"
+            }
+
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.NAME" {
+            label {
+                en = "Account Name"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account Officer"
+            }
+
+        }
+
+        AND
+
+        field "REFERENCE.CURRENCY" {
+            label {
+                en = "Ref Ccy"
+            }
+
+        }
+
+        AND
+
+        field "VALUATION.AMT" {
+            label {
+                en = "Valuation Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Portfolio Id"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Portfolio Details\""
+    }
+
+    field "CUSTOMER.NUMBER" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NUMBER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Officer"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "INVESTMENT.PROGRAM" {
+        label {
+            en = "Investment Program"
+        }
+
+        format: User
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INVESTMENT.PROGRAM"
+        conversion: getFrom "INVESTMENT.PROGRAM" "DESCRIPTION" false
+    }
+
+    field "MANAGED.ACCOUNT" {
+        label {
+            en = "Managed Account"
+        }
+
+        format: User
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MANAGED.ACCOUNT"
+        conversion: getFrom "MANAGED.ACCOUNT" "DESCRIPTION" false
+    }
+
+    field "DEFAULT.DEPO" {
+        label {
+            en = "Depository"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "DEFAULT.DEPO"
+    }
+
+    field "SUB.ACCOUNT" {
+        label {
+            en = "Sub Account"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SUB.ACCOUNT"
+    }
+
+    field "SUB.ACC.EXT.ID" {
+        label {
+            en = "Sub Acct Ext ID"
+        }
+
+        display-type: "ALPHANUMERIC"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 63
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "SUB.ACC.EXT.ID"
+    }
+
+    field "REF.CCY" {
+        label {
+            en = "Reference Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        column-width: 10
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.CURRENCY"
+    }
+
+    field "VALUATION.AMT" {
+        label {
+            en = "Valuation Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "REF.CCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 80
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "VALUATION.AMT"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Portfolio details to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Portfolio Overview"
+        }
+
+        label-field: "@ID"
+        image: "custscv.gif" parameters {
+            field: "@ID"
+        }
+
+        composite-screen: "PORTFOLIO.OVERVIEW"
+    }
+
+}

@@ -1,0 +1,208 @@
+Enquiry "AC.EXP.WAITING" for "name:/AC_ExpectedReceipts:AC.EXPECTED.RECS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Expected Funds Waiting Match"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "STATUS" {
+        Equals "W", "OR", "STATUS", "EQ", "P"
+    }
+
+    fixed-selection "FUNDS.TYPE" {
+        Equals "ER"
+    }
+
+    fixed-sort: "ACCOUNT.ID" Null
+    fixed-sort: "VALUE.DATE" Null
+    fixed-sort: "AMOUNT" Null
+    custom-selection {
+
+        field "ACCOUNT.ID" {
+            label {
+                en = "Account"
+            }
+
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT" {
+            label {
+                en = "Amount"
+            }
+
+        }
+
+        AND
+
+        field "ORD.CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Records waiting Match\""
+    }
+
+    field "ID" {
+        label {
+            en = "Record ID"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCOUNT.ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.ID"
+    }
+
+    field "ORD.CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ORD.CUSTOMER"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "CCY.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 87
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CCY.AMOUNT"
+    }
+
+    field "DATE.ENTERED" {
+        label {
+            en = "Input Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 107
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.ENTERED"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 128
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+        conversion: getFrom "AC.ENRICHMENT" "ENRICHMENT DESCRIPTION" false
+    }
+
+    field "ZERONORECORDS" {
+        comma-separator: false
+        operation: constant "\"No Expected receipts waiting\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "AC.EXPECTED.RECS,AUTO"
+    }
+
+    attributes: "REMOVE"
+}

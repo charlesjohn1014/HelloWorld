@@ -1,0 +1,180 @@
+Enquiry "CUS.ACCT.LIST" for "name:/AC_ModelBank:NOFILE.CUSTOMER.MASS.BLOCK#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Customer Mass Block Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.ID" {
+            label {
+                en = "Customer ID"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.ID" {
+            label {
+                en = "Account ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "BLOCK.ID" {
+        label {
+            en = "Block ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "|"
+    }
+
+    field "CUS1" {
+        comma-separator: false
+        operation: selection "CUSTOMER.ID"
+    }
+
+    field "POSTING.RESTRICT" {
+        label {
+            en = "Posting Restriction"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "|"
+        conversion: getFrom "POSTING.RESTRICT" "DESCRIPTION" false
+    }
+
+    field "BLOCKING.CODE" {
+        label {
+            en = "Blocking Code"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "|"
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "|"
+    }
+
+    field "END.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "|"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "VER1" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER.MASS.BLOCK,MASS.UNBLOCK\""
+    }
+
+    field "VER2" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER.MASS.BLOCK,AC.EXCLUDE.UNBLOCK\""
+    }
+
+    field "VERDEC" {
+        comma-separator: false
+        operation: if "CUS1" NotEquals "NULL" process "VER1" "VER2"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No record available for the selection criteria\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "BLOCK.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "BLOCK.ID"
+        }
+
+        from-field: "VERDEC"
+    }
+
+    security {
+        application: "CUSTOMER.MASS.BLOCK"
+        field: "BLOCK.ID"
+    }
+
+}

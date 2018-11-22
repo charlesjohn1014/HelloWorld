@@ -1,0 +1,333 @@
+Enquiry "AA.DETAILS.CHARGES" for "name:/AA_ModelBank:NOFILE.AA.CHARGE.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Charges"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "AMOUNT" Descending
+
+    field "ZERO" {
+        display-type: "CLASS-BOLD.RED"
+        format: Translate break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+        }
+
+        column-width: 180
+        processing-mode: Single
+        operation: constant "\"No Charges to Display\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 85
+        operation: constant "\"\""
+    }
+
+    field "C.NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\'\'\""
+    }
+
+    field "SP" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "ZERO.02" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "S.SIM.REF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "SIM.REF"
+    }
+
+    field "SIM" {
+        comma-separator: false
+        operation: if "S.SIM.REF" Equals "NULL" process "C.NULL" "S.SIM.REF"
+    }
+
+    field "ARR.CHARGE.ID" {
+        length: 200
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.CHARGE.ID"
+        conversion: call
+        jBC: "@ E.AA.FORMAT.ENQUIRY.DATA"
+    }
+
+    field "ARR" {
+        comma-separator: false
+        operation: field-extract "ARR.CHARGE.ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ARR.CCY" {
+        comma-separator: false
+        operation: field-extract "ARR"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "PROP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARR.CHARGE.ID"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "PC" {
+        comma-separator: false
+        operation: field-extract "PROP"
+        conversion: getFrom "AA.PROPERTY" "PROPERTY.CLASS" false
+    }
+
+    field "L.DATE" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 85
+        operation: constant "\"Date\""
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 85
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.DATE"
+    }
+
+    field "L.TYPE" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 180
+        operation: constant "\"Description\""
+    }
+
+    field "TYPE" {
+        label {
+            en = "Fee Type"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 180
+        operation: field-extract "PROP"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "BILL" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BILL.ID"
+    }
+
+    field "L.AMOUNT" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 80
+        operation: constant "\"Amount\""
+    }
+
+    field "AMOUNT" {
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "ADJ.AMOUNT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ADJUSTMENT.AMOUNT"
+    }
+
+    field "D.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 80
+        operation: calc "AMOUNT" + "ADJ.AMOUNT"
+    }
+
+    field "CALC.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHG.CALC.TYPE"
+    }
+
+    field "CHARGE.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 25
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.TYPE"
+        conversion: replace {
+            oldData: "DEBIT"
+        }
+
+        conversion: replace {
+            oldData: "CREDIT"
+            newData: "CR"
+        }
+
+    }
+
+    field "ADJUSTED" {
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 50
+        operation: if "AMOUNT" NotEquals "D.AMOUNT" process "\"(Adj)\""
+    }
+
+    field "PAD" {
+        length: 200
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        column-width: 115
+        operation: constant "\" \""
+    }
+
+    field "C.COS.CHARGES.PC" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.CHARGES.PC \""
+    }
+
+    field "COS.CHARGES.PC" {
+        comma-separator: false
+        operation: calc "C.COS.CHARGES.PC":"ARR":"SP":"SIM":"SP":"BILL.ID":"SP":"PROP"
+    }
+
+    field "ENQ.CHARGE.DETAILS" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.CHARGES.DETAILS\""
+    }
+
+    field "AA.DETAILS.CHARGES" {
+        comma-separator: false
+        operation: if "PC" Equals "\"PERIODIC.CHARGES\"" process "COS.CHARGES.PC" "ENQ.CHARGE.DETAILS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "TYPE"
+        image: "view.gif"
+        criteria: "ARR.ID" Equals "ARR"
+        criteria: "BILL.REFERENCE" Equals "BILL"
+        criteria: "PROPERTY" Equals "PROP"
+        criteria: "SIM.REF" Equals "S.SIM.REF"
+        from-field: "AA.DETAILS.CHARGES"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

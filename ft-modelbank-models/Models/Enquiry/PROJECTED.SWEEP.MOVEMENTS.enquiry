@@ -1,0 +1,193 @@
+Enquiry "PROJECTED.SWEEP.MOVEMENTS" for "name:/PO_Cashpooling:NOFILE.PROJECTED.SWEEP.MOVEMENTS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Projected Sweep Movements"
+    }
+
+    description {
+        en = "Projected Sweep Movements"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "INFO.CP.RECORDS" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Group Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "HEAD" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Projected Sweep movements\""
+    }
+
+    field "GROUP ID" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Group Id :\""
+    }
+
+    field "Y.GROUP" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        operation: selection "@ID"
+    }
+
+    field "L.DATE" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Next Sweep Date :\""
+    }
+
+    field "Y.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "L.CURRENCY" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Currency :\""
+    }
+
+    field "Y.CURRENCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 3
+        }
+
+        operation: field-extract "Y.GROUP"
+        conversion: getFrom "AC.CP.GROUP.PARAM" "CURRENCY" false
+    }
+
+    field "V.FROM.ACCT" {
+        label {
+            en = "From Acct"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "V.TO.ACCT" {
+        label {
+            en = "To Acct"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "V.AMOUNT" {
+        label {
+            en = "Sweep Movement"
+        }
+
+        format: Currency "Y.CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "V.DATE" {
+        label {
+            en = "Date"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records To Display \""
+    }
+
+}

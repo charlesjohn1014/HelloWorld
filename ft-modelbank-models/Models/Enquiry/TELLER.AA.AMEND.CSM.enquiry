@@ -1,0 +1,288 @@
+Enquiry "TELLER.AA.AMEND.CSM" for "name:/TT_Contract:TELLER$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Modify AA Cash Transactions"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5 fixed-selection "TRANSACTION.CODE" {
+        Equals "85", "86", "87"
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "IHLD", "INAU"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY.1" {
+            label {
+                en = "Ccy"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.1" {
+            label {
+                en = "Account"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT.LOCAL.1" {
+            label {
+                en = "Amount Lcy"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT.FCY.1" {
+            label {
+                en = "Amount Fcy"
+            }
+
+        }
+
+        AND
+
+        field "INPUTTER" {
+            label {
+                en = "Inputter"
+            }
+
+        }
+
+        AND
+
+        field "RECORD.STATUS" {
+            label {
+                en = "Record Status"
+            }
+
+        }
+
+        AND
+
+        field "DATE.TIME" {
+            label {
+                en = "Date time"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER.MAIN" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Modify AA Cash Transactions\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Txn ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY.1"
+    }
+
+    field "ACCOUNT" {
+        label {
+            en = "Arrangement Id"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.2"
+    }
+
+    field "AMOUNT.LCY" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT.LOCAL.1"
+    }
+
+    field "AMOUNT.FCY" {
+        length: 21
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT.FCY.1"
+    }
+
+    field "LCCY" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: if "CURRENCY" Equals "LCCY" process "AMOUNT.LCY" "AMOUNT.FCY"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "VER.FINAL" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: call
+        jBC: "@ E.MB.TELLER.GEN.VERSIONS"
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Pending Transactions\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "VER.FINAL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "VER.FINAL"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "VER.FINAL"
+    }
+
+}

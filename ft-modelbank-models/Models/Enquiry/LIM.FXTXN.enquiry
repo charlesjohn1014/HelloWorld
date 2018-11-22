@@ -1,0 +1,220 @@
+Enquiry "LIM.FXTXN" for "name:/LI_LimitTransaction:LIMIT.DAILY.OS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Limit - FX MM Contracts"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "CREDIT.LINE.NO" {
+            label {
+                en = "Credit Line Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Limit FX & MM Contracts\""
+    }
+
+    field "BS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\\\""
+    }
+
+    field "TXN.CO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.REF.COMPANY"
+    }
+
+    field "TXN.REF" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.REFERENCE"
+    }
+
+    field "TXN.REF.BS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "TXN.REF":"BS"
+    }
+
+    field "TXN.REF.CO" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: calc "TXN.REF.BS":"TXN.CO"
+    }
+
+    field "CCY.BUY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.CURRENCY"
+    }
+
+    field "CCY.SELL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "OTHER.CURRENCY"
+    }
+
+    field "D.BUY" {
+        label {
+            en = "Buy Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CCY.BUY"
+    }
+
+    field "AMT.BUY" {
+        label {
+            en = "Buy Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY.BUY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TXN.AMOUNT"
+    }
+
+    field "C.SELL" {
+        label {
+            en = "Sell Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CCY.SELL"
+    }
+
+    field "AMT.SELL" {
+        label {
+            en = "Sell Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY.SELL" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OTHER.AMOUNT"
+    }
+
+    field "V.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 66
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 5 to 0 delimited by "."
+    }
+
+    field "NEXT.APPL" {
+        comments: "Next level"
+        comma-separator: false
+        operation: field-extract "TXN.REF.CO"
+        conversion: extract from 1 to 2
+        conversion: replace {
+            oldData: "FX"
+            newData: "FOREX"
+        }
+
+        conversion: replace {
+            oldData: "MM"
+            newData: "MM.MONEY.MARKET"
+        }
+
+        conversion: replace {
+            oldData: "ND"
+            newData: "ND.DEAL"
+        }
+
+    }
+
+    field "NEXT.APPL1" {
+        comma-separator: false
+        operation: field-extract "TXN.REF.CO"
+        conversion: extract from 1 to 4
+        conversion: replace {
+            oldData: "FXLO"
+            newData: "FX.LIM.ORDER"
+        }
+
+    }
+
+    field "DEC1" {
+        comma-separator: false
+        operation: if "NEXT.APPL1" Equals "\"FX.LIM.ORDER\"" process "NEXT.APPL1" "NEXT.APPL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Transaction"
+        }
+
+        label-field: "V.DATE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "TXN.REF.CO"
+        }
+
+        from-field: "DEC1"
+    }
+
+}

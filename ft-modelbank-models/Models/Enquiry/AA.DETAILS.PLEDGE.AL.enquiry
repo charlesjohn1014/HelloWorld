@@ -1,0 +1,365 @@
+Enquiry "AA.DETAILS.PLEDGE.AL" for "name:/LI_Config:LIMIT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Summary of collateral vs. limits for a customer"
+    }
+
+    description {
+        en = "Limit Summary"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "LIABILITY.NUMBER" {
+            label {
+                en = "Liability Number"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+        }
+
+        None
+    }
+
+    field "LIMIT.ID" {
+        label {
+            en = "Limit Ref"
+        }
+
+        length: 32
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Pledge Details\""
+    }
+
+    field "LIABILITY.NUMBER" {
+        label {
+            en = "Liability"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.NUMBER"
+    }
+
+    field "CUSTOMER.ID" {
+        comma-separator: false
+        operation: field-extract "LIMIT.ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "BK" {
+        comma-separator: false
+        operation: break-change "CUSTOMER.ID"
+    }
+
+    field "CUSTOMER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 12
+            line: + 1
+        }
+
+        operation: constant "\"Pledge Cust\""
+    }
+
+    field "CUSTOMER.NAME" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "LIMIT.PRODUCT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.PRODUCT"
+    }
+
+    field "LIMIT.NO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "LIMIT.ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "CURR" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 5
+            line: + 1
+        }
+
+        operation: constant "\"Ccy\""
+    }
+
+    field "LIMIT.CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "ONLINE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 6
+            line: + 1
+        }
+
+        operation: constant "\"O/L Limit\""
+    }
+
+    field "ONLINE.LIMIT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ONLINE.LIMIT"
+        conversion: value 1
+    }
+
+    field "FIXED" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 7
+            line: + 1
+        }
+
+        operation: constant "\"Fixed/Variable\""
+    }
+
+    field "FV" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FIXED.VARIABLE"
+        conversion: replace {
+            oldData: "FIXED"
+            newData: " Fixed"
+        }
+
+        conversion: replace {
+            oldData: "VARIABLE"
+            newData: " Variable"
+        }
+
+    }
+
+    field "SEC.AMT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 8
+            line: + 1
+        }
+
+        operation: constant "\"Secure Amt\""
+    }
+
+    field "SECURED.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURED.AMT"
+        conversion: call
+        jBC: "@ E.SUM"
+        conversion: call
+        jBC: "@ E.SUM"
+    }
+
+    field "ACCOUNT.OS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.LIMIT.ACCOUNT.OS"
+    }
+
+    field "TOTAL.OS" {
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOTAL.OS"
+        conversion: value 1
+    }
+
+    field "AVAIL.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AVAIL.AMT"
+        conversion: value 1
+    }
+
+    field "OS.AMT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 9
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"O/S Amt\""
+    }
+
+    field "OS" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: calc "TOTAL.OS" + "ACCOUNT.OS"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "AVAILABLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        operation: constant "\"Avail/Excess\""
+    }
+
+    field "AVAIL.EXCESS" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: calc "AVAIL.AMT" + "ACCOUNT.OS"
+    }
+
+    field "ACCOUNT" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT"
+    }
+
+    field "PLEDGE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 11
+            line: + 1
+        }
+
+        operation: constant "\"Pledge Amt\""
+    }
+
+    field "PLEDGE.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 11
+            line: + 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACCOUNT"
+        conversion: getFrom "ACCOUNT" "WORKING.BALANCE" false
+        conversion: abs
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records to Display\""
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

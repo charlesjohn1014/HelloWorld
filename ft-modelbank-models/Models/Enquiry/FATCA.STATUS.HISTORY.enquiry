@@ -1,0 +1,383 @@
+Enquiry "FATCA.STATUS.HISTORY" for "name:/FA_CustomerIdentification:FATCA.FCSI.AMENDMENTS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "FATCA Classification Change-History"
+    }
+
+    description {
+        en = "Classification Change-History"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "RM.ID" {
+        label {
+            en = "RM Id"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"FATCA Classification Change-History\""
+    }
+
+    field "NAME" {
+        label {
+            en = "RM Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "RM.ID"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "RM.AREA" {
+        label {
+            en = "RM Market"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        operation: field-extract "RM.ID"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 92
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CLIENT.TYPE" {
+        label {
+            en = "Client Type"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 129
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "FATCA.CUSTOMER.SUPPLEMENTARY.INFO" "CLIENT.TYPE" false
+        conversion: getFrom "FATCA.CUSTOMER.TYPE" "DESCRIPTION" false
+    }
+
+    field "EFFECTIVE.DATE" {
+        label {
+            en = "Change Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "FATCA.STATUS" {
+        label {
+            en = "Classification"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 166
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FATCA.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "EFFECTIVE.DATE.02" {
+        label {
+            en = "Change Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 203
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "FCSI.CURR.NO" {
+        label {
+            en = "Curr No"
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "FCSI.CURR.NO"
+    }
+
+    field "F.CURR.NO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "FATCA.CUSTOMER.SUPPLEMENTARY.INFO" "CURR.NO" false
+    }
+
+    field "F.REASON" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "FATCA.CUSTOMER.SUPPLEMENTARY.INFO" "CHANGE.REASON" false
+    }
+
+    field "F.INPUT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "FATCA.CUSTOMER.SUPPLEMENTARY.INFO" "INPUTTER" false
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "F.AUTH" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "FATCA.CUSTOMER.SUPPLEMENTARY.INFO" "AUTHORISER" false
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "C.NO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "FCSI.CURR.NO"
+    }
+
+    field "C1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\";\""
+    }
+
+    field "ID1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "@ID"
+    }
+
+    field "F.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "ID1":"C1":"C.NO"
+    }
+
+    field "REASON" {
+        label {
+            en = "Change Reason"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "F.ID"
+        conversion: getFrom "FATCA.CUSTOMER.SUPPLEMENTARY.INFO$HIS" "CHANGE.REASON" false
+    }
+
+    field "INPUT" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "F.ID"
+        conversion: getFrom "FATCA.CUSTOMER.SUPPLEMENTARY.INFO$HIS" "INPUTTER" false
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "AUTH" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "F.ID"
+        conversion: getFrom "FATCA.CUSTOMER.SUPPLEMENTARY.INFO$HIS" "AUTHORISER" false
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "CHANGE.REASON" {
+        label {
+            en = "Change Reason"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 242
+        }
+
+        processing-mode: Multi
+        operation: if "C.NO" Equals "F.CURR.NO" process "F.REASON" "REASON"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 279
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: if "C.NO" Equals "F.CURR.NO" process "F.INPUT" "INPUT"
+    }
+
+    field "AUTHORISER" {
+        label {
+            en = "Authoriser"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 317
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: if "C.NO" Equals "F.CURR.NO" process "F.AUTH" "AUTH"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available for current selection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CUST.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CUST.ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Hist Record"
+        }
+
+        label-field: "FATCA.STATUS"
+        image: "details.gif" parameters {
+            function:  See
+            field: "F.ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+}

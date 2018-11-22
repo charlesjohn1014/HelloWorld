@@ -1,0 +1,390 @@
+Enquiry "CDP.REQUEST.CAPTURE" for "name:/CZ_Framework:CZ.CDP.REQUEST.CAPTURE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Expiring Record Details"
+    }
+
+    description {
+        en = "Request Capture Records"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 20 fixed-selection "REQUEST.COMPLETED" {
+        NotEquals "YES"
+    }
+
+    fixed-selection "CURR.EXP.DATE" {
+        GreaterOrEquals "!TODAY"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Request ID"
+            }
+
+        }
+
+        AND
+
+        field "REQUEST.TYPE" {
+            label {
+                en = "Request Type"
+            }
+
+        }
+
+        AND
+
+        field "PARTY.ID" {
+            label {
+                en = "Party ID"
+            }
+
+        }
+
+        AND
+
+        field "CURR.EXP.DATE" {
+            label {
+                en = "Current Expiry Date"
+            }
+
+        }
+
+        AND
+
+        field "REQUEST.STATUS" {
+            label {
+                en = "Request Status"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Request Capture Records\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Request No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "REQUEST.TYPE" {
+        label {
+            en = "Request Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REQUEST.TYPE"
+    }
+
+    field "PARTY.ID" {
+        label {
+            en = "Party ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PARTY.ID"
+    }
+
+    field "PARTY.APPLICATION" {
+        label {
+            en = "Party Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PARTY.APPLICATION"
+    }
+
+    field "PARTY.NAME" {
+        label {
+            en = "Party Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "PARTY.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "DATE.LOGGED" {
+        label {
+            en = "Date of Request"
+        }
+
+        format: Date
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.LOGGED"
+    }
+
+    field "CURR.EXP.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURR.EXP.DATE"
+    }
+
+    field "CURREXPDT" {
+        label {
+            en = "Current Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "CURR.EXP.DATE"
+    }
+
+    field "DAYS.EXPIRE" {
+        label {
+            en = "Days to Expire"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "CURR.EXP.DATE"
+        conversion: call
+        jBC: "@ E.GET.EXPIRING.DAYS"
+    }
+
+    field "REQUEST.STATUS" {
+        label {
+            en = "Request Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REQUEST.STATUS"
+    }
+
+    field "NEW.ACTION" {
+        label {
+            en = "New Action"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NEW.ACTION"
+    }
+
+    field "REASON" {
+        label {
+            en = "Reason"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACTION.NOTES"
+    }
+
+    field "EXT.VAL1" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "EXT.VAL2" {
+        comma-separator: false
+        operation: constant "\"NO\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "EXTENDED" {
+        label {
+            en = "Request Extended"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: if "NEW.EXP.DATE" NotEquals "NULL" process "EXT.VAL1" "EXT.VAL2"
+    }
+
+    field "REQUEST.COMPLETED" {
+        label {
+            en = "Request Completed"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REQUEST.COMPLETED"
+    }
+
+    field "DATE.COMPLETED" {
+        label {
+            en = "Date Completed"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.COMPLETED"
+    }
+
+    field "NEW.OFFICER" {
+        label {
+            en = "Initiating Officer"
+        }
+
+        length: 55
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "NEW.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "CZ.CDP.REQUEST.CAPTURE,AMEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "CZ.CDP.REQUEST.CAPTURE,AMEND"
+    }
+
+}

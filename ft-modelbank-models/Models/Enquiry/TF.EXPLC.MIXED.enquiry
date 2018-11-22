@@ -1,0 +1,246 @@
+Enquiry "TF.EXPLC.MIXED" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Mixed Payment Under Export LC"
+    }
+
+    description {
+        en = "Mixed Payment Under Export LC"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.EXPDR"
+    }
+
+    fixed-selection "NEW.DRAW.SET" {
+        Equals "NULL"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Drawing Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: constant "\"Mixed Payment Documents\""
+    }
+
+    field "LC.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "LC.OLD.NO" {
+        comma-separator: false
+        operation: field-extract "LC.NO"
+        conversion: getFrom "LETTER.OF.CREDIT" "OLD.LC.NUMBER" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LC.NO.DISPLAY" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "LC.OLD.NO" NotEquals "NULL" process "LC.OLD.NO" "LC.NO"
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: getFrom "LC.TYPES" "PAY.TYPE" false
+    }
+
+    field "NA" {
+        comma-separator: false
+        operation: constant "\"Acceptance\""
+    }
+
+    field "A" {
+        comma-separator: false
+        operation: constant "\"Acceptance\""
+    }
+
+    field "D" {
+        comma-separator: false
+        operation: constant "\"Deferred Payment\""
+    }
+
+    field "MIX" {
+        comma-separator: false
+        operation: constant "\"Mixed Payment\""
+    }
+
+    field "TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "LC.TYPE" Equals "A" process "A" "COND1"
+    }
+
+    field "COND1" {
+        comma-separator: false
+        operation: if "LC.TYPE" Equals "M" process "MIX" "COND2"
+    }
+
+    field "COND2" {
+        comma-separator: false
+        operation: if "LC.TYPE" Equals "D" process "D" "NA"
+    }
+
+    field "CUSTOMER.LINK" {
+        label {
+            en = "Issuing Bank"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.LINK"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NEW.DRAW.SET" {
+        label {
+            en = "Draw Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NEW.DRAW.SET"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Documents pending \""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Mixed Payment "
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,EXMXPYMT"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

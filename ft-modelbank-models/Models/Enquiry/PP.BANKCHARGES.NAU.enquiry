@@ -1,0 +1,327 @@
+Enquiry "PP.BANKCHARGES.NAU" for "name:/PP_FeeDeterminationGUI:PP.BANKCHARGES$NAU#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Sending Bank Our Charges Unauthorised List"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    description {
+        en = "Bank Charges Search"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 19 fixed-selection "SendingOrReceivingBankCharge" {
+        Equals "\'S\'"
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        NotEquals "\'IHLD\'"
+    }
+
+    fixed-sort: "CompanyID" Null
+    fixed-sort: "CorrespondentBIC" Null
+    fixed-sort: "CTRBTRIndicator" Descending
+    fixed-sort: "SLACode" Descending
+    fixed-sort: "CurrencyCode" Descending
+    fixed-sort: "CountryCodeDestination" Descending
+    custom-selection {
+
+        field "CompanyID" {
+            label {
+                en = "Company"
+            }
+
+        }
+
+        AND
+
+        field "CorrespondentBIC" {
+            label {
+                en = "BIC"
+            }
+
+        }
+
+        AND
+
+        field "CTRBTRIndicator" {
+            label {
+                en = "CTR/BTR"
+            }
+
+        }
+
+        AND
+
+        field "SLACode" {
+            label {
+                en = "SLA"
+            }
+
+        }
+
+        AND
+
+        field "CurrencyCode" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "CountryCodeDestination" {
+            label {
+                en = "Destination Country"
+            }
+
+        }
+
+        AND
+
+        field "CommonCurrency" {
+            label {
+                en = "Fee Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "BankChargesID" {
+        label {
+            en = "BankCharges ID"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "BankChargesID"
+    }
+
+    field "ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company Code"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "Correspondent BIC" {
+        label {
+            en = "BIC"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CorrespondentBIC"
+    }
+
+    field "CTRBTR" {
+        label {
+            en = "CTR/BTR"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CTRBTRIndicator"
+    }
+
+    field "SLA" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SLACode"
+    }
+
+    field "Currency" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CurrencyCode"
+    }
+
+    field "Destination Country" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CountryCodeDestination"
+    }
+
+    field "Fee Currency" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CommonCurrency"
+    }
+
+    field "Start Date" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StartDateBankCharges"
+    }
+
+    field "End Date" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EndDateBankCharges"
+    }
+
+    field "Inputter" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INPUTTER"
+    }
+
+    field "Record Status" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "CompanyID"
+        image: "txnauthorise.gif"
+        criteria: "CompanyID" parameters {
+            function:  Authorise
+            field: "ID"
+        }
+
+        screen: "PP.BANKCHARGES,AUTH"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "CompanyID"
+        image: "txndelete.gif"
+        criteria: "CompanyID" parameters {
+            function:  Delete
+            field: "ID"
+        }
+
+        screen: "PP.BANKCHARGES,DELETE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CompanyID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "PP.BANKCHARGES,VIEW"
+    }
+
+}

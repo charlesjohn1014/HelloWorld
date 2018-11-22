@@ -1,0 +1,302 @@
+Enquiry "AM.VAL.GRAPH.COS" for "name:/AM_ModelBank:NOFILE.AM.CUST.DISPLAY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Portfolio Valuation"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DATA.ITEM" {
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            mandatory: true
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "EXTRACT.DATE" {
+            label {
+                en = "Extract Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SUB.ASSET.SA" {
+            label {
+                en = "Sub Asset"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "HIDE.ZERO.POS" {
+            label {
+                en = "Hide Zero Pos"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ONLINE.YNO" {
+            label {
+                en = "Online Y/N"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "OPEN.ORDERS" {
+            label {
+                en = "Open Orders"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "VALUATION.CCY" {
+            label {
+                en = "Valuation Ccy"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "USER.PROMPT" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        column-width: 300
+        operation: constant "\"Valuation Charts\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Data"
+        }
+
+        display-type: "CLASS-DEMO"
+        format: User
+        length: 70
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "PORTFOLI" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 1 delimited by "%"
+        conversion: extract from 1 to 1 delimited by "^"
+    }
+
+    field "PORTFOLIO" {
+        comma-separator: false
+        operation: selection "SAM.NO"
+    }
+
+    field "TD" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: today
+    }
+
+    field "SD" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "@ID"
+        conversion: extract from 10 to 1 delimited by "%"
+    }
+
+    field "ED" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: selection "EXTRACT.DATE"
+    }
+
+    field "XD" {
+        comma-separator: false
+        operation: if "ED" Equals "NULL" process "TD" "ED"
+    }
+
+    field "SASA" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: selection "SUB.ASSET.SA"
+    }
+
+    field "HZP" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: selection "HIDE.ZERO.POS"
+    }
+
+    field "OYNO" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: selection "ONLINE.YNO"
+    }
+
+    field "PTFOT" {
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        operation: constant "\"Portfolio No:\""
+    }
+
+    field "PTFO" {
+        label {
+            en = "Portfolio"
+        }
+
+        display-type: "CLASS-FDCT"
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: selection "SAM.NO"
+    }
+
+    field "1MTH" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 14 to 1 delimited by "%"
+    }
+
+    field "3MTH" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 15 to 1 delimited by "%"
+    }
+
+    field "6MTH" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 16 to 1 delimited by "%"
+    }
+
+    field "1YR" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 17 to 1 delimited by "%"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Pie"
+        }
+
+        label-field: "USER.PROMPT"
+        image: "details.gif"
+        criteria: "SAM.NO" Equals "PORTFOLIO"
+        criteria: "EXTRACT.DATE" Equals "ED"
+        criteria: "SUB.ASSET.SA" Equals "SASA"
+        criteria: "HIDE.ZERO.POS" Equals "HZP"
+        criteria: "ONLINE.YNO" Equals "OYNO"
+        enquiry: "GB.VAL.CHART"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Multipie"
+        }
+
+        label-field: "USER.PROMPT"
+        image: "edit.gif"
+        criteria: "SAM.NO" Equals "PORTFOLIO"
+        criteria: "EXTRACT.DATE" Equals "ED"
+        criteria: "SUB.ASSET.SA" Equals "SASA"
+        criteria: "HIDE.ZERO.POS" Equals "HZP"
+        criteria: "ONLINE.YNO" Equals "OYNO"
+        enquiry: "AM.VAL.MULTIPIE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "%age pie"
+        }
+
+        label-field: "USER.PROMPT"
+        image: "../pie.gif"
+        criteria: "SAM.NO" Equals "PORTFOLIO"
+        criteria: "EXTRACT.DATE" Equals "ED"
+        criteria: "SUB.ASSET.SA" Equals "SASA"
+        criteria: "HIDE.ZERO.POS" Equals "HZP"
+        criteria: "ONLINE.YNO" Equals "OYNO"
+        enquiry: "GB.VAL.CHART.NEW"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Line"
+        }
+
+        label-field: "USER.PROMPT"
+        image: "../../enquiry\\bar.gif"
+        criteria: "SAM.NO" Equals "PORTFOLIO"
+        criteria: "EXTRACT.DATE" Equals "ED"
+        criteria: "SUB.ASSET.SA" Equals "SASA"
+        criteria: "HIDE.ZERO.POS" Equals "HZP"
+        criteria: "ONLINE.YNO" Equals "OYNO"
+        enquiry: "GB.VAL.CHART.LINE"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Bar"
+        }
+
+        label-field: "USER.PROMPT"
+        image: "../../enquiry\\bar.gif"
+        criteria: "SAM.NO" Equals "PORTFOLIO"
+        criteria: "EXTRACT.DATE" Equals "ED"
+        criteria: "SUB.ASSET.SA" Equals "SASA"
+        criteria: "HIDE.ZERO.POS" Equals "HZP"
+        criteria: "ONLINE.YNO" Equals "OYNO"
+        enquiry: "GB.VAL.CHART.BAR"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "HORIZONTAL.DRILLDOWNS"
+}

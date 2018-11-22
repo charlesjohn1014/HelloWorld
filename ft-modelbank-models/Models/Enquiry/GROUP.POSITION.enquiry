@@ -1,0 +1,246 @@
+Enquiry "GROUP.POSITION" for "name:/PO_Cashpooling:NOFILE.GROUP.POSITION#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Simple Group Position"
+    }
+
+    description {
+        en = "Simple Group Position"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 99 fixed-selection "@ID" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "GROUP.NAME" {
+            mandatory: true
+            label {
+                en = "Group Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "VALUE" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\" Group Position \""
+    }
+
+    field "L.GROUP" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Group : \""
+    }
+
+    field "GROUP" {
+        label {
+            en = "Group"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: selection "GROUP.NAME"
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Currency :\""
+    }
+
+    field "V.CURRENCY" {
+        label {
+            en = "CURRENCY"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        operation: field-extract "GROUP"
+        conversion: getFrom "AC.CP.GROUP.PARAM" "CURRENCY" false
+    }
+
+    field "ACCOUNT" {
+        label {
+            en = "MAIN ACCOUNT"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Main Account :\""
+    }
+
+    field "V.ACCOUNT" {
+        label {
+            en = "Account"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 3
+        }
+
+        operation: field-extract "GROUP"
+        conversion: getFrom "AC.CP.GROUP.PARAM" "MAIN.MASTER" false
+    }
+
+    field "L.TOT" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Total Balance:\""
+    }
+
+    field "Y.TOT.BAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "V.CURRENCY" negative-pattern -#
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 4
+        }
+
+        operation: field-extract "VALUE"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "SUB.GROUP" {
+        label {
+            en = "Sub Group"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "VALUE"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SUB.ACCOUNT" {
+        label {
+            en = "Cash Pool Acct"
+        }
+
+        format: User
+        length: 100
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-extract "VALUE"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        format: Currency "V.CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: field-extract "VALUE"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SUB.TOT.BAL" {
+        label {
+            en = "Group Total"
+        }
+
+        display-type: "CLASS-BOLD.RED"
+        format: Currency "V.CURRENCY" negative-pattern -#
+        length: 100
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Multi
+        operation: field-extract "VALUE"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records to Display\""
+    }
+
+}

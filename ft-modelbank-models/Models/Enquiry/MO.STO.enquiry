@@ -1,0 +1,272 @@
+Enquiry "MO.STO" for "name:/AC_StandingOrders:STANDING.ORDER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Standing Orders List"
+    }
+
+    zero-records-display: true
+    show-all-books: true
+    start-line: 4
+    end-line: 19 fixed-selection "K.TYPE" {
+        NotEquals "DD"
+    }
+
+    fixed-sort: "CURRENCY" Null
+    custom-selection {
+
+        field "DEBIT.CUSTOMER" {
+            label {
+                en = "CUSTOMER NUMBER"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "STO.ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "DASH" {
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "STANDING.ORDER" {
+        label {
+            en = "Txn.Reference"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STANDING.ORDER"
+    }
+
+    field "BEN.ACCT.NO" {
+        label {
+            en = "Ben Acct No"
+        }
+
+        length: 34
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BEN.ACCT.NO"
+    }
+
+    field "BENEFICIARY" {
+        label {
+            en = "Beneficiary"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY"
+    }
+
+    field "CPTY.ACCT.NO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CPTY.ACCT.NO"
+    }
+
+    field "ACCT.DESC" {
+        comma-separator: false
+        operation: field-extract "CPTY.ACCT.NO"
+        conversion: call
+        jBC: "@ E.MB.FMT.ACCT"
+    }
+
+    field "ACCT" {
+        format: User
+        comma-separator: false
+        operation: calc "CPTY.ACCT.NO":"DASH":"ACCT.DESC"
+    }
+
+    field "BEN.DETAIL" {
+        label {
+            en = "Ben Detail"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "BEN.ACCT.NO":"HYPHEN":"BENEFICIARY"
+    }
+
+    field "CREDIT.ACCT" {
+        label {
+            en = "Pay To"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: if "BEN.ACCT.NO" Equals "\"\"" process "ACCT" "BEN.DETAIL"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "CURRENT.AMOUNT.BAL" {
+        label {
+            en = "Amount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.AMOUNT.BAL"
+    }
+
+    field "LAST.RUN.DATE" {
+        label {
+            en = "Last Payment"
+        }
+
+        format: Date
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LAST.RUN.DATE"
+    }
+
+    field "CURR.FREQ.DATE" {
+        label {
+            en = "Next Payment"
+        }
+
+        format: Date
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURR.FREQ.DATE"
+    }
+
+    field "CURRENT.FREQUENCY" {
+        label {
+            en = "Frequency"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.FREQUENCY"
+        conversion: extract from 10 to 99
+        conversion: call
+        jBC: "@ E.AA.GET.RECURRENCE.MASK"
+    }
+
+    field "CURRENT.END.DATE" {
+        label {
+            en = "End Date"
+        }
+
+        format: Date
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.END.DATE"
+    }
+
+    field "PAYMENT.DETAILS" {
+        label {
+            en = "Description"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.DETAILS"
+    }
+
+    field "STR1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"STO,MB.AI.CANCEL R\""
+    }
+
+    field "STR2" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "STANDING.ORDER"
+    }
+
+    field "NEXT.ENQ" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "STR1":"STR2"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"You have no standing instructions for display\""
+    }
+
+}

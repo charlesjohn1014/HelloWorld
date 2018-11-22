@@ -1,0 +1,107 @@
+Enquiry "RC.PENDING.TXNS.DETS" for "name:/RC_TransactionCycler:RC.PENDING.TXNS#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 4
+    end-line: 9
+
+    field "ACC.ID" {
+        label {
+            en = "Account Number"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "RC.DET.ID" {
+        length: 100
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RC.DETAIL.ID"
+    }
+
+    field "RC.STATUS" {
+        label {
+            en = "RC Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "RC.DET.ID"
+        conversion: getFrom "RC.DETAIL" "RC.STATUS" false
+    }
+
+    field "RC.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: field-extract "RC.DET.ID"
+        conversion: getFrom "RC.DETAIL" "RETRY.AMT" false
+    }
+
+    field "RET.DATE" {
+        label {
+            en = "Retry Start Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "RC.DET.ID"
+        conversion: getFrom "RC.DETAIL" "RETRY.START.DATE" false
+    }
+
+    field "NEXT.RET.DATE" {
+        label {
+            en = "Next Retry Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "RC.DET.ID"
+        conversion: getFrom "RC.DETAIL" "NEXT.RETRY.DATE" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "ACC.ID"
+        image: "view.gif"
+        criteria: "RC.DET.ID" parameters {
+            function:  See
+            field: "RC.DET.ID"
+        }
+
+        application: "RC.DETAIL"
+    }
+
+}

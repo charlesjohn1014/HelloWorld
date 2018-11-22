@@ -1,0 +1,213 @@
+Enquiry "AP.MONTHLY.PERFORMANCE.REPORT" for "name:/AM_ModelBank:NOFILE.AP.MONTHLY.PERF#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Monthly Perfomance"
+    }
+
+    description {
+        en = "Monthly Perfomance"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.MB.AP.BUILD.RTN"
+    }
+
+    fixed-selection "@ID" {
+    }
+
+    fixed-selection "PORTFOLIO.ID" {
+        Equals "!CURRENT.SELECTED.PORTFOLIOS"
+    }
+
+    fixed-selection "PERF.TYPE" {
+        Equals "NET-OF-FEES"
+    }
+
+    custom-selection {
+
+        field "FROM.DATE" {
+            label {
+                en = "From Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TO.DATE" {
+            label {
+                en = "To Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "START.D" {
+        label {
+            en = "Start Date"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Monthly Time Weighted Performance for one year\""
+    }
+
+    field "PF.TXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Portfolio No: \""
+    }
+
+    field "PF.ID" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "PF.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: calc "PF.TXT":"PF.ID"
+    }
+
+    field "VAL.CCY.TXT" {
+        format: User break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Valuation CCY: \""
+    }
+
+    field "VAL.CCY" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "VAL.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: calc "VAL.CCY.TXT":"VAL.CCY"
+    }
+
+    field "END.D" {
+        label {
+            en = "Month"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PERF" {
+        label {
+            en = "Month"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 30
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "CUM.PERF" {
+        label {
+            en = "Monthly Performance%"
+        }
+
+        format: Currency "VAL.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 40
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "PORTF.ID" {
+        label {
+            en = "Cumulative Perf %"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: selection "PORTFOLIO.ID"
+    }
+
+    attributes: "NO.MORE.OPTIONS" ; "DISABLE.NO.SORT.OPTIONS" ; "NO.ENQUIRY.FAVOURITES" ; "ALLDATA"
+}

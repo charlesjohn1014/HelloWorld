@@ -1,0 +1,232 @@
+Enquiry "AA.DETAILS.PAYMENT.SCHEDULE.NAU" for "name:/AA_PaymentSchedule:AA.ARR.PAYMENT.SCHEDULE$NAU#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    custom-selection {
+
+        field "ID.COMP.1" {
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "ARR.PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "D.ARR.PROPERTY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 125
+        operation: field-extract "ARR.PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "PAYMENT.TYPE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.TYPE"
+    }
+
+    field "CALC.TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PAYMENT.TYPE"
+        conversion: getFrom "AA.PAYMENT.TYPE" "CALC.TYPE" false
+    }
+
+    field "C.ACTUAL" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"ACTUAL\""
+    }
+
+    field "D.PAYMENT.TYPE" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PAYMENT.TYPE"
+        conversion: getFrom "AA.PAYMENT.TYPE" "DESCRIPTION" false
+    }
+
+    field "L.PAYMENT.TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "D.PAYMENT.TYPE":"\":\""
+    }
+
+    field "D.PAYMENT.TYPE.02" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 125
+        processing-mode: Multi
+        operation: if "PAYMENT.TYPE" NotEquals "\"\"" process "L.PAYMENT.TYPE" "\"\""
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PROPERTY"
+    }
+
+    field "PROPERTY.DESC" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "ACTUAL.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACTUAL.AMT"
+    }
+
+    field "CALC.AMOUNT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CALC.AMOUNT"
+    }
+
+    field "AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "ACTUAL.AMT" NotEquals "\"\"" process "ACTUAL.AMT" "CALC.AMOUNT"
+    }
+
+    field "PERCENTAGE" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PERCENTAGE"
+    }
+
+    field "C.PERC" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"% of \""
+    }
+
+    field "D.PERCENTAGE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PERCENTAGE":"C.PERC":"PROPERTY.DESC"
+    }
+
+    field "D.PAYMENT1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CALC.TYPE" Equals "C.ACTUAL" process "PROPERTY.DESC" "AMOUNT"
+    }
+
+    field "D.PAYMENT" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 100
+        processing-mode: Multi
+        operation: if "PERCENTAGE" NotEquals "\"\"" process "D.PERCENTAGE" "D.PAYMENT1"
+    }
+
+    field "PAYMENT.METHOD" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 50
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.METHOD"
+        conversion: replace {
+            oldData: "DUE"
+            newData: "Due"
+        }
+
+        conversion: replace {
+            oldData: "CAPITALISE"
+            newData: "Capitalised"
+        }
+
+    }
+
+    field "PAYMENT.FREQ" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        column-width: 225
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.FREQ"
+        conversion: call
+        jBC: "@ E.AA.GET.RECURRENCE.MASK"
+    }
+
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

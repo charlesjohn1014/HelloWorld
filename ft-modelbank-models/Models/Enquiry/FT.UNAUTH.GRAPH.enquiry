@@ -1,0 +1,112 @@
+Enquiry "FT.UNAUTH.GRAPH" for "name:/FT_ModelBank:NOFILE.FT.UNAUTH.GRAPH#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "FT.LIST" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        Matches "OT...", "EQ", "\'AC\'", "\'IT\'", "\'OD\'", "\'OD10\'"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        NotEquals "\'OTTC\'"
+    }
+
+    field "AMT.TEXT" {
+        label {
+            en = "Amount"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "AMT.TEXT.1" {
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "AMT.TEXT"
+    }
+
+    field "CREDIT.AMT" {
+        label {
+            en = "Credit Amount"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CREDIT.AMT1" {
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "CREDIT.AMT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task Pending\""
+    }
+
+    graph {
+        type: "BAR.ORDINAL"
+        label {
+            en = "Unauthorised FT transactions" x: 120 y: 30
+        }
+
+        dimension {
+            width: 450 height: 300
+        }
+
+        margins {
+            top: 50 bottom: 100 left: 50 right: 75
+        }
+
+        scale {
+            x: 100 y: 100
+        }
+
+        legend {
+            x: 400 y: 50
+        }
+
+        x-axis {
+            field: "AMT.TEXT.1"
+            display-legend: true
+            show-grid: true
+        }
+
+        y-axis {
+            field: "CREDIT.AMT1"
+            display-legend: true
+            show-grid: true
+        }
+
+    }
+
+    enquiry-graph-id {
+        "FT.UNAUTH.GRAPH"
+    }
+
+    attributes: "ALLDATA" ; "NO.ENQUIRY.FAVOURITES"
+}

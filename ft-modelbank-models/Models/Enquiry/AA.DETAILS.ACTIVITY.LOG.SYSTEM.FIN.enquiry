@@ -1,0 +1,873 @@
+Enquiry "AA.DETAILS.ACTIVITY.LOG.SYSTEM.FIN" for "name:/AA_ModelBank:NOFILE.AA.ACTIVITY.LOG#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Activity Log"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 10 fixed-selection "SUPPRESS.REVERSAL" {
+        Equals "YES"
+    }
+
+    fixed-selection "INITIATION" {
+        Equals "SCHEDULED*EOD", "SCHEDULED*SOD", "SYSTEM*SOD", "SYSTEM*EOD"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SIM.REF" {
+            label {
+                en = "Simulation"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+            operands: Equals, LessThan, LessOrEquals, Greater, GreaterOrEquals
+        }
+
+        AND
+
+        field "END.DATE" {
+            label {
+                en = "End Date"
+            }
+
+            operands: Equals, LessThan, LessOrEquals, Greater, GreaterOrEquals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 80
+        operation: constant "\"System Activites\""
+    }
+
+    field "Z.TITLE" {
+        format: Translate break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 80
+        operation: constant "\"System Activities\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ARRANGEMENT.ID" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "CURRENCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "BUILD.ACTIVITY.RECORD" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.AA.ACT.LOG.REC"
+    }
+
+    field "ACTIVITY.REF" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY.REF"
+    }
+
+    field "FILE.VER" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "FILE.VER"
+    }
+
+    field "ACT.LIV" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "1" false
+    }
+
+    field "ACT.NAU" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "1" false
+    }
+
+    field "ACT.HIS" {
+        comma-separator: false
+        operation: calc "ACTIVITY.REF":"\";1\""
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$HIS" "1" false
+    }
+
+    field "ACT.DEL1" {
+        comma-separator: false
+        operation: if "ACT.LIV" Equals "NULL" process "ACT.NAU" "ACT.LIV"
+    }
+
+    field "ACT.DEL2" {
+        comma-separator: false
+        operation: if "ACT.DEL1" Equals "NULL" process "ACT.HIS" "ACT.DEL1"
+    }
+
+    field "ACT.DEL3" {
+        comma-separator: false
+        operation: if "ACT.DEL2" Equals "NULL" process "FILE.VER" "ACT.DEL2"
+    }
+
+    field "ACT.DEL" {
+        comma-separator: false
+        operation: if "ACT.DEL3" Equals "NULL" process "\"YES\"" "\"NO\""
+    }
+
+    field "MASTER.LIV" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "MASTER.AAA" false
+    }
+
+    field "MASTER.NAU" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "MASTER.AAA" false
+    }
+
+    field "MASTER.HIS" {
+        comma-separator: false
+        operation: calc "ACTIVITY.REF":"\";1\""
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$HIS" "MASTER.AAA" false
+    }
+
+    field "MASTER.ID1" {
+        comma-separator: false
+        operation: if "MASTER.LIV" Equals "NULL" process "MASTER.NAU" "MASTER.LIV"
+    }
+
+    field "MASTER.ID" {
+        comma-separator: false
+        operation: if "MASTER.ID1" Equals "NULL" process "MASTER.HIS" "MASTER.ID1"
+    }
+
+    field "INITIATION" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INITIATION"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ACT.USER" {
+        comma-separator: false
+        operation: if "INITIATION" Equals "\"USER\"" process "\"YES\"" "\"NO\""
+    }
+
+    field "ACT.TXN" {
+        comma-separator: false
+        operation: if "INITIATION" Equals "\"TRANSACTION\"" process "\"YES\"" "\"NO\""
+    }
+
+    field "ACT.SYS1" {
+        comma-separator: false
+        operation: if "INITIATION" Equals "\"SCHEDULED\"" process "\"YES\"" "\"NO\""
+    }
+
+    field "ACT.SYS" {
+        comma-separator: false
+        operation: if "INITIATION" Equals "\"SYSTEM\"" process "\"YES\"" "ACT.SYS1"
+    }
+
+    field "ACT.MASTER" {
+        comma-separator: false
+        operation: if "MASTER.ID" Equals "ACTIVITY.REF" process "\"YES\"" "\"NO\""
+    }
+
+    field "PREV.DATE" {
+        comma-separator: false
+        operation: field-extract "EFF.DATE"
+    }
+
+    field "ORIG.EFF.DATE" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "EFF.DATE" {
+        format: Date
+        comma-separator: false
+        operation: if "ACT.DEL" Equals "\"YES\"" process "\"\"" "ORIG.EFF.DATE"
+    }
+
+    field "D.DATE" {
+        label {
+            en = "Date"
+        }
+
+        display-type: "CLASS-DATES-ITALIC"
+        format: Date
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 80
+        operation: if "PREV.DATE" Equals "EFF.DATE" process "\"\"" "EFF.DATE"
+    }
+
+    field "ACTIVITY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY"
+    }
+
+    field "INDENT1" {
+        comma-separator: false
+        operation: if "ACT.MASTER" Equals "\"YES\"" process "\"PRIMARY\"" "\"SECONDARY\""
+    }
+
+    field "INDENT2" {
+        comma-separator: false
+        operation: if "ACT.SYS" Equals "\"YES\"" process "\"PRIMARY\"" "INDENT1"
+    }
+
+    field "INDENT" {
+        comma-separator: false
+        operation: if "INDENT2" Equals "\"SECONDARY\"" process "\"---\"" "\"\""
+    }
+
+    field "D.ACTIVITY1" {
+        format: User
+        comma-separator: false
+        operation: field-extract "ACTIVITY"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "D.ACTIVITY2" {
+        comma-separator: false
+        operation: calc "INDENT":"D.ACTIVITY1"
+    }
+
+    field "D.ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 180
+        operation: if "ACT.DEL" Equals "\"YES\"" process "\"\"" "D.ACTIVITY2"
+    }
+
+    field "INITIATION.02" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INITIATION"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "D.INITIATION1" {
+        format: Translate
+        comma-separator: false
+        operation: field-extract "INITIATION"
+        conversion: replace {
+            oldData: "USER"
+            newData: "User"
+        }
+
+        conversion: replace {
+            oldData: "TRANSACTION"
+            newData: "Txn"
+        }
+
+        conversion: replace {
+            oldData: "SECONDARY"
+            newData: "2nd"
+        }
+
+        conversion: replace {
+            oldData: "SCHEDULED"
+            newData: "Sys"
+        }
+
+        conversion: replace {
+            oldData: "SYSTEM"
+            newData: "Sys"
+        }
+
+    }
+
+    field "D.INITIATION" {
+        label {
+            en = "Type"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 65
+        operation: if "ACT.DEL" Equals "\"YES\"" process "\"\"" "D.INITIATION1"
+    }
+
+    field "ACTIVITY.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY.AMT"
+    }
+
+    field "TXN.SYS.LIV" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "TXN.SYSTEM.ID" false
+    }
+
+    field "TXN.SYS.NAU" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "TXN.SYSTEM.ID" false
+    }
+
+    field "TXN.SYS" {
+        comma-separator: false
+        operation: if "TXN.SYS.LIV" Equals "NULL" process "TXN.SYS.NAU" "TXN.SYS.LIV"
+    }
+
+    field "TXN.AMT.LIV" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "ORIG.TXN.AMT" false
+    }
+
+    field "TXN.AMT.NAU" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "ORIG.TXN.AMT" false
+    }
+
+    field "TXN.AMT1" {
+        comma-separator: false
+        operation: if "TXN.AMT.NAU" Equals "NULL" process "TXN.AMT.LIV" "TXN.AMT.NAU"
+    }
+
+    field "TXN.AMT" {
+        comma-separator: false
+        operation: if "TXN.SYS" Equals "AA" process "NULL" "TXN.AMT1"
+    }
+
+    field "D.TXN.AMT" {
+        label {
+            en = "Txn Amt"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 80
+        operation: if "ACT.DEL" Equals "\"YES\"" process "\"\"" "TXN.AMT"
+    }
+
+    field "TXN.ID.LIV" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "TXN.CONTRACT.ID" false
+    }
+
+    field "TXN.ID.NAU" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "TXN.CONTRACT.ID" false
+    }
+
+    field "TXN.ID" {
+        label {
+            en = "Txn Reference"
+        }
+
+        comma-separator: false
+        operation: if "TXN.ID.NAU" Equals "NULL" process "TXN.ID.LIV" "TXN.ID.NAU"
+    }
+
+    field "D.ACTIVITY.AMT1" {
+        comma-separator: false
+        operation: if "ACTIVITY.AMT" Equals "TXN.AMT" process "NULL" "ACTIVITY.AMT"
+    }
+
+    field "D.ACTIVITY.AMT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 180
+        operation: if "ACT.DEL" Equals "\"YES\"" process "\"\"" "D.ACTIVITY.AMT1"
+    }
+
+    field "ACTIVITY.STATUS" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY.STATUS"
+    }
+
+    field "LIVE.ACT" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "1" false
+    }
+
+    field "NAU.ACT" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "1" false
+    }
+
+    field "DEL.ACT" {
+        comma-separator: false
+        operation: if "ACTIVITY.STATUS" Equals "\"DELETE\"" process "\"YES\"" "\"NO\""
+    }
+
+    field "REV.ACT" {
+        comma-separator: false
+        operation: if "ACTIVITY.STATUS" Equals "\"AUTH-REV\"" process "\"YES\"" "\"NO\""
+    }
+
+    field "SIM.ACT1" {
+        comma-separator: false
+        operation: if "LIVE.ACT" NotEquals "\"\"" process "\"NO\"" "\"YES\""
+    }
+
+    field "SIM.ACT2" {
+        comma-separator: false
+        operation: if "NAU.ACT" NotEquals "\"\"" process "\"NO\"" "SIM.ACT1"
+    }
+
+    field "SIM.ACT3" {
+        comma-separator: false
+        operation: if "DEL.ACT" Equals "\"YES\"" process "\"NO\"" "SIM.ACT2"
+    }
+
+    field "SIM.ACT" {
+        comma-separator: false
+        operation: if "REV.ACT" Equals "\"YES\"" process "\"NO\"" "SIM.ACT3"
+    }
+
+    field "STATUS1" {
+        comma-separator: false
+        operation: if "SIM.ACT" Equals "\"YES\"" process "\"Simulated\"" "ACTIVITY.STATUS"
+    }
+
+    field "STATUS" {
+        format: Translate
+        comma-separator: false
+        operation: field-extract "STATUS1"
+        conversion: replace {
+            oldData: "AUTH"
+            newData: "Authorised"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Not Authorised"
+        }
+
+        conversion: replace {
+            oldData: "DELETE"
+            newData: "Deleted"
+        }
+
+        conversion: replace {
+            oldData: "AUTH-REV"
+            newData: "Reversed"
+        }
+
+        conversion: replace {
+            oldData: "REVERSE"
+            newData: "Reverse Pending"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH-CHG"
+            newData: "Change Pending"
+        }
+
+    }
+
+    field "DISP1" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "DISP2" {
+        comma-separator: false
+        operation: if "ACTIVITY.STATUS" Equals "\"UNAUTH\"" process "\"NO\"" "DISP1"
+    }
+
+    field "DISP3" {
+        comma-separator: false
+        operation: if "ACTIVITY.STATUS" Equals "\"REVERSE\"" process "\"NO\"" "DISP2"
+    }
+
+    field "DISP4" {
+        comma-separator: false
+        operation: if "ACTIVITY.STATUS" Equals "\"UNAUTH-CHG\"" process "\"NO\"" "DISP3"
+    }
+
+    field "DISP5" {
+        comma-separator: false
+        operation: if "SIM.ACT" Equals "\"YES\"" process "\"NO\"" "DISP4"
+    }
+
+    field "DISP6" {
+        comma-separator: false
+        operation: if "INITIATION" Equals "\"SECONDARY\"" process "\"NO\"" "DISP5"
+    }
+
+    field "DISP7" {
+        comma-separator: false
+        operation: if "INITIATION" Equals "\"SCHEDULED\"" process "\"NO\"" "DISP6"
+    }
+
+    field "DISP8" {
+        comma-separator: false
+        operation: if "INITIATION" Equals "\"SYSTEM\"" process "\"NO\"" "DISP7"
+    }
+
+    field "DISP9" {
+        comma-separator: false
+        operation: if "ACT.DEL" Equals "\"YES\"" process "\"NO\"" "DISP8"
+    }
+
+    field "DISP.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 90
+        operation: if "DISP9" Equals "\"YES\"" process "STATUS" "\"\""
+    }
+
+    field "V.AAA.GENERAL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA\""
+    }
+
+    field "V.AAA.TXN" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.TXN\""
+    }
+
+    field "V.FT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,VIEW\""
+    }
+
+    field "V.TT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"TELLER\""
+    }
+
+    field "V.VIEW1" {
+        comma-separator: false
+        operation: field-extract "V.AAA.GENERAL"
+    }
+
+    field "V.VIEW2" {
+        comma-separator: false
+        operation: if "TXN.SYS" Equals "\"FT\"" process "V.FT" "V.VIEW1"
+    }
+
+    field "V.VIEW3" {
+        comma-separator: false
+        operation: if "TXN.SYS" Equals "\"AAAA\"" process "V.AAA.TXN" "V.VIEW2"
+    }
+
+    field "V.VIEW" {
+        comma-separator: false
+        operation: if "TXN.SYS" Equals "\"TT\"" process "V.TT" "V.VIEW3"
+    }
+
+    field "V.REV1" {
+        comma-separator: false
+        operation: field-extract "V.AAA.GENERAL"
+    }
+
+    field "V.REV3" {
+        comma-separator: false
+        operation: if "TXN.SYS" Equals "\"TT\"" process "V.TT" "V.REV1"
+    }
+
+    field "V.REV2" {
+        comma-separator: false
+        operation: if "TXN.SYS" Equals "\"FT\"" process "V.FT" "V.REV3"
+    }
+
+    field "V.REV" {
+        comma-separator: false
+        operation: if "TXN.SYS" Equals "\"AAAA\"" process "V.AAA.TXN" "V.REV2"
+    }
+
+    field "V.ID.1" {
+        comma-separator: false
+        operation: if "TXN.ID" Matches "\"AA...\"" process "ACTIVITY.REF" "TXN.ID"
+    }
+
+    field "V.ID" {
+        comma-separator: false
+        operation: if "TXN.ID" Equals "\"\"" process "ACTIVITY.REF" "V.ID.1"
+    }
+
+    field "ZERORECORD" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 180
+        operation: constant "\"No activity to display\""
+    }
+
+    field "NEW.SYSTEM.ID" {
+        comma-separator: false
+        operation: calc "TXN.SYS":"DELIM"
+    }
+
+    field "Y.DRILL" {
+        comma-separator: false
+        operation: calc "NEW.SYSTEM.ID":"TXN.ID"
+        conversion: call
+        jBC: "@ E.CONV.AA.TXN.VER"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "SEE" {
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "REV" {
+        comma-separator: false
+        operation: constant "\"R\""
+    }
+
+    field "VIEW" {
+        comma-separator: false
+        operation: calc "V.VIEW":"SP":"SEE":"SP":"V.ID"
+    }
+
+    field "REVERSE" {
+        comma-separator: false
+        operation: calc "V.REV":"SP":"REV":"SP":"V.ID"
+    }
+
+    field "V.AAA" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA\""
+    }
+
+    field "VIEW.AAA" {
+        comma-separator: false
+        operation: calc "V.AAA":"SP":"SEE":"SP":"ACTIVITY.REF"
+    }
+
+    field "REV.AAA" {
+        comma-separator: false
+        operation: calc "V.AAA":"SP":"REV":"SP":"ACTIVITY.REF"
+    }
+
+    field "AIE" {
+        comma-separator: false
+        operation: constant "\"AC.INWARD.ENTRY\""
+    }
+
+    field "AEP" {
+        comma-separator: false
+        operation: constant "\"AC.ENTRY.PARAM\""
+    }
+
+    field "LK.AAA" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT...\""
+    }
+
+    field "VIEW.NULL" {
+        comma-separator: false
+        operation: if "Y.DRILL" Equals "NULL" process "VIEW.AAA" "VIEW"
+    }
+
+    field "REV.NULL" {
+        comma-separator: false
+        operation: if "Y.DRILL" Equals "NULL" process "REV.AAA" "REVERSE"
+    }
+
+    field "VIEW.AEP" {
+        comma-separator: false
+        operation: if "Y.DRILL" Equals "AEP" process "VIEW.AAA" "VIEW.NULL"
+    }
+
+    field "VIEW.AIE" {
+        comma-separator: false
+        operation: if "Y.DRILL" Equals "AIE" process "VIEW.AAA" "VIEW.AEP"
+    }
+
+    field "REV.AEP" {
+        comma-separator: false
+        operation: if "Y.DRILL" Equals "AEP" process "REV.AAA" "REV.NULL"
+    }
+
+    field "REV.AIE" {
+        comma-separator: false
+        operation: if "Y.DRILL" Equals "AIE" process "REV.AAA" "REV.AEP"
+    }
+
+    field "VIEW.DRILL" {
+        comma-separator: false
+        operation: if "Y.DRILL" Matches "LK.AAA" process "VIEW.AAA" "VIEW.AIE"
+    }
+
+    field "REV.DRILL" {
+        comma-separator: false
+        operation: if "Y.DRILL" Matches "LK.AAA" process "REV.AAA" "REV.AIE"
+    }
+
+    toolbar: "ENQUIRY.SELECTION.PRINT" drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "DISP.STATUS"
+        image: "view.gif"
+        from-field: "VIEW.DRILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "DISP.STATUS"
+        image: "txnreverse.gif"
+        from-field: "REV.DRILL"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS" ; "NO.ENQUIRY.FAVOURITES" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

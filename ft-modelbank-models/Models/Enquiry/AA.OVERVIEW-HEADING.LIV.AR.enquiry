@@ -1,0 +1,268 @@
+Enquiry "AA.OVERVIEW-HEADING.LIV.AR" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Overview Heading"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "OVER" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Overview\""
+    }
+
+    field "SP" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "DASH" {
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "@ID" {
+        break-condition {
+            break: Once
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: value 1
+    }
+
+    field "PROD" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.AA.GET.PRODUCT.ID"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "HVT" {
+        comma-separator: false
+        operation: field-extract "ACC"
+        conversion: getFrom "ACCOUNT" "HVT.FLAG" false
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "HVT.TEXT" {
+        comma-separator: false
+        operation: constant "\"HVT Enabled\""
+    }
+
+    field "C.HVT.DISP" {
+        comma-separator: false
+        operation: calc "DASH":"SP":"HVT.TEXT"
+    }
+
+    field "C.HVT" {
+        comma-separator: false
+        operation: if "HVT" Equals "YES" process "C.HVT.DISP" "NULL"
+    }
+
+    field "D.TITLE" {
+        display-type: "CLASS-COS.HEADING"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 850
+        operation: calc "ACC":"SP":"CCY":"DASH":"PROD":"SP":"OVER":"C.HVT"
+    }
+
+    field "ARR.STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.STATUS"
+    }
+
+    field "PRODUCT.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "ARR.STATUS.PL" {
+        comma-separator: false
+        operation: calc "ARR.STATUS":"PRODUCT.LINE"
+    }
+
+    field "AUTH" {
+        comma-separator: false
+        operation: constant "\"AUTH\""
+    }
+
+    field "STATUS" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "AUTH" process "ARR.STATUS.PL" "ARR.STATUS"
+    }
+
+    field "D.STATUS" {
+        display-type: "CLASS-COS.HEADING.DATA.LABEL"
+        length: 40
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 254
+        processing-mode: Single
+        operation: field-extract "STATUS"
+        conversion: replace {
+            oldData: "AUTH-FWD"
+            newData: "Future Dated"
+        }
+
+        conversion: replace {
+            oldData: "AUTHACCOUNTS"
+            newData: "Authorised"
+        }
+
+        conversion: replace {
+            oldData: "AUTHBUNDLE"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "AUTHDEPOSITS"
+            newData: "Not Funded"
+        }
+
+        conversion: replace {
+            oldData: "AUTHLENDING"
+            newData: "Not Disbursed"
+        }
+
+        conversion: replace {
+            oldData: "CANCELLED"
+            newData: "Cancelled"
+        }
+
+        conversion: replace {
+            oldData: "CLOSE"
+            newData: "Closed"
+        }
+
+        conversion: replace {
+            oldData: "CURRENT"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "EXPIRED"
+            newData: "Expired"
+        }
+
+        conversion: replace {
+            oldData: "MATURED"
+            newData: "Matured"
+        }
+
+        conversion: replace {
+            oldData: "PENDING.CLOSURE"
+            newData: "Pending Closure"
+        }
+
+        conversion: replace {
+            oldData: "REVERSED"
+            newData: "Reversed"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Unauthorised"
+        }
+
+        conversion: replace {
+            oldData: "REQUEST.CLOSURE"
+            newData: "Request Closure"
+        }
+
+    }
+
+    field "C.NEW" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.NEW.ACTIVITIES ARRANGEMENT EQ \""
+    }
+
+    field "DRILL" {
+        comma-separator: false
+        operation: calc "C.NEW":"@ID"
+    }
+
+    field "DRILL2" {
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "\"ACCOUNTS\"" process "S.AR" "C.NEW"
+    }
+
+    field "DRILL1" {
+        comma-separator: false
+        operation: if "CATEGORY" Equals "\"6003\"" process "C.AR" "DRILL2"
+    }
+
+    field "DRILL.02" {
+        comma-separator: false
+        operation: calc "DRILL1":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "New Activity"
+        }
+
+        label-field: "D.TITLE"
+        from-field: "DRILL"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

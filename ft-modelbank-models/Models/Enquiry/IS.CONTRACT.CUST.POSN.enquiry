@@ -1,0 +1,373 @@
+Enquiry "IS.CONTRACT.CUST.POSN" for "name:/IS_Purchase:IS.CONTRACT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Customer Position Summary"
+    }
+
+    description {
+        en = "Customer Position Summary"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "NO.OF.UNITS" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "IS.CONTRACT.ID" {
+            label {
+                en = "Contract Reference"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "@ID" {
+        label {
+            en = "Purchase Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Purchase Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "SALE.REFERENCE" {
+        label {
+            en = "Sale Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SALE.REFERENCE"
+    }
+
+    field "SALE.DATE" {
+        label {
+            en = "Sale Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SALE.REFERENCE"
+        conversion: getFrom "AA.ARRANGEMENT" "START.DATE" false
+    }
+
+    field "TOT.PURCHASE.PRICE" {
+        label {
+            en = "Purchase Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.PURCHASE.PRICE"
+    }
+
+    field "COMMODITY" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "COMMODITY"
+    }
+
+    field "ASSET.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ASSET.REF"
+    }
+
+    field "VENDOR" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "VENDOR"
+    }
+
+    field "NULL.VALUE" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HYPHEN" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "PUR.COMM1" {
+        comma-separator: false
+        operation: calc "@ID":"HYPHEN"
+    }
+
+    field "PUR.COMM" {
+        comma-separator: false
+        operation: calc "PUR.COMM1":"COMMODITY"
+    }
+
+    field "ASS.VENDOR1" {
+        comma-separator: false
+        operation: calc "ASSET.REF":"HYPHEN"
+    }
+
+    field "ASS.VENDOR" {
+        comma-separator: false
+        operation: calc "ASS.VENDOR1":"VENDOR"
+    }
+
+    field "IS.PAY.ID" {
+        comma-separator: false
+        operation: if "ASSET.REF" Equals "NULL.VALUE" process "PUR.COMM" "ASS.VENDOR"
+    }
+
+    field "IS.DP.AMT" {
+        label {
+            en = "Down Payment"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        operation: field-extract "IS.PAY.ID"
+        conversion: getFrom "IS.PAYMENT.BALANCES" "TOT.DOWN.PAYMENT" false
+    }
+
+    field "NO.OF.UNITS" {
+        label {
+            en = "No of Units"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.OF.UNITS"
+    }
+
+    field "UNIT.VALUE" {
+        label {
+            en = "Price per Unit"
+        }
+
+        display-type: "AMOUNT"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "UNIT.VALUE"
+    }
+
+    field "FIN.OUTSTANDING" {
+        label {
+            en = "Finance Outstanding"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 11
+        }
+
+        operation: field-extract "SALE.REFERENCE"
+        conversion: call
+        jBC: "@ IS.E.FINANCE.OS.AMOUNT"
+    }
+
+    field "SALE.REF" {
+        comma-separator: false
+        operation: field-extract "SALE.REFERENCE"
+    }
+
+    field "CUST.UNITS.DP" {
+        comma-separator: false
+        operation: calc "IS.DP.AMT" / "UNIT.VALUE"
+    }
+
+    field "BNK.UNITS.AFT.SALE" {
+        comma-separator: false
+        operation: calc "FIN.OUTSTANDING" / "UNIT.VALUE"
+    }
+
+    field "BNK.UNITS.B4.SALE" {
+        comma-separator: false
+        operation: calc "NO.OF.UNITS" - "CUST.UNITS.DP"
+    }
+
+    field "BANK.UNITS.CHK" {
+        comma-separator: false
+        operation: if "SALE.REF" Equals "NULL.VALUE" process "BNK.UNITS.B4.SALE" "BNK.UNITS.AFT.SALE"
+    }
+
+    field "BANK.UNITS" {
+        label {
+            en = "Bank Share(Units)"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 12
+        }
+
+        operation: field-extract "BANK.UNITS.CHK"
+    }
+
+    field "CUST.UNITS.SALE" {
+        comma-separator: false
+        operation: calc "NO.OF.UNITS" - "BANK.UNITS"
+    }
+
+    field "CUST.UNITS.CHK" {
+        comma-separator: false
+        operation: if "SALE.REF" Equals "NULL.VALUE" process "CUST.UNITS.DP" "CUST.UNITS.SALE"
+    }
+
+    field "CUST.UNITS" {
+        label {
+            en = "Customer Share(Units)"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 13
+        }
+
+        operation: field-extract "CUST.UNITS.CHK"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Contractwise Customer Position Details\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records to display\""
+    }
+
+}

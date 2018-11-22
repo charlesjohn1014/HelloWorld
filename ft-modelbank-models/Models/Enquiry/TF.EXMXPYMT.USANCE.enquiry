@@ -1,0 +1,210 @@
+Enquiry "TF.EXMXPYMT.USANCE" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Amendment to Mixed Drawings"
+    }
+
+    description {
+        en = "Amendment to Mixed Drawings"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "TRANS.TYPE" {
+        Equals "EXPORTS"
+    }
+
+    fixed-selection "DRAWING.TYPE" {
+        Equals "MX"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Drawing Ref"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.REVIEW" {
+            label {
+                en = "Due Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: constant "\"Amendment to Mixed Drawings\""
+    }
+
+    field "LC.CREDIT.TYPE" {
+        label {
+            en = "LC Types"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: getFrom "LC.TYPES" "DESCRIPTION" false
+    }
+
+    field "SETTLEMENT.TERMS" {
+        label {
+            en = "Settlement Terms"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.TERMS"
+    }
+
+    field "CUSTOMER.LINK" {
+        label {
+            en = "Issuing Bank"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.LINK"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Draw Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "PAYMENT.TYPE" {
+        label {
+            en = "Payment Terms"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.TYPE"
+    }
+
+    field "INST.PAY.AMT" {
+        label {
+            en = "Pay Portion"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INST.PAY.AMT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No amendment pending for Mixed Drawings\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,EXMXAMD"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

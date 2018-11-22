@@ -1,0 +1,260 @@
+Enquiry "AI.PERSONAL.MESSAGE.IN" for "name:/EB_ARC:EB.SECURE.MESSAGE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of messages from the bank"
+    }
+
+    zero-records-display: true
+    show-all-books: true
+    start-line: 4
+    end-line: 5
+    build-routines {
+        jBC: "E.MB.SEC.MSG"
+    }
+
+    fixed-selection "TO.CUSTOMER" {
+        Equals "!EXT.CUSTOMER"
+    }
+
+    fixed-sort: "DATE.SENT" Descending
+    fixed-sort: "TIME.SENT" Descending
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Your Inbox\""
+    }
+
+    field "TO.STATUS" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TO.STATUS"
+    }
+
+    field "MSG.ID" {
+        label {
+            en = "Message ID"
+        }
+
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "UNREAD" {
+        comma-separator: false
+        operation: constant "\"UNREAD\""
+    }
+
+    field "READ" {
+        comma-separator: false
+        operation: constant "\"READ\""
+    }
+
+    field "SUBJECT" {
+        label {
+            en = "Subject"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SUBJECT"
+    }
+
+    field "DATE.SENT" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.SENT"
+    }
+
+    field "DATE.SENT.DISP" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 95
+        operation: if "TO.STATUS" Equals "READ" process "DATE.SENT"
+    }
+
+    field "DATE.SENT.BOLD" {
+        label {
+            en = "Date"
+        }
+
+        display-type: "CLASS-FDLB"
+        format: Date
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 95
+        operation: if "TO.STATUS" Equals "UNREAD" process "DATE.SENT"
+    }
+
+    field "TIME.SENT" {
+        label {
+            en = "Time"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TIME.SENT"
+    }
+
+    field "TIME.SENT.DISP" {
+        label {
+            en = "Time"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 85
+        operation: if "TO.STATUS" Equals "READ" process "TIME.SENT"
+    }
+
+    field "TIME.SENT.BOLD" {
+        label {
+            en = "Time"
+        }
+
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 85
+        operation: if "TO.STATUS" Equals "UNREAD" process "TIME.SENT"
+    }
+
+    field "FROM.DAO" {
+        label {
+            en = "From"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FROM.DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "FROM.DAO.DISP" {
+        label {
+            en = "From"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        column-width: 150
+        operation: if "TO.STATUS" Equals "READ" process "FROM.DAO"
+    }
+
+    field "FROM.DAO.BOLD" {
+        label {
+            en = "From"
+        }
+
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        column-width: 150
+        operation: if "TO.STATUS" Equals "UNREAD" process "FROM.DAO"
+    }
+
+    field "DAO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "FROM.DAO"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No messages available for display\""
+    }
+
+    field "ZERO.RECORD.HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Your Inbox\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Read"
+        }
+
+        label-field: "SUBJECT"
+        criteria: "EB.SECURE.MESSAGE" > "MSG.ID"
+        criteria: "@ID" Equals "MSG.ID"
+        enquiry: "AI.PERSONAL.MESSAGE.READ.IN"
+    }
+
+    attributes: "DRILLDOWNS.AS.HYPERLINKS" ; "UNDERLINE.HEADER.ROW" ; "DISABLE.NO.SORT.OPTIONS"
+}

@@ -1,0 +1,453 @@
+Enquiry "AA.DETAILS.FINANCIAL.SUMMARY.WS" for "name:/AA_Framework:NOFILE.AA.FIN.SUMMARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Financial Summary Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "BALANCE.TYPE" {
+        Equals "TOTCOMMITMENT", "CURCOMMITMENT"
+    }
+
+    fixed-selection "BALANCE.TYPE" {
+        Equals "TOTALPRINCIPAL", "TOTALDUE"
+    }
+
+    fixed-selection "BALANCE.TYPE" {
+        Equals "TOTALDELINQUENT", "UNCLOAN"
+    }
+
+    fixed-selection "BALANCE.TYPE" {
+        Equals "ACCPRINCIPALINT", "ACCPENALTYINT"
+    }
+
+    fixed-selection "BALANCE.TYPE" {
+        Equals "ACCDEPOSITINT", "PAYDEPOSITINT"
+    }
+
+    fixed-selection "BALANCE.TYPE" {
+        Equals "EXPACCOUNT", "PAYACCOUNT"
+    }
+
+    fixed-selection "BALANCE.TYPE" {
+        Equals "CURACCOUNT", "UNCACCOUNT", "UNDACCOUNT"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BALANCE.TYPE" {
+            label {
+                en = "Balance Type"
+            }
+
+        }
+
+        AND
+
+        field "DISPLAY.ZERO.BALS" {
+            label {
+                en = "Display Zero Bals"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SIM.REF" {
+            label {
+                en = "Simulation Reference"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+            operands: GreaterOrEquals
+        }
+
+        AND
+
+        field "END.DATE" {
+            label {
+                en = "End Date"
+            }
+
+            operands: LessOrEquals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 155
+        operation: constant "\"Financial Summary\""
+    }
+
+    field "Z.TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 155
+        operation: constant "\"Financial Summary\""
+    }
+
+    field "ID" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "BAL.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BAL.AMOUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "VIRTUAL.BALANCES" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "PROPERTY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "PROPERTY.CLASS" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ARRANGEMENT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "SIMULATION" {
+        comma-separator: false
+        operation: selection "SIM.REF"
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "D.BALANCE.TYPE" {
+        label {
+            en = "Balance Type"
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 155
+        processing-mode: Single
+        operation: if "VIRTUAL.BALANCES" Equals "\"\"" process "BAL.TYPE" "\"\""
+        conversion: getFrom "AC.BALANCE.TYPE" "DESCRIPTION" false
+    }
+
+    field "D.V.BALANCE.TYPE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 155
+        processing-mode: Single
+        operation: if "VIRTUAL.BALANCES" NotEquals "\"\"" process "BAL.TYPE" "\"\""
+        conversion: getFrom "AC.BALANCE.TYPE" "DESCRIPTION" false
+    }
+
+    field "D.BALANCE.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 65
+        processing-mode: Single
+        operation: field-extract "BAL.AMOUNT"
+        conversion: abs
+    }
+
+    field "AGEING.STATUS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.AGEING.STATUS"
+    }
+
+    field "C.CUR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"CUR\""
+    }
+
+    field "C.OD.STATUS" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Overdue Status: \""
+    }
+
+    field "L.AGEING.STATUS.1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: if "AGEING.STATUS" NotEquals "C.CUR" process "C.OD.STATUS" "\"\""
+    }
+
+    field "L.AGEING.STATUS" {
+        label {
+            en = "Overdue Status:"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID" break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        column-width: 155
+        operation: if "AGEING.STATUS" Equals "\"\"" process "\"\"" "L.AGEING.STATUS.1"
+    }
+
+    field "C.AGEING.TABLE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.OVERDUE.STATUS*\""
+    }
+
+    field "AGEING.ID" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: calc "C.AGEING.TABLE":"AGEING.STATUS"
+    }
+
+    field "D.AGEING.STATUS" {
+        label {
+            en = "AA.OVERDUE.STATUS*"
+        }
+
+        display-type: "CLASS-BOLD.RED"
+        format: User break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        column-width: 65
+        operation: field-extract "AGEING.ID"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "SUSPENDED" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.SUSPENSION.STATUS"
+        conversion: replace {
+            oldData: "YES"
+            newData: "Suspended"
+        }
+
+    }
+
+    field "C.ACC.STATUS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Accrual Status:\""
+    }
+
+    field "L.SUSPENDED" {
+        label {
+            en = "Accrual Status:"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        column-width: 155
+        operation: if "SUSPENDED" NotEquals "\"\"" process "C.ACC.STATUS" "\"\""
+    }
+
+    field "D.SUSPENDED" {
+        display-type: "CLASS-BOLD.RED"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 3
+        }
+
+        column-width: 65
+        operation: if "SUSPENDED" NotEquals "\"\"" process "SUSPENDED" "\"\""
+    }
+
+    field "ZPAD" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Balance Details"
+        }
+
+        label-field: "D.V.BALANCE.TYPE"
+        image: "view.gif"
+        criteria: "ARRANGEMENT.ID" Equals "ARRANGEMENT"
+        criteria: "DRILL.DOWN.ENQ" Equals "YES"
+        criteria: "BALANCE.TYPE" Equals "BAL.TYPE"
+        criteria: "SIM.REF" Equals "SIMULATION"
+        enquiry: "AA.DETAILS.VIRTUAL.BALANCE"
+    }
+
+    web-service {
+        names: "GET.RETAIL.LOAN.DETAILS"
+        activity: "RE.GET.LOAN.BALANCE"
+        description: "Get Loan Balances"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

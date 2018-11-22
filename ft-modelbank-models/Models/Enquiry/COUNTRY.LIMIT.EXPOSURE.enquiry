@@ -1,0 +1,335 @@
+Enquiry "COUNTRY.LIMIT.EXPOSURE" for "name:/LI_ModelBank:NOFILE.LIMIT.COUNTRY.EXPOSURE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Country Risk Exposure"
+    }
+
+    description {
+        en = "Country Risk Exposure"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "CUSTOMER.ID" {
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.NUMBER" {
+            mandatory: true
+            label {
+                en = "Customer ID"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "BUSINESS.UNIT" {
+            label {
+                en = "Business Unit"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer Group:\""
+    }
+
+    field "HVALUE1" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 1
+        }
+
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.GET.CUSTOMER.GROUP"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Report in :\""
+    }
+
+    field "HVALUE2" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 2
+        }
+
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.GET.CUSTOMER.GROUP"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "HEADER3" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 2
+        }
+
+        operation: constant "\"as at\""
+    }
+
+    field "HVALUE3" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 2
+        }
+
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.GET.CUSTOMER.GROUP"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "COUNTRY" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "CNAME" {
+        format: User
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "COUNTRY"
+        conversion: getFrom "COUNTRY" "COUNTRY.NAME" false
+    }
+
+    field "OWNING.COUNTRY" {
+        label {
+            en = "Owning Country"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: calc "COUNTRY":"SPACE":"CNAME"
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.GET.CUSTOMER.GROUP"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "APP.AMT" {
+        label {
+            en = "Approved Amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "TAPP.AMT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        operation: total "APP.AMT"
+    }
+
+    field "ADV.AMT" {
+        label {
+            en = "Advised amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TADV.AMT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        operation: total "ADV.AMT"
+    }
+
+    field "UTIL.AMT" {
+        label {
+            en = "Utilised amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "TUTIL.AMT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+            line: + 1
+        }
+
+        operation: total "UTIL.AMT"
+    }
+
+    field "AMT" {
+        label {
+            en = "Available amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "TAMT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+            line: + 1
+        }
+
+        operation: total "AMT"
+    }
+
+    field "TOTAL" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\"Total\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records available for the selection criteria\""
+    }
+
+}

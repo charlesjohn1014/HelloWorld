@@ -1,0 +1,224 @@
+Enquiry "AA.FIND.DORMANT.ARRANGEMENT" for "name:/AA_PaymentSchedule:AA.ACCOUNT.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Find Dormant Arrangements"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ARR.DORMANCY.STATUS" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "ARR.DORMANCY.STATUS" {
+            label {
+                en = "Dormancy Status"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ARRANGEMENT.ID" {
+        label {
+            en = "Arrangement"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "ARR.DESC" {
+        label {
+            en = "Description"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+        conversion: getFrom "ACCOUNT" "WORKING.BALANCE" false
+    }
+
+    field "LAST.ACT.DATE" {
+        label {
+            en = "Last Activity Date"
+        }
+
+        format: Date
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ACTIVITY.HISTORY" "SYSTEM.DATE" false
+        conversion: value 1 1
+    }
+
+    field "DORM.STATUS" {
+        label {
+            en = "Dormancy Status"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARR.DORMANCY.STATUS"
+        conversion: replace {
+            oldData: "INACTIVE"
+            newData: "Inactive"
+        }
+
+        conversion: replace {
+            oldData: "UNCLAIMED"
+            newData: "Unclaimed"
+        }
+
+        conversion: replace {
+            oldData: "DORMANT"
+            newData: "Dormant"
+        }
+
+    }
+
+    field "PROD.LINE" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "PROD.CODE" {
+        comma-separator: false
+        operation: field-extract "PROD.LINE"
+        conversion: replace {
+            oldData: "ACCOUNTS"
+            newData: "AR"
+        }
+
+        conversion: replace {
+            oldData: "DEPOSITS"
+            newData: "AD"
+        }
+
+        conversion: replace {
+            oldData: "LENDING"
+            newData: "AL"
+        }
+
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "COS" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.\""
+    }
+
+    field "COS.PR" {
+        comma-separator: false
+        operation: calc "COS":"PROD.CODE"
+    }
+
+    field "COS.DRILL" {
+        comma-separator: false
+        operation: calc "COS.PR":"SP":"ARRANGEMENT.ID"
+    }
+
+    field "ZERORECORDS" {
+        label {
+            en = "\"No Data to display\""
+        }
+
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Data to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ARRANGEMENT.ID"
+        image: "view.gif"
+        from-field: "COS.DRILL"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS" ; "NO.ENQUIRY.FAVOURITES"
+}

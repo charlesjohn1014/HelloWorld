@@ -1,0 +1,219 @@
+Enquiry "AA.OVERVIEW-HEADING.LIV.AB" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Overview Heading"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "TITLE" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Overview\""
+    }
+
+    field "SP" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "DASH" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "@ID" {
+        break-condition {
+            break: Once
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PROD" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.AA.GET.PRODUCT.ID"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CCY" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINK.ARRANGEMENT"
+        conversion: value 1
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "C.DASH" {
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "D.TITLE" {
+        display-type: "CLASS-COS.HEADING"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 1100
+        operation: calc "@ID":"SP":"CCY":"SP":"DASH":"SP":"PROD":"SP":"TITLE"
+    }
+
+    field "ARR.STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.STATUS"
+    }
+
+    field "PRODUCT.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "ARR.STATUS.PL" {
+        comma-separator: false
+        operation: calc "ARR.STATUS":"PRODUCT.LINE"
+    }
+
+    field "AUTH" {
+        comma-separator: false
+        operation: constant "\"AUTH\""
+    }
+
+    field "STATUS" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "AUTH" process "ARR.STATUS.PL" "ARR.STATUS"
+    }
+
+    field "D.STATUS" {
+        display-type: "CLASS-COS.HEADING.DATA.LABEL"
+        format: Translate
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "STATUS"
+        conversion: replace {
+            oldData: "AUTH-FWD"
+            newData: "Future Dated"
+        }
+
+        conversion: replace {
+            oldData: "AUTHACCOUNTS"
+            newData: "Authorised"
+        }
+
+        conversion: replace {
+            oldData: "AUTHBUNDLE"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "AUTHDEPOSITS"
+            newData: "Not Funded"
+        }
+
+        conversion: replace {
+            oldData: "AUTHLENDING"
+            newData: "Not Disbursed"
+        }
+
+        conversion: replace {
+            oldData: "CANCELLED"
+            newData: "Cancelled"
+        }
+
+        conversion: replace {
+            oldData: "CLOSE"
+            newData: "Closed"
+        }
+
+        conversion: replace {
+            oldData: "CURRENT"
+            newData: "Current"
+        }
+
+        conversion: replace {
+            oldData: "EXPIRED"
+            newData: "Expired"
+        }
+
+        conversion: replace {
+            oldData: "MATURED"
+            newData: "Matured"
+        }
+
+        conversion: replace {
+            oldData: "PENDING.CLOSURE"
+            newData: "Pending Closure"
+        }
+
+        conversion: replace {
+            oldData: "REVERSED"
+            newData: "Reversed"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Unauthorised"
+        }
+
+        conversion: replace {
+            oldData: "REQUEST.CLOSURE"
+            newData: "Request Closure"
+        }
+
+    }
+
+    field "C.NEW" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.NEW.ACTIVITIES ARRANGEMENT EQ \""
+    }
+
+    field "DRILL" {
+        comma-separator: false
+        operation: calc "C.NEW":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "New Activity"
+        }
+
+        label-field: "D.TITLE"
+        from-field: "DRILL"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

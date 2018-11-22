@@ -1,0 +1,491 @@
+Enquiry "AI.PD.OUTSTANDINGS.REPORT" for "name:/PD_Contract:PD.PAYMENT.DUE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "PD Outstanding Report"
+    }
+
+    description {
+        en = "PD Outstanding Report"
+    }
+
+    no-selection: true
+    start-line: 7
+    end-line: 96 fixed-selection "STATUS" {
+        NotEquals "CUR"
+    }
+
+    fixed-sort: "CUSTOMER" Null
+    fixed-sort: "CATEGORY" Null
+    custom-selection {
+
+        field "@ID" {
+            operands: Equals
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currrency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Product"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account Officer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PAYMENT.DTE.DUE" {
+            label {
+                en = "Payment Due Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "CUSTOMER" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Outstanding\""
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 13
+            line: 0
+        }
+
+        operation: constant "\"Payments Due\""
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 2
+        }
+
+        operation: constant "\"Customer\""
+    }
+
+    field "CUST.BRK" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "CUSTOMER"
+    }
+
+    field "DCUST" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 2
+        }
+
+        operation: field-extract "CUSTOMER"
+    }
+
+    field "DCUST.NAME" {
+        display-type: "CLASS-ENQ.H.ID"
+        format: User break-condition {
+            break: NewPage
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 2
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "@ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DISP.ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "TOTAL.OVERDUE.AMT" {
+        label {
+            en = "Total Amt Due"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.OVERDUE.AMT"
+    }
+
+    field "PAYMENT.DTE.DUE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.DTE.DUE"
+    }
+
+    field "DISP.PAY.DATE" {
+        label {
+            en = "Repay Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: field-extract "PAYMENT.DTE.DUE"
+    }
+
+    field "TEMP" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.DTE.DUE"
+    }
+
+    field "AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "@ID":"\"-\"":"TEMP"
+        conversion: call
+        jBC: "@ E.MB.CALCULATE.PDBAL.DETAILS"
+    }
+
+    field "PRINCIPAL.AMOUNT" {
+        label {
+            en = "Principal"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: field-number 176
+    }
+
+    field "INTEREST.AMOUNT" {
+        label {
+            en = "Interest"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: field-number 175
+    }
+
+    field "PENALTY.INTEREST" {
+        label {
+            en = "Penalty Interest"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: field-number 177
+    }
+
+    field "PSPREAD" {
+        label {
+            en = "Penalty Spread"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: field-number 178
+    }
+
+    field "OTHERS" {
+        label {
+            en = "Others(CE+CS)"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-number 179
+    }
+
+    field "PAYMENT.AMOUNT" {
+        label {
+            en = "Overdue Amt"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 14
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.AMOUNT"
+    }
+
+    field "BAL.KEY1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "@ID":"MINUS"
+    }
+
+    field "BAL.KEY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "BAL.KEY1":"PAYMENT.DTE.DUE"
+    }
+
+    field "NO.DAYS.ODUE" {
+        label {
+            en = "Days"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Multi
+        operation: field-extract "BAL.KEY"
+        conversion: getFrom "PD.BALANCES" "NO.DAYS.OVERDUE" false
+    }
+
+    field "REPAID.STATUS" {
+        label {
+            en = "OD Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REPAID.STATUS"
+    }
+
+    field "OUTSTANDING.AMT" {
+        label {
+            en = "Outstanding Amt"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Multi
+        operation: application-field-name "OUTSTANDING.AMT"
+    }
+
+    field "MINUS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "TOT.OTS.AMT" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "CUST.BRK"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        operation: total "OUTSTANDING.AMT"
+    }
+
+    field "176" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "CUST.BRK"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+            line: + 3
+        }
+
+        operation: total "176"
+    }
+
+    drilldown "1" {
+        description {
+            en = "PAYMENT DUE detail"
+        }
+
+        label-field: "DISP.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "PD.PAYMENT.DUE"
+    }
+
+}

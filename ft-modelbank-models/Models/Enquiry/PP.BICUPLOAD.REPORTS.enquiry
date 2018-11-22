@@ -1,0 +1,116 @@
+Enquiry "PP.BICUPLOAD.REPORTS" for "name:/PP_BICUploadGUI:NOFILE.BICUPLOAD.REPORTS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "BIC UPLOAD - View Reports"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    description {
+        en = "BIC UPLOAD Reports Search"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "Y.BUILD.LIST" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            mandatory: true
+            label {
+                en = "Company ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "COMPID" {
+        comma-separator: false
+        operation: selection "CompanyID"
+    }
+
+    field "Company" {
+        label {
+            en = "Company"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "COMPID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "REPORT.NAME" {
+        label {
+            en = "Report Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ENQNAME" {
+        comma-separator: false
+        operation: field-extract "REPORT.NAME"
+        conversion: call
+        jBC: "@ PP.ENQ.GET.ENQNAME"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No BIC UPLOAD Reports Available\""
+    }
+
+    field "ERR.MSG" {
+        display-type: "CLASS-ENQ.NORECS"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Report"
+        }
+
+        label-field: "REPORT.NAME"
+        image: "details.gif"
+        criteria: "CompanyID" Equals "COMPID"
+        criteria: "ID" Equals "REPORT.NAME"
+        from-field: "ENQNAME"
+    }
+
+    attributes: "NO.MORE.OPTIONS" ; "DISABLE.NO.SORT.OPTIONS"
+}

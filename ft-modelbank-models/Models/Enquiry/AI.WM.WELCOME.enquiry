@@ -1,0 +1,284 @@
+Enquiry "AI.WM.WELCOME" for "name:/EB_ARC:EB.EXTERNAL.USER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Welcome Back"
+    }
+
+    show-all-books: true
+    start-line: 4
+    end-line: 99 fixed-selection "@ID" {
+        Equals "!EXT.EXTERNAL.USER"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "BLANK" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "T.GOOD" {
+        comma-separator: false
+        operation: constant "\"Good \""
+    }
+
+    field "T.MORN" {
+        comma-separator: false
+        operation: constant "\" morning \""
+    }
+
+    field "T.AFT" {
+        comma-separator: false
+        operation: constant "\" afternoon \""
+    }
+
+    field "T.EVE" {
+        comma-separator: false
+        operation: constant "\" evening \""
+    }
+
+    field "T.WELCOME" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "NAME" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NAME"
+    }
+
+    field "SN" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "T.ULAST" {
+        comma-separator: false
+        operation: constant "\". You last logged in at \""
+    }
+
+    field "T.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.LAST.USE"
+        conversion: value 1 2
+        conversion: julian
+        conversion: oconv "D4"
+    }
+
+    field "S.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DATE.LAST.USE"
+    }
+
+    field "T.ON" {
+        comma-separator: false
+        operation: constant "\" on \""
+    }
+
+    field "TIME1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIME.LAST.USE"
+        conversion: call
+        jBC: "@ E.MB.AI.LAST.LOGIN.TIME"
+    }
+
+    field "TIME" {
+        comma-separator: false
+        operation: field-extract "TIME1"
+        conversion: value 1 1
+        conversion: extract from 1 to 6
+    }
+
+    field "TIME.1" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TIME"
+        conversion: value 1
+        conversion: extract from 1 to 2
+    }
+
+    field "TIME.2" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TIME"
+        conversion: value 1
+        conversion: extract from 3 to 2
+    }
+
+    field "TIME.3" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TIME"
+        conversion: value 1
+        conversion: extract from 5 to 2
+    }
+
+    field "CURRTIME" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TIME.LAST.USE"
+        conversion: value 1 1
+        conversion: extract from 1 to 6
+    }
+
+    field "MTIME" {
+        comma-separator: false
+        operation: constant "\"115959\""
+    }
+
+    field "ATIME" {
+        comma-separator: false
+        operation: constant "\"175959\""
+    }
+
+    field "ATIME1" {
+        comma-separator: false
+        operation: constant "\"120000 175959\""
+    }
+
+    field "N0" {
+        comma-separator: false
+        operation: if "CURRTIME" LessOrEquals "MTIME" process "T.MORN" "BLANK"
+    }
+
+    field "N1" {
+        comma-separator: false
+        operation: if "CURRTIME" Between "ATIME1" process "T.AFT" "BLANK"
+    }
+
+    field "N2" {
+        comma-separator: false
+        operation: if "CURRTIME" Greater "ATIME" process "T.EVE" "BLANK"
+    }
+
+    field "TIME.4" {
+        comma-separator: false
+        display-section: Header
+        operation: calc "TIME.1":"\":\"":"TIME.2"
+    }
+
+    field "MESSAGE" {
+        comma-separator: false
+        display-section: Header
+        operation: calc "T.GOOD":"N0":"N1":"N2":"SN"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "MESSAGE.2" {
+        comma-separator: false
+        operation: calc "MESSAGE":"T.ULAST"
+    }
+
+    field "MESSAGE.3" {
+        comma-separator: false
+        operation: calc "MESSAGE.2":"TIME"
+    }
+
+    field "MESSAGE.4" {
+        comma-separator: false
+        operation: calc "MESSAGE.3":"T.DATE"
+    }
+
+    field "DATE.LAST.USE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TIME1"
+        conversion: value 1 1
+        conversion: extract from 7 to 2
+    }
+
+    field "ONE" {
+        comma-separator: false
+        operation: constant "\"1\""
+    }
+
+    field "MESSAGE.0" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        operation: if "DATE.LAST.USE" Greater "ONE" process "MESSAGE.2" "MESSAGE"
+    }
+
+    field "DATE.DISP" {
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: if "DATE.LAST.USE" Greater "ONE" process "T.DATE" "BLANK"
+    }
+
+    field "TIME.DISPLAY" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: if "DATE.LAST.USE" Greater "ONE" process "TIME" "BLANK"
+    }
+
+    field "VAL1" {
+        comma-separator: false
+        operation: constant "\"Below is the Snapshot of Your\""
+    }
+
+    field "VAL2" {
+        comma-separator: false
+        operation: constant "\" Portfolio Valuation\""
+    }
+
+    field "VAL" {
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        operation: calc "VAL1":"VAL2"
+    }
+
+    attributes: "NO.COLUMN.HEADER"
+}

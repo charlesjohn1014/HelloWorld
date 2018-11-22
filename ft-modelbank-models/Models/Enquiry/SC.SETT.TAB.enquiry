@@ -1,0 +1,638 @@
+Enquiry "SC.SETT.TAB" for "name:/SC_ModelBank:NOFILE.SETT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Outstanding Settlement Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 19 fixed-selection "SEL.REC" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "TRANS.REF" {
+            label {
+                en = "Transaction No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Client No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CU.PORTFOLIO" {
+            label {
+                en = "Portfolio No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BROKER.NO" {
+            label {
+                en = "Cpty/Broker No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TRADE.DATE" {
+            label {
+                en = "Trade Date"
+            }
+
+            operands: Greater, LessThan, Equals
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+            operands: Greater, LessThan, Equals
+        }
+
+        AND
+
+        field "DEPOSITORY" {
+            label {
+                en = "Depository"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TRADE.CCY" {
+            label {
+                en = "Trade Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SECURITY.NUMBER" {
+            label {
+                en = "Security No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BR.DEL.INSTR" {
+            label {
+                en = "Delivery Instn"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TRANS.CODE" {
+            label {
+                en = "Trans Type"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TOTAL.NOMINAL" {
+            label {
+                en = "No Nominals"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "BOND.OR.SHARE" {
+            label {
+                en = "Bond/Share"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Outstanding Settlements Details\""
+    }
+
+    field "TRAN.REF" {
+        label {
+            en = "Transaction No"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Security No"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "DESCRIPT" false
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "DEPO.NAME" {
+        label {
+            en = "Depository Name"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "DEPOSITORY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Val/Sett Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "INPUTTER" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        display-section: NoDisplay
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "TOT.CUS.AMT" {
+        label {
+            en = "Client Amt O/s"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "TRADE.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "TOT.BR.AMT" {
+        label {
+            en = "Brok Amt O/s"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "TRADE.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "TOT.NOM" {
+        label {
+            en = "Total Nominals"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "CU.PORT" {
+        label {
+            en = "Portfolio No"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Port Name"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+        conversion: extract from 1 to 1 delimited by "-"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CU.CCY" {
+        label {
+            en = "Client Ccy"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        hidden: true
+        operation: field-extract "TRAN.REF"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "SC.SETTLEMENT$NAU" "CU.ACC.CCY" false
+    }
+
+    field "CU.AMT.OUTSTAND" {
+        label {
+            en = "Client amt o/s"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CU.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "CU.NOM.OUTSAND" {
+        label {
+            en = "Client Nom o/s"
+        }
+
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    field "BR.NO" {
+        label {
+            en = "Cpty/Broker No"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "BR.NAME" {
+        label {
+            en = "Cpty/Brok Name"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "BR.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BROK.ACCT" {
+        label {
+            en = "Nostro Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 19 to 1 delimited by "*"
+    }
+
+    field "BR.ACC.CCY" {
+        label {
+            en = "Brok/Cpty Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "BROK.ACCT"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "BR.AMT.OUTSTAND" {
+        label {
+            en = "Broker Amt o/s"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "BR.ACC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 19
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "BR.NOM.OUTSTAND" {
+        label {
+            en = "Broker Nom o/s"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 17 to 1 delimited by "*"
+    }
+
+    field "BR.DEL.INSTR" {
+        label {
+            en = "Del Instn"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 18 to 1 delimited by "*"
+    }
+
+    field "TRANS.CODE1" {
+        comma-separator: false
+        operation: field-extract "TRAN.REF"
+        conversion: getFrom "SC.SETTLEMENT$NAU" "TRANS.CODE" false
+    }
+
+    field "TRANS.CODE2" {
+        comma-separator: false
+        operation: field-extract "TRAN.REF"
+        conversion: getFrom "SC.SETTLEMENT" "TRANS.CODE" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "TRANS.CODE" {
+        label {
+            en = "Trans Type"
+        }
+
+        comma-separator: false
+        operation: if "TRANS.CODE1" Equals "NULL" process "TRANS.CODE2" "TRANS.CODE1"
+    }
+
+    field "BROKER.AC" {
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Multi
+        operation: field-extract "TRAN.REF"
+        conversion: getFrom "SEC.TRADE" "BR.ACC.NO" false
+    }
+
+    field "BROK.AC" {
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Multi
+        operation: field-extract "TRAN.REF"
+        conversion: getFrom "SECURITY.TRANSFER" "BR.ACC.NO" false
+    }
+
+    field "BROK ACC" {
+        label {
+            en = "Br/Cpty Nostro"
+        }
+
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Multi
+        operation: if "BROKER.AC" Equals "NULL" process "BROK.AC" "BROKER.AC"
+    }
+
+    field "DAO" {
+        label {
+            en = "Rel Mgr"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.OFFICER" false
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "ZERONORECORD" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No Outstanding Settlements\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "TRAN.REF"
+        image: "view.gif" parameters {
+            function:  See
+            field: "TRAN.REF"
+        }
+
+        screen: "SC.SETTLEMENT,INP"
+    }
+
+    attributes: "ALLDATA"
+}

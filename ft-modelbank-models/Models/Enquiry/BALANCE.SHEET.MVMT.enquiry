@@ -1,0 +1,305 @@
+Enquiry "BALANCE.SHEET.MVMT" for "name:/RE_ReportGeneration:RE.STAT.LINE.BAL#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Balance sheet", fr = "Debit Mvmt", de = "Credit Mvmt"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = " Line Number"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = " Description"
+        }
+
+        column: 7
+        line: 2
+    }
+
+    header {
+        label {
+            en = " Open Bal"
+        }
+
+        column: 23
+        line: 2
+    }
+
+    header {
+        label {
+            en = "YTD"
+        }
+
+        column: 41
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Today"
+        }
+
+        column: 59
+        line: 2
+    }
+
+    header {
+        label {
+            en = "YTD"
+        }
+
+        column: 77
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Today"
+        }
+
+        column: 95
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Close Bal"
+        }
+
+        column: 113
+        line: 2
+    }
+
+    description {
+        en = "BALANCE.SHEET.MVMT"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Report Name"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "REPORT.LINE" {
+            label {
+                en = "Report Line"
+            }
+
+        }
+
+        AND
+
+        field "LINE.CCY.DATE" {
+            mandatory: true
+            label {
+                en = "System Date"
+            }
+
+            operands: Contains
+        }
+
+        None
+    }
+
+    field "REPORT.LINE" {
+        label {
+            en = "REPORT.LINE"
+        }
+
+        format: User
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: i-desc "REPORT.LINE"
+    }
+
+    field "@ID" {
+        label {
+            en = "@ID"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "REPORT.NAME" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: i-desc "REPORT.NAME"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "DOT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "LINE.DESC.1" {
+        comma-separator: false
+        operation: calc "REPORT.NAME":"DOT"
+    }
+
+    field "LINE.DESC" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: calc "LINE.DESC.1":"REPORT.LINE"
+        conversion: getFrom "RE.STAT.LINE.CONT" "DESC" false
+    }
+
+    field "OPEN.BAL.LCL" {
+        label {
+            en = "OPEN.BAL.LCL"
+        }
+
+        format: Currency "LCY" negative-pattern -#
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        operation: application-field-name "OPEN.BAL.LCL"
+    }
+
+    field "DB.MVMT.YTD.LCL" {
+        label {
+            en = "DB.MVMT.YTD.LCL"
+        }
+
+        format: Currency "LCY" negative-pattern -#
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DB.MVMT.YTD.LCL"
+    }
+
+    field "DB.MVMT.LCL" {
+        label {
+            en = "DB.MVMT.LCL"
+        }
+
+        format: Currency "LCY" negative-pattern -#
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DB.MVMT.LCL"
+    }
+
+    field "CR.MVMT.YTD.LCL" {
+        label {
+            en = "CR.MVMT.YTD.LCL"
+        }
+
+        format: Currency "LCY" negative-pattern -#
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 77
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CR.MVMT.YTD.LCL"
+    }
+
+    field "CR.MVMT.LCL" {
+        label {
+            en = "CR.MVMT.LCL"
+        }
+
+        format: Currency "LCY" negative-pattern -#
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CR.MVMT.LCL"
+    }
+
+    field "CLOSING.BAL.LCL" {
+        label {
+            en = "CLOSING.BAL.LCL"
+        }
+
+        format: Currency "LCY" negative-pattern -#
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 113
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CLOSING.BAL.LCL"
+    }
+
+    field "LCY" {
+        format: Currency "LCY" negative-pattern -#
+        comma-separator: false
+        operation: local-currency
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "REPORT.LINE" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "RE.STAT.LINE.BAL"
+    }
+
+}

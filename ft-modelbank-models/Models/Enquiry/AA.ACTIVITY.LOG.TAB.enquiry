@@ -1,0 +1,251 @@
+Enquiry "AA.ACTIVITY.LOG.TAB" for "name:/AA_ModelBank:NOFILE.AA.ACTIVITY.LOG#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Activity Log"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "SIM.REF" {
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "START DATE"
+            }
+
+            operands: LessOrEquals
+        }
+
+        AND
+
+        field "END.DATE" {
+            label {
+                en = "END DATE"
+            }
+
+            operands: GreaterOrEquals
+        }
+
+        AND
+
+        field "ACTIVITY.ID" {
+            label {
+                en = "ACTIVITY ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.AA.ACT.LOG.REC"
+    }
+
+    field "PREV.EFF.DATE" {
+        comma-separator: false
+        operation: field-extract "EFF.DATE"
+    }
+
+    field "EFF.DATE" {
+        comma-separator: false
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "D.EFFECTIVE.DATE" {
+        label {
+            en = "Effective Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "PREV.EFF.DATE" NotEquals "EFF.DATE" process "EFF.DATE" "\"\""
+    }
+
+    field "SEQUENCE.NO" {
+        comma-separator: false
+        operation: application-field-name "SEQUENCE.NO"
+    }
+
+    field "ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: application-field-name "ACTIVITY"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "INITIATION" {
+        label {
+            en = "Initiation"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: application-field-name "INITIATION"
+        conversion: oconv "MCT"
+    }
+
+    field "ACTIVITY.AMT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: application-field-name "ACTIVITY.AMT"
+    }
+
+    field "ACTIVITY.REF" {
+        alignment: Left
+        comma-separator: false
+        hidden: true
+        operation: application-field-name "ACTIVITY.REF"
+    }
+
+    field "LIVE.ACT" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "1" false
+    }
+
+    field "L.ACT.REF" {
+        label {
+            en = "Activity Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        hidden: true
+        operation: if "LIVE.ACT" NotEquals "\"\"" process "ACTIVITY.REF" "\"\""
+    }
+
+    field "S.ACT.REF" {
+        display-type: "CLASS-ITALIC"
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        hidden: true
+        operation: if "LIVE.ACT" Equals "\"\"" process "ACTIVITY.REF" "\"\""
+    }
+
+    field "ACTIVITY.STATUS" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "ACTIVITY.STATUS"
+        conversion: replace {
+            oldData: "AUTH"
+            newData: "Authorized"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Not Authorized"
+        }
+
+        conversion: replace {
+            oldData: "DELETE"
+            newData: "Deleted"
+        }
+
+        conversion: replace {
+            oldData: "AUTH-REV"
+            newData: "Reversed"
+        }
+
+        conversion: replace {
+            oldData: "REVERSE"
+            newData: "Reversal Not Authorized"
+        }
+
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        hidden: true
+        operation: if "LIVE.ACT" Equals "\"\"" process "\"Simulated\"" "ACTIVITY.STATUS"
+    }
+
+    field "V.AAA.USER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA\""
+    }
+
+    field "V.AAA.TXN" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.TXN\""
+    }
+
+    field "V.AAA" {
+        comma-separator: false
+        operation: if "INITIATION" Equals "TXN" process "V.AAA.TXN" "V.AAA.USER"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "L.ACT.REF"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ACTIVITY.REF"
+        }
+
+        from-field: "V.AAA"
+    }
+
+    attributes: "ALLDATA"
+}

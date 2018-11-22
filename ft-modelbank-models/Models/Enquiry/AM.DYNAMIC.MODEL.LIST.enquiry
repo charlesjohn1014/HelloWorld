@@ -1,0 +1,348 @@
+Enquiry "AM.DYNAMIC.MODEL.LIST" for "name:/AM_DynamicModelling:AM.DYNAMIC.MODEL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List Of Available Models"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ROOT.NODE" {
+        Equals "\'Yes\'"
+    }
+
+    fixed-selection "VALIDITY.DATE" {
+        Equals "!TODAY"
+    }
+
+    fixed-selection "MODEL.STATUS" {
+        Equals "\'Active\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+        }
+
+        AND
+
+        field "NODE.NAME" {
+            label {
+                en = "Model Id"
+            }
+
+        }
+
+        AND
+
+        field "AUTHORISER" {
+            label {
+                en = "Authoriser"
+            }
+
+        }
+
+        AND
+
+        field "ACTIVE" {
+            label {
+                en = "Active"
+            }
+
+        }
+
+        None
+    }
+
+    field "NODE.NAME" {
+        label {
+            en = "Model Id"
+        }
+
+        length: 28
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NODE.NAME"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Active Dynamic Models\""
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "AUTHORISER" {
+        label {
+            en = "Created By"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: application-field-name "AUTHORISER"
+        conversion: extract from 2 to 0 delimited by "_"
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "ACTIVE" {
+        label {
+            en = "Active"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACTIVE"
+    }
+
+    field "VALIDITY.DATE" {
+        label {
+            en = "ActiveVersionDate"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALIDITY.DATE"
+    }
+
+    field "S.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "LAST.CHANGE" {
+        label {
+            en = "LastUpdate"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 125
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LAST.CHANGE.DATE"
+    }
+
+    field "FOLIO.ID" {
+        label {
+            en = "VP"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PORTFOLIO.ID"
+    }
+
+    field "DM.ID" {
+        label {
+            en = "DM.ID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NODE.NAME.02" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NODE.NAME"
+    }
+
+    field "DD.COPY.APP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"AM.DYNAMIC.MODEL.COPY,AUTO I F3\""
+    }
+
+    field "DD.COPY.FDESC" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\" DESCRIPTION=\""
+    }
+
+    field "DD.COPY.FDATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\" FROM.DATE=\""
+    }
+
+    field "DD.COPY.FID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\" DYNAMIC.MODEL=\""
+    }
+
+    field "DD.COPY.DESC" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "DD.COPY.FDESC":"DESCRIPTION"
+    }
+
+    field "DD.COPY.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "DD.COPY.FDATE":"VALIDITY.DATE"
+    }
+
+    field "DD.COPY.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "DD.COPY.FID":"NODE.NAME"
+    }
+
+    field "DD.COPY.ARGS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "DD.COPY.DESC":"DD.COPY.DATE":"DD.COPY.ID"
+    }
+
+    field "DD.COPY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "DD.COPY.APP":"DD.COPY.ARGS"
+    }
+
+    field "FOLIO.ID.02" {
+        label {
+            en = "PORTFOLIO"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "PORTFOLIO.ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "History"
+        }
+
+        label-field: "FOLIO.ID"
+        criteria: "PORTFOLIO.ID" Equals "FOLIO.ID"
+        enquiry: "AM.DYNAMIC.MODEL.HIS.MODEL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "NODE.NAME" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "AM.DYNAMIC.MODEL,AUTO"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "NODE.NAME" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "AM.DYNAMIC.MODEL,AUTO"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Disable"
+        }
+
+        label-field: "DESCRIPTION" parameters {
+            function:  Input
+            field: "DM.ID"
+        }
+
+        screen: "AM.DYNAMIC.MODEL,DEACTIVATE"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Duplicate"
+        }
+
+        label-field: "DESCRIPTION"
+        from-field: "DD.COPY"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Performance Details"
+        }
+
+        label-field: "DESCRIPTION"
+        criteria: "SAM.NO" Equals "FOLIO.ID"
+        criteria: "START.DATE" GreaterOrEquals "S.DATE"
+        criteria: "END.DATE" LessOrEquals "!TODAY"
+        enquiry: "SC.DAILY.PERF"
+    }
+
+}

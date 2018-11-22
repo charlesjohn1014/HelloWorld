@@ -1,0 +1,213 @@
+Enquiry "AA.REQUEST.PAYOFF" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Request Payoff / Preclosures"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "ARRANGEMENT.ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "ARR.STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.STATUS"
+    }
+
+    field "SIM" {
+        comma-separator: false
+        operation: selection "SIMULATION.REF"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PROD.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "PAYOFF" {
+        comma-separator: false
+        operation: constant "\"Request Payoff\""
+    }
+
+    field "REQ.CLOSE" {
+        comma-separator: false
+        operation: constant "\"Simulate Closure\""
+    }
+
+    field "REDEEM" {
+        comma-separator: false
+        operation: constant "\"Redeem Deposit\""
+    }
+
+    field "PRD.COND" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "\"CURRENT\"" process "REDEEM" "NULL"
+    }
+
+    field "DEPOSIT" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "\"DEPOSITS\"" process "PRD.COND" "NULL"
+    }
+
+    field "LOAN.EX.CHK" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "\"EXPIRED\"" process "PAYOFF" "NULL"
+    }
+
+    field "PRD.COND1" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "\"CURRENT\"" process "PAYOFF" "LOAN.EX.CHK"
+    }
+
+    field "PRD.COND3" {
+        comma-separator: false
+        operation: if "ARR.STATUS" NotEquals "\"PENDING.CLOSURE\"" process "REQ.CLOSE" "NULL"
+    }
+
+    field "PRD.COND2" {
+        comma-separator: false
+        operation: if "ARR.STATUS" NotEquals "\"CLOSE\"" process "PRD.COND3" "NULL"
+    }
+
+    field "ACCTS" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "\"ACCOUNTS\"" process "PRD.COND2" "REQ.CLOSE"
+    }
+
+    field "LOAN" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "\"LENDING\"" process "PRD.COND1" "ACCTS"
+    }
+
+    field "CURRENT" {
+        comma-separator: false
+        operation: if "PROD.LINE" NotEquals "\"DEPOSITS\"" process "LOAN" "DEPOSIT"
+    }
+
+    field "EXPIRED" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "\"EXPIRED\"" process "LOAN" "NULL"
+    }
+
+    field "D.REQUEST1" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "\"CURRENT\"" process "CURRENT" "EXPIRED"
+    }
+
+    field "AUTH" {
+        comma-separator: false
+        operation: constant "\"AUTH\""
+    }
+
+    field "CHK.ARR.RES" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "\"RESTORE-AUTH\"" process "AUTH" "ARR.STATUS"
+    }
+
+    field "CHK.ARR.AUTH" {
+        comma-separator: false
+        operation: if "ARR.STATUS" Equals "\"AUTH\"" process "AUTH" "CHK.ARR.RES"
+    }
+
+    field "D.REQUEST2" {
+        comma-separator: false
+        operation: if "CHK.ARR.AUTH" Equals "\"AUTH\"" process "CURRENT" "EXPIRED"
+    }
+
+    field "D.REQUEST3" {
+        comma-separator: false
+        operation: if "D.REQUEST2" NotEquals "NULL" process "D.REQUEST2" "D.REQUEST1"
+    }
+
+    field "D.REQUEST" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 248
+        operation: if "SIM" Equals "NULL" process "D.REQUEST3" "NULL"
+    }
+
+    field "V.PAYOFF" {
+        comma-separator: false
+        operation: constant "\"AA.SIMULATION.CAPTURE,AA.DRILL.PAYOFF I F3\""
+    }
+
+    field "V.REDEEM" {
+        comma-separator: false
+        operation: constant "\"AA.SIMULATION.CAPTURE,AA.DEP.REDEEM I F3\""
+    }
+
+    field "V.CALCULATION" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "\"DEPOSITS\"" process "V.REDEEM" "V.PAYOFF"
+    }
+
+    field "PROPERTY.CLASS" {
+        comma-separator: false
+        operation: constant "\"PAYOFF\""
+    }
+
+    field "DELIM" {
+        comma-separator: false
+        operation: constant "\"~\""
+    }
+
+    field "GET.PROP" {
+        comma-separator: false
+        operation: calc "ARRANGEMENT.ID":"DELIM":"PROPERTY.CLASS"
+        conversion: call
+        jBC: "@ E.AA.CONV.GET.PROPERTY.NAME"
+    }
+
+    field "GEN.PAYOFF" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"\"-CALCULATE-\"":"GET.PROP"
+    }
+
+    field "ACT.REDEEM" {
+        comma-separator: false
+        operation: constant "\"DEPOSITS-REDEEM-ARRANGEMENT\""
+    }
+
+    field "ACT.CALCULATE" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "\"DEPOSITS\"" process "ACT.REDEEM" "GEN.PAYOFF"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Run"
+        }
+
+        label-field: "D.REQUEST"
+        image: "execute.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "ACT.CALCULATE"
+        from-field: "V.CALCULATION"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

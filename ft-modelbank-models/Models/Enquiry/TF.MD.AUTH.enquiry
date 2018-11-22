@@ -1,0 +1,351 @@
+Enquiry "TF.MD.AUTH" for "name:/EB_ModelBank:NOFILE.TF.MD.AUTH#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 5
+    end-line: 20 fixed-selection "USER.RTN" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "INPUTTER" {
+            label {
+                en = "INPUTTER"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "AUTHORISER" {
+            label {
+                en = "AUTHORISER"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 30
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Authorised Transactions\""
+    }
+
+    field "RET.ARR" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "TRANS.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "RET.ARR"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "APPL.NAME" {
+        label {
+            en = "Application"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "RET.ARR"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "RET.ARR"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "Y.AMT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "RET.ARR"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "Y.INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "RET.ARR"
+        conversion: extract from 5 to 1 delimited by "*"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "Y.AUTHORISER" {
+        label {
+            en = "Authoriser"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "RET.ARR"
+        conversion: extract from 6 to 1 delimited by "*"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "LC.TYPE" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+        conversion: extract from 1 to 1
+    }
+
+    field "LC.OPER" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "CONCAT1" {
+        comma-separator: false
+        operation: calc "LC.TYPE":"LC.OPER"
+    }
+
+    field "CONCAT2" {
+        comma-separator: false
+        operation: calc "CONCAT1":"APPL.NAME"
+    }
+
+    field "VERSION" {
+        comma-separator: false
+        operation: field-extract "CONCAT2"
+        conversion: replace {
+            oldData: "IPLETTER.OF.CREDIT"
+            newData: "IMPLC.HP"
+        }
+
+        conversion: replace {
+            oldData: "IOLETTER.OF.CREDIT"
+            newData: "IMPLC.HP"
+        }
+
+        conversion: replace {
+            oldData: "IALETTER.OF.CREDIT"
+            newData: "IMAMDEXT.HP"
+        }
+
+        conversion: replace {
+            oldData: "IDLETTER.OF.CREDIT"
+            newData: "IMAMDECIDE.HP"
+        }
+
+        conversion: replace {
+            oldData: "ICLETTER.OF.CREDIT"
+            newData: "CHGCOL"
+        }
+
+        conversion: replace {
+            oldData: "EPLETTER.OF.CREDIT"
+            newData: "EXPLC.HP"
+        }
+
+        conversion: replace {
+            oldData: "EOLETTER.OF.CREDIT"
+            newData: "EXPLC.HP"
+        }
+
+        conversion: replace {
+            oldData: "EALETTER.OF.CREDIT"
+            newData: "EXAM.DEXT.HP"
+        }
+
+        conversion: replace {
+            oldData: "EDLETTER.OF.CREDIT"
+            newData: "EXAMDECIDE.HP"
+        }
+
+        conversion: replace {
+            oldData: "ECLETTER.OF.CREDIT"
+            newData: "CHGCOL"
+        }
+
+        conversion: replace {
+            oldData: "COLETTER.OF.CREDIT"
+            newData: "COLDOC.HP"
+        }
+
+        conversion: replace {
+            oldData: "CALETTER.OF.CREDIT"
+            newData: "COLAMD.HP"
+        }
+
+        conversion: replace {
+            oldData: "CTLETTER.OF.CREDIT"
+            newData: "OUTTRACE"
+        }
+
+        conversion: replace {
+            oldData: "IDRAWINGS"
+            newData: "IMPSP.HP"
+        }
+
+        conversion: replace {
+            oldData: "EDRAWINGS"
+            newData: "EXPSP.HP"
+        }
+
+        conversion: replace {
+            oldData: "CDRAWINGS"
+            newData: "OUTCOLPMT.HP"
+        }
+
+        conversion: replace {
+            oldData: "LC.AMENDMENTS"
+            newData: "IMPLC.HP"
+        }
+
+        conversion: replace {
+            oldData: "DR.DISC.AMENDMENTS"
+            newData: "ACAMD"
+        }
+
+        conversion: replace {
+            oldData: "MD.DEAL"
+            newData: "GUARANTEE.HP"
+        }
+
+        conversion: replace {
+            oldData: "LC.ACCOUNT.BALANCES"
+            newData: "CHG"
+        }
+
+    }
+
+    field "APPL.COMMA" {
+        comma-separator: false
+        operation: calc "APPL.NAME":"\",\""
+    }
+
+    field "DRILLDOWN" {
+        comma-separator: false
+        operation: calc "APPL.COMMA":"VERSION"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Authorised Contracts available for this user\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "TRANS.REF" parameters {
+            function:  See
+            field: "TRANS.REF"
+        }
+
+        from-field: "DRILLDOWN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "TRANS.REF" parameters {
+            function:  Reverse
+            field: "TRANS.REF"
+        }
+
+        from-field: "DRILLDOWN"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Send Message"
+        }
+
+        label-field: "TRANS.REF" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.TICKLER,VIEW"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Document Capture"
+        }
+
+        label-field: "TRANS.REF"
+        criteria: "CURRENT.APPL" > "APPL.NAME"
+        criteria: "CURRENT.TRANS.REF" > "TRANS.REF" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "IM.DOCUMENT.IMAGE,CAPTURE.LC"
+    }
+
+}

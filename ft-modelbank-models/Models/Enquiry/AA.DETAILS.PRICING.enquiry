@@ -1,0 +1,130 @@
+Enquiry "AA.DETAILS.PRICING" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Relationship Pricing"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "L.LINK.TYPE" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Plan\""
+    }
+
+    field "LINK.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RELATIONSHIP.PLAN"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "L.PRICING" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Pricing Arrangement\""
+    }
+
+    field "LINK.ARR" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RELATIONSHIP.ARR"
+    }
+
+    field "L.LINK.ARR" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 120
+        operation: if "LINK.ARR" NotEquals "NULL" process "L.PRICING" "NULL"
+    }
+
+    field "D.LINK.ARR" {
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 130
+        operation: if "LINK.ARR" NotEquals "NULL" process "LINK.ARR" "NULL"
+    }
+
+    field "L.LINK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        column-width: 95
+        operation: if "LINK.TYPE" NotEquals "NULL" process "L.LINK.TYPE" "NULL"
+    }
+
+    field "D.LINK.TYPE" {
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        column-width: 165
+        operation: if "LINK.TYPE" NotEquals "NULL" process "LINK.TYPE" "NULL"
+    }
+
+    field "PROD" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "D.LINK.ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Pricing Details"
+        }
+
+        label-field: "D.LINK.ARR"
+        image: "view.gif" parameters {
+            field: "D.LINK.ARR"
+        }
+
+        composite-screen: "AA.OVERVIEW.PR"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

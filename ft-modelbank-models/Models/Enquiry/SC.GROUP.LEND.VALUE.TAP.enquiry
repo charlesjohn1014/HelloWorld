@@ -1,0 +1,466 @@
+Enquiry "SC.GROUP.LEND.VALUE.TAP" for "name:/SC_ScvValuationUpdates:SC.GROUP.POS.ASSET#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Group Positions"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 99
+    custom-selection {
+
+        field "MASTER.PORTFOLIO" {
+            label {
+                en = "Master ID"
+            }
+
+        }
+
+        AND
+
+        field "SEL.CCY" {
+            label {
+                en = "Display Ccy"
+            }
+
+        }
+
+        None
+    }
+
+    field "SAM" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: selection "MASTER.PORTFOLIO"
+    }
+
+    field "S.CCY" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: selection "SEL.CCY"
+        conversion: call
+        jBC: "@ E.SC.SET.CCY2"
+    }
+
+    field "REFCCY" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "DISP.CCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: if "S.CCY" Equals "NULL" process "REFCCY" "S.CCY"
+    }
+
+    field "SECURITY.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.CCY"
+        conversion: call
+        jBC: "@ E.SC.SET.CCY"
+    }
+
+    field "ID" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "SECURITY.NO" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "ST" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"*\""
+    }
+
+    field "SCCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.CCY"
+    }
+
+    field "CONCAT" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "ID":"ST":"SECURITY.NO":"ST":"SCCY"
+    }
+
+    field "GET.VAL" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CONCAT"
+        conversion: call
+        jBC: "@ E.SC.GET.VALUE.FROM.GPA"
+    }
+
+    field "ID.SAT" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "PORT.SAT" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "ID.SAT" Equals "\"\"" process "\"Child\"" "ID.SAT"
+    }
+
+    field "SAT" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PORT.SAT"
+    }
+
+    field "SM.VALUE" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 8 to 1 delimited by "~"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "SAT.DES" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SAT"
+        conversion: getFrom "SUB.ASSET.TYPE" "SHORT.DESCR" false
+    }
+
+    field "SAT.DESC" {
+        label {
+            en = "Sub Asset Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: if "SAT.DES" Equals "\"\"" process "\"Child_Portfolio\"" "SAT.DES"
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SEC.NAME" {
+        label {
+            en = "Description"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SECURITY.CCY.02" {
+        label {
+            en = "Sec Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.CCY"
+    }
+
+    field "MARKT.VAL" {
+        label {
+            en = "Market Value"
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 2 to 1 delimited by "~"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "MARG.VALUE" {
+        length: 24
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "MARGIN.VALUE"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "SECOND.MKRT.VALUE" {
+        label {
+            en = "Mkt Val of Collateral Assets"
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SM.VALUE"
+    }
+
+    field "LIABT" {
+        label {
+            en = "Liabilities"
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 5 to 1 delimited by "~"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "EST2" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ESTIMATION"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "MGN.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 11 to 1 delimited by "~"
+    }
+
+    field "HUNDRED" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"100\""
+    }
+
+    field "MGN.PCT" {
+        label {
+            en = "Margin %"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        decimals: 0
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: calc "MGN.RATE" * "HUNDRED"
+    }
+
+    field "MAR.VALUE" {
+        label {
+            en = "Lombard Value"
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 17
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 3 to 1 delimited by "~"
+        conversion: call
+        jBC: "@ E.CONVERT.AMT"
+    }
+
+    field "DIVERSE" {
+        label {
+            en = "Diversification"
+        }
+
+        display-type: "CLASS-BOLD.RED"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 4 to 1 delimited by "~"
+    }
+
+    field "TOPUP.RATE" {
+        label {
+            en = "Top Up %"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        decimals: 0
+        position {
+            column: 23
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 9 to 1 delimited by "~"
+    }
+
+    field "TOP.UP" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "TOPUP.RATE" / "HUNDRED"
+    }
+
+    field "TOP.UP.AMT" {
+        label {
+            en = "Top Up Amt"
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 25
+        }
+
+        processing-mode: Multi
+        operation: calc "TOP.UP" * "SECOND.MKRT.VALUE"
+    }
+
+    field "SEL.OUT" {
+        label {
+            en = "Sell Out %"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        decimals: 0
+        position {
+            column: 27
+        }
+
+        processing-mode: Multi
+        operation: field-extract "GET.VAL"
+        conversion: extract from 10 to 1 delimited by "~"
+    }
+
+    field "SELL.OUT" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SEL.OUT" / "HUNDRED"
+    }
+
+    field "SELL.OUT.RT" {
+        label {
+            en = "Sell Out Amt"
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 29
+        }
+
+        processing-mode: Multi
+        operation: calc "SELL.OUT" * "SECOND.MKRT.VALUE"
+    }
+
+    field "CHILD" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SAM"
+        conversion: getFrom "SC.VALUATION.GROUP" "CHILD.PORTFOLIO" false
+    }
+
+    field "PORTS" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "SAM":"SPACE":"CHILD"
+    }
+
+}

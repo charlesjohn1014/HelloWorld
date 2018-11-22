@@ -1,0 +1,154 @@
+Enquiry "DAO.EVENT.VIEW" for "name:/EB_AlertProcessing:EVENT.LOG#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Alerts Of Customers"
+    }
+
+    description {
+        en = "Alerts Of Customers"
+    }
+
+    zero-records-display: true
+    start-line: 2
+    end-line: 3
+    build-routines {
+        jBC: "E.BUILD.DAO.EVENT.VIEW"
+    }
+
+    fixed-selection "DELIVERY.REF" {
+        NotEquals "\'\'\'\'"
+    }
+
+    fixed-selection "APPLICATION" {
+        DoesNotContain ".../..."
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Alerts\""
+    }
+
+    field "ID" {
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "TOUCH.POINT.REF" {
+        label {
+            en = "Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOUCH.POINT.REF"
+    }
+
+    field "EVENT" {
+        label {
+            en = "Event"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TEC.ITEM"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "DEL" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "DELIVERY.REF"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Alerts triggered\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "EVENT"
+        image: "view.gif"
+        criteria: "DELIVERY.REF" Equals "DEL"
+        enquiry: "DE.MSG.SUM"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Application"
+        }
+
+        label-field: "EVENT"
+        image: "details.gif" parameters {
+            function:  See
+            field: "TOUCH.POINT.REF"
+        }
+
+        from-field: "APPLICATION"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Send"
+        }
+
+        label-field: "EVENT"
+        image: "reexecute.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.SECURE.MESSAGE,ALERT.REP"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

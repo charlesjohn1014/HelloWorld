@@ -1,0 +1,229 @@
+Enquiry "CGT.REV.ENTRY" for "name:/SC_SctCapitalGains:CGT.REV.ENTRY#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "List of Reversed Accounting Entry "
+        }
+
+        column: 20
+        line: 1
+    }
+
+    header {
+        label {
+            en = "for Capital Gain Tax"
+        }
+
+        column: 54
+        line: 1
+    }
+
+    start-line: 4
+    end-line: 19
+
+    field "@ID" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "STMT.ENT.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "STMT.ENT.ID"
+    }
+
+    field "ACCT.ID" {
+        label {
+            en = "Account No"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENT.ID"
+        conversion: getFrom "STMT.ENTRY" "1" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Cust Id"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENT.ID"
+        conversion: getFrom "STMT.ENTRY" "1" false
+        conversion: getFrom "ACCOUNT" "1" false
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "2" false
+    }
+
+    field "TRD.ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 51
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENT.ID"
+        conversion: getFrom "STMT.ENTRY" "17" false
+    }
+
+    field "LCY.AMT" {
+        label {
+            en = "Lcy Amt"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 68
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENT.ID"
+        conversion: getFrom "STMT.ENTRY" "3" false
+    }
+
+    field "CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENT.ID"
+        conversion: getFrom "STMT.ENTRY" "12" false
+    }
+
+    field "FCY.AMT" {
+        label {
+            en = "Fcy Amt"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 85
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENT.ID"
+        conversion: getFrom "STMT.ENTRY" "13" false
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 98
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENT.ID"
+        conversion: getFrom "STMT.ENTRY" "11" false
+    }
+
+    field "BOOK.DATE" {
+        label {
+            en = "Booking Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 109
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STMT.ENT.ID"
+        conversion: getFrom "STMT.ENTRY" "25" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Statement Entry Book Enquiry"
+        }
+
+        label-field: "CUST.ID"
+        criteria: "ACCOUNT" Equals "ACCT.ID"
+        criteria: "BOOKING.DATE" Equals "BOOK.DATE"
+        enquiry: "STMT.ENT.BOOK"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Statement Entry file"
+        }
+
+        label-field: "CUST.ID" parameters {
+            function:  See
+            field: "STMT.ENT.ID"
+        }
+
+        application: "STMT.ENTRY"
+    }
+
+}

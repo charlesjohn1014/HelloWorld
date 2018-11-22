@@ -1,0 +1,106 @@
+Enquiry "DE.MM.I.HIST" for "name:/DE_ModelBank:NOFILE.DE.MM.I.HIST#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "History of Inward Dlvry Msgs"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "R.OUT.LIST" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "OUT.DATE" {
+            operands: LessThan
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"History of Inward Delivery\""
+    }
+
+    field "REF.NO" {
+        label {
+            en = "Delivery Reference"
+        }
+
+        length: 26
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DIH.ID" {
+        label {
+            en = "Message Type"
+        }
+
+        comma-separator: false
+        operation: field-extract "REF.NO"
+        conversion: getFrom "DE.I.HEADER" "MESSAGE.TYPE" false
+    }
+
+    field "DISP" {
+        label {
+            en = "Disposition"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CARR" {
+        label {
+            en = "Carrier"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Delivery Details"
+        }
+
+        label-field: "REF.NO"
+        image: "view.gif"
+        criteria: "DEL.ID" Equals "REF.NO" parameters {
+            field: "REF.NO"
+        }
+
+        composite-screen: "DE.I.HIST.DISP"
+    }
+
+}

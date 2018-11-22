@@ -1,0 +1,419 @@
+Enquiry "FT.INREMIT" for "name:/FT_Contract:FUNDS.TRANSFER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Inward Remittance Executed Today"
+    }
+
+    description {
+        en = "Inward Remittances executed Today"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "TRANSACTION.TYPE" {
+        Equals "IT"
+    }
+
+    fixed-sort: "DEBIT.CURRENCY" Null
+    fixed-sort: "DEBIT.ACCT.NO" Null
+    fixed-sort: "CREDIT.ACCT.NO" Null
+    custom-selection {
+
+        field "DEBIT.CURRENCY" {
+            label {
+                en = "Debit Ccy"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "DEBIT.ACCT.NO" {
+            label {
+                en = "Debit Account"
+            }
+
+        }
+
+        AND
+
+        field "DEBIT.VALUE.DATE" {
+            label {
+                en = "Debit Value Date"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.CURRENCY" {
+            label {
+                en = "Credit Ccy"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.ACCT.NO" {
+            label {
+                en = "Credit Account"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.VALUE.DATE" {
+            label {
+                en = "Credit Value Date"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.AMOUNT" {
+            label {
+                en = "Credit Amount"
+            }
+
+        }
+
+        AND
+
+        field "CREDIT.CUSTOMER" {
+            label {
+                en = "Credit Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "Debit Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        operation: constant "\"Incoming Transfers Today\""
+    }
+
+    field "DEBIT.ACCT.NO.02" {
+        label {
+            en = "Received From"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "DEBIT.CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "DEBIT.CURRENCY"
+    }
+
+    field "DEBIT.AMOUNT" {
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: application-field-name "DEBIT.AMOUNT"
+    }
+
+    field "CREDIT.AMOUNT" {
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: application-field-name "CREDIT.AMOUNT"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.DRAMT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: if "DEBIT.AMOUNT" Greater "NULL" process "DEBIT.AMOUNT" "CREDIT.AMOUNT"
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "CREDIT.ACCT.NAME" {
+        label {
+            en = "Beneficiary"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: i-desc "CREDIT.ACCT.NAME"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Debit Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.DEBITED"
+        conversion: extract from 1 to 3
+    }
+
+    field "DEBIT.AMOUNT.02" {
+        label {
+            en = "Debit Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.DEBITED"
+        conversion: extract from 4 to 20
+    }
+
+    field "CCY2" {
+        label {
+            en = "Charge Ccy"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.CHARGE.AMT"
+        conversion: extract from 1 to 3
+    }
+
+    field "CHARGE.AMT" {
+        label {
+            en = "Charges"
+        }
+
+        format: Currency "CCY2" negative-pattern -#
+        length: 22
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.CHARGE.AMT"
+        conversion: extract from 4 to 20
+    }
+
+    field "CCY3" {
+        label {
+            en = "Credit Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: application-field-name "AMOUNT.CREDITED"
+        conversion: extract from 1 to 3
+    }
+
+    field "CREDIT.AMT" {
+        label {
+            en = "Credit Amount"
+        }
+
+        format: Currency "CCY3" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.CREDITED"
+        conversion: extract from 4 to 20
+    }
+
+    field "PROFIT.CENT" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROFIT.CENTRE.DEPT"
+    }
+
+    field "Y.DRILL" {
+        comma-separator: false
+        operation: calc "PROFIT.CENTRE.DEPT":"TRANSACTION.TYPE"
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,\""
+    }
+
+    field "Y.VER2" {
+        comma-separator: false
+        operation: constant "\"IT.LCYVOST.FTHP\""
+    }
+
+    field "Y.VER1" {
+        comma-separator: false
+        operation: constant "\"IT.FCYNOST.FTHP\""
+    }
+
+    field "Y.DRILL2" {
+        comma-separator: false
+        operation: if "Y.DRILL" Equals "\"IT\"" process "Y.VER2" "Y.VER1"
+    }
+
+    field "Y.VAL" {
+        comma-separator: false
+        operation: calc "APPL":"Y.DRILL2"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Inward Remittances effected Today\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "Y.VAL"
+    }
+
+}

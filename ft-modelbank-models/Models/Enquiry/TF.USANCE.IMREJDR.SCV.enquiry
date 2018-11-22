@@ -1,0 +1,262 @@
+Enquiry "TF.USANCE.IMREJDR.SCV" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of Rejected Documents(Imports)"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DRAWING.TYPE" {
+        Equals "CR"
+    }
+
+    fixed-sort: "LC.CREDIT.TYPE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "CUSTOMER.LINK" {
+            label {
+                en = "Applicant"
+            }
+
+        }
+
+        AND
+
+        field "DRAW.CURRENCY" {
+            label {
+                en = "Document Currency"
+            }
+
+        }
+
+        AND
+
+        field "DOCUMENT.AMOUNT" {
+            label {
+                en = "Document Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 1
+        }
+
+        operation: constant "\"Accept/Final Rejection of Discrepant Docs\""
+    }
+
+    field "ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 123
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PRESENTOR" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRESENTOR"
+    }
+
+    field "PRESENTOR.CUST" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "PRESENTOR.DISP" {
+        label {
+            en = "Presentor"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 75
+        operation: if "PRESENTOR" NotEquals "NULL" process "PRESENTOR" "PRESENTOR.CUST"
+    }
+
+    field "DRAWING.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 20
+        processing-mode: Single
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        column-width: 30
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMT" {
+        label {
+            en = "Doc Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        column-width: 75
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "VAL.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        column-width: 70
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "VERSION" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NEW.DRAW.SET"
+        conversion: replace {
+            oldData: "MX"
+            newData: "IMPSP"
+        }
+
+        conversion: replace {
+            oldData: "AC"
+            newData: "IMPAC"
+        }
+
+        conversion: replace {
+            oldData: "DP"
+            newData: "IMPAC"
+        }
+
+    }
+
+    field "DRAWINGS" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS,\""
+    }
+
+    field "SEL.VERSION" {
+        comma-separator: false
+        operation: calc "DRAWINGS":"VERSION"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        column-width: 123
+        operation: constant "\"No discrepant docs pending for Acceptance\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Accept"
+        }
+
+        label-field: "ID"
+        image: "accept.gif" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        from-field: "SEL.VERSION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Final Rejection "
+        }
+
+        label-field: "ID"
+        image: "reject.gif" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "DRAWINGS,IMFINALREJ"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.TOOLBAR"
+}

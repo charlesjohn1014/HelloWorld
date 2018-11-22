@@ -1,0 +1,236 @@
+Enquiry "ID.MUD.DEPOSIT.POOL" for "name:/ID_PdsProcess:ID.DEPOSIT.BALANCES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Mudaraba deposits List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 10
+    end-line: 19 fixed-selection "PAY.PROFIT" {
+        Equals "\"NO\""
+    }
+
+    custom-selection {
+
+        field "PDS.ACTION.REF" {
+            mandatory: true
+            label {
+                en = "Sim Reference"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CURRENCY"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of failed deposits due to minimum Tenor\""
+    }
+
+    field "HDR2" {
+        comma-separator: false
+        operation: constant "\"Simulation Ref : \""
+    }
+
+    field "SIM.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 55
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: calc "HDR2":"SIM.REF"
+    }
+
+    field "CONTRACT.REF" {
+        label {
+            en = "Contract Reference"
+        }
+
+        length: 55
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "Account Number"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "CONTRACT.REF"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Arrangement Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CATEGORY.DESC" {
+        label {
+            en = "Category - Description"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "PAY.PROFIT" {
+        label {
+            en = "Pay Profit"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAY.PROFIT"
+    }
+
+    field "NO.PROFIT.REASON" {
+        label {
+            en = "No Profit Reason"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.PROFIT.REASON"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ERROR.MSG" {
+        label {
+            en = "Error Message"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: field-extract "NO.PROFIT.REASON"
+        conversion: getFrom "EB.ERROR" "ERROR.MSG" false
+    }
+
+    field "EXCLUDED.BALANCE" {
+        label {
+            en = "Exclude Balance"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXCLUDED.BALANCE"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"No Mudaraba deposits to display\""
+    }
+
+}

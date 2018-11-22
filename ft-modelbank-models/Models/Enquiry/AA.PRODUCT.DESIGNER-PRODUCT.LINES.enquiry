@@ -1,0 +1,133 @@
+Enquiry "AA.PRODUCT.DESIGNER-PRODUCT.LINES" for "name:/AA_ProductFramework:AA.PRODUCT.LINE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Lines"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "DESCRIPTION" {
+        label {
+            en = "Line"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "LINE" {
+        label {
+            en = "ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PRODUCT.LINE.ID"
+    }
+
+    field "V.AA.PRD.GRP" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.GROUP,AA\""
+    }
+
+    field "V.AA.PRD.GRP.OTH" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.GROUP,AA.OTHER\""
+    }
+
+    field "V.AA.PRODUCT.GROUP" {
+        comma-separator: false
+        operation: if "LINE" Equals "\"OTHER\"" process "V.AA.PRD.GRP.OTH" "V.AA.PRD.GRP"
+    }
+
+    field "V.AA.PRODUCT.LINE" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.LINE,AA\""
+    }
+
+    field "E.AA.PROD.GRP" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.DESIGNER-PRODUCT.GROUPS\""
+    }
+
+    field "E.AA.PROD.GRP.OTH" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.DESIGNER-PRODUCT.GROUPS.OTHER\""
+    }
+
+    field "E.AA.PRODUCT.GROUP" {
+        comma-separator: false
+        operation: if "LINE" Equals "\"OTHER\"" process "E.AA.PROD.GRP.OTH" "E.AA.PROD.GRP"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "LINE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "LINE"
+        }
+
+        from-field: "V.AA.PRODUCT.LINE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Amend Description"
+        }
+
+        label-field: "LINE"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "LINE"
+        }
+
+        from-field: "V.AA.PRODUCT.LINE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "New Product Group"
+        }
+
+        label-field: "LINE"
+        image: "new.gif"
+        criteria: "AA.PRODUCT.LINE" > "LINE" parameters {
+            function:  Input
+        }
+
+        from-field: "V.AA.PRODUCT.GROUP"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Product Groups"
+        }
+
+        label-field: "LINE"
+        image: "right.arrow.gif"
+        criteria: "PRODUCT.LINE" Equals "LINE"
+        from-field: "E.AA.PRODUCT.GROUP"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

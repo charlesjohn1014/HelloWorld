@@ -1,0 +1,500 @@
+Enquiry "MF.FEE.DETAILS" for "name:/EB_ModelBank:NOFILE.CATEG.ENT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "CATEGORY ENTRIES"
+        }
+
+        column: 26
+        line: 0
+    }
+
+    header {
+        label {
+            en = "CATEGORY:"
+        }
+
+        column: 54
+        line: 0
+    }
+
+    header {
+        label {
+            en = "CCY :"
+        }
+
+        column: 71
+        line: 1
+    }
+
+    description {
+        en = "MF Fee Details"
+    }
+
+    start-line: 6
+    end-line: 18
+    custom-selection {
+
+        field "CATEGORY" {
+            mandatory: true
+        }
+
+        AND
+
+        field "BOOKING.DATE" {
+            mandatory: true
+        }
+
+        None
+    }
+
+    field "FILL.REC" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.CATEG.ENQ2"
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "VAL.DATE" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: getFrom "CATEG.ENTRY" "11" false
+    }
+
+    field "P.VAL.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "VAL.DATE"
+        conversion: julian
+        conversion: oconv "D2"
+        conversion: replace {
+            oldData: "--"
+        }
+
+    }
+
+    field "CAT" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "B.CAT" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "CAT"
+    }
+
+    field "CAT.02" {
+        break-condition {
+            break: Page
+        }
+
+        alignment: Right
+        comma-separator: false
+        fmtMask: "###-###"
+        position {
+            column: 65
+            line: 0
+        }
+
+        operation: field-extract "CAT"
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "D.CCY" {
+        break-condition {
+            break: Page
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 76
+            line: 1
+        }
+
+        operation: field-extract "CCY"
+    }
+
+    field "LANG" {
+        comma-separator: false
+        operation: language
+    }
+
+    field "CATEG.D" {
+        format: User break-condition {
+            break: Page
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 1
+        }
+
+        operation: field-extract "CAT"
+        conversion: getFrom "CATEGORY" "1" false
+    }
+
+    field "TCODE" {
+        comma-separator: false
+        operation: field-number 5
+    }
+
+    field "DESC" {
+        format: User
+        comma-separator: false
+        operation: field-number 5
+        conversion: getFrom "TRANSACTION" "1" false
+    }
+
+    field "NOREC" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*** NO ENTRIES FOR PERIOD ***\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"LD\""
+    }
+
+    field "THEIR.REF" {
+        comma-separator: false
+        operation: field-number 9
+    }
+
+    field "F" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"F\""
+    }
+
+    field "ASTRIX" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "D.ASTRIX" {
+        comma-separator: false
+        operation: if "VAL.DATE" Greater "TODAY" process "ASTRIX" "F"
+    }
+
+    field "P.ASTRIX" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: if "VAL.DATE" Greater "TODAY" process "ASTRIX" "NULL"
+    }
+
+    field "T.ASTERIX" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "D.ASTRIX"
+    }
+
+    field "PDESC" {
+        label {
+            en = "Description"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: if "TCODE" NotEquals "NULL" process "DESC" "NOREC"
+    }
+
+    field "REFNO" {
+        label {
+            en = "Reference No"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        operation: field-number 6
+    }
+
+    field "POST" {
+        label {
+            en = "Post Date"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        operation: application-field-name "BOOKING.DATE"
+        conversion: julian
+        conversion: oconv "D2"
+        conversion: replace {
+            oldData: "--"
+        }
+
+    }
+
+    field "AMT" {
+        format: Currency "CCY" negative-pattern #-
+        comma-separator: false
+        operation: field-number 8
+    }
+
+    field "NOREC2" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"------------------\""
+    }
+
+    field "PAMT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 58
+        }
+
+        operation: if "TCODE" NotEquals "NULL" process "AMT" "NOREC2"
+    }
+
+    field "TRN.TYPE" {
+        comma-separator: false
+        operation: field-extract "REFNO"
+        conversion: extract from 1 to 2
+    }
+
+    field "EXTRA.DESC" {
+        comma-separator: false
+        position {
+            column: 4
+            line: + 1
+        }
+
+        operation: if "TRN.TYPE" Equals "LD" process "THEIR.REF" "NULL"
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "ZER1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: if "TOTAL" Equals "ZERO" process "TOTAL" "B.AMT.BF"
+    }
+
+    field "ENT.TOT" {
+        break-condition {
+            field: "B.CAT"
+        }
+
+        comma-separator: false
+        operation: total "AMT"
+    }
+
+    field "T.ENT.TOT" {
+        break-condition {
+            field: "T.ASTERIX"
+        }
+
+        comma-separator: false
+        operation: total "AMT"
+    }
+
+    field "T.D.BAL" {
+        break-condition {
+            field: "T.ASTERIX"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 14
+            line: + 1
+        }
+
+        operation: constant "\"BALANCE AT PERIOD END\""
+    }
+
+    field "D.BAL" {
+        break-condition {
+            field: "B.CAT"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 14
+            line: + 2
+        }
+
+        operation: constant "\"BALANCE INCLUDING FORWARDS\""
+    }
+
+    field "T.TOTAL" {
+        format: Currency "CCY" negative-pattern #- break-condition {
+            field: "T.ASTERIX"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 58
+            line: + 1
+        }
+
+        operation: calc "T.ENT.TOT" + "B.AMT.BF"
+    }
+
+    field "TOTAL" {
+        format: Currency "CCY" negative-pattern #- break-condition {
+            field: "B.CAT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 58
+            line: + 2
+        }
+
+        operation: calc "ENT.TOT" + "B.AMT.BF"
+    }
+
+    field "BFWD" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 4
+        }
+
+        operation: constant "\"BALANCE AT PERIOD START\""
+    }
+
+    field "B.AMT.BF" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "AMT.BFWD" {
+        format: Currency "CCY" negative-pattern #- break-condition {
+            break: Page
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 58
+            line: 4
+        }
+
+        operation: field-extract "B.AMT.BF"
+    }
+
+    field "CATEG.ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        label-field: "PDESC" parameters {
+            function:  See
+            field: "CATEG.ID"
+        }
+
+        application: "CATEG.ENTRY"
+    }
+
+}

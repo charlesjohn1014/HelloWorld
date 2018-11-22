@@ -1,0 +1,377 @@
+Enquiry "AM.BOND.FO" for "name:/AM_Modelling:AM.RECOMMENDATION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Recommended Bond List"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "BOND.OR.SHARE" {
+        Equals "\'B\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "RECOMMENDATION.NO" {
+            label {
+                en = "Recommendation No"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY" {
+            label {
+                en = "Security"
+            }
+
+        }
+
+        AND
+
+        field "INV.OBJECTIVE" {
+            label {
+                en = "Inv.Objective"
+            }
+
+        }
+
+        AND
+
+        field "SIZING" {
+            label {
+                en = "Sizing"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Recommended Bond List\""
+    }
+
+    field "SEC" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "SECURITY.CURRENCY" false
+    }
+
+    field "SECURITY.CURRENCY" {
+        label {
+            en = "Security Ccy"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "SEC"
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+    }
+
+    field "RECOMMENDATION.NO" {
+        label {
+            en = "Recommendation"
+        }
+
+        length: 45
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "RECOMMENDATION.NO"
+    }
+
+    field "SECURITY" {
+        label {
+            en = "SECURITY.CODE"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+    }
+
+    field "SECNO" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+    }
+
+    field "I.S.I.N" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Description"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "SEC"
+        conversion: getFrom "SECURITY.MASTER" "MATURITY.DATE" false
+    }
+
+    field "RATED" {
+        label {
+            en = "Rating"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RATING"
+    }
+
+    field "INV.OBJECTIVE" {
+        label {
+            en = "Objective"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "INV.OBJECTIVE"
+    }
+
+    field "NARRATIVE" {
+        label {
+            en = "Reason"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NARRATIVE"
+    }
+
+    field "LAST.PRICE" {
+        label {
+            en = "Last price"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    field "PRICE.CURRENCY" {
+        label {
+            en = "Pr ccy"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "PRICE.CURRENCY" false
+    }
+
+    field "LAST.RCD" {
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "RECOMMENDATION.NO"
+        conversion: call
+        jBC: "@ E.AM.GET.LAST.RCD"
+    }
+
+    field "LAST.RCD.RATED" {
+        label {
+            en = "Last Rating"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        hidden: true
+        operation: field-extract "LAST.RCD"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "LAST.RCD.DATE" {
+        label {
+            en = "Last Rcd Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        hidden: true
+        operation: field-extract "LAST.RCD"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "PT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "SECNO.POINT" {
+        comma-separator: false
+        operation: calc "SECNO":"PT"
+    }
+
+    field "SECNO.DATE" {
+        comma-separator: false
+        operation: calc "SECNO.POINT":"LAST.RCD.DATE"
+    }
+
+    field "INIT.PRICE" {
+        label {
+            en = "Init Price"
+        }
+
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECNO.DATE"
+        conversion: getFrom "SC.PRICE.CHANGE" "OLD.PRICE" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Bond Details"
+        }
+
+        label-field: "SEC.NO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "SEC.NO"
+        }
+
+        screen: "SECURITY.MASTER,INP"
+    }
+
+}

@@ -1,0 +1,182 @@
+Enquiry "TCIB.AI.WM.MKT.DATA" for "name:/AM_Benchmark:AM.BENCH.INDICES#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 99 fixed-selection "USER.DEFINED" {
+        Equals "SC.INDICES"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "IND" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SN" {
+        label {
+            en = "Indices"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DU" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.UPDATE"
+    }
+
+    field "DA" {
+        format: Date
+        comma-separator: false
+        processing-mode: Multi
+        operation: last-working-day
+    }
+
+    field "RATE" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "RATE"
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "HISTID" {
+        comma-separator: false
+        operation: calc "IND":"DOT":"DA"
+    }
+
+    field "HRATE" {
+        comma-separator: false
+        operation: field-extract "HISTID"
+        conversion: getFrom "AM.BENCH.INDICES.HIST" "RATE" false
+    }
+
+    field "HRATE1" {
+        label {
+            en = "Rates"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: if "HRATE" Equals "\"0.00\"" process "NULL" "HRATE"
+    }
+
+    field "DIF" {
+        comma-separator: false
+        operation: calc "RATE" - "HRATE"
+    }
+
+    field "DIFF" {
+        label {
+            en = "Change"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        operation: if "DIF" Equals "\"0.00\"" process "NULL" "DIF"
+    }
+
+    field "DIV" {
+        comma-separator: false
+        operation: calc "DIFF" / "HRATE"
+    }
+
+    field "PERC2" {
+        comma-separator: false
+        operation: calc "DIV" * "100"
+    }
+
+    field "PERC3" {
+        label {
+            en = "Precentage"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        operation: if "PERC2" Equals "\"0.00\"" process "NULL" "PERC2"
+    }
+
+    field "DOT.02" {
+        comma-separator: false
+        operation: constant "\"...\""
+    }
+
+    field "IND.DOT" {
+        label {
+            en = "id"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: calc "IND":"DOT"
+    }
+
+}

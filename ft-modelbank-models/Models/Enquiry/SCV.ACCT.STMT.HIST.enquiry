@@ -1,0 +1,332 @@
+Enquiry "SCV.ACCT.STMT.HIST" for "name:/ST_AccountStatement:ACCT.STMT.PRINT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Statement History"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 99
+    custom-selection {
+
+        field "STMT.ACCOUNT.NO" {
+        }
+
+        None
+    }
+
+    field "@ID" {
+        comments:
+        "Displays the account number and then calls the routine to extract the statement dates and opening balances from ACCT.STMT.PRINT as multi values."
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.STMT.DATES"
+    }
+
+    field "HEADER.TITTLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Account \""
+    }
+
+    field "HEADER,TITTLE.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Statement History\""
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Account:\""
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Ccy:\""
+    }
+
+    field "B.ACCT" {
+        comments: "Throw page on new id"
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "@ID"
+    }
+
+    field "CUR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TODAY" {
+        comments: "Use to check for current period"
+        format: Date break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: today
+    }
+
+    field "ACCT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "CCY" {
+        comments: "Account curency"
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "CCY.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 9
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "CCY"
+        conversion: getFrom "CURRENCY" "CCY.NAME" false
+    }
+
+    field "STATEMENT.DATES" {
+        comments: "Dates of statement"
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "STMT.DATE.BAL"
+    }
+
+    field "DISPLAY.DATES" {
+        label {
+            en = "Statement date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "STATEMENT.DATES"
+    }
+
+    field "CURR.PERIOD.IND" {
+        label {
+            en = "Curr period ind"
+        }
+
+        comments: "Hilights current period"
+        comma-separator: false
+        escapeSequence: BL
+        position {
+            column: 16
+        }
+
+        processing-mode: Multi
+        operation: if "DISPLAY.DATES" Equals "TODAY" process "CUR" "NULL"
+    }
+
+    field "OPENING.BALANCE" {
+        label {
+            en = "Opening balance"
+        }
+
+        comments: "Opening balance of statement"
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-number 2
+    }
+
+    field "CLOSING.BALANCE" {
+        label {
+            en = "Closing balance"
+        }
+
+        comments: "Closing balance"
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Multi
+        operation: field-number 3
+    }
+
+    field "AS.NEXT.TEXT" {
+        format: Translate break-condition {
+            field: "B.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 3
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Next Due Date :\""
+    }
+
+    field "NEXT.STMT.DATE" {
+        comments: "Extract Date part of stmt"
+        format: Date break-condition {
+            field: "B.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 16
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT.STATEMENT" "STMT.FQU.1" false
+        conversion: call
+        jBC: "@ E.NEXT.STMT.FQU1.DT"
+        conversion: extract from 1 to 8
+    }
+
+    field "STMT.FQU.TXT" {
+        format: Translate break-condition {
+            field: "B.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 20
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Frequency :\""
+    }
+
+    field "STMT.FQU" {
+        comments: "Frequency bit" break-condition {
+            field: "B.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 45
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT.STATEMENT" "STMT.FQU.1" false
+        conversion: extract from 9 to 5
+    }
+
+    field "LAST.NO.TXT" {
+        format: Translate break-condition {
+            field: "B.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 51
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Last stmt no.:\""
+    }
+
+    field "LAST.NO" {
+        break-condition {
+            field: "B.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 66
+            line: + 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT.STATEMENT" "LAST.STATEMENT.NO" false
+    }
+
+    field "LEGEND" {
+        comments: "Expalin \'*\'" break-condition {
+            field: "B.ACCT"
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 3
+            line: + 2
+        }
+
+        operation: constant "\"* Denotes Current period\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Statement"
+        }
+
+        label-field: "DISPLAY.DATES"
+        image: "view.gif"
+        criteria: "SELECT.ACCOUNT" Equals "@ID"
+        criteria: "STMT.DATE" Equals "STATEMENT.DATES"
+        criteria: "STMT.FREQ" Equals "1"
+        enquiry: "ACCOUNT.STATEMENT.SCRN"
+    }
+
+    attributes: "ALLDATA"
+}

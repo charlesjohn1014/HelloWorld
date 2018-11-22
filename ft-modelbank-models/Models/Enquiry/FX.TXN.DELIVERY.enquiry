@@ -1,0 +1,261 @@
+Enquiry "FX.TXN.DELIVERY" for "name:/DE_Config:DE.O.HEADER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "FX Delivery Messages"
+    }
+
+    description {
+        en = "FX Delivery Messages"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 99 fixed-selection "TRANSACTION.REF" {
+        Matches "FX..."
+    }
+
+    custom-selection {
+
+        field "TRANSACTION.REF" {
+            mandatory: true
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "BANK.DATE" {
+            label {
+                en = "Bank Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "TRANSACTION.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "TRANSACTION.REF"
+    }
+
+    field "CURRENCY.BOUGHT" {
+        label {
+            en = "Ccy Bought"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "TRANSACTION.REF"
+        conversion: getFrom "FOREX" "CURRENCY.BOUGHT" false
+    }
+
+    field "FOREX.TXN.DELIVERY" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"List Of Forex Transaction Deliveries\""
+    }
+
+    field "AMOUNT.BOUGHT" {
+        label {
+            en = "Amount Bought"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "TRANSACTION.REF"
+        conversion: getFrom "FOREX" "AMOUNT.BOUGHT" false
+    }
+
+    field "CURRENCY.SOLD" {
+        label {
+            en = "Ccy Sold"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "TRANSACTION.REF"
+        conversion: getFrom "FOREX" "CURRENCY.SOLD" false
+    }
+
+    field "AMOUNT.SOLD" {
+        label {
+            en = "Amount Sold"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "TRANSACTION.REF"
+        conversion: getFrom "FOREX" "AMOUNT.SOLD" false
+    }
+
+    field "@ID" {
+        label {
+            en = "Reference"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "MESSAGE.TYPE" {
+        label {
+            en = "Message"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MESSAGE.TYPE"
+    }
+
+    field "CUSTOMER.NUMBER" {
+        label {
+            en = "Sent to"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUSTOMER.NUMBER"
+    }
+
+    field "UNF" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"UNFORMATTED\""
+    }
+
+    field "APPFMT" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICATION.FORMAT"
+    }
+
+    field "CAR.ADD" {
+        length: 8
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CARRIER.ADDR.NO"
+    }
+
+    field "DCAR" {
+        label {
+            en = "Carrier"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: if "CAR.ADD" Equals "NL" process "UNF" "CAR.ADD"
+    }
+
+    field "MSGD" {
+        label {
+            en = "Msg Status"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MSG.DISPOSITION"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Messages are generated\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "DELIVERY.REF" Equals "@ID"
+        enquiry: "DE.MSG.SUM"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES"
+}

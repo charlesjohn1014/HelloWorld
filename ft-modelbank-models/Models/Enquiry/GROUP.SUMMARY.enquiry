@@ -1,0 +1,138 @@
+Enquiry "GROUP.SUMMARY" for "name:/LI_ModelBank:CUSTOMER.LIMITS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Group Summary"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "RISK.GROUP.ID" {
+        Equals "!CURRENT.ID"
+    }
+
+    fixed-selection "@ID" {
+        Contains "TOTAL"
+    }
+
+    fixed-selection "TIME.BAND" {
+        NotEquals "NULL"
+    }
+
+    fixed-sort: "TIME.BAND" Null
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Group TB Summary\""
+    }
+
+    field "GRP.VAL1" {
+        comma-separator: false
+        operation: constant "\"Group Limit<1Yr\""
+    }
+
+    field "GRP.VAL2" {
+        comma-separator: false
+        operation: constant "\"Group Limit>1yr\""
+    }
+
+    field "TIME.BAND" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TIME.BAND"
+    }
+
+    field "REPORT.CCY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REPORT.CURRENCY"
+    }
+
+    field "DISP.VAL" {
+        comma-separator: false
+        operation: if "TIME.BAND" Greater "365" process "GRP.VAL2" "GRP.VAL1"
+    }
+
+    field "BRK.DISPVAL" {
+        comma-separator: false
+        operation: break-change "DISP.VAL"
+    }
+
+    field "DISP.FINAL" {
+        label {
+            en = "Category"
+        }
+
+        break-condition {
+            field: "BRK.DISPVAL"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "DISP.VAL"
+    }
+
+    field "APPROVED.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INTERNAL.AMT"
+    }
+
+    field "DISP.APPROVED" {
+        comma-separator: false
+        operation: calc "APPROVED.AMT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "TOT.APPROVED" {
+        label {
+            en = "Approved Amount"
+        }
+
+        break-condition {
+            field: "BRK.DISPVAL"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: total "DISP.APPROVED"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Group TB Records Available\""
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

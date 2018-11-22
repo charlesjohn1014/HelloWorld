@@ -1,0 +1,209 @@
+Enquiry "CHG.REFUND" for "name:/LC_Foundation:LC.ACCOUNT.BALANCES$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised LC Refund of Charges"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CHRG.STATUS" {
+        Equals "14"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised LC Refund of charges\""
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Chrg Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMT.REC" {
+        label {
+            en = "Charge Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMT.REC"
+    }
+
+    field "CHRG.CODE" {
+        label {
+            en = "Charge Code"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.CODE"
+    }
+
+    field "CHRG.STATUS" {
+        label {
+            en = "Charge Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.STATUS"
+        conversion: getFrom "LC.ENRICHMENT" "CHRG.STATUS" false
+    }
+
+    field "SETTLE.AC.FROM" {
+        label {
+            en = "Settle Account"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SETTLE.AC.FROM"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Records Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "LC.ACCOUNT.BALANCES,REFUND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "LC.ACCOUNT.BALANCES,REFUND"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        screen: "LC.ACCOUNT.BALANCES,REFUND"
+    }
+
+}

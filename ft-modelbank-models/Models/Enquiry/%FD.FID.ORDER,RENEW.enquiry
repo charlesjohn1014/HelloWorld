@@ -1,0 +1,466 @@
+Enquiry "%FD.FID.ORDER,RENEW" for "name:/FD_Contract:FD.FID.ORDER#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "FIDUCIARY ORDERS TO PROCESS"
+        }
+
+        column: 24
+        line: 0
+    }
+
+    header {
+        label {
+            en = "ACC-OFF:"
+        }
+
+        column: 24
+        line: 1
+    }
+
+    header {
+        label {
+            en = "MAT:"
+        }
+
+        column: 62
+        line: 0
+    }
+
+    header {
+        label {
+            en = "MNEMONIC"
+        }
+
+        column: 4
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CCY"
+        }
+
+        column: 15
+        line: 2
+    }
+
+    header {
+        label {
+            en = "PREV AMOUNT"
+        }
+
+        column: 27
+        line: 2
+    }
+
+    header {
+        label {
+            en = "PROP NEW AMT"
+        }
+
+        column: 43
+        line: 2
+    }
+
+    header {
+        label {
+            en = "TERM"
+        }
+
+        column: 60
+        line: 2
+    }
+
+    header {
+        label {
+            en = "NOTE"
+        }
+
+        column: 67
+        line: 1
+    }
+
+    header {
+        label {
+            en = "PAD"
+        }
+
+        column: 67
+        line: 2
+    }
+
+    header {
+        label {
+            en = "REN"
+        }
+
+        column: 73
+        line: 1
+    }
+
+    header {
+        label {
+            en = "TYPE"
+        }
+
+        column: 73
+        line: 2
+    }
+
+    header {
+        label {
+            en = "FN"
+        }
+
+        column: 78
+        line: 2
+    }
+
+    description {
+        en = "FD.FID.ORDER Default List"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RENEWAL.TYPE" {
+        Equals "MANUAL", "SEMI"
+    }
+
+    fixed-selection "RENEWED.ORDER.ID" {
+        NotEquals "NULL"
+    }
+
+    fixed-selection "LIVE.RENEWAL" {
+        Equals "NULL"
+    }
+
+    fixed-sort: "MATURITY.DATE" Null
+    fixed-sort: "ACCT.OFFICER" Null
+    fixed-sort: "CUSTOMER" Null
+
+    field "AMOUNT" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "ACCT.OFF.NOTES" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "WITHOLD.TAX.AMT"
+    }
+
+    field "COMMITTED.INT" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TAX.AMT.CHG"
+    }
+
+    field "COMM.AMOUNT" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COMM.AMOUNT"
+    }
+
+    field "WITHOLD.TAX.AMT" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INTEREST.RATE"
+    }
+
+    field "RENEWAL.AMT" {
+        length: 9
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "RENEWAL.AMT"
+    }
+
+    field "MATURITY.DATE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "ACCT.OFFICER" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCT.OFFICER"
+    }
+
+    field "COMM.TAKEN" {
+        length: 9
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COMM.TAKEN"
+    }
+
+    field "\\NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "NOTE.PAD" {
+        comma-separator: false
+        operation: constant "\"Y\""
+    }
+
+    field "IADV" {
+        comma-separator: false
+        operation: constant "\"INCOMEADVANCE\""
+    }
+
+    field "IARR" {
+        comma-separator: false
+        operation: constant "\"INCOMEARREARS\""
+    }
+
+    field "PI" {
+        length: 17
+        alignment: Right
+        comma-separator: false
+        operation: calc "AMOUNT" + "COMMITTED.INT"
+    }
+
+    field "PIC" {
+        length: 17
+        alignment: Right
+        comma-separator: false
+        operation: calc "PI" - "COMM.AMOUNT"
+    }
+
+    field "PIW" {
+        comma-separator: false
+        operation: calc "PI" - "WITHOLD.TAX.AMT"
+    }
+
+    field "PICW" {
+        comma-separator: false
+        operation: calc "PIC" - "WITHOLD.TAX.AMT"
+    }
+
+    field "TEST1" {
+        comma-separator: false
+        operation: calc "RENEWAL.AMT":"COMM.TAKEN"
+    }
+
+    field "TEST2" {
+        comma-separator: false
+        operation: calc "RENEWAL.AMT":"COMM.TAKEN"
+    }
+
+    field "BREAK.KEY" {
+        comma-separator: false
+        operation: calc "ACCT.OFFICER":"MATURITY.DATE"
+    }
+
+    field "MAT.BREAK" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "BREAK.KEY"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT.02" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "DISP.RENEW1" {
+        label {
+            en = "Disp Renew"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 38
+        }
+
+        operation: if "TEST1" Equals "IADV" process "PIW" "AMOUNT"
+    }
+
+    field "DISP.RENEW2" {
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 38
+        }
+
+        operation: if "TEST2" Equals "IARR" process "PICW" "DISP.RENEW1"
+    }
+
+    field "TERM" {
+        label {
+            en = "Term"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TERM"
+    }
+
+    field "NOTES" {
+        label {
+            en = "Notes"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        operation: if "ACCT.OFF.NOTES" Equals "NULL" process "NULL" "NOTE.PAD"
+    }
+
+    field "RENEWAL.TYPE" {
+        label {
+            en = "Renewal Type"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 73
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RENEWAL.TYPE"
+    }
+
+    field "DISPLAY.MATURITY" {
+        format: Date break-condition {
+            break: Page
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 67
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: field-extract "MATURITY.DATE"
+    }
+
+    field "ACCT.OFFICER.02" {
+        break-condition {
+            break: Page
+        }
+
+        length: 34
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 33
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "RENEWED.ORDER.ID" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "RENEWED.ORDER.ID"
+    }
+
+    field "@ID" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "RENEWED.ORDER.ID"
+    }
+
+    drilldown "1" {
+        label-field: "CUSTOMER"
+        quit-SEE: "@ID"
+    }
+
+}

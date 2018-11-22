@@ -1,0 +1,327 @@
+Enquiry "SY.DCI.NOB2B.TRADES" for "name:/DI_Contract:SY.DCI#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "List of Dual Ccy Invst Trades without B2B Reference"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    full-description {
+        en = "DCI Trades without B2B Reference"
+    }
+
+    description {
+        en = "DCI Trades without B2B Reference"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "B2B.REFERENCE" {
+        Equals "NULL"
+    }
+
+    fixed-selection "ALTERNATE.CCY.2" {
+        Equals "\"\""
+    }
+
+    fixed-sort: "B2B.REFERENCE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Client"
+            }
+
+        }
+
+        AND
+
+        field "TRADE.DATE" {
+            label {
+                en = "Trade Date"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        AND
+
+        field "SY.DX.REFERENCE" {
+            label {
+                en = "Common Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "COUNTERPARTY" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COUNTERPARTY"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "B2B.REFERENCE" {
+        label {
+            en = "B2B Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "B2B.REFERENCE"
+    }
+
+    field "SY.DX.REFERENCE" {
+        label {
+            en = "Common Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SY.DX.REFERENCE"
+    }
+
+    field "COUNTERPARTY.DEAL" {
+        label {
+            en = "Cparty Deal"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COUNTERPARTY.DEAL"
+    }
+
+    field "DEPOSIT.AMOUNT" {
+        label {
+            en = "Deposit Amt"
+        }
+
+        display-type: "NUMERIC"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 0
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSIT.AMOUNT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "BC" {
+        comma-separator: false
+        operation: break-change "B2B.REFERENCE"
+    }
+
+    field "M" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "D1" {
+        comma-separator: false
+        operation: calc "DEPOSIT.AMOUNT" * "M"
+    }
+
+    field "C" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER\""
+    }
+
+    field "D" {
+        comma-separator: false
+        operation: constant "\"DEALER\""
+    }
+
+    field "CUSTOMER.TYPE" {
+        comma-separator: false
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "DX.CUSTOMER" "CUSTOMER.TYPE" false
+    }
+
+    field "AB" {
+        comma-separator: false
+        operation: if "CUSTOMER.TYPE" Equals "C" process "DEPOSIT.AMOUNT" "D1"
+    }
+
+    field "NO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No DCI Trades without B2B reference available\""
+    }
+
+    field "OPEN POSITION" {
+        display-type: "CLASS-BOLD.RED" break-condition {
+            field: "BC"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+            line: + 1
+        }
+
+        operation: constant "\"Open Position\""
+    }
+
+    field "TOT" {
+        break-condition {
+            field: "BC"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        operation: total "AB"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SY.DCI,DCI.INPUT"
+    }
+
+    attributes: "ALLDATA"
+}

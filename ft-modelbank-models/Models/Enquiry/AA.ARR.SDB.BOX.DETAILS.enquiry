@@ -1,0 +1,179 @@
+Enquiry "AA.ARR.SDB.BOX.DETAILS" for "name:/AA_SafeDepositBox:AA.ARR.SAFE.DEPOSIT.BOX#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    custom-selection {
+
+        field "ID.COMP.1" {
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate
+        length: 16
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        column-width: 150
+        processing-mode: Single
+        operation: constant "\"Safe Deposit Box\""
+    }
+
+    field "TITLE.BX.TYPE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 150
+        operation: constant "\"Box Type\""
+    }
+
+    field "TITLE.BX.NUM" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        column-width: 150
+        operation: constant "\"Box Number\""
+    }
+
+    field "EB.LOOKUP" {
+        comma-separator: false
+        operation: constant "\"AA.SDB.BOX.TYPE\""
+    }
+
+    field "SYM" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "BOX.TYPE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BOX.TYPE"
+    }
+
+    field "C.BX.TYPE" {
+        format: User
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: calc "EB.LOOKUP":"SYM":"BOX.TYPE"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "BOX.NUMBER" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BOX.NUMBER"
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ACT.VALUE" {
+        comma-separator: false
+        operation: constant "\"-UPDATE-\""
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"ACT.VALUE":"PROPERTY"
+    }
+
+    field "ARRANGEMENT.ID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+    }
+
+    field "REFRESH.SDB.DET" {
+        comma-separator: false
+        operation: constant "\"AA.ARR.SDB.BOX.DETAILS\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refresh"
+        }
+
+        label-field: "TITLE.BX.TYPE"
+        image: "refresh.gif"
+        criteria: "ID.COMP.1" Equals "ARRANGEMENT.ID"
+        from-field: "REFRESH.SDB.DET"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "TITLE.BX.TYPE"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "DRILL.VER"
+    }
+
+    fileVersion: Live, Exception, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

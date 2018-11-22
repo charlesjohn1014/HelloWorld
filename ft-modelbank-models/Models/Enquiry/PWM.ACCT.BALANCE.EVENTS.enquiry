@@ -1,0 +1,262 @@
+Enquiry "PWM.ACCT.BALANCE.EVENTS" for "name:/BE_ModelBank:NOFILE.PWM.PORT.ALERT.LIST#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "PWM-Alerts"
+    }
+
+    description {
+        en = "PWM-Alerts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "SEL.REC" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "ALERT" {
+        Matches "PWM..."
+    }
+
+    custom-selection {
+
+        field "ALERT" {
+            label {
+                en = "Alert"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO.NO" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.NO" {
+            label {
+                en = "Acct.No"
+            }
+
+        }
+
+        AND
+
+        field "SUBSCRIBED" {
+            label {
+                en = "Subscribed?"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Event Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "ALERT" {
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "ALERT"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: field-extract "ALERT"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "P1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Portfolio.No :\""
+    }
+
+    field "PORTFOLIO.NO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: selection "PORTFOLIO.NO"
+    }
+
+    field "A1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Account.No. :\""
+    }
+
+    field "ACCT.NO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 15
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 2
+        }
+
+        operation: selection "ACCOUNT.NO"
+    }
+
+    field "RTN.VAL" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: replace {
+        }
+
+    }
+
+    field "MESSAGE.GRP" {
+        label {
+            en = "Message Group"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "RTN.VAL"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "TEC.ITEMS" {
+        label {
+            en = "Field"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "RTN.VAL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TEC.ITEMS"
+    }
+
+    field "TEC.DESCRIPTION" {
+        label {
+            en = "Event"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: field-extract "RTN.VAL"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "SUBSCRIBED" {
+        label {
+            en = "Subscribed?"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: field-extract "RTN.VAL"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Either Portfolio or Account No is mandatory\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Subscription"
+        }
+
+        label-field: "TEC.ITEMS"
+        image: "action.gif"
+        criteria: "CURRENT.ACCOUNT" > "ACCT.NO"
+        criteria: "TEC.ITEMS" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.ALERT.REQUEST,IN.PWM"
+    }
+
+}

@@ -1,0 +1,146 @@
+Enquiry "MF.AGENT.FEES.HP" for "name:/MF_Contract:MF.TRADE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Agent Fees Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "AGENT" Null
+    custom-selection {
+
+        field "AGENT" {
+            label {
+                en = "Agent"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Agent Fees Details\""
+    }
+
+    field "AGENT.ID" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AGENT"
+    }
+
+    field "AGENT.BREAK" {
+        comma-separator: false
+        operation: break-change "AGENT.ID"
+    }
+
+    field "AGENT1" {
+        label {
+            en = "Agent"
+        }
+
+        break-condition {
+            field: "AGENT.BREAK"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "AGENT.ID"
+    }
+
+    field "AGENT.NAME1" {
+        label {
+            en = "Agent Name"
+        }
+
+        break-condition {
+            field: "AGENT.BREAK"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-extract "AGENT.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "AGENT.FEE1" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AGENT.FEE"
+    }
+
+    field "TOT.AGENT.FEE" {
+        label {
+            en = "Agent Fee"
+        }
+
+        display-type: "CLASS-POSNEG" break-condition {
+            field: "AGENT.BREAK"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 47
+        }
+
+        operation: total "AGENT.FEE1"
+    }
+
+    field "ZERONORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Agent Fee Details not available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "AGENT1"
+        image: "details.gif"
+        criteria: "AGENT" Equals "AGENT1"
+        enquiry: "MF.AGENT.DETS"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

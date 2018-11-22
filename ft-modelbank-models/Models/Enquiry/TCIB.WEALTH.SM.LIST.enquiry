@@ -1,0 +1,274 @@
+Enquiry "TCIB.WEALTH.SM.LIST" for "name:/SC_ScoSecurityMasterMaintenance:SECURITY.MASTER#" {
+    metamodelVersion: "1.30.6"
+    start-line: 2
+    end-line: 6
+    fixed-sort: "SHORT.NAME" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "SecurityNumber"
+            }
+
+        }
+
+        AND
+
+        field "BOND.OR.SHARE" {
+            label {
+                en = "BondOrShare"
+            }
+
+        }
+
+        AND
+
+        field "QUOTED.LISTED.NO" {
+            label {
+                en = "QuotedListedNo"
+            }
+
+        }
+
+        AND
+
+        field "LAST.PRICE" {
+            label {
+                en = "LastPriced"
+            }
+
+        }
+
+        AND
+
+        field "DATE.LAST.PRICE" {
+            label {
+                en = "DateLastChange"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Instrument ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "MNEMONIC" {
+        label {
+            en = "Mnemonic"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MNEMONIC"
+    }
+
+    field "ISIN" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Short name"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "STOCK.EXCHANGE" {
+        label {
+            en = "Stock Exchange"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STOCK.EXCHANGE"
+    }
+
+    field "PRICE.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRICE.CURRENCY"
+    }
+
+    field "PRICE.UPDATE.CODE" {
+        comma-separator: false
+        operation: application-field-name "PRICE.UPDATE.CODE"
+    }
+
+    field "DATE.LAST.PRICE" {
+        comma-separator: false
+        operation: application-field-name "DATE.LAST.PRICE"
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "SC.PC" {
+        comma-separator: false
+        operation: calc "@ID":"DOT":"DATE.LAST.PRICE"
+    }
+
+    field "OLDPRICE" {
+        label {
+            en = "Last Price"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        operation: field-extract "SC.PC"
+        conversion: getFrom "SC.PRICE.CHANGE" "OLD.PRICE" false
+        conversion: call
+        jBC: "@ E.MB.SCPRICE.OLD"
+    }
+
+    field "LAST.PRICE" {
+        label {
+            en = "Price"
+        }
+
+        format: Currency "PRICE.CCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LAST.PRICE"
+    }
+
+    field "DESC" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "SECURITY.MASTER" "DESCRIPT" false
+    }
+
+    field "BOND.OR.SHARE" {
+        label {
+            en = "Bond/Share"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BOND.OR.SHARE"
+    }
+
+    field "RED" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"down\""
+    }
+
+    field "AMBER" {
+        comma-separator: false
+        operation: constant "\"flat\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "GREEN" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"up\""
+    }
+
+    field "CHANGE" {
+        comma-separator: false
+        operation: if "LAST.PRICE" Greater "OLDPRICE" process "GREEN" "RED"
+    }
+
+    field "CHANGE.DISP" {
+        comma-separator: false
+        operation: if "LAST.PRICE" Equals "OLDPRICE" process "AMBER" "CHANGE"
+    }
+
+    field "TREND" {
+        label {
+            en = "Movement"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: if "LAST.PRICE" Equals "NULL" process "NULL" "CHANGE.DISP"
+    }
+
+}

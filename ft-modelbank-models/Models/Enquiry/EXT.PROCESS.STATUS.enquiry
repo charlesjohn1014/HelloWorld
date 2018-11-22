@@ -1,0 +1,269 @@
+Enquiry "EXT.PROCESS.STATUS" for "name:/PW_Foundation:PW.ACTIVITY.TXN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Activity List"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "EXT.PROCESS.ID" {
+        Equals "!CURRENT.EXT.ID"
+    }
+
+    fixed-selection "PW.ACTIVITY.STATUS" {
+        Matches "WS..."
+    }
+
+    fixed-selection "EXTERNAL.PROCESS" {
+        NotEquals "\"\""
+    }
+
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "USER" {
+            label {
+                en = "User"
+            }
+
+        }
+
+        AND
+
+        field "EXT.PROCESS.ID" {
+            label {
+                en = "External Process Id"
+            }
+
+        }
+
+        AND
+
+        field "TRANSACTION.REF" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "PW.ACTIVITY.STATUS" {
+            label {
+                en = "Activity Status"
+            }
+
+        }
+
+        None
+    }
+
+    field "PW" {
+        label {
+            en = "ID"
+        }
+
+        display-type: "PWACTIVITY"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PW.ACTIVITY.TXN.ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List Of Activity\""
+    }
+
+    field "WS.PEN" {
+        comma-separator: false
+        operation: constant "\"WS.PENDING\""
+    }
+
+    field "WS.COMP" {
+        comma-separator: false
+        operation: constant "\"WS.COMPLETED\""
+    }
+
+    field "PROCESS" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROCESS"
+    }
+
+    field "@ID" {
+        label {
+            en = "Activity ID"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "ACTIVITY.STATUS" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PW.ACTIVITY.STATUS"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ACTIVITY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY"
+        conversion: getFrom "PW.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "ACTIVITY.BOLD" {
+        label {
+            en = "Activity Name"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Single
+        operation: if "ACTIVITY.STATUS" Equals "WS.PEN" process "ACTIVITY"
+    }
+
+    field "ACTIVITY.NORMAL" {
+        label {
+            en = "Activity Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Single
+        operation: if "ACTIVITY.STATUS" Equals "WS.COMP" process "ACTIVITY"
+    }
+
+    field "PW.ACTIVITY.STATUS" {
+        label {
+            en = "Activity Status"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PW.ACTIVITY.STATUS"
+    }
+
+    field "TXN.REF" {
+        label {
+            en = "Transaction Ref."
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 68
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.REF"
+    }
+
+    field "Launch" {
+        length: 99
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TARGET"
+    }
+
+    field "USER" {
+        label {
+            en = "Activity Owner"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 82
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "USER"
+    }
+
+    field "DUE.DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DUE.DATE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Execute Activity"
+        }
+
+        label-field: "@ID"
+        image: "execute.gif" parameters {
+            pw-activity: "PW"
+        }
+
+        from-field: "Launch"
+    }
+
+}

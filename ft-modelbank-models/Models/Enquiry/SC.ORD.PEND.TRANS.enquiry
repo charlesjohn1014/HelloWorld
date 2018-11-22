@@ -1,0 +1,368 @@
+Enquiry "SC.ORD.PEND.TRANS" for "name:/SC_SctOrderCapture:SEC.OPEN.ORDER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Orders waiting for transmission"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "DEAL.STATUS" {
+        NotEquals "TRANSMITTED"
+    }
+
+    fixed-selection "DEAL.STATUS" {
+        NotEquals "TRADED"
+    }
+
+    fixed-selection "DEAL.STATUS" {
+        NotEquals "REJECTED"
+    }
+
+    fixed-sort: "SECURITY.NO" Null
+    custom-selection {
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security Number"
+            }
+
+        }
+
+        AND
+
+        field "CUST.NUMBER" {
+            label {
+                en = "Client "
+            }
+
+        }
+
+        AND
+
+        field "TRANSACTION.CODE" {
+            label {
+                en = "Transaction Code"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Orders waiting to be Transmitted\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SEC.DESC" {
+        label {
+            en = "Sec Desc"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "DESCRIPT" false
+    }
+
+    field "CUST.NUMBER" {
+        label {
+            en = "Client "
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUST.NUMBER"
+    }
+
+    field "CU.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "CUST.NUMBER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ROUT.COMPANY" {
+        label {
+            en = "Routing Co"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ROUT.COMPANY"
+    }
+
+    field "ROUTED.ORDER.REF" {
+        label {
+            en = "Routed Ord Ref"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ROUTED.ORDER.REF"
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Order Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.DATE"
+    }
+
+    field "ORDER.TIME" {
+        label {
+            en = "Ord Time"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.TIME"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Txn"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+    }
+
+    field "ORDER.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.TYPE"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "LIMIT.PRICE" {
+        label {
+            en = "Limit Price"
+        }
+
+        format: Currency "TRADE.CCY" negative-pattern -#
+        length: 16
+        alignment: Left
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIMIT.PRICE"
+    }
+
+    field "LIMIT.EXP.DATE" {
+        label {
+            en = "Expiry"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIMIT.EXP.DATE"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "DEAL.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.STATUS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transmit"
+        }
+
+        label-field: "@ID"
+        image: "execute.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SEC.OPEN.ORDER,MIDDLE.TRANSMIT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Reverse
+            field: "@ID"
+        }
+
+        screen: "SEC.OPEN.ORDER,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SEC.OPEN.ORDER,BUY"
+    }
+
+}

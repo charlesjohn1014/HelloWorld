@@ -1,0 +1,891 @@
+Enquiry "AA.DETAILS.INTEREST" for "name:/AA_Interest:AA.ARR.INTEREST#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Interest Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "ARR.DATE" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.3"
+    }
+
+    field "SIM.REF" {
+        comma-separator: false
+        operation: selection "SIMULATION.REF"
+    }
+
+    field "PROPERTY.DESC" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 105
+        processing-mode: Single
+        operation: field-extract "PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "C.COMPOUND.FREQ" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Compound Frequency\""
+    }
+
+    field "COMPOUND.TYPE" {
+        format: Translate
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COMPOUND.TYPE"
+    }
+
+    field "L.COMPOUND.TYPE" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 10
+        }
+
+        column-width: 105
+        operation: if "COMPOUND.TYPE" Equals "\"\"" process "\"\"" "C.COMPOUND.FREQ"
+    }
+
+    field "D.COMPOUND.TYPE" {
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 20
+        }
+
+        column-width: 65
+        operation: field-extract "COMPOUND.TYPE"
+    }
+
+    field "C.SINGLE" {
+        label {
+            en = "TRANSLATE"
+        }
+
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Single Rate\""
+    }
+
+    field "RATE.TIER.TYPE" {
+        label {
+            en = "TRANSLATE"
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "RATE.TIER.TYPE"
+        conversion: replace {
+            oldData: "LEVEL"
+            newData: "Tier Levels"
+        }
+
+        conversion: replace {
+            oldData: "BAND"
+            newData: "Tier Bands"
+        }
+
+        conversion: replace {
+            oldData: "SINGLE"
+            newData: "Single Rate"
+        }
+
+    }
+
+    field "TIER.TYPE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 105
+        processing-mode: Multi
+        operation: if "RATE.TIER.TYPE" Equals "\"\"" process "C.SINGLE" "RATE.TIER.TYPE"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"0\""
+    }
+
+    field "FIXED.RATE" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "FIXED.RATE"
+    }
+
+    field "FLOATING.INDEX" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "FLOATING.INDEX"
+    }
+
+    field "PERIODIC.INDEX" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PERIODIC.INDEX"
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LINKED" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.RATE"
+    }
+
+    field "LINK.DETS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "LINKED.ARRANGEMENT":"TLT":"LINKED.PROPERTY"
+    }
+
+    field "L.PROP.DESC" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LINKED.PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "LINK.INDEX" {
+        comma-separator: false
+        operation: calc "LINKED.ARRANGEMENT":"SP":"L.PROP.DESC"
+    }
+
+    field "L.FIXED" {
+        label {
+            en = "TRANSLATE"
+        }
+
+        format: Translate
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Fixed\""
+    }
+
+    field "L.VARIABLE" {
+        label {
+            en = "TRANSLATE"
+        }
+
+        format: Translate
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"Variable\""
+    }
+
+    field "L.PERIODIC" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Periodic\""
+    }
+
+    field "L.LINKED" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Linked\""
+    }
+
+    field "D.RATE.TYPE1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FLOATING.INDEX" NotEquals "\"\"" process "L.VARIABLE" "L.LINKED"
+    }
+
+    field "D.RATE.TYPE2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FIXED.RATE" NotEquals "\"\"" process "L.FIXED" "D.RATE.TYPE1"
+    }
+
+    field "D.RATE.TYPE" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 65
+        processing-mode: Multi
+        operation: if "PERIODIC.INDEX" NotEquals "\"\"" process "L.PERIODIC" "D.RATE.TYPE2"
+    }
+
+    field "INDEX.1" {
+        label {
+            en = "LANGUAGE"
+        }
+
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "FLOATING.INDEX"
+        conversion: getFrom "BASIC.RATE.TEXT" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "PI.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PERIODIC.INDEX":"CURRENCY":"TODAY"
+    }
+
+    field "INDEX.2" {
+        label {
+            en = "LANGUAGE"
+        }
+
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PI.ID"
+        conversion: getFrom "PERIODIC.INTEREST" "DESCRIPTION" false
+    }
+
+    field "INDEX.3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINKED" Equals "YES" process "LINK.INDEX" "INDEX.2"
+    }
+
+    field "INDEX" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "INDEX.1" NotEquals "\"\"" process "INDEX.1" "INDEX.3"
+    }
+
+    field "EFF.RATE" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "EFFECTIVE.RATE"
+    }
+
+    field "TLT" {
+        comma-separator: false
+        operation: constant "\"~\""
+    }
+
+    field "FLOAT.RATE.1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "FLOATING.INDEX":"TLT":"CURRENCY":"TLT":"ARR.DATE"
+        conversion: call
+        jBC: "@ E.AA.GET.FLOAT.RATE"
+    }
+
+    field "LINK.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINKED" Equals "YES" process "LINK.DETS" "NULL"
+        conversion: call
+        jBC: "@ E.AA.GET.LINKED.RATE"
+    }
+
+    field "FLOAT.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINKED" Equals "YES" process "LINK.RATE" "FLOAT.RATE.1"
+    }
+
+    field "FIX.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FIXED.RATE" NotEquals "\"\"" process "FIXED.RATE" "FLOAT.RATE"
+    }
+
+    field "MARGIN.OPER" {
+        length: 9
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "MARGIN.OPER"
+        conversion: replace {
+            oldData: "ADD"
+            newData: "+"
+        }
+
+        conversion: replace {
+            oldData: "SUB"
+            newData: "-"
+        }
+
+        conversion: replace {
+            oldData: "MUL"
+            newData: "*"
+        }
+
+        conversion: replace {
+            newData: "+"
+        }
+
+    }
+
+    field "MARGIN.RATE" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "MARGIN.RATE"
+    }
+
+    field "MARGIN.TYPE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "MARGIN.TYPE"
+    }
+
+    field "FLOAT.RATE1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "FLOAT.RATE" + "MARGIN.RATE"
+    }
+
+    field "FLOAT.RATE2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "FLOAT.RATE" - "MARGIN.RATE"
+    }
+
+    field "FLOAT.RATE3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "FLOAT.RATE" * "MARGIN.RATE"
+    }
+
+    field "FLOAT.EFF.RATE1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "MARGIN.OPER" Equals "\"-\"" process "FLOAT.RATE2" "FLOAT.RATE3"
+    }
+
+    field "FLOAT.EFF.RATE2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "MARGIN.OPER" Equals "\"+\"" process "FLOAT.RATE1" "FLOAT.EFF.RATE1"
+    }
+
+    field "D.MIN.RATE" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.MIN.RATE"
+    }
+
+    field "MIN.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "D.MIN.RATE" NotEquals "NULL" process "D.MIN.RATE" "FLOAT.EFF.RATE2"
+    }
+
+    field "D.MAX.RATE" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.MAX.RATE"
+    }
+
+    field "FLOAT.EFF.RATE3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FLOAT.EFF.RATE2" LessThan "MIN.RATE" process "MIN.RATE" "FLOAT.EFF.RATE2"
+    }
+
+    field "MAX.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "D.MAX.RATE" NotEquals "NULL" process "D.MAX.RATE" "FLOAT.EFF.RATE3"
+    }
+
+    field "FLOAT.EFF.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FLOAT.EFF.RATE3" Greater "MAX.RATE" process "MAX.RATE" "FLOAT.EFF.RATE3"
+    }
+
+    field "NEG.RATE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.NEGATIVE.RATE"
+    }
+
+    field "MRG.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "MARGIN.OPER":"MARGIN.RATE"
+    }
+
+    field "FLT.GT.MG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FLOAT.EFF.RATE" GreaterOrEquals "MRG.RATE" process "ZERO" "NULL"
+    }
+
+    field "MRG.ZERO" {
+        comma-separator: false
+        operation: if "MARGIN.RATE" Equals "NULL" process "ZERO" "MRG.RATE"
+    }
+
+    field "FLT.LT.MG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FLOAT.EFF.RATE" LessThan "MRG.ZERO" process "FLOAT.RATE" "NULL"
+    }
+
+    field "FLT.CHK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FLOAT.RATE" GreaterOrEquals "ZERO" process "FLT.GT.MG" "FLT.LT.MG"
+    }
+
+    field "FIN.NEG.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FLOAT.EFF.RATE" LessOrEquals "ZERO" process "ZERO" "FLOAT.EFF.RATE"
+    }
+
+    field "BLK.CHK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FLOAT.EFF.RATE" GreaterOrEquals "ZERO" process "FLOAT.EFF.RATE" "FLT.CHK"
+    }
+
+    field "NEG.RATE.NO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "NEG.RATE" Equals "NO" process "FIN.NEG.RATE" "BLK.CHK"
+    }
+
+    field "NEG.RATE.YES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "NEG.RATE" Equals "YES" process "FLOAT.EFF.RATE" "NEG.RATE.NO"
+    }
+
+    field "EFF.RATE.FIX.FLT" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FIXED.RATE" NotEquals "\"\"" process "EFF.RATE" "NEG.RATE.YES"
+    }
+
+    field "EFFECTIVE.RATE" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "PERIODIC.INDEX" NotEquals "\"\"" process "EFF.RATE" "EFF.RATE.FIX.FLT"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "OPEN" {
+        comma-separator: false
+        operation: constant "\" (\""
+    }
+
+    field "CLOSE" {
+        comma-separator: false
+        operation: constant "\")\""
+    }
+
+    field "MARGIN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "ARRANGEMENT":"\"-\"":"PROPERTY":"\"-\"":"SIM.REF"
+        conversion: call
+        jBC: "@ E.MB.GET.INTEREST.RATE"
+    }
+
+    field "RATE.FIXED.1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EFFECTIVE.RATE":"\"%\""
+    }
+
+    field "REL.OPR" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RELATIONSHIP.OPERAND"
+        conversion: replace {
+            newData: "+"
+        }
+
+        conversion: replace {
+            oldData: "ADD"
+            newData: "+"
+        }
+
+        conversion: replace {
+            oldData: "SUB"
+            newData: "-"
+        }
+
+        conversion: replace {
+            oldData: "MUL"
+            newData: "*"
+        }
+
+    }
+
+    field "REL.MARGIN" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RELATIONSHIP.MARGIN"
+    }
+
+    field "REL.TOT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "MARGIN":"SP":"REL.OPR":"SP":"REL.MARGIN":"\"%\""
+    }
+
+    field "TOTMARGIN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "REL.MARGIN" Equals "\"\"" process "MARGIN" "REL.TOT"
+    }
+
+    field "RATE.FIXED.2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "RATE.FIXED.1":"OPEN":"FIX.RATE":"\"%\"":"SP":"TOTMARGIN":"CLOSE"
+    }
+
+    field "TEMP3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "FIX.RATE":"\"%\"":"SP":"REL.OPR":"SP":"REL.MARGIN":"\"%\""
+    }
+
+    field "TEMP2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "RATE.FIXED.1":"OPEN":"TEMP3":"CLOSE"
+    }
+
+    field "TEMP1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "REL.MARGIN" Equals "\"\"" process "RATE.FIXED.1" "TEMP2"
+    }
+
+    field "RATE.FIXED" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "MARGIN.TYPE" Equals "\"\"" process "TEMP1" "RATE.FIXED.2"
+    }
+
+    field "TMP.RATE.FLOAT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EFFECTIVE.RATE":"\"%\"":"OPEN":"INDEX":"SP":"MARGIN":"CLOSE"
+    }
+
+    field "RATE.FLOATING" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "MARGIN.TYPE" Equals "\"\"" process "RATE.FIXED.1" "TMP.RATE.FLOAT"
+    }
+
+    field "TMP.RATE.LINK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EFFECTIVE.RATE":"\"%\"":"OPEN":"INDEX":"SP":"MARGIN":"CLOSE"
+    }
+
+    field "RATE.LINKED" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "MARGIN.TYPE" Equals "\"\"" process "RATE.FIXED.1" "TMP.RATE.LINK"
+    }
+
+    field "TMP.RATE.PERIOD" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "EFFECTIVE.RATE":"\"%\"":"OPEN":"INDEX":"SP":"MARGIN":"CLOSE"
+    }
+
+    field "RATE.PERIODIC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "MARGIN.TYPE" Equals "\"\"" process "RATE.FIXED.1" "TMP.RATE.PERIOD"
+    }
+
+    field "RATE.1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FIXED.RATE" NotEquals "\"\"" process "RATE.FIXED" "\"\""
+    }
+
+    field "RATE.2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FLOATING.INDEX" NotEquals "\"\"" process "RATE.FLOATING" "RATE.1"
+    }
+
+    field "RATE.3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "LINKED" Equals "YES" process "TMP.RATE.LINK" "RATE.2"
+    }
+
+    field "RATE" {
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: if "PERIODIC.INDEX" NotEquals "\"\"" process "RATE.PERIODIC" "RATE.3"
+    }
+
+    field "C.UPTO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"up to \""
+    }
+
+    field "C.REMAINDER" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"remainder\""
+    }
+
+    field "TIER.AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.AMOUNT"
+    }
+
+    field "UPTO.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "C.UPTO":"TIER.AMOUNT"
+    }
+
+    field "TYPE.CHK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "D.RATE.TYPE" Equals "\"\"" process "\"\"" "C.REMAINDER"
+    }
+
+    field "UPTO" {
+        format: Translate
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TIER.AMOUNT" NotEquals "\"\"" process "UPTO.AMOUNT" "TYPE.CHK"
+    }
+
+    field "TIER.AMOUNT.V1" {
+        comma-separator: false
+        operation: field-extract "TIER.AMOUNT"
+        conversion: value 1
+    }
+
+    field "D.UPTO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TIER.AMOUNT.V1" Equals "\"\"" process "\"\"" "UPTO"
+    }
+
+    field "FINAL.UPTO" {
+        format: Translate
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        column-width: 130
+        processing-mode: Multi
+        operation: if "TIER.TYPE" Equals "C.SINGLE" process "\"\"" "D.UPTO"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 105
+        operation: constant "\"No Interest available\""
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ACT.UPDATE" {
+        comma-separator: false
+        operation: constant "\"-UPDATE-\""
+    }
+
+    field "ACT.CHANGE" {
+        comma-separator: false
+        operation: constant "\"-CHANGE-\""
+    }
+
+    field "AL.ACT" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "LENDING" process "ACT.CHANGE" "NULL"
+    }
+
+    field "AD.ACT" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "DEPOSITS" process "ACT.CHANGE" "AL.ACT"
+    }
+
+    field "ACT.VALUE" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "ACCOUNTS" process "ACT.UPDATE" "AD.ACT"
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"ACT.VALUE":"PROPERTY"
+    }
+
+    field "ARRANGEMENT.ID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+    }
+
+    field "REFRESH.INTEREST" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.INTEREST\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refresh"
+        }
+
+        label-field: "PROPERTY.DESC"
+        image: "refresh.gif"
+        criteria: "ID.COMP.1" Equals "ARRANGEMENT.ID"
+        from-field: "REFRESH.INTEREST"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "PROPERTY.DESC"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "DRILL.VER"
+    }
+
+    fileVersion: Live, Exception, Simulation
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS"
+}

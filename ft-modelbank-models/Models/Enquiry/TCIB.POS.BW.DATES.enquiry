@@ -1,0 +1,245 @@
+Enquiry "TCIB.POS.BW.DATES" for "name:/SC_ModelBank:NOFILE.TRANS.BW.DATES#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 19 fixed-selection "POS.BW.DATES" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "SECURITY.ACCOUNT" {
+            mandatory: true
+            label {
+                en = "Portfolio Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "FROM.TRADE.DATE" {
+            mandatory: true
+            label {
+                en = "From Trade Date"
+            }
+
+            operands: GreaterOrEquals
+        }
+
+        AND
+
+        field "TO.TRADE.DATE" {
+            mandatory: true
+            label {
+                en = "To Trade Date"
+            }
+
+            operands: LessOrEquals
+        }
+
+        None
+    }
+
+    field "PORTFOLIO.NO" {
+        label {
+            en = "Portfolio No"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "FROM.DATE" {
+        comma-separator: false
+        operation: selection "FROM.TRADE.DATE"
+    }
+
+    field "TO.DATE" {
+        comma-separator: false
+        operation: selection "TO.TRADE.DATE"
+    }
+
+    field "PORTFOLIO.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        format: User
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "DEPOSITORY.NO" {
+        label {
+            en = "Depository No"
+        }
+
+        format: User
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "DEPOSITORY.NAME" {
+        label {
+            en = "Depository Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "POSITION" {
+        label {
+            en = "Position"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "TRADE.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "RM" {
+        label {
+            en = "Rel Mgr"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        hidden: true
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.OFFICER" false
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "ISIN" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "Y.PDF.ID" {
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: call
+        jBC: "@ TCIB.CONV.PDF.PORT.STMT"
+    }
+
+    field "Y.PDF.ID.NEW" {
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: field-extract "Y.PDF.ID"
+        conversion: extract from 1 to 1 delimited by "^"
+    }
+
+    field "Y.PDF.PATH" {
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: field-extract "Y.PDF.ID"
+        conversion: extract from 2 to 1 delimited by "^"
+    }
+
+    field "Y.PDF.LOCATION" {
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        operation: field-extract "Y.PDF.ID"
+        conversion: extract from 3 to 1 delimited by "^"
+    }
+
+}

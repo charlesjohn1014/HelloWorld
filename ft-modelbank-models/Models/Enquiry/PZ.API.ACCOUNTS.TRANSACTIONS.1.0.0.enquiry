@@ -1,0 +1,477 @@
+Enquiry "PZ.API.ACCOUNTS.TRANSACTIONS.1.0.0" for "name:/AC_EntryCreation:STMT.ENTRY#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Transaction History"
+    }
+
+    description {
+        en = "Transaction History"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 50
+    build-routines {
+        jBC: "E.PZ.TXN.HIST.BUILD"
+    }
+
+    fixed-sort: "DATE.TIME" Descending
+    fixed-sort: "@ID" Descending
+    custom-selection {
+
+        field "TXN.HIST.ACCT.ID" {
+            mandatory: true
+            label {
+                en = "id"
+            }
+
+        }
+
+        AND
+
+        field "IN.START.DATE" {
+            label {
+                en = "fromDate"
+            }
+
+        }
+
+        AND
+
+        field "IN.END.DATE" {
+            label {
+                en = "toDate"
+            }
+
+        }
+
+        AND
+
+        field "NO.OF.ENTRIES" {
+            label {
+                en = "noOfEntries"
+            }
+
+        }
+
+        AND
+
+        field "SUM.OR.DETAIL" {
+            label {
+                en = "sumOrDetail"
+            }
+
+        }
+
+        AND
+
+        field "IN.END.TIME" {
+            label {
+                en = "toTime"
+            }
+
+        }
+
+        None
+    }
+
+    field "OUTPUT" {
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.PZ.TXN.HIST.CONVERSION"
+    }
+
+    field "DESC" {
+        comma-separator: false
+        operation: field-extract "OUTPUT"
+        conversion: call
+        jBC: "@ E.GET.NARRATIVE"
+        conversion: call
+        jBC: "@ E.GET.SPECIAL.NARR"
+    }
+
+    field "VAL.DESC" {
+        comma-separator: false
+        operation: if "DESC" Equals "OUTPUT" process "NULL" "DESC"
+    }
+
+    field "ACCOUNTREFERENCE" {
+        label {
+            en = "id"
+        }
+
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 1
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 1 to 1 delimited by "^~^"
+    }
+
+    field "ACCOUNTID" {
+        label {
+            en = "accountId"
+        }
+
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 5
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 2 to 1 delimited by "^~^"
+    }
+
+    field "ACCOUNT.DESC" {
+        label {
+            en = "accountDesc"
+        }
+
+        format: User break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 10
+        }
+
+        operation: field-extract "ACCOUNTID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "IBAN" {
+        label {
+            en = "accountIBAN"
+        }
+
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 15
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 3 to 1 delimited by "^~^"
+    }
+
+    field "TOT.AMT" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        operation: total "AMOUNT"
+    }
+
+    field "OPEN.BALANCE" {
+        label {
+            en = "openBalance"
+        }
+
+        display-type: "AMOUNT" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 20
+        }
+
+        operation: calc "CLOSE.BAL" - "TOT.AMT"
+    }
+
+    field "CLOSE.BALANCE" {
+        label {
+            en = "closeBalance"
+        }
+
+        display-type: "AMOUNT" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 25
+        }
+
+        operation: calc "OPEN.BALANCE" + "TOT.AMT"
+    }
+
+    field "CLOSE.BAL" {
+        comma-separator: false
+        operation: field-extract "OUTPUT"
+        conversion: extract from 15 to 1 delimited by "^~^"
+    }
+
+    field "EXEC.END.TIME" {
+        label {
+            en = "executionEndTime"
+        }
+
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Footer
+        position {
+            column: 30
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 16 to 1 delimited by "^~^"
+    }
+
+    field "BOOKING.DATE" {
+        label {
+            en = "bookingDate"
+        }
+
+        display-type: "DATE"
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 4 to 1 delimited by "^~^"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "valueDate"
+        }
+
+        display-type: "DATE"
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 5 to 1 delimited by "^~^"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "transactionType"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 6 to 1 delimited by "^~^"
+    }
+
+    field "TXN.CODE.DESC" {
+        label {
+            en = "transactionTypeName"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: field-extract "TRANSACTION.CODE"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "STMT.ENTRY.ID" {
+        label {
+            en = "transactionId"
+        }
+
+        length: 90
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "STMT.ENTRY.ID"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "currency"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 7 to 1 delimited by "^~^"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "amount"
+        }
+
+        display-type: "AMOUNT"
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 10 to 1 delimited by "^~^"
+    }
+
+    field "TXN.CURRENCY" {
+        label {
+            en = "currency"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 8 to 1 delimited by "^~^"
+    }
+
+    field "TXN.CURRENCY.AMOUNT" {
+        label {
+            en = "transactionAmount"
+        }
+
+        display-type: "AMOUNT"
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 11 to 1 delimited by "^~^"
+    }
+
+    field "EXCHANGE.RATE" {
+        label {
+            en = "exchangeRate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 9 to 1 delimited by "^~^"
+    }
+
+    field "PAYEE.ACCOUNT" {
+        label {
+            en = "toAccountId"
+        }
+
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 12 to 1 delimited by "^~^"
+    }
+
+    field "PAYEE.CUSTOMER" {
+        label {
+            en = "toCustomerId"
+        }
+
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 13 to 1 delimited by "^~^"
+    }
+
+    field "REMITTANCE.INFORMATION" {
+        label {
+            en = "remittanceInformation"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NARRATIVE"
+    }
+
+    field "TRANS.REFERENCE" {
+        label {
+            en = "transactionReference"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 14 to 1 delimited by "^~^"
+    }
+
+}

@@ -1,0 +1,92 @@
+Enquiry "LC.ADD.DETAILS.SCV" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "LC Additional Detials"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "CUST.ID" {
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+        conversion: getFrom "LETTER.OF.CREDIT" "APPLICANT.CUSTNO" false
+    }
+
+    field "ADD.DETAILS" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 260
+        operation: constant "\"Import LC Enquiries\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "LC Bill Booked Under Collection"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "CUSTOMER.LINK" Equals "CUST.ID"
+        enquiry: "TFIMBILL.LC.SCV"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Shipping Guarantee LCs"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "APPLICANT.CUSTNO" Equals "CUST.ID"
+        enquiry: "TF.IMPGTEE.SCCV"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Usance Bill Due"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "CUSTOMER.LINK" Equals "CUST.ID"
+        enquiry: "TF.IMPACDUE.SCV"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Usance Bill Discounted"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "CUSTOMER.LINK" Equals "CUST.ID"
+        enquiry: "TF.IMPACDUEDISC.SCV"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Docs Released Under Trust"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "CUSTOMER.LINK" Equals "CUST.ID"
+        enquiry: "TF.IMPDR.TRUSTREL.SCV"
+    }
+
+    drilldown "6" {
+        description {
+            en = "LCs Expired but Outstanding"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "APPLICANT.CUSTNO" Equals "CUST.ID"
+        enquiry: "TF.IMPLCEXPD.SCV"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

@@ -1,0 +1,222 @@
+Enquiry "FX.OPEN.ALL.SUMM" for "name:/FX_ModelBank:NOFILE.MAIN.FX.POS.OPEN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Currency Position"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DATA.ARR" {
+    }
+
+    fixed-sort: "CCY.SELECT" Null
+    custom-selection {
+
+        field "CCY.SELECT" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        AND
+
+        field "DEALER.DESK" {
+            label {
+                en = "Dealer Desk"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency Position \""
+    }
+
+    field "POS.IN.ARR" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "SEL.DEAL" {
+        comma-separator: false
+        operation: selection "DEALER.DESK"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "POS.IN.ARR"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "AL.POSITION" {
+        label {
+            en = "AL Position"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: field-extract "POS.IN.ARR"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "SPOT.POSITION" {
+        label {
+            en = "Spot Position"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        operation: field-extract "POS.IN.ARR"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "FWD.POS" {
+        label {
+            en = "Forward Position"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        operation: field-extract "POS.IN.ARR"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "NET.POS" {
+        label {
+            en = "Net Position"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Single
+        operation: field-extract "POS.IN.ARR"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "UNAUTH.POS" {
+        label {
+            en = "Unauth AL Position"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        processing-mode: Single
+        operation: field-extract "POS.IN.ARR"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SEL.OPR" {
+        comma-separator: false
+        operation: field-extract "POS.IN.ARR"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "SEL.CRIT1" {
+        comma-separator: false
+        operation: constant "\"DEALER.DESK \""
+    }
+
+    field "SEL.CRIT2" {
+        comma-separator: false
+        operation: calc "SEL.CRIT1":"SEL.OPR"
+    }
+
+    field "SEL.CRIT3" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "SEL.CRIT4" {
+        comma-separator: false
+        operation: calc "SEL.CRIT3":"SEL.DEAL"
+    }
+
+    field "SEL.CRIT5" {
+        comma-separator: false
+        operation: calc "SEL.CRIT2":"SEL.CRIT4"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Forex Position Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Position Details"
+        }
+
+        label-field: "CURRENCY"
+        image: "view.gif"
+        criteria: "CCY.SELECT" Equals "CURRENCY"
+        criteria: "SEL.CRIT5"
+        enquiry: "FX.OPEN.ALL.DETAIL"
+    }
+
+}

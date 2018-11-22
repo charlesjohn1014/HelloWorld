@@ -1,0 +1,263 @@
+Enquiry "%FD.FID.ORDER,COMM" for "name:/FD_Contract:FD.FID.ORDER#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "FD.FID.ORDER - COMMISSION AMOUNTS"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "CONTRACT.ID"
+        }
+
+        column: 5
+        line: 1
+    }
+
+    header {
+        label {
+            en = "MNEMONIC"
+        }
+
+        column: 25
+        line: 1
+    }
+
+    header {
+        label {
+            en = "FID.TYPE"
+        }
+
+        column: 40
+        line: 1
+    }
+
+    header {
+        label {
+            en = "INT START   INT END DATE  DAYS B"
+        }
+
+        column: 5
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CCY        AMOUNT"
+        }
+
+        column: 42
+        line: 2
+    }
+
+    header {
+        label {
+            en = "RATE"
+        }
+
+        column: 60
+        line: 2
+    }
+
+    header {
+        label {
+            en = "INT AMT FN"
+        }
+
+        column: 70
+        line: 2
+    }
+
+    description {
+        en = "FD.FID.ORDER Default List"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "@ID" {
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "FID.TYPE" {
+        label {
+            en = "Fid Type"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FID.TYPE"
+    }
+
+    field "START.DATE" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "FD.BALANCES" "START.INT.PERIOD" false
+    }
+
+    field "END.DATE" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "FD.BALANCES" "END.INT.PERIOD" false
+    }
+
+    field "DATE.1" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "FD.BALANCES" "START.INT.PERIOD" false
+        conversion: julian
+    }
+
+    field "DATE.2" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "FD.BALANCES" "END.INT.PERIOD" false
+        conversion: julian
+    }
+
+    field "DAYS" {
+        comma-separator: false
+        operation: calc "DATE.2" - "DATE.1"
+    }
+
+    field "\\NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "DISP.INT.START" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+            line: + 1
+        }
+
+        operation: field-extract "START.DATE"
+    }
+
+    field "DISP.INT.END" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+            line: + 1
+        }
+
+        operation: field-extract "END.DATE"
+    }
+
+    field "DISP.DAYS" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 32
+            line: + 1
+        }
+
+        operation: if "DAYS" LessThan "ZERO" process "NULL" "DAYS"
+    }
+
+    field "INT.DAY.BASIS" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 36
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TAX.CHG.XRATE"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 42
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "DISP.AMOUNT" {
+        display-type: "CLASS-POSNEG"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+            line: + 1
+        }
+
+        operation: field-extract "AMOUNT"
+    }
+
+    drilldown "1" {
+        label-field: "@ID"
+        quit-SEE: "@ID"
+    }
+
+}

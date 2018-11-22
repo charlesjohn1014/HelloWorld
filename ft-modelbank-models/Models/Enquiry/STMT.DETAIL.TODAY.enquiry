@@ -1,0 +1,504 @@
+Enquiry "STMT.DETAIL.TODAY" for "name:/ST_StmtPrinting:NOFILE.STMT.DETAIL#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "ACCOUNT STATEMENT"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "CUSTOMER :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "ACCOUNT.NO:"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CURRENCY:"
+        }
+
+        column: 62
+        line: 2
+    }
+
+    description {
+        en = "STMT.DETAIL.TODAY"
+    }
+
+    start-line: 6
+    end-line: 18 fixed-selection "STMT.DATA" {
+    }
+
+    custom-selection {
+
+        field "ACCOUNT.NO" {
+        }
+
+        None
+    }
+
+    field "POST" {
+        label {
+            en = "BOOKING.DATE"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DESC" {
+        label {
+            en = "DESCRIPTION"
+        }
+
+        format: User
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "TRN.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "THEIR.REF" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"LD\""
+    }
+
+    field "TT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"TT\""
+    }
+
+    field "AZ" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AZ\""
+    }
+
+    field "TRN.TYPE" {
+        comma-separator: false
+        operation: field-extract "TRN.ID"
+    }
+
+    field "EXTRA.DESC" {
+        comma-separator: false
+        position {
+            column: 15
+            line: + 1
+        }
+
+        operation: if "TRN.TYPE" Equals "LD" process "THEIR.REF" "NULL"
+    }
+
+    field "OUR.REF.ID.1" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "OUR.REF" {
+        label {
+            en = "OUR.REFERENCE"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "TRN.TYPE"
+    }
+
+    field "OUR.REF.ID" {
+        comma-separator: false
+        operation: field-extract "OUR.REF"
+        conversion: extract from 1 to 2
+    }
+
+    field "VALUE" {
+        label {
+            en = "VALUE.DATE"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 47
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "LOCAL" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "CUR" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "PRT.CUR" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 78
+            line: 2
+        }
+
+        operation: field-extract "CUR"
+    }
+
+    field "AMT.LCL" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "AMT.CUR" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "AMT" {
+        label {
+            en = "AMOUNT"
+        }
+
+        format: Currency "CUR" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+        }
+
+        operation: if "CUR" Equals "LOCAL" process "AMT.LCL" "AMT.CUR"
+    }
+
+    field "CUST" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "D.CUST" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: field-extract "CUST"
+    }
+
+    field "D.CUSTNM" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 71
+            line: 1
+        }
+
+        operation: field-extract "CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ACC" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "B.ACC" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ACC"
+    }
+
+    field "P.ACC" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: field-extract "ACC"
+    }
+
+    field "ENT.TOT" {
+        comma-separator: false
+        operation: total "AMT"
+    }
+
+    field "TOTAL" {
+        format: Currency "CUR" negative-pattern -# break-condition {
+            field: "B.ACC"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+            line: + 1
+        }
+
+        operation: calc "ENT.TOT" + "AMT.BFWD"
+    }
+
+    field "CFWD" {
+        break-condition {
+            field: "B.ACC"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+            line: + 1
+        }
+
+        operation: constant "\"BALANCE CARRIED FORWARD AS ON\""
+    }
+
+    field "TDATE" {
+        format: Date break-condition {
+            field: "B.ACC"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        operation: today
+    }
+
+    field "BFWD" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 4
+        }
+
+        operation: constant "\"BALANCE BROUGHT FORWARD AS ON\""
+    }
+
+    field "YDATE" {
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 4
+        }
+
+        operation: last-working-day
+    }
+
+    field "SAMT1" {
+        comma-separator: false
+        operation: field-extract "ACC"
+        conversion: call
+        jBC: "@ E.GET.ACCT.BALANCE"
+    }
+
+    field "AMT.BFWD" {
+        format: Currency "CUR" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 59
+            line: 4
+        }
+
+        operation: field-extract "SAMT1"
+    }
+
+    field "S.SYS.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "SYS.ID" {
+        comma-separator: false
+        operation: if "OUR.REF.ID" Equals "AZ" process "AZ" "S.SYS.ID"
+    }
+
+    field "AZ.TRN.ID" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+        conversion: extract from 4 to 99
+    }
+
+    field "S.TRN.ID" {
+        comma-separator: false
+        operation: if "OUR.REF.ID" Equals "AZ" process "AZ.TRN.ID" "TRN.ID"
+    }
+
+    field "C.ID" {
+        comments: "Next Level DrillDown"
+        comma-separator: false
+        operation: field-extract "SYS.ID"
+        conversion: call
+        jBC: "@ E.READ.EB.SYSTEM.ID"
+    }
+
+    field "SYS.DEF" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"STMT.ENTRY\""
+    }
+
+    field "NULL.02" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "S.ID" {
+        comma-separator: false
+        operation: if "SYS.ID" Equals "NULL" process "SYS.DEF" "C.ID"
+    }
+
+    field "STMT.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "S.KEY" {
+        comma-separator: false
+        operation: if "SYS.ID" Equals "C.ID" process "STMT.ID" "S.TRN.ID"
+    }
+
+    drilldown "1" {
+        label-field: "POST" parameters {
+            function:  See
+            field: "S.KEY"
+        }
+
+        from-field: "S.ID"
+    }
+
+}

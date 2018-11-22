@@ -1,0 +1,231 @@
+Enquiry "INT.AC.MAINTENANCE" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Internal Account Recon Setup"
+    }
+
+    description {
+        en = "Internal Account Recon Setup"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CUSTOMER" {
+        Equals "NULL"
+    }
+
+    fixed-selection "RECONCILE.ACCT" {
+        Equals "Y"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Account No."
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Acct Officer"
+            }
+
+        }
+
+        AND
+
+        field "OTHER.OFFICER" {
+            label {
+                en = "Other Officer"
+            }
+
+        }
+
+        None
+    }
+
+    field "Header" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Int. Account Recon Maintenance\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Account No"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SHORT.TITLE" {
+        label {
+            en = "Short Title"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "SHORT.TITLE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Account Officer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "OTHER.OFFICER" {
+        label {
+            en = "Other Officer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OTHER.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "RECS.ID" {
+        comma-separator: false
+        operation: constant "\".RECS.1\""
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "COCODE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CO.CODE"
+    }
+
+    field "M950" {
+        comma-separator: false
+        operation: constant "\"950\""
+    }
+
+    field "ALL" {
+        comma-separator: false
+        operation: constant "\".ALL\""
+    }
+
+    field "ACNO" {
+        comma-separator: false
+        operation: calc "\"A-\"":"@ID":"DOT"
+    }
+
+    field "PROD950" {
+        comma-separator: false
+        operation: calc "COCODE":"DOT":"ACNO":"M950":"ALL"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Add Recon Product"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "PROD950"
+        }
+
+        screen: "DE.PRODUCT,INT.AC"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Add Recon Frequency"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ACCOUNT.STATEMENT,INT.AC"
+    }
+
+}

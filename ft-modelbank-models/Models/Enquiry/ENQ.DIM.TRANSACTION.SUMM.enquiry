@@ -1,0 +1,322 @@
+Enquiry "ENQ.DIM.TRANSACTION.SUMM" for "name:/DZ_ModelBank:DF.VW.TRANS.SUMMARY$DIM#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Transaction Summary"
+        }
+
+        column: 1
+        line: 0
+    }
+
+    description {
+        en = "Transaction Summary"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 7
+    end-line: 25
+    fixed-sort: "REPORTING.DATE" Null
+    fixed-sort: "COMPANY.CODE" Null
+    fixed-sort: "POSITION.TYPE" Null
+    fixed-sort: "REPORTING.TYPE" Null
+    fixed-sort: "SYSTEM.ID" Null
+    custom-selection {
+
+        field "REPORTING.DATE" {
+            label {
+                en = "Reporting Date"
+            }
+
+        }
+
+        AND
+
+        field "COMPANY.CODE" {
+            label {
+                en = "Company"
+            }
+
+        }
+
+        AND
+
+        field "SYSTEM.ID" {
+            label {
+                en = "System Id"
+            }
+
+        }
+
+        AND
+
+        field "REPORTING.TYPE" {
+            label {
+                en = "Reporting Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Reporting Date : \""
+    }
+
+    field "HDR.DISPLAY.1" {
+        format: Date break-condition {
+            break: Once
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: selection "REPORTING.DATE"
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "COM.CODE" {
+        label {
+            en = "Company Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COMPANY.CODE"
+    }
+
+    field "REP.DATE" {
+        label {
+            en = "Reporting Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REPORTING.DATE"
+    }
+
+    field "OUT.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "REPORTING.DATE"
+    }
+
+    field "SYS.ID" {
+        label {
+            en = "System Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SYSTEM.ID"
+    }
+
+    field "TOT.DR" {
+        label {
+            en = "Total Debits LCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DEBIT.LCY"
+    }
+
+    field "TOT.CR" {
+        label {
+            en = "Total Credits LCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CREDIT.LCY"
+    }
+
+    field "DIFF" {
+        label {
+            en = "Difference LCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DIFFERENCE.LCY"
+    }
+
+    field "RT" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "REPORTING.TYPE"
+    }
+
+    field "RT.C" {
+        comma-separator: false
+        operation: constant "\"CONTINGENT\""
+    }
+
+    field "RT.NC" {
+        comma-separator: false
+        operation: constant "\"NON-CONTINGENT\""
+    }
+
+    field "TYPE.C" {
+        comma-separator: false
+        operation: constant "\"C\""
+    }
+
+    field "TYPE.NC" {
+        comma-separator: false
+        operation: constant "\"NC\""
+    }
+
+    field "R.NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "RT.COND1" {
+        comma-separator: false
+        operation: if "RT" Equals "RT.C" process "TYPE.C" "R.NULL"
+    }
+
+    field "RT.COND2" {
+        comma-separator: false
+        operation: if "RT" Equals "RT.NC" process "TYPE.NC" "R.NULL"
+    }
+
+    field "RT.COND" {
+        label {
+            en = "Reporting Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: if "RT.COND1" NotEquals "R.NULL" process "RT.COND1" "RT.COND2"
+    }
+
+    field "POS.TYPE" {
+        label {
+            en = "Position Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "POSITION.TYPE"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Transaction records to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Entries"
+        }
+
+        label-field: "SYS.ID"
+        image: "view.gif"
+        criteria: "SYSTEM.ID" BeginsWith "SYS.ID"
+        criteria: "CO.CODE" Equals "COM.CODE"
+        criteria: "REPORTING.DATE" Equals "OUT.DATE"
+        criteria: "REPORTING.TYPE" Equals "RT"
+        criteria: "POSITION.TYPE" Equals "POS.TYPE"
+        enquiry: "ENQ.DIM.TRANSACTION.SEARCH"
+    }
+
+}

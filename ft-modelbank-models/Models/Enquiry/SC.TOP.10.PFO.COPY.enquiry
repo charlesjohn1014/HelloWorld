@@ -1,0 +1,102 @@
+Enquiry "SC.TOP.10.PFO.COPY" for "name:/SC_ModelBank:NOFILE.SC.TOP.TEN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Top 10 Pvt Clients"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "CUST.LIST" {
+        NotEquals "\"\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Customer No"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Top 10 Retail Customers as on\""
+    }
+
+    field "IHDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: today
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "VALUATION.AMT" {
+        label {
+            en = "Net Profit LCY"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Customer Overview"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            field: "@ID"
+        }
+
+        composite-screen: "CUST.OVERVIEW.HP"
+    }
+
+}

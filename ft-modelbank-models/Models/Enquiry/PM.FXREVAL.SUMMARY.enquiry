@@ -1,0 +1,218 @@
+Enquiry "PM.FXREVAL.SUMMARY" for "name:/PM_Reports:NOFILE.PM.FXREVAL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Forex Revaluation Summary"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ID.LIST" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "PM.ENQ.PARAM" {
+        Equals "FXP"
+    }
+
+    fixed-selection "SUMMARY" {
+        Equals "Y"
+    }
+
+    custom-selection {
+
+        field "CCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 33
+            line: 0
+        }
+
+        operation: constant "\"Currency Position Reval Summary\""
+    }
+
+    field "LCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "INIT.COMMON" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "BUILD.DATA" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.FXREVAL"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        format: User
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DISPLAY.DATE"
+    }
+
+    field "NET.FCY" {
+        label {
+            en = "Net Fcy Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NET.FCY"
+    }
+
+    field "NEG" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"-1\""
+    }
+
+    field "UNREAL.PL" {
+        format: Currency "LCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "UNREAL.PL"
+    }
+
+    field "D.UNREAL.PL" {
+        label {
+            en = "Unreal Profit/Loss"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        processing-mode: Multi
+        operation: calc "NEG" * "UNREAL.PL"
+    }
+
+    field "TOT.LINE2" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        operation: constant "\"===============\""
+    }
+
+    field "TOT.UNREAL.PL" {
+        format: Currency "LCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        operation: application-field-name "TOT.UNREAL.PL"
+    }
+
+    field "D.TOT.UNREAL.PL" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "LCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 46
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: calc "NEG" * "TOT.UNREAL.PL"
+    }
+
+    field "PM.ENQ.P" {
+        comma-separator: false
+        display-section: Header
+        operation: selection "PM.ENQ.PARAM"
+    }
+
+    field "DD.CCY" {
+        format: User
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DISPLAY.DATE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CURRENCY"
+        image: "view.gif"
+        criteria: "PM.ENQ.PARAM" Equals "PM.ENQ.P"
+        criteria: "CCY" Equals "DD.CCY"
+        enquiry: "PM.FXREVAL"
+    }
+
+}

@@ -1,0 +1,425 @@
+Enquiry "TF.IMPLCOS.SMBC" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Import LCs Outstanding"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.IMPLCOS"
+    }
+
+    fixed-selection "ADVICE.EXPIRY.DATE" {
+        GreaterOrEquals "!TODAY"
+    }
+
+    fixed-sort: "ADVICE.EXPIRY.DATE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "APPLICANT.CUSTNO" {
+            label {
+                en = "Applicant Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "LC Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ADVISING.BK.CUSTNO" {
+            label {
+                en = "Advising Bank"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 45
+            line: 1
+        }
+
+        operation: constant "\"Import LCs Outstanding\""
+    }
+
+    field "OLD.LC.NUMBER" {
+        label {
+            en = "LC Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OLD.LC.NUMBER"
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: application-field-name "LC.TYPE"
+        conversion: getFrom "LC.TYPES" "1" false
+    }
+
+    field "ISSUE.DATE" {
+        label {
+            en = "Issue Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ISSUE.DATE"
+    }
+
+    field "APPLICANT.CUSTNO" {
+        label {
+            en = "Applicant"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICANT.CUSTNO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ADVISING.BK.CUSTNO" {
+        label {
+            en = "Advising Bank"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ADVISING.BK.CUSTNO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "DR.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DRAWINGS"
+    }
+
+    field "OUTSD.AMT" {
+        label {
+            en = "Outstanding Amt"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: calc "LC.AMT" - "DR.AMT"
+    }
+
+    field "LIAB.AMT" {
+        label {
+            en = "Liability Amt"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.AMT"
+    }
+
+    field "NEG" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "NIL" {
+        comma-separator: false
+        operation: constant "\" ---\""
+    }
+
+    field "TOL1" {
+        comma-separator: false
+        operation: constant "\"Within LC Tolerance\""
+    }
+
+    field "TOL2" {
+        comma-separator: false
+        operation: constant "\"LC Overdrawn\""
+    }
+
+    field "CHECK.SIGN" {
+        length: 25
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "OUTSD.AMT"
+        conversion: extract from 1 to 1
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "OUTSD1.AMT" {
+        comma-separator: false
+        operation: field-extract "OUTSD.AMT"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "TOT.AMT" {
+        comma-separator: false
+        operation: calc "OUTSD1.AMT" + "LIAB.AMT"
+    }
+
+    field "CHECK.AMT" {
+        comma-separator: false
+        operation: if "LIAB.AMT" Greater "ZERO" process "TOT.AMT" "LIAB.AMT"
+    }
+
+    field "COND.1" {
+        length: 25
+        alignment: Right
+        comma-separator: false
+        operation: if "CHECK.AMT" GreaterOrEquals "OUTSD1.AMT" process "TOL1" "TOL2"
+    }
+
+    field "CONDITION" {
+        label {
+            en = "Remarks"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        hidden: true
+        operation: if "CHECK.SIGN" Equals "NEG" process "COND.1" "NIL"
+    }
+
+    field "CCY2" {
+        label {
+            en = "Margin Ccy"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CREDIT.PROVIS.ACC"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "PRO.OUT.AMOUNT" {
+        label {
+            en = "Margin Outstg"
+        }
+
+        format: Currency "CCY2" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PRO.OUT.AMOUNT"
+    }
+
+    field "ADVICE.EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ADVICE.EXPIRY.DATE"
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Liability Reversal"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Import LCs are Outstanding\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record "
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "LETTER.OF.CREDIT,IMPLC.VIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "TRANS.REF" Equals "@ID"
+        enquiry: "LC.DOCUMENTS"
+    }
+
+}

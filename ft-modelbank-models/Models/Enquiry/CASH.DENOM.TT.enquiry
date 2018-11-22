@@ -1,0 +1,400 @@
+Enquiry "CASH.DENOM.TT" for "name:/TT_Stock:TT.STOCK.CONTROL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cash Position by Denomination"
+    }
+
+    description {
+        en = "Cash Position by Denomination"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5
+    build-routines {
+        jBC: "E.MB.TELLER.POSITION"
+    }
+
+    fixed-selection "CUSTOMER.NO" {
+        Equals "NULL"
+    }
+
+    fixed-selection "SERIAL.NO" {
+        Equals "\"\""
+    }
+
+    fixed-sort: "CURRENCY" Null
+    fixed-sort: "TELLER.ID" Null
+    fixed-sort: "CATEGORY" Null
+    custom-selection {
+
+        field "TELLER.ID" {
+            label {
+                en = "Teller ID"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Category"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 0
+        }
+
+        operation: constant "\"Cash Position by Denomination \""
+    }
+
+    field "COMP.CODE" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: getFrom "ACCOUNT" "CO.CODE" false
+    }
+
+    field "TELLER.ID" {
+        label {
+            en = "Teller ID"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 9 to 4
+    }
+
+    field "DUMMY1" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ TT.SORT.BY.DENOM"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: i-desc "CURRENCY"
+    }
+
+    field "DENOMINATION" {
+        label {
+            en = "Denomination"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: field-number 110
+    }
+
+    field "QUANTITY" {
+        label {
+            en = "Quantity"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Multi
+        operation: field-number 111
+    }
+
+    field "THIS.CCY" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 3
+    }
+
+    field "DENOM.VALUE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DENOMINATION"
+        conversion: getFrom "TELLER.DENOMINATION" "VALUE" false
+    }
+
+    field "THIS.BALANCE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "QUANTITY" * "DENOM.VALUE"
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "THIS.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 42
+        }
+
+        processing-mode: Multi
+        operation: if "THIS.BALANCE" Equals "ZERO" process "NULL" "THIS.BALANCE"
+    }
+
+    field "TILL.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: field-extract "TELLER.ID"
+        conversion: getFrom "TELLER.ID" "STATUS" false
+        conversion: replace {
+            oldData: "CLOSE"
+            newData: "Close"
+        }
+
+        conversion: replace {
+            oldData: "OPEN"
+            newData: "Open"
+        }
+
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "B.CCY" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "TELLER.ID"
+    }
+
+    field "LINE" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: constant "\"-----------------\""
+    }
+
+    field "T.CCY" {
+        break-condition {
+            field: "B.CCY"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "THIS.CCY"
+    }
+
+    field "T.TEXT" {
+        display-type: "CLASS-POSNEG" break-condition {
+            field: "B.CCY"
+        }
+
+        comma-separator: false
+        operation: constant "\"Total\""
+    }
+
+    field "T.BALANCE" {
+        format: Currency "THIS.CCY" negative-pattern -# break-condition {
+            field: "B.CCY"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        operation: total "BALANCE"
+    }
+
+    field "USER" {
+        comma-separator: false
+        operation: user
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Cash available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Open Till"
+        }
+
+        label-field: "TELLER.ID" parameters {
+            function:  Input
+            field: "TELLER.ID"
+        }
+
+        screen: "TELLER.ID,CREATE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Close Till"
+        }
+
+        label-field: "TELLER.ID" parameters {
+            function:  Input
+            field: "TELLER.ID"
+        }
+
+        screen: "TELLER.ID,CLOSE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Vault to Till"
+        }
+
+        label-field: "TELLER.ID"
+        criteria: "CURRENT.TELLER.1" > "TELLER.ID" parameters {
+            function:  Input
+            field: "TELLER.ID"
+        }
+
+        screen: "TELLER,VAULT.TO.TILL"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Till to Vault"
+        }
+
+        label-field: "TELLER.ID"
+        criteria: "CURRENT.TELLER.2" > "TELLER.ID" parameters {
+            function:  Input
+            field: "TELLER.ID"
+        }
+
+        screen: "TELLER,TILL.TO.VAULT"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Till Transfer - Local"
+        }
+
+        label-field: "TELLER.ID"
+        criteria: "CURRENT.TELLER.3" > "TELLER.ID" parameters {
+            function:  Input
+            field: "TELLER.ID"
+        }
+
+        screen: "TELLER,LCY.TILLTFR"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Till Transfer - Foreign"
+        }
+
+        label-field: "TELLER.ID"
+        criteria: "CURRENT.TELLER.4" > "TELLER.ID" parameters {
+            function:  Input
+            field: "TELLER.ID"
+        }
+
+        screen: "TELLER,FCY.TILLTFR"
+    }
+
+}

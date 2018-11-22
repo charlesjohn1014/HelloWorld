@@ -1,0 +1,162 @@
+Enquiry "AI.PWM.ACCT.ALERT" for "name:/BE_ModelBank:NOFILE.PWM.PORT.ALERT.LIST#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "PWM-Account Balance alerts"
+    }
+
+    description {
+        en = "PWM-Account Balance alerts"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "SEL.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "ALERT" {
+            label {
+                en = "Alert"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO.NO" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.NO" {
+            label {
+                en = "Account"
+            }
+
+        }
+
+        None
+    }
+
+    field "ALERT" {
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: selection "ALERT"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        operation: constant "\"Account Alerts\""
+    }
+
+    field "A1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Account.No. :\""
+    }
+
+    field "ACCT.NO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 15
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 2
+        }
+
+        operation: selection "ACCOUNT.NO"
+    }
+
+    field "TEC.ITEM" {
+        label {
+            en = "Field"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: replace {
+        }
+
+    }
+
+    field "INT.EXT" {
+        comma-separator: false
+        operation: field-extract "TEC.ITEM"
+        conversion: getFrom "TEC.ITEMS" "SUBSCRIPTION.LEVEL" false
+    }
+
+    field "INT" {
+        comma-separator: false
+        operation: constant "\"INTERNAL\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "@ID" {
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "TEC.ITEM"
+    }
+
+    field "TEC.DESC" {
+        label {
+            en = "Alert"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "TEC.ITEM"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Subscription"
+        }
+
+        label-field: "TEC.DESC"
+        image: "edit.gif"
+        criteria: "CURRENT.ACCOUNT" > "ACCT.NO"
+        criteria: "TEC.ITEMS" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.ALERT.REQUEST,IN.PWM"
+    }
+
+    attributes: "NO.COLUMN.HEADER"
+}

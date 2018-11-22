@@ -1,0 +1,267 @@
+Enquiry "LD.LOAN.TODAY" for "name:/LD_Contract:LD.LOANS.AND.DEPOSITS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "LD Loans disbursed Today"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CATEGORY" {
+        Between "21050", "21074"
+    }
+
+    fixed-selection "VALUE.DATE" {
+        Equals "!TODAY"
+    }
+
+    fixed-sort: "CATEGORY" Null
+    fixed-sort: "CURRENCY" Null
+    custom-selection {
+
+        field "CATEGORY" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.ID" {
+            label {
+                en = "Customer id"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"LD Loans \""
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 0
+        }
+
+        operation: constant "\"Disbursed Today\""
+    }
+
+    field "HEADER.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Branch Name : \""
+    }
+
+    field "COMPANY" {
+        label {
+            en = "Branch Name :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 17
+            line: 2
+        }
+
+        operation: company
+        conversion: getFrom "COMPANY" "1" false
+    }
+
+    field "CATEG.BRK" {
+        comma-separator: false
+        operation: break-change "CATEGORY"
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 56
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 82
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 86
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 106
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date/Days"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 118
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FIN.MAT.DATE"
+    }
+
+    field "MIS.ACCT.OFFICER" {
+        label {
+            en = "Acct Officer"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MIS.ACCT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "2" false
+    }
+
+    field "BLANK.LINE" {
+        break-condition {
+            field: "CATEG.BRK"
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View LD Contract"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "LD.LOANS.AND.DEPOSITS"
+    }
+
+}

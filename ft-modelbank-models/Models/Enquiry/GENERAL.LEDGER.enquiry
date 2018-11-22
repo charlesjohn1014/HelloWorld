@@ -1,0 +1,923 @@
+Enquiry "GENERAL.LEDGER" for "name:/RE_ReportGeneration:RE.JOURNAL.WORK#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "General Ledger For Period"
+        }
+
+        column: 40
+        line: 0
+    }
+
+    header {
+        label {
+            en = "PCB Account"
+        }
+
+        column: 6
+        line: 0
+    }
+
+    header {
+        label {
+            en = "to"
+        }
+
+        column: 75
+        line: 0
+    }
+
+    header {
+        label {
+            en = "For Ccy"
+        }
+
+        column: 95
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Booking"
+        }
+
+        column: 3
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Date"
+        }
+
+        column: 5
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Fiscal"
+        }
+
+        column: 11
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Period"
+        }
+
+        column: 11
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Trans"
+        }
+
+        column: 19
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Ref."
+        }
+
+        column: 19
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Description"
+        }
+
+        column: 34
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Ccy"
+        }
+
+        column: 62
+        line: 1
+    }
+
+    header {
+        label {
+            en = "DR"
+        }
+
+        column: 68
+        line: 1
+    }
+
+    header {
+        label {
+            en = "CR"
+        }
+
+        column: 68
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Foreign"
+        }
+
+        column: 80
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Amount"
+        }
+
+        column: 80
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Local"
+        }
+
+        column: 101
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Amount"
+        }
+
+        column: 101
+        line: 2
+    }
+
+    description {
+        en = "GENERAL.LEDGER"
+    }
+
+    start-line: 6
+    end-line: 55
+    build-routines {
+        jBC: "E.BUILD.JOURNAL.LIST"
+    }
+
+    fixed-sort: "REPORT.LINE" Null
+    fixed-sort: "SYSTEM.DATE" Null
+    fixed-sort: "SYSTEM.APP" Null
+    fixed-sort: "OUR.REFERENCE" Null
+    custom-selection {
+
+        field "REPORT.NAME" {
+            mandatory: true
+            label {
+                en = "Report Name"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SEL.DATE" {
+            label {
+                en = "Selection Date"
+            }
+
+            operands: Between
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PCB.ACCOUNT" {
+            label {
+                en = "PCB Account"
+            }
+
+        }
+
+        None
+    }
+
+    field "BUILD.OPEN.BAL" {
+        comments: "Builds opeing balances for all lines on this date" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.BUILD.RE.OPEN.BAL"
+    }
+
+    field "BUILD.CLOSE.BAL" {
+        comments: "Builds closing balance for all lines" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.BUILD.RE.CLOSE.BAL"
+    }
+
+    field "ENQUIRY.TYPE" {
+        comments: "Used to denote that the work file is required for the GL type layout" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"GENERAL.LEDGER\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "ALL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"ALL\""
+    }
+
+    field "ONE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"1\""
+    }
+
+    field "ID" {
+        length: 55
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "DR" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"DR\""
+    }
+
+    field "CR" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"CR\""
+    }
+
+    field "LCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "NO.MOVEMENTS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"No Movements\""
+    }
+
+    field "COMPANY.ID" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: company
+    }
+
+    field "FIN.YEAR.END" {
+        comments: "Last Year End" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "COMPANY.ID"
+        conversion: getFrom "COMPANY" "FINANCIAL.YEAR.END" false
+    }
+
+    field "THIS.YEAR" {
+        comments: "Last Year part of Fin Year" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "FIN.YEAR.END"
+        conversion: extract from 1 to 4
+    }
+
+    field "LAST.YEAR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: calc "THIS.YEAR" - "ONE"
+    }
+
+    field "REPORT.LINE" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BRK.LINE" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "REPORT.LINE"
+    }
+
+    field "LINE.DESC" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: field-extract "REPORT.LINE"
+    }
+
+    field "PCB.ACCOUNT" {
+        comma-separator: false
+        operation: i-desc "PCB.ACCOUNT"
+    }
+
+    field "LINE.MNEMONIC" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        operation: field-extract "PCB.ACCOUNT"
+        conversion: getFrom "RE.STAT.REP.LINE" "MNEMONIC" false
+    }
+
+    field "LINE.NARR.DISP" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        escapeSequence: HI
+        position {
+            column: 20
+            line: 0
+        }
+
+        operation: if "LINE.MNEMONIC" Equals "NULL" process "LINE.DESC" "LINE.MNEMONIC"
+    }
+
+    field "OPENING.BAL" {
+        format: Translate break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 3
+            line: 4
+        }
+
+        operation: constant "\"Opening Balance\""
+    }
+
+    field "OPEN.BALANCE" {
+        format: Currency "LCY" negative-pattern #- break-condition {
+            break: NewPage
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 91
+            line: 4
+        }
+
+        operation: field-extract "PCB.ACCOUNT"
+        conversion: call
+        jBC: "@ E.GET.RE.OPEN.BAL"
+    }
+
+    field "CLOSE.BALANCE" {
+        format: Currency "LCY" negative-pattern #- break-condition {
+            field: "BRK.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 91
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "PCB.ACCOUNT"
+        conversion: call
+        jBC: "@ E.GET.RE.CLOSE.BAL"
+    }
+
+    field "OPEN.DR.CR" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 68
+            line: 4
+        }
+
+        operation: if "OPEN.BALANCE" LessThan "ZERO" process "DR" "CR"
+    }
+
+    field "SYSTEM.DATE" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "BOOKING.DATE" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BOOKING.DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "FISCAL.YEAR" {
+        comments: "Financial Year Currently 4 digit year"
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "THIS.YEAR"
+    }
+
+    field "OUR.REF" {
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "TXN.CODE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TXN.CODE"
+    }
+
+    field "RE.TXN.DESC" {
+        format: User
+        comma-separator: false
+        operation: field-extract "TXN.CODE"
+        conversion: getFrom "RE.TXN.CODE" "DESCRIPTION" false
+    }
+
+    field "PERIOD" {
+        comments: "Requested period for report" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "SYSTEM.DATE"
+    }
+
+    field "PERIOD1" {
+        format: Date break-condition {
+            break: NewPage
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        escapeSequence: HI
+        position {
+            column: 66
+            line: 0
+        }
+
+        operation: field-extract "PERIOD"
+        conversion: extract from 1 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "PERIOD2" {
+        format: Date break-condition {
+            break: NewPage
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        escapeSequence: HI
+        position {
+            column: 78
+            line: 0
+        }
+
+        operation: field-extract "PERIOD"
+        conversion: extract from 2 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "SEL.CCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "CURRENCY"
+    }
+
+    field "DISP.CCY" {
+        comments: "Selected CCY , show ALL if null" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 103
+            line: 0
+        }
+
+        operation: if "SEL.CCY" Equals "NULL" process "ALL" "SEL.CCY"
+    }
+
+    field "AC.TXN.DESC" {
+        format: User
+        comma-separator: false
+        operation: field-extract "TXN.CODE"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "DEF.NARR" {
+        comma-separator: false
+        operation: if "RE.TXN.DESC" Equals "NULL" process "AC.TXN.DESC" "RE.TXN.DESC"
+    }
+
+    field "TRN.ID" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "STMT.NARR" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TRN.ID"
+        conversion: getFrom "STMT.ENTRY" "NARRATIVE" false
+    }
+
+    field "CATEG.NARR" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TRN.ID"
+        conversion: getFrom "CATEG.ENTRY" "NARRATIVE" false
+    }
+
+    field "PREFERED.NARR" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "STMT.NARR" NotEquals "NULL" process "STMT.NARR" "CATEG.NARR"
+    }
+
+    field "DISP.TXN.CODE" {
+        comma-separator: false
+        operation: if "PREFERED.NARR" Equals "NULL" process "DEF.NARR" "PREFERED.NARR"
+    }
+
+    field "DISP.ACTUAL.TXN" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Single
+        operation: if "DEF.NARR" Equals "NULL" process "NO.MOVEMENTS" "DEF.NARR"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT.FCY" {
+        format: Currency "CURRENCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 71
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.FCY"
+    }
+
+    field "AMOUNT.LCY" {
+        format: Currency "LCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 91
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LCY"
+    }
+
+    field "AMT.LCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LCY"
+    }
+
+    field "DR.CR" {
+        comma-separator: false
+        position {
+            column: 68
+        }
+
+        processing-mode: Single
+        operation: if "AMOUNT.LCY" LessThan "ZERO" process "DR" "CR"
+    }
+
+    field "CLOSE.BAL.NARR" {
+        break-condition {
+            field: "BRK.LINE"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Closing Balance\""
+    }
+
+    field "CLOSING.DR.CR" {
+        break-condition {
+            field: "BRK.LINE"
+        }
+
+        comma-separator: false
+        position {
+            column: 68
+            line: + 1
+        }
+
+        operation: if "CLOSE.BALANCE" LessThan "ZERO" process "DR" "CR"
+    }
+
+    field "CR.BAL.NARR" {
+        break-condition {
+            field: "BRK.LINE"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Total Credits\""
+    }
+
+    field "DR.BAL.NARR" {
+        break-condition {
+            field: "BRK.LINE"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: constant "\"Total Debits\""
+    }
+
+    field "GRAND.DR.TOT.NARR" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: constant "\"Grand DR Total\""
+    }
+
+    field "GRAND.CR.TOT.NARR" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 5
+        }
+
+        operation: constant "\"Grand CR Total\""
+    }
+
+    field "GRAND.TOT.NARR" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 6
+        }
+
+        processing-mode: Single
+        operation: constant "\"Grand Net Total\""
+    }
+
+    field "CR.AMT" {
+        comma-separator: false
+        operation: if "AMT.LCY" GreaterOrEquals "ZERO" process "AMT.LCY" "ZERO"
+    }
+
+    field "DR.AMT" {
+        comma-separator: false
+        operation: if "AMT.LCY" LessThan "ZERO" process "AMT.LCY" "ZERO"
+    }
+
+    field "CR.TOT" {
+        format: Currency "LCY" negative-pattern #- break-condition {
+            field: "BRK.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 91
+            line: + 2
+        }
+
+        operation: total "CR.AMT"
+    }
+
+    field "GRAND.CR.TOT" {
+        format: Currency "LCY" negative-pattern #- break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 91
+            line: + 5
+        }
+
+        operation: total "CR.AMT"
+    }
+
+    field "DR.TOT" {
+        format: Currency "LCY" negative-pattern #- break-condition {
+            field: "BRK.LINE"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 91
+            line: + 3
+        }
+
+        operation: total "DR.AMT"
+    }
+
+    field "GRAND.DR.TOT" {
+        format: Currency "LCY" negative-pattern #- break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 91
+            line: + 4
+        }
+
+        operation: total "DR.AMT"
+    }
+
+    field "GRAND.TOTAL" {
+        format: Currency "LCY" negative-pattern #- break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 91
+            line: + 6
+        }
+
+        operation: total "AMT.LCY"
+    }
+
+}

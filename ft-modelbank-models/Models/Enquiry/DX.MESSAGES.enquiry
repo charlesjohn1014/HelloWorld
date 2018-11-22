@@ -1,0 +1,184 @@
+Enquiry "DX.MESSAGES" for "name:/DX_Trade:DX.TRANSACTION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of DX Messages"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "MESSAGE.REF" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Trans Ref"
+            }
+
+            operands: Contains
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Delivery Messages\""
+    }
+
+    field "DX.TRADE" {
+        label {
+            en = "Trade ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 15
+    }
+
+    field "SOURCE.REF" {
+        label {
+            en = "Source Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SOURCE.REF"
+    }
+
+    field "PORT.CUST.ID" {
+        label {
+            en = "Portfolio No"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORT.CUST.ID"
+    }
+
+    field "TRANS.DATE" {
+        label {
+            en = "Trans Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.DATE"
+    }
+
+    field "ACT.EVENT.TYPE" {
+        label {
+            en = "Act Event Type"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACT.EVENT.TYPE"
+        conversion: getFrom "DX.EVENT.TYPE" "DESCRIPTION" false
+        conversion: oconv "MCT"
+    }
+
+    field "MESSAGE.DATE" {
+        label {
+            en = "Message Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MESSAGE.DATE"
+    }
+
+    field "MESSAGE.REF" {
+        label {
+            en = "Message Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MESSAGE.REF"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Messages Generated for the selected reference\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "MESSAGE.REF"
+        image: "view.gif"
+        criteria: "DELIVERY.REF" Equals "MESSAGE.REF"
+        enquiry: "DE.MSG.SUM"
+    }
+
+}

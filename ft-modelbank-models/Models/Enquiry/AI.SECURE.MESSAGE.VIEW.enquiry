@@ -1,0 +1,326 @@
+Enquiry "AI.SECURE.MESSAGE.VIEW" for "name:/EB_ARC:EB.SECURE.MESSAGE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "All Messages"
+    }
+
+    show-all-books: true
+    start-line: 4
+    end-line: 19
+    fixed-sort: "DATE.TIME" Descending
+    custom-selection {
+
+        field "TO.CUSTOMER" {
+            label {
+                en = "To Customer"
+            }
+
+        }
+
+        AND
+
+        field "TO.DAO" {
+            label {
+                en = "To DAO"
+            }
+
+        }
+
+        AND
+
+        field "FROM.DAO" {
+            label {
+                en = "From DAO"
+            }
+
+        }
+
+        AND
+
+        field "FROM.CUSTOMER" {
+            label {
+                en = "From Customer"
+            }
+
+        }
+
+        AND
+
+        field "DATE.SENT" {
+            label {
+                en = "Date Sent"
+            }
+
+        }
+
+        AND
+
+        field "TIME.SENT" {
+            label {
+                en = "Time Sent"
+            }
+
+        }
+
+        AND
+
+        field "DATE.READ" {
+            label {
+                en = "Date Read"
+            }
+
+        }
+
+        AND
+
+        field "TO.STATUS" {
+            label {
+                en = "To Status"
+            }
+
+        }
+
+        AND
+
+        field "FROM.STATUS" {
+            label {
+                en = "From Status"
+            }
+
+        }
+
+        AND
+
+        field "PARENT.MESSAGE.ID" {
+            label {
+                en = "Parent message id"
+            }
+
+        }
+
+        None
+    }
+
+    field "SUBJECT" {
+        label {
+            en = "Subject"
+        }
+
+        length: 80
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SUBJECT"
+    }
+
+    field "FROM.CUSTOMER" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FROM.CUSTOMER"
+    }
+
+    field "FROM.CUS.NAME" {
+        comma-separator: false
+        operation: field-extract "FROM.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "HYPEN" {
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "FROM.CUS" {
+        comma-separator: false
+        operation: calc "FROM.CUSTOMER":"HYPEN"
+    }
+
+    field "FROM.CUST" {
+        label {
+            en = "From Customer"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: calc "FROM.CUS":"FROM.CUS.NAME"
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "FROM.DAO" {
+        label {
+            en = "From DAO"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FROM.DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "TO.CUSTOMER" {
+        label {
+            en = "To"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TO.CUSTOMER"
+    }
+
+    field "TO.CUS.NAME" {
+        comma-separator: false
+        operation: field-extract "TO.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "TO.CUS" {
+        comma-separator: false
+        operation: calc "TO.CUSTOMER":"HYPEN"
+    }
+
+    field "TO.CUST" {
+        label {
+            en = "To Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: calc "TO.CUS":"TO.CUS.NAME"
+    }
+
+    field "FROM.TO.CUS" {
+        label {
+            en = "From / To Customer"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: if "TO.CUSTOMER" Equals "NULL" process "FROM.CUST" "TO.CUST"
+    }
+
+    field "TO.DAO" {
+        label {
+            en = "To DAO"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TO.DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "FROM.TO.DAO" {
+        label {
+            en = "From / To DAO"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: if "FROM.DAO" Equals "NULL" process "TO.DAO" "FROM.DAO"
+    }
+
+    field "DATE.TIME" {
+        label {
+            en = "Date and Time"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE.TIME"
+    }
+
+    field "TO.STATUS" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TO.STATUS"
+    }
+
+    field "FROM.STATUS" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FROM.STATUS"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: if "TO.STATUS" Equals "NULL" process "FROM.STATUS" "TO.STATUS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Read Message"
+        }
+
+        label-field: "SUBJECT" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "EB.SECURE.MESSAGE,MSGS"
+    }
+
+    attributes: "DRILLDOWNS.AS.HYPERLINKS"
+}

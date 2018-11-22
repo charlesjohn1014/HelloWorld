@@ -1,0 +1,169 @@
+Enquiry "TCIB.WEALTH.AVAIL.ALERT" for "name:/BE_ModelBank:NOFILE.PWM.PORT.ALERT.LIST#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 99 fixed-selection "SEL.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "ALERT" {
+            mandatory: true
+            label {
+                en = "AlertType"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO.NO" {
+            label {
+                en = "PortfolioId"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ACCOUNT.NO" {
+            label {
+                en = "AccountId"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Event Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "ALERT" {
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "ALERT"
+    }
+
+    field "TEC.ITEM" {
+        label {
+            en = "Field"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: replace {
+        }
+
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "INT.EXT" {
+        comma-separator: false
+        operation: field-extract "TEC.ITEM"
+        conversion: getFrom "TEC.ITEMS" "SUBSCRIPTION.LEVEL" false
+    }
+
+    field "INT" {
+        comma-separator: false
+        operation: constant "\"INTERNAL\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Event Description"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "TEC.ITEM"
+    }
+
+    field "TEC.DESC" {
+        label {
+            en = "Alert"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "TEC.ITEM"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "EVENT.AT.INHE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TEC.ITEM"
+        conversion: getFrom "TEC.ITEMS" "INHERIT" false
+    }
+
+    field "INHERIT" {
+        label {
+            en = "Inherit"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TEC.ITEM"
+        conversion: getFrom "TEC.ITEMS" "INHERIT" false
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"...YES...\""
+    }
+
+    field "VERSION.1" {
+        comma-separator: false
+        operation: constant "\"NO.INHERIT\""
+    }
+
+    field "VERSION.2" {
+        comma-separator: false
+        operation: constant "\"INHERIT\""
+    }
+
+    field "VERSION.FINAL" {
+        label {
+            en = "Inherit"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "INHERIT" Matches "YES" process "VERSION.2" "VERSION.1"
+    }
+
+}

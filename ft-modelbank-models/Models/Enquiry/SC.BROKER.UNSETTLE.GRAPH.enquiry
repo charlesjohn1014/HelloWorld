@@ -1,0 +1,112 @@
+Enquiry "SC.BROKER.UNSETTLE.GRAPH" for "name:/SC_ModelBank:NOFILE.BR.UNSETTLE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unsettled Broker Records"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Unsettled Broker Records\""
+    }
+
+    field "BROKER.NO" {
+        label {
+            en = "Broker"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "#"
+    }
+
+    field "BROKER.NAME" {
+        label {
+            en = "Broker Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "BROKER.NO"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "CNT" {
+        label {
+            en = "Total"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "#"
+    }
+
+    field "NO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No outstanding settlements from brokers\""
+    }
+
+    graph {
+        type: "BAR.ORDINAL"
+        label {
+            en = "Unsettled Trades - By Broker" x: 120 y: 30
+        }
+
+        dimension {
+            width: 450 height: 300
+        }
+
+        margins {
+            top: 50 bottom: 100 left: 75 right: 50
+        }
+
+        scale {
+            x: 100 y: 100
+        }
+
+        legend {
+            x: 400 y: 50
+        }
+
+        x-axis {
+            field: "BROKER.NAME"
+            display-legend: true
+            show-grid: true
+        }
+
+        y-axis {
+            field: "CNT"
+            display-legend: true
+            show-grid: true
+        }
+
+    }
+
+    enquiry-graph-id {
+        "SC.BROKER.UNSETTLE.GRAPH"
+    }
+
+    attributes: "ALLDATA"
+}

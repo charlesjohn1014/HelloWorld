@@ -1,0 +1,339 @@
+Enquiry "AC.EXP.BAL" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Expected Balance Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    fixed-sort: "CUSTOMER" Null
+    custom-selection {
+
+        field "ACCOUNT.NUMBER" {
+        }
+
+        AND
+
+        field "CUSTOMER" {
+        }
+
+        AND
+
+        field "CATEGORY" {
+        }
+
+        None
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Expected Balance \""
+    }
+
+    field "HEADER.2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 0
+        }
+
+        operation: constant "\"Details as at :\""
+    }
+
+    field "ACCT.DISPLAY" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Account\""
+    }
+
+    field "HEADER.3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Cleared/Actual\""
+    }
+
+    field "ACC" {
+        label {
+            en = "Account"
+        }
+
+        comments: "Account no for header"
+        display-type: "CLASS-ENQ.H.ID"
+        length: 8
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 9
+            line: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "TODAY" {
+        comments: "Use !TODAY for date comparisons"
+        display-type: "CLASS-ENQ.H.ID"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: 0
+        }
+
+        operation: today
+    }
+
+    field "ACC.TITLE" {
+        comments: "Get the A/C title it\'s friendlier"
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "ACCT.CCY" {
+        label {
+            en = "Cleared/Actual"
+        }
+
+        comments: "Used for formatting & header"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 63
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ONLINE.ACTUAL.BAL" {
+        comments: "Actual balance (includes uncleared)"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "ONLINE.CLEARED.BAL" {
+        comments: "Cleared balance does not include credits with forward exposure"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.CLEARED.BALANCE"
+    }
+
+    field "CLEARED" {
+        label {
+            en = "Cleared/Actual"
+        }
+
+        comments: "Display cleared balance"
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "ACCT.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 66
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "ONLINE.CLEARED.BAL"
+    }
+
+    field "DELIM" {
+        comments: "Separator for display"
+        display-type: "CLASS-ENQ.COLUMN.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 85
+            line: 2
+        }
+
+        operation: constant "\"/\""
+    }
+
+    field "ACTUAL.BAL" {
+        label {
+            en = "Cleared/Actual"
+        }
+
+        comments: "Display actual balance"
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "ACCT.CCY" negative-pattern -#
+        length: 19
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 86
+            line: 2
+        }
+
+        operation: field-extract "ONLINE.ACTUAL.BAL"
+    }
+
+    field "ER.VALUE.DATE" {
+        label {
+            en = "Value"
+        }
+
+        comments: "Show the Expected Value Date"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ER.VALUE.DATE"
+    }
+
+    field "ER.BALANCE" {
+        label {
+            en = "Expected Amount"
+        }
+
+        comments: "Display the total for the date Note this can be negative if the money comes in unexpected."
+        format: Currency "ACCT.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ER.BALANCE"
+    }
+
+    field "ER.BALANCE.TMP" {
+        comments: "Temp bal field for totalling"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ER.BALANCE"
+    }
+
+    field "ZERO" {
+        comments: "Zero used for comparisons"
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"0\""
+    }
+
+    field "TYPE" {
+        label {
+            en = "Type"
+        }
+
+        comments: "Work out if current or forward"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: calc "TODAY" - "ER.VALUE.DATE"
+        conversion: call
+        jBC: "@ AC.EXP.OD.DAYS"
+    }
+
+    field "PROJ.BAL" {
+        label {
+            en = "Usable Amount"
+        }
+
+        comments: "Which amount to use if LT Zero"
+        format: Currency "ACCT.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: if "ER.BALANCE" LessThan "ZERO" process "ZERO" "ER.BALANCE.TMP"
+    }
+
+    field "TOT.BAL" {
+        comments: "More totalling"
+        comma-separator: false
+        processing-mode: Multi
+        operation: total "PROJ.BAL"
+    }
+
+    field "ADD.TOT" {
+        comments: "More totalling"
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PROJ.BAL" + "TOT.BAL"
+    }
+
+    field "DISP.PROJ.BAL" {
+        label {
+            en = "Projected Balance"
+        }
+
+        comments:
+        "Totals based on user balance Use either CALC ADD.TOT + ACTUAL.BAL or CALC ADD.TOT + CLEARED Depends on how exposure dates are set"
+        format: Currency "ACCT.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: calc "ADD.TOT" + "ACTUAL.BAL"
+    }
+
+}

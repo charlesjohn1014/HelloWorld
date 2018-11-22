@@ -1,0 +1,343 @@
+Enquiry "AA.DETAILS.CHARGES.PC" for "name:/AA_ModelBank:NOFILE.AA.CHARGE.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Periodic Charges"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "C.NULL" {
+        comma-separator: false
+        operation: constant "\"\'\'\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "S.SIM.REF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "SIM.REF"
+    }
+
+    field "SIM" {
+        comma-separator: false
+        operation: if "S.SIM.REF" Equals "NULL" process "C.NULL" "S.SIM.REF"
+    }
+
+    field "ARR.CHARGE.ID" {
+        length: 200
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.CHARGE.ID"
+        conversion: call
+        jBC: "@ E.AA.FORMAT.ENQUIRY.DATA"
+    }
+
+    field "ARR" {
+        comma-separator: false
+        operation: field-extract "ARR.CHARGE.ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ARR.CCY" {
+        comma-separator: false
+        operation: field-extract "ARR"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "PROP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARR.CHARGE.ID"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.ID"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 140
+        operation: field-extract "PROP"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "L.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 140
+        operation: constant "\"Bill Date\""
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 90
+        operation: application-field-name "PAYMENT.DATE"
+    }
+
+    field "C.DEFER.DATE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Deferred Till\""
+    }
+
+    field "DEFER.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 90
+        processing-mode: Single
+        operation: application-field-name "DEFER.DATE"
+    }
+
+    field "L.DEFER.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 140
+        operation: if "DEFER.DATE" NotEquals "NULL" process "C.DEFER.DATE"
+    }
+
+    field "BILL" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BILL.ID"
+    }
+
+    field "L.AMOUNT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 100
+        operation: constant "\"Amount\""
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        column-width: 75
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "CHARGE.TYPE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+            line: + 1
+        }
+
+        column-width: 127
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.TYPE"
+        conversion: replace {
+            oldData: "DEBIT"
+        }
+
+        conversion: replace {
+            oldData: "CREDIT"
+            newData: "CR"
+        }
+
+    }
+
+    field "C.ADJ.AMOUNT" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Adjusted\""
+    }
+
+    field "ADJ.AMOUNT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ADJUSTMENT.AMOUNT"
+    }
+
+    field "ADJUSTED.AMOUNT" {
+        format: Currency "ARR.CCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "AMOUNT" + "ADJ.AMOUNT"
+    }
+
+    field "L.ADJ.AMOUNT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        column-width: 100
+        operation: if "ADJ.AMOUNT" NotEquals "AMOUNT" process "C.ADJ.AMOUNT"
+    }
+
+    field "D.ADJ.AMOUNT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+            line: + 2
+        }
+
+        column-width: 75
+        operation: if "ADJ.AMOUNT" NotEquals "AMOUNT" process "ADJUSTED.AMOUNT"
+    }
+
+    field "ADJ.CHARGE.TYPE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+            line: + 2
+        }
+
+        column-width: 127
+        operation: field-extract "CHARGE.TYPE"
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: today
+    }
+
+    field "PRODUCT.LINE" {
+        comma-separator: false
+        operation: field-extract "ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "C.ACTIVITY" {
+        comma-separator: false
+        operation: constant "\"-ADJUST.BILL-BALANCE.MAINTENANCE\""
+    }
+
+    field "ACTIVITY" {
+        comma-separator: false
+        operation: calc "PRODUCT.LINE":"C.ACTIVITY"
+    }
+
+    field "V.AAA1" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3 \""
+    }
+
+    field "V.AAA2" {
+        comma-separator: false
+        operation: constant "\"EFFECTIVE.DATE=\""
+    }
+
+    field "V.AAA" {
+        comma-separator: false
+        operation: calc "V.AAA1":"V.AAA2":"TODAY"
+    }
+
+    field "DRILL" {
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 127
+        operation: if "PRODUCT.LINE" NotEquals "\"\"" process "SP"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Adjust Bill"
+        }
+
+        label-field: "DRILL"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARR"
+        criteria: "AA.ACTIVITY" > "ACTIVITY"
+        from-field: "V.AAA"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

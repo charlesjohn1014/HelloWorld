@@ -1,0 +1,319 @@
+Enquiry "FX.FW.DEALS" for "name:/FX_Contract:FOREX#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Forward Deals Today"
+    }
+
+    description {
+        en = "Forward Deals Today"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DEAL.TYPE" {
+        Equals "FW"
+    }
+
+    fixed-selection "DEAL.DATE" {
+        Equals "!TODAY"
+    }
+
+    fixed-selection "DEAL.SUB.TYPE" {
+        NotEquals "IN"
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "MAT"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "COUNTERPARTY" {
+            label {
+                en = "Counterparty"
+            }
+
+        }
+
+        AND
+
+        field "DEALER.DESK" {
+            label {
+                en = "Dealer"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: constant "\"Forward Deals Today\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "COUNTERPARTY" {
+        label {
+            en = "Counterparty"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "COUNTERPARTY"
+    }
+
+    field "COUNTERPARTY1" {
+        label {
+            en = "Counterparty Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COUNTERPARTY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy Buy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY.BOUGHT"
+    }
+
+    field "AMOUNT.BOUGHT" {
+        label {
+            en = "Amount Buy"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.BOUGHT"
+    }
+
+    field "CCY2" {
+        label {
+            en = "Ccy Sell"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY.SOLD"
+    }
+
+    field "SELL.AMT" {
+        label {
+            en = "Amount Sell"
+        }
+
+        format: Currency "CCY2" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.SOLD"
+    }
+
+    field "VALUE.DATE.BUY" {
+        label {
+            en = "Value Date Buy"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE.BUY"
+    }
+
+    field "VALUE.DATE.SELL" {
+        label {
+            en = "Value Date Sell"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "VALUE.DATE.SELL"
+    }
+
+    field "FWD.RATE" {
+        label {
+            en = "Forward Rate"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FORWARD.RATE"
+    }
+
+    field "OPTION.DATE" {
+        label {
+            en = "Option Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "OPTION.DATE"
+    }
+
+    field "OUR.ACCOUNT.PAY" {
+        label {
+            en = "Account Sell"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUR.ACCOUNT.PAY"
+    }
+
+    field "OUR.ACCOUNT.REC" {
+        label {
+            en = "Account Buy"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OUR.ACCOUNT.REC"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Forward Deals available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "FOREX,FORWARDDEAL"
+    }
+
+}

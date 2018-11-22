@@ -1,0 +1,375 @@
+Enquiry "AM.RM.CONTACT.CURR" for "name:/CR_Analytical:CR.CONTACT.LOG#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Current Contact Log"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "CONTACT.DATE" {
+        LessOrEquals "!TODAY"
+    }
+
+    fixed-selection "CONTACT.TYPE" {
+        Equals "TRANSACTION"
+    }
+
+    fixed-sort: "CONTACT.CLIENT" Null
+    fixed-sort: "CONTACT.DATE" Null
+    fixed-sort: "CONTACT.TIME" Null
+    custom-selection {
+
+        field "CONTACT.CLIENT" {
+            mandatory: true
+            label {
+                en = "Client"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CONTACT.STAFF" {
+            label {
+                en = "Staff"
+            }
+
+        }
+
+        AND
+
+        field "CONTACT.DATE" {
+            label {
+                en = "Date"
+            }
+
+        }
+
+        AND
+
+        field "CONTACT.TIME" {
+            label {
+                en = "Time"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.ID" {
+            label {
+                en = "Transaction Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "ENQ.TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Last 10 Transactions\""
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DD.ID" {
+        comma-separator: false
+        operation: field-extract "@ID"
+    }
+
+    field "CONTACT.CLIENT" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTACT.CLIENT"
+    }
+
+    field "CLIENT.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CONTACT.CLIENT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CONTACT.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTACT.TYPE"
+        conversion: replace {
+            oldData: "CALLCENTRE"
+            newData: "Call Centre"
+        }
+
+        conversion: replace {
+            oldData: "EMAIL"
+            newData: "Email"
+        }
+
+        conversion: replace {
+            oldData: "LETTER"
+            newData: "Letter"
+        }
+
+        conversion: replace {
+            oldData: "MANUAL"
+            newData: "Manual"
+        }
+
+        conversion: replace {
+            oldData: "MEETING"
+            newData: "Meeting"
+        }
+
+        conversion: replace {
+            oldData: "TELEPHONE"
+            newData: "Phone"
+        }
+
+        conversion: replace {
+            oldData: "TEXT"
+            newData: "SMS"
+        }
+
+        conversion: replace {
+            oldData: "TRANSACTION"
+            newData: "Txn"
+        }
+
+    }
+
+    field "CONTACT.CHANNEL" {
+        label {
+            en = "Channel"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CONTACT.CHANNEL"
+    }
+
+    field "CONTACT.DESC" {
+        label {
+            en = "Description"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTACT.DESC"
+    }
+
+    field "CONTACT.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTACT.DATE"
+    }
+
+    field "CONTACT.TIME" {
+        label {
+            en = "Time"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "CONTACT.TIME"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "APPL.VERSION" {
+        length: 60
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPL.VERSION"
+    }
+
+    field "CONTRACT.ID" {
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.ID"
+    }
+
+    field "S.TEXT" {
+        comma-separator: false
+        operation: constant "\"S \""
+    }
+
+    field "S.FUNC" {
+        comma-separator: false
+        operation: if "APPL.VERSION" Equals "NULL" process "NULL" "S.TEXT"
+    }
+
+    field "APP.SPACE" {
+        comma-separator: false
+        operation: calc "APPL.VERSION":"SPACE"
+    }
+
+    field "APP.SP.SEE" {
+        comma-separator: false
+        operation: calc "APP.SPACE":"S.FUNC"
+    }
+
+    field "APP.SEE.TXN" {
+        comma-separator: false
+        operation: calc "APP.SP.SEE":"CONTRACT.ID"
+    }
+
+    field "D.NO.APP.1" {
+        comma-separator: false
+        operation: constant "\"COS SCV.NO.TXN.DD \""
+    }
+
+    field "D.NO.APP.2" {
+        comma-separator: false
+        operation: calc "D.NO.APP.1":"@ID"
+    }
+
+    field "TXN.DD" {
+        comma-separator: false
+        operation: if "APPL.VERSION" Equals "NULL" process "D.NO.APP.2" "APP.SEE.TXN"
+    }
+
+    field "CONTRACT.ID.02" {
+        label {
+            en = "Txn Id"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.ID"
+    }
+
+    field "WALK.IN.CUSTOMER" {
+        label {
+            en = "Walk In Customer"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "WALK.IN.CUSTOMER"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No current contacts for this customer\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Contact Details"
+        }
+
+        label-field: "CONTACT.DATE"
+        image: "view.gif"
+        criteria: "CLIENT.CONTACT.LOG" Equals "@ID"
+        enquiry: "SCV.CONTACT.DET"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update Contact"
+        }
+
+        label-field: "CONTACT.DATE"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "CR.CONTACT.LOG,SCV.UPD"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Txn Details"
+        }
+
+        label-field: "CONTACT.DATE"
+        image: "details.gif"
+        from-field: "TXN.DD"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "HORIZONTAL.DRILLDOWNS"
+}

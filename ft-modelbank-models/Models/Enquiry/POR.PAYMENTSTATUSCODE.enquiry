@@ -1,0 +1,214 @@
+Enquiry "POR.PAYMENTSTATUSCODE" for "name:/PP_PaymentFrameworkService:POR.PAYMENTSTATUSCODE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Warehouse Payments List"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "StatusCode" {
+        Equals "19", "660"
+    }
+
+    fixed-selection "ProcessedIndicator" {
+        Equals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            label {
+                en = "Company ID"
+            }
+
+        }
+
+        AND
+
+        field "FTNumber" {
+            label {
+                en = "FT Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "ID" {
+        label {
+            en = "PaymentStatusCode ID"
+        }
+
+        length: 255
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "COMP.ID" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "CompanyCode" {
+        label {
+            en = "CompanyCode"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "CompanyCode"
+        conversion: getFrom "PP.COMPANY" "CompanyCode" false
+    }
+
+    field "FTNumber" {
+        label {
+            en = "FT Number"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FTNumber"
+    }
+
+    field "FLD.IDENT" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "POR.TXN.ID" {
+        comma-separator: false
+        operation: calc "COMP.ID":"FLD.IDENT":"FTNumber":"COMP.RAC"
+    }
+
+    field "Processing Date" {
+        label {
+            en = "Processing Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "POR.TXN.ID"
+        conversion: getFrom "POR.TRANSACTION" "ProcessingDate" false
+    }
+
+    field "StatusCode" {
+        label {
+            en = "Status Code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StatusCode"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No Records Found in Warehouse Payments\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "CompanyCode"
+        criteria: "CURRENT.OldID" > "ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "PP.WAREHOUSE.PAYMENTS,MODIFY"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Release"
+        }
+
+        label-field: "CompanyCode"
+        criteria: "CURRENT.OldID" > "ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "PP.WAREHOUSE.PAYMENTS,RELEASE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Cancel"
+        }
+
+        label-field: "CompanyCode"
+        criteria: "CURRENT.OldID" > "ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "PP.WAREHOUSE.PAYMENTS,CANCEL"
+    }
+
+    drilldown "4" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CompanyCode"
+        image: "view.gif"
+        criteria: "@ID" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "POR.PAYMENTSTATUSCODE,VIEW"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

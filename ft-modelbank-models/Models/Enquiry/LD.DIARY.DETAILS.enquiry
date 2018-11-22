@@ -1,0 +1,588 @@
+Enquiry "LD.DIARY.DETAILS" for "name:/LM_Contract:LMM.ACCOUNT.BALANCES#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "LD Diary Details"
+        }
+
+        column: 20
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Contract No :"
+        }
+
+        column: 45
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Customer :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Type"
+        }
+
+        column: 40
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Value Date :"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Maturity :"
+        }
+
+        column: 26
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Current Rate :"
+        }
+
+        column: 50
+        line: 2
+    }
+
+    header {
+        label {
+            en = "%"
+        }
+
+        column: 73
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Date"
+        }
+
+        column: 5
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Day"
+        }
+
+        column: 20
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Diary Details"
+        }
+
+        column: 30
+        line: 4
+    }
+
+    full-description {
+        en =
+        "This enquiry shows Diary actions only. And can befrom the start date, and the future events upto thematurity date, or a supplied END.DATE.The enquiryselects LMM.ACCOUNT.BALANCES whichis updated at NAU stage by LD.Once selected this utilises 2 routines:LD.ENQ.INT.I - initialises common variablesE.LD.SCHED.LIST- routine to build schedulesThis builds up R.RECORD for each contract witha m v assocaited list of details based on theSCHEDULES.PAST file, and projected futureschedules. The layout of R.RECORD at this pointis (useful fields only): 6 Customer Id 7 Currency 8 Current Principal 9 Category 10 Ld status AND PD status value 2 11 Curentrate 12 Value Date 13 Fin Mat Date 15,x Schedule Date yyyymmdd 16,x Interest Amount 17,x Principal Amount 18,x Total payment (Prin + Int + Comm+ Fee) 19 Opening Balance 20,X Capitalised Charges 21,x Fee Charge Amount 22,x 23,x Running Balance on schedule date 24 Closing Balance 25 Final Date 26,x Diary Details 27,x Payable Fees 28,x Receivable charges 29,x 30,x 31,x 32,x 33,x New interest Rate 34,x Overdue marker"
+    }
+
+    description {
+        en = "LD.DIARY.DETAILS"
+    }
+
+    start-line: 5
+    end-line: 18
+    build-routines {
+        jBC: "E.BUILDACCBAL.IDS"
+    }
+
+    fixed-selection "@ID" {
+        Matches "...LD..."
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.NO" {
+            operands: Equals
+        }
+
+        AND
+
+        field "CONTRACT.ID" {
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "END.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "CATEGORY" {
+            operands: Equals
+        }
+
+        AND
+
+        field "SHOW.PD.INFO" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NULL.02" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FWD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"FWD\""
+    }
+
+    field "SCHED.NARR" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 69
+            line: 1
+        }
+
+        operation: constant "\"Sch :\""
+    }
+
+    field "SCHEDULE.TYPES" {
+        comments: "Use this field to denote the schedu le types to be shown" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 75
+            line: 1
+        }
+
+        operation: constant "\"D\""
+    }
+
+    field "S.DT.ID" {
+        length: 17
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ID" {
+        comments: "Key of the LD file"
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "DMMY.OPF" {
+        comments: "Open files and store in common" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ LD.ENQ.INT.I"
+    }
+
+    field "START.DATE.SEL" {
+        comments: "Optional Start Date" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "START.DATE"
+    }
+
+    field "END.DATE.SEL" {
+        comments: "OPtional end date supplied" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "END.DATE"
+    }
+
+    field "BK.LD.ID" {
+        comments: "Throw new page when id changes"
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ID"
+    }
+
+    field "DMMY.FLD" {
+        comments: "Build the record used for display o of info For each loan"
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.LD.SCHED.LIST"
+    }
+
+    field "D.ID" {
+        break-condition {
+            break: NewPage
+        }
+
+        alignment: Left
+        comma-separator: false
+        fmtMask: "##/#####/#####"
+        position {
+            column: 57
+            line: 0
+        }
+
+        operation: field-extract "ID"
+    }
+
+    field "CUSTOMER" {
+        comments: "Customer Number. FIELD 6"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "OUTS.CURR.PRINC"
+    }
+
+    field "D.CUST" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 1
+        }
+
+        operation: field-extract "CUSTOMER"
+    }
+
+    field "CU.NAME" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CCY" {
+        comments: "Currency FIELD 7"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "OUTS.OD.PRINC"
+    }
+
+    field "STATUS" {
+        comments: "LD status FIELD 10"
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DATE.PRIN.REC"
+    }
+
+    field "LD.STAT" {
+        comments: "NAU status from LD" break-condition {
+            break: NewPage
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 73
+            line: 0
+        }
+
+        operation: field-extract "ID"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS$NAU" "RECORD.STATUS" false
+    }
+
+    field "PROD.CAT" {
+        comments: "Field 9" break-condition {
+            break: NewPage
+        }
+
+        alignment: Right
+        comma-separator: false
+        fmtMask: "##-###"
+        display-section: Header
+        position {
+            column: 45
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CUM.PRIN.REC"
+    }
+
+    field "PROD.DESC" {
+        format: User break-condition {
+            break: NewPage
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 52
+            line: 1
+        }
+
+        operation: field-extract "PROD.CAT"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "VALUE.DATE" {
+        format: Date break-condition {
+            break: NewPage
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUTS.OVER.DUE.INT"
+    }
+
+    field "MATURITY" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 37
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUTS.SUSP.INT"
+        conversion: call
+        jBC: "@ LD.ENQ.MATDATE"
+    }
+
+    field "CURRENT.RATE" {
+        format: Rate break-condition {
+            break: NewPage
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 65
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUTS.ACCRUED.INT"
+    }
+
+    field "LD.STATUS" {
+        comments: "LD status" break-condition {
+            break: NewPage
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 75
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE.PRIN.REC"
+        conversion: value 1
+    }
+
+    field "OD.STATUS" {
+        comments: "Overdue Status" break-condition {
+            break: NewPage
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 112
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE.PRIN.REC"
+        conversion: value 2
+    }
+
+    field "DATE" {
+        comments: "Field 15"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "OUTS.ACCRUED.COMM"
+    }
+
+    field "DISP.DATE.DAY" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DATE"
+        conversion: julian
+        conversion: oconv "DDMALY"
+    }
+
+    field "DAY" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DATE"
+        conversion: julian
+        conversion: oconv "DWAL"
+    }
+
+    field "Diary Details" {
+        comments: "Field 26 Diary detailed text"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "M.OS.C.ACC.ON.OD.P"
+    }
+
+    field "NEXT.ENQ" {
+        comments: "Next Level Down"
+        length: 2
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NO.OF.MTHS.LEFT"
+    }
+
+    drilldown "1" {
+        description {
+            en = "32"
+        }
+
+        label-field: "D.ID"
+        from-field: "NEXT.ENQ"
+    }
+
+}

@@ -1,0 +1,177 @@
+Enquiry "AP.EQUITY.SECTOR.GRAPH" for "name:/AM_ModelBank:NOFILE.EQUITY.SECTOR.ALLOC#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Equities Sector Allocation"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+    }
+
+    fixed-selection "SAM.NO" {
+        Equals "!CURRENT.SELECTED.PORTFOLIOS"
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "SAM.NO" {
+        label {
+            en = "Portfolio"
+        }
+
+        format: User
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Equity Sector Allocation\""
+    }
+
+    field "PORTF.TXT" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: constant "\"Portfolio No: \""
+    }
+
+    field "PORTF.ID" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: field-extract "SAM.NO"
+    }
+
+    field "PORT.HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: calc "PORTF.TXT":"PORTF.ID"
+    }
+
+    field "VALCCY.TXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Valuation CCY: \""
+    }
+
+    field "VALCCY" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "VALCCY.TXT.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: calc "VALCCY.TXT":"VALCCY"
+    }
+
+    field "B.SAM.NO" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "TITLE"
+    }
+
+    field "INDUSTRY" {
+        label {
+            en = "Industry"
+        }
+
+        display-type: "PIELABEL"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TOT" {
+        label {
+            en = "Total %"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+        conversion: iconv "MD"
+        conversion: oconv "MD"
+    }
+
+    field "DISPLAY.TOT" {
+        display-type: "PIE"
+        comma-separator: false
+        display-section: NoDisplay
+        position {
+            column: 40
+        }
+
+        operation: field-extract "TOT"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"There are no details for display\""
+    }
+
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER"
+}

@@ -1,0 +1,408 @@
+Enquiry "FATCA.STATUS.CHANGE" for "name:/FA_CustomerIdentification:FATCA.CUSTOMER.SUPPLEMENTARY.INFO#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "FATCA Status Changed Today"
+    }
+
+    description {
+        en = "FATCA Status Changed Today"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "STATUS.CHANGE.DATE" {
+        Equals "!TODAY"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DAO" {
+        label {
+            en = "RM Id"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "DAO.NAME" {
+        label {
+            en = "RM Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "RM.AREA" {
+        label {
+            en = "RM Market"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        operation: field-extract "DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"FATCA Status Changed Today\""
+    }
+
+    field "DATE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Date:\""
+    }
+
+    field "DATE.02" {
+        format: Date
+        length: 25
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: today
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 92
+        }
+
+        hidden: true
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "T1" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "POTENTIAL.US"
+    }
+
+    field "T2" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROVEN.US"
+    }
+
+    field "T3" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROVEN.NONUS"
+    }
+
+    field "R1" {
+        comma-separator: false
+        operation: constant "\"Potentially US\""
+    }
+
+    field "R2" {
+        comma-separator: false
+        operation: constant "\"Proven US\""
+    }
+
+    field "R3" {
+        comma-separator: false
+        operation: constant "\"Proven Non US\""
+    }
+
+    field "Y" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "N" {
+        comma-separator: false
+        operation: constant "\"NO\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "P1" {
+        comma-separator: false
+        operation: if "T1" Equals "Y" process "R1" "NULL"
+    }
+
+    field "P2" {
+        comma-separator: false
+        operation: if "T2" Equals "Y" process "R2" "NULL"
+    }
+
+    field "P3" {
+        comma-separator: false
+        operation: if "T3" Equals "Y" process "R3" "NULL"
+    }
+
+    field "CUSTOMER.TYPE" {
+        label {
+            en = "Client Type"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 129
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CLIENT.TYPE"
+        conversion: getFrom "FATCA.CUSTOMER.TYPE" "DESCRIPTION" false
+    }
+
+    field "KYC" {
+        label {
+            en = "KYC Status"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 167
+        }
+
+        operation: calc "P1":"P2":"P3"
+    }
+
+    field "FORM.TYPE" {
+        label {
+            en = "Document Type"
+        }
+
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 185
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FORM.TYPE"
+        conversion: getFrom "FATCA.FORM.TYPE" "DESCRIPTION" false
+    }
+
+    field "OLD.FATCA.STATUS" {
+        label {
+            en = "Old FATCA Status"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 237
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OLD.FATCA.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "FATCA.STATUS" {
+        label {
+            en = "New FATCA Status"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 275
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FATCA.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "CHANGE.REASON" {
+        label {
+            en = "Change Reason"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 312
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CHANGE.REASON"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 350
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 0 delimited by "_"
+    }
+
+    field "AUTHORISER" {
+        label {
+            en = "Authoriser"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 387
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "AUTHORISER"
+        conversion: extract from 2 to 0 delimited by "_"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available for current selection\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "CUST.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Details"
+        }
+
+        label-field: "CUST.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+    attributes: "ALLDATA"
+}

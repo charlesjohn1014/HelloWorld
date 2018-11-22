@@ -1,0 +1,169 @@
+Enquiry "LC.AMENDMENTS.EXPLCACCP" for "name:/LC_Contract:LC.AMENDMENTS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Accepted Export LC Internet Request"
+    }
+
+    description {
+        en = "Accepted Export LC Internet Request"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "ISSUING.BANK" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "IB.EVENT.STATUS" {
+        Equals "\'Approved\'"
+    }
+
+    fixed-sort: "EXPIRY.DATE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "BENEFICIARY" {
+            label {
+                en = "Drawer Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "Doc Currency"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 0
+        }
+
+        operation: constant "\"List of Accepted Export LC Internet Request\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LC.CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        label {
+            en = "LC Amount"
+        }
+
+        format: Currency "LC.CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "LC.ID" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "BENE.CUST" {
+        label {
+            en = "Beneficiary"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "LC.ID"
+        conversion: getFrom "LETTER.OF.CREDIT" "BENEFICIARY.CUSTNO" false
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Accepted Export LCs\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "LC.AMENDMENTS,EXPLC"
+    }
+
+}

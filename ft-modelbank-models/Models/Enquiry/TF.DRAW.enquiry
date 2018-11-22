@@ -1,0 +1,695 @@
+Enquiry "TF.DRAW" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Drawings for Document Upload"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99 fixed-selection "LC.CREDIT.TYPE" {
+        NotEquals "REIM"
+    }
+
+    fixed-selection "DRAWING.TYPE" {
+        NotEquals "FR"
+    }
+
+    fixed-sort: "DRAWING.TYPE" Null
+    fixed-sort: "LC.CREDIT.TYPE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.LINK" {
+            label {
+                en = "Customer ID"
+            }
+
+        }
+
+        AND
+
+        field "PRESENTOR.CUST" {
+            label {
+                en = "Received From"
+            }
+
+        }
+
+        AND
+
+        field "DRAW.CURRENCY" {
+            label {
+                en = "Draw Currency"
+            }
+
+        }
+
+        AND
+
+        field "DOCUMENT.AMOUNT" {
+            label {
+                en = "Document Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Drawings for Document Upload\""
+    }
+
+    field "ID" {
+        label {
+            en = "Tranaction Ref"
+        }
+
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.LINK" {
+        label {
+            en = "Customer ID"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CUSTOMER.LINK"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: i-desc "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NULL" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PRESENTOR" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR"
+    }
+
+    field "PRESENTOR.CUST" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PRES" {
+        label {
+            en = "Received From"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "PRESENTOR.CUST" NotEquals "NULL" process "PRESENTOR.CUST" "PRESENTOR"
+    }
+
+    field "DOCS.RECEIVED" {
+        label {
+            en = "Docs Received"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCS.RECEIVED"
+    }
+
+    field "DRAWING.TYPE" {
+        label {
+            en = "Draw Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "LC.CREDIT.TYPE" {
+        label {
+            en = "Charge Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: getFrom "LC.TYPES" "IMPORT.EXPORT" false
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "!CURRENT.TF.REF" {
+        label {
+            en = "CURRENT.TF.REF"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "RATE.BOOKED"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Drawings\""
+    }
+
+    field "TYPE.LC" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 12
+        conversion: getFrom "LETTER.OF.CREDIT" "LC.TYPE" false
+        conversion: getFrom "LC.TYPES" "IMPORT.EXPORT" false
+    }
+
+    field "LC.TYPE.ID" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 12
+        conversion: getFrom "LETTER.OF.CREDIT" "LC.TYPE" false
+    }
+
+    field "LC.TYPE" {
+        alignment: Left
+        comma-separator: false
+        operation: if "LC.CREDIT.TYPE" Equals "NULL" process "TYPE.LC" "LC.CREDIT.TYPE"
+    }
+
+    field "NULL.02" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CONCAT.1" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "DRAWING.TYPE":"LC.TYPE"
+        conversion: extract from 1 to 3
+    }
+
+    field "CONCAT.2" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CONCAT.1"
+        conversion: replace {
+            oldData: "COI"
+            newData: "IMREG"
+        }
+
+        conversion: replace {
+            oldData: "SPI"
+            newData: "IMSIGHT"
+        }
+
+        conversion: replace {
+            oldData: "ACI"
+            newData: "IMACCEPT"
+        }
+
+        conversion: replace {
+            oldData: "DPI"
+            newData: "IMACCEPT"
+        }
+
+        conversion: replace {
+            oldData: "CRI"
+            newData: "IMPREJ"
+        }
+
+        conversion: replace {
+            oldData: "FRI"
+            newData: "IMFINALREJ"
+        }
+
+        conversion: replace {
+            oldData: "MAI"
+            newData: "IMPMAT"
+        }
+
+        conversion: replace {
+            oldData: "MDI"
+            newData: "IMPMAT"
+        }
+
+        conversion: replace {
+            oldData: "COE"
+            newData: "EXREG"
+        }
+
+        conversion: replace {
+            oldData: "SPE"
+            newData: "EXPSP"
+        }
+
+        conversion: replace {
+            oldData: "ACE"
+            newData: "EXUSANCE"
+        }
+
+        conversion: replace {
+            oldData: "DPE"
+            newData: "EXUSANCE"
+        }
+
+        conversion: replace {
+            oldData: "MAE"
+            newData: "EXPMAT"
+        }
+
+        conversion: replace {
+            oldData: "MDE"
+            newData: "EXPMAT"
+        }
+
+        conversion: replace {
+            oldData: "CRE"
+            newData: "EXREJ"
+        }
+
+        conversion: replace {
+            oldData: "FRE"
+            newData: "EXFINALREJ"
+        }
+
+        conversion: replace {
+            oldData: "ADE"
+            newData: "DOCAD"
+        }
+
+        conversion: replace {
+            oldData: "ADI"
+            newData: "DOCAD"
+        }
+
+        conversion: replace {
+            oldData: "RPE"
+            newData: "EXREG"
+        }
+
+        conversion: replace {
+            oldData: "RPI"
+            newData: "IMREG"
+        }
+
+        conversion: replace {
+            oldData: "DCI"
+            newData: "IMDC"
+        }
+
+        conversion: replace {
+            oldData: "DCE"
+            newData: "EXDC"
+        }
+
+        conversion: replace {
+            oldData: "MXI"
+            newData: "MXPYMT"
+        }
+
+        conversion: replace {
+            oldData: "MXE"
+            newData: "EXMXPYMT"
+        }
+
+        conversion: replace {
+            oldData: "RDI"
+            newData: "RD"
+        }
+
+        conversion: replace {
+            oldData: "RDE"
+            newData: "RD"
+        }
+
+    }
+
+    field "CONCAT.3" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "DRAWING.TYPE":"LC.CREDIT.TYPE"
+        conversion: replace {
+            oldData: "ACI"
+            newData: "IMUSANDISC"
+        }
+
+        conversion: replace {
+            oldData: "DPI"
+            newData: "IMUSANDISC"
+        }
+
+        conversion: replace {
+            oldData: "SPE"
+            newData: "EXSIGHTDISC"
+        }
+
+        conversion: replace {
+            oldData: "ACE"
+            newData: "EXUSANDISC"
+        }
+
+        conversion: replace {
+            oldData: "DPE"
+            newData: "EXUSANDISC"
+        }
+
+        conversion: replace {
+            oldData: "DCI"
+            newData: "IMDC"
+        }
+
+        conversion: replace {
+            oldData: "DCE"
+            newData: "EXDC"
+        }
+
+        conversion: replace {
+            oldData: "MXI"
+            newData: "IMPDISC"
+        }
+
+        conversion: replace {
+            oldData: "MXE"
+            newData: "EXMXPDISC"
+        }
+
+    }
+
+    field "Y.VALUE" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "DISCOUNT.AMT" NotEquals "NULL" process "CONCAT.3" "CONCAT.2"
+    }
+
+    field "LC.CR.TYPE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "LC.TYPE.ID"
+    }
+
+    field "DOC.COLL" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "LC.CR.TYPE"
+        conversion: getFrom "LC.TYPES" "DOC.COLLECTION" false
+    }
+
+    field "CLEAN.CREDIT" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "LC.CR.TYPE"
+        conversion: getFrom "LC.TYPES" "CLEAN.CREDIT" false
+    }
+
+    field "CLEAN.COLL" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "LC.CR.TYPE"
+        conversion: getFrom "LC.TYPES" "CLEAN.COLLECTION" false
+    }
+
+    field "COLL.VERSION" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "DRAWING.TYPE":"LC.TYPE"
+        conversion: extract from 1 to 3
+        conversion: replace {
+            oldData: "SPI"
+            newData: "INCOLPMT"
+        }
+
+        conversion: replace {
+            oldData: "COI"
+            newData: "IMCOL"
+        }
+
+        conversion: replace {
+            oldData: "SPE"
+            newData: "OUTCOLPMT"
+        }
+
+        conversion: replace {
+            oldData: "COE"
+            newData: "EXPCOL"
+        }
+
+    }
+
+    field "YES" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "CHECK.DOC.COLL" {
+        alignment: Left
+        comma-separator: false
+        operation: if "DOC.COLL" Equals "YES" process "COLL.VERSION" "Y.VALUE"
+    }
+
+    field "CHECK.CLEAN.CRE" {
+        alignment: Left
+        comma-separator: false
+        operation: if "CLEAN.CREDIT" Equals "YES" process "COLL.VERSION" "CHECK.DOC.COLL"
+    }
+
+    field "VERSION.DRILL" {
+        alignment: Left
+        comma-separator: false
+        operation: if "CLEAN.COLL" Equals "YES" process "COLL.VERSION" "CHECK.CLEAN.CRE"
+    }
+
+    field "VERSION" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "DRAWINGS,":"VERSION.DRILL"
+    }
+
+    field "LCID" {
+        label {
+            en = "LC Id"
+        }
+
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "NEXT.DRAWING" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "LCID"
+        conversion: getFrom "LETTER.OF.CREDIT" "NEXT.DRAWING" false
+    }
+
+    field "ZERO" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "NINE" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"9\""
+    }
+
+    field "NEW.DRAW" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "ZERO":"NEXT.DRAWING"
+    }
+
+    field "NEXT.DRAW" {
+        alignment: Left
+        comma-separator: false
+        operation: if "NEXT.DRAWING" Greater "NINE" process "NEXT.DRAWING" "CHECK.DRAW"
+    }
+
+    field "CHECK.DRAW" {
+        alignment: Left
+        comma-separator: false
+        operation: if "NEXT.DRAWING" Equals "ONE" process "ONE" "NEW.DRAW"
+    }
+
+    field "DRAW.ID" {
+        alignment: Left
+        comma-separator: false
+        operation: calc "LCID":"NEXT.DRAW"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Upload"
+        }
+
+        label-field: "ID"
+        image: "transferout.gif"
+        criteria: "CURRENT.TXN.REF" > "ID"
+        criteria: "CURRENT.LC.REF" > "LCID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "IM.DOCUMENT.IMAGE,IMDR.CAP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ID"
+        image: "view.gif"
+        criteria: "CURRENT.TXN.REF" > "ID" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        from-field: "VERSION"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Register New Docs"
+        }
+
+        label-field: "ID"
+        image: "new.gif"
+        criteria: "CURRENT.LC.REF" > "LCID"
+        criteria: "CURRENT.TXN.REF" > "DRAW.ID" parameters {
+            function:  Input
+            field: "LCID"
+        }
+
+        screen: "DRAWINGS,RD"
+    }
+
+    fileVersion: Live
+}

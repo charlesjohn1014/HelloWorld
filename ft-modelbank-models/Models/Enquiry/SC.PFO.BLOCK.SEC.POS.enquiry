@@ -1,0 +1,264 @@
+Enquiry "SC.PFO.BLOCK.SEC.POS" for "name:/SC_SctBlocking:SC.BLOCK.SEC.POS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Summary Blocked Positions"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BLD.BLK.POS"
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unblock Sec Position\""
+    }
+
+    field "DEPOT" {
+        label {
+            en = "Depository"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SEC.DEPOT"
+    }
+
+    field "PORT" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "SECURITIES.ACCOUNT"
+    }
+
+    field "PORT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SECURITIES.ACCOUNT"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "SECCODE" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "ALT.SECURITY.NO" false
+        conversion: value 2
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Trans Type"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "NEW.AMT.BLOCKED" {
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: application-field-name "NEW.AMT.BLOCKED"
+    }
+
+    field "MOINSUN" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "BLOCK" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"BLOCK\""
+    }
+
+    field "AMT.PLUS" {
+        comma-separator: false
+        operation: field-extract "NEW.AMT.BLOCKED"
+    }
+
+    field "AMT.MOINS" {
+        comma-separator: false
+        operation: calc "NEW.AMT.BLOCKED" * "MOINSUN"
+    }
+
+    field "AMT" {
+        label {
+            en = "Blocked Unblocked"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        column-width: 8
+        operation: if "TRANSACTION.TYPE" Equals "BLOCK" process "AMT.PLUS" "AMT.MOINS"
+    }
+
+    field "TOTAL.AMT" {
+        label {
+            en = "Total Units"
+        }
+
+        display-type: "CLASS-FDLB" break-condition {
+            break: End
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 8
+        operation: total "AMT"
+    }
+
+    field "ACTION.DATE" {
+        label {
+            en = "Blocking Date"
+        }
+
+        format: Date
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACTION.DATE"
+    }
+
+    field "BLOCKED.UNTIL" {
+        label {
+            en = "Block Expiry Date"
+        }
+
+        format: Date
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BLOCKED.UNTIL"
+    }
+
+    field "ADDITION.INFO" {
+        label {
+            en = "Narrative"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ADDITION.INFO"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Unblock"
+        }
+
+        label-field: "@ID"
+        image: "unlock.gif"
+        criteria: "SC.BLOCK.SEC.POS" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SC.BLOCK.SEC.POS,UNBLOCK"
+    }
+
+}

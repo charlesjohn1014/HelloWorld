@@ -1,0 +1,165 @@
+Enquiry "DLM.DETAIL.COMPARE" for "name:/DL_ModelBank:NOFILE.DLM.COMPARE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "DLM Compare"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        NotEquals "1"
+    }
+
+    fixed-selection "AUTOREFRESH" {
+        Equals "60"
+    }
+
+    field "DLM.DETAIL.COMMENT" {
+        display-type: "CLASS-COS.HEADING"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: constant "\"DLM Compare\""
+    }
+
+    field "APPLICATION.COMMENT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        no-header: true
+        operation: constant "\"Table Name\""
+    }
+
+    field "COUNT.LIVE.COMMENT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 250
+            line: + 1
+        }
+
+        no-header: true
+        operation: constant "\"Live Count\""
+    }
+
+    field "COUNT.RO.COMMENT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 280
+            line: + 1
+        }
+
+        no-header: true
+        operation: constant "\"RO Count\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Table"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        no-header: true
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "~"
+    }
+
+    field "LIVE.INIT" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "~"
+    }
+
+    field "ERTEXT" {
+        display-type: "CLASS-BOLD.RED"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Error \""
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "LIVE.COUNT" {
+        label {
+            en = "DLM Count"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        position {
+            column: 250
+            line: + 1
+        }
+
+        no-header: true
+        operation: if "LIVE.INIT" LessThan "ZERO" process "ERTEXT" "LIVE.INIT"
+    }
+
+    field "DLM.INIT" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "~"
+    }
+
+    field "DLM.COUNT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        position {
+            column: 280
+            line: + 1
+        }
+
+        no-header: true
+        operation: if "DLM.INIT" LessThan "ZERO" process "ERTEXT" "DLM.INIT"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS"
+        format: Translate break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No application configured to move to DLM \""
+    }
+
+    attributes: "SINGLE.BACKGROUND.COLOUR"
+}

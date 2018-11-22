@@ -1,0 +1,205 @@
+Enquiry "SC.POS.TRANSFER" for "name:/SC_ScoSecurityPositionUpdate:SECURITY.TRANS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Position.Transfer :"
+        }
+
+        column: 0
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Transfer Date :"
+        }
+
+        column: 53
+        line: 0
+    }
+
+    header {
+        label {
+            en = "PORTFOLIO"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "SHORT NAME"
+        }
+
+        column: 11
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CCY"
+        }
+
+        column: 48
+        line: 2
+    }
+
+    header {
+        label {
+            en = "NOMINAL"
+        }
+
+        column: 56
+        line: 2
+    }
+
+    header {
+        label {
+            en = "COST.REF.CCY"
+        }
+
+        column: 67
+        line: 2
+    }
+
+    description {
+        en = "SC.POS.TRANSFER"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "SECURITY.ACCOUNT" {
+        NotMatches "...999"
+    }
+
+    fixed-selection "REFERENCE.NUMBER" {
+        Matches "POSTSC..."
+    }
+
+    custom-selection {
+
+        field "TRADE.DATE" {
+        }
+
+        None
+    }
+
+    field "REFERENCE.NUMBER" {
+        comma-separator: false
+        position {
+            column: 20
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.NUMBER"
+        conversion: extract from 1 to 16
+    }
+
+    field "DATE.ENTERED" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 69
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.NUMBER"
+        conversion: extract from 1 to 16
+        conversion: call
+        jBC: "@ E.TXN.DATE"
+    }
+
+    field "TRANS.ID" {
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.NUMBER"
+        conversion: extract from 1 to 16
+    }
+
+    field "B.TRANS" {
+        comments: "Throw a page for each POSITION.TRANSFER Record."
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "TRANS.ID"
+    }
+
+    field "SEC.ACC.NO" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+    }
+
+    field "SEC.ACC.NAME" {
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+        conversion: extract from 1 to 30
+    }
+
+    field "TRANS.TYPE" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.TYPE"
+    }
+
+    field "REF.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "NOMINAL" {
+        length: 12
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 51
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "COST.REF.CCY" {
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 63
+        }
+
+        operation: application-field-name "COST.INVST.REF.CCY"
+    }
+
+}

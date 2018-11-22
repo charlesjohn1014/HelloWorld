@@ -1,0 +1,165 @@
+Enquiry "SL.LC.ENQUIRY" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "SL Linked Letter of Credit"
+    }
+
+    description {
+        en = "SL Linked Letter of Credit"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99 fixed-selection "SL.REF.TRANCHE" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "ISSUE.DATE" {
+        LessOrEquals "!TODAY"
+    }
+
+    fixed-selection "ADVICE.EXPIRY.DATE" {
+        GreaterOrEquals "!TODAY"
+    }
+
+    fixed-selection "AMEND.STATUS" {
+        NotEquals "\'PENDING\'"
+    }
+
+    fixed-selection "OSUSANCE.VAL" {
+        Equals "\'0\'"
+    }
+
+    fixed-selection "OSCOLLECT.VAL" {
+        Equals "\'0\'"
+    }
+
+    fixed-selection "DISCOUNT.VAL" {
+        Equals "\"\""
+    }
+
+    custom-selection {
+
+        field "SL.REF.TRANCHE" {
+            label {
+                en = "SL Tranche Ref"
+            }
+
+            operands: Contains
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "APPLICANT.CUSTNO" {
+        label {
+            en = "Applicant"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICANT.CUSTNO"
+    }
+
+    field "APPLICANT" {
+        label {
+            en = "Applicant Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICANT.CUSTNO"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        label {
+            en = "LC Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "OWN.PART.AMOUNT" {
+        label {
+            en = "Own Amount"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OWN.PART.AMOUNT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No LC records available under this facility forTrading\""
+    }
+
+}

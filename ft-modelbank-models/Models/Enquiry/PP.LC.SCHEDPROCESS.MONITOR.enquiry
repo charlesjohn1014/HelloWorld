@@ -1,0 +1,289 @@
+Enquiry "PP.LC.SCHEDPROCESS.MONITOR" for "name:/PP_LocalClearingGUI:NOFILE.LC.SCHEDPROCESS.MONITOR#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "LC Scheduled process monitor"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "LC.MONITOR" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyCode" {
+            mandatory: true
+            label {
+                en = "Company ID"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "ClearingId" {
+            label {
+                en = "Clearing Name"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "Status" {
+            label {
+                en = "Status"
+            }
+
+            operands: Equals, Matches
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Local clearing time schedule Process Monitor\""
+    }
+
+    field "NEWHEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: today
+        conversion: call
+        jBC: "@ PP.SCHEDULEPROCESS.REFRESH.TIME"
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company Code"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ClearingId" {
+        label {
+            en = "Clearing Name"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ServiceDesc" {
+        label {
+            en = "Service Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SchedTimes" {
+        label {
+            en = "Scheduled Times"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "Status" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "StartTime" {
+        label {
+            en = "Start time"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "EndTime" {
+        label {
+            en = "End time"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "ServiceName" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "ServiceID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "IDVAL" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "AMEND.VER" {
+        comma-separator: false
+        operation: constant "\"PP.LC.TSA.FREQUENCIES,PP.FREQ.RESET2 I F3\""
+    }
+
+    field "NEW.VER" {
+        comma-separator: false
+        operation: constant "\"PP.LC.TSA.FREQUENCIES,PP.FREQ.RESET I F3\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SEL.VER" {
+        comma-separator: false
+        operation: if "IDVAL" Equals "NULL" process "NEW.VER" "AMEND.VER"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: constant "\" No records found to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ClearingId"
+        image: "view.gif"
+        criteria: "@ID" Equals "ServiceName"
+        enquiry: "PP.LC.SCHEDPROCESS.DETAILS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Restart"
+        }
+
+        label-field: "ClearingId"
+        image: "reexecute.gif" parameters {
+            function:  Input
+            field: "ServiceName"
+        }
+
+        screen: "TSA.SERVICE,PP.START"
+    }
+
+    drilldown "3" {
+        description {
+            en = "ViewHistory"
+        }
+
+        label-field: "ClearingId"
+        image: "details.gif"
+        criteria: "@ID" Equals "ServiceName"
+        enquiry: "PP.LC.TSA.RUN.HISTORY"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Reset"
+        }
+
+        label-field: "ClearingId"
+        image: "edit.gif"
+        criteria: "CURRENT.IDVALUE" > "IDVAL"
+        criteria: "CURRENT.CompanyID" > "CompanyID"
+        criteria: "CURRENT.ClearingId" > "ClearingId"
+        criteria: "CURRENT.TSAServiceId" > "ServiceID"
+        from-field: "SEL.VER"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Authorise/Delete"
+        }
+
+        label-field: "ClearingId"
+        image: "txnauthorise.gif"
+        criteria: "TSAServiceID" Equals "ServiceID"
+        enquiry: "PP.LC.SCHEDPROCESS.NAU"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

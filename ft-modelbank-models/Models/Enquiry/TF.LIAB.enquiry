@@ -1,0 +1,371 @@
+Enquiry "TF.LIAB" for "name:/LI_ModelBank:NOFILE.LIMIT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Limit Summary/Customer Liability"
+    }
+
+    description {
+        en = "Limit Summary/Customer Liability"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.TF.LIAB.BLD.RTN"
+    }
+
+    custom-selection {
+
+        field "LIABILITY.NUMBER" {
+            label {
+                en = "Liability Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "FILL.REC" {
+        length: 10000
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.LIM.ENQ.REC.BUILD"
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Liability Customer: \""
+    }
+
+    field "HEADER.SPACE" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "HEADER.3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 75
+            line: 1
+        }
+
+        operation: constant "\" Amount in 000\'s\""
+    }
+
+    field "LIAB" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 1
+    }
+
+    field "P.REF" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 2
+    }
+
+    field "SER" {
+        label {
+            en = "S.No."
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 3
+    }
+
+    field "P.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: field-number 4
+    }
+
+    field "P.LIM" {
+        label {
+            en = "Limit"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        processing-mode: Multi
+        operation: field-number 5
+        conversion: oconv "MD0,"
+    }
+
+    field "P.OS.AMT" {
+        label {
+            en = "Outstg. Amt."
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "P.CCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 41
+        }
+
+        processing-mode: Multi
+        operation: field-number 6
+        conversion: oconv "MD0"
+    }
+
+    field "P.AVAIL" {
+        label {
+            en = "Aval.Amt."
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 15
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 54
+        }
+
+        processing-mode: Multi
+        operation: field-number 7
+        conversion: oconv "MD0"
+    }
+
+    field "EXP" {
+        label {
+            en = "Expiry Date"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 66
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 8
+        conversion: call
+        jBC: "@ LIMIT.CONV.DATE"
+    }
+
+    field "TOT.DB" {
+        label {
+            en = "Total DB"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 18
+        conversion: oconv "MD0,"
+    }
+
+    field "TOT.CR" {
+        label {
+            en = "Total CR"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 19
+        conversion: oconv "MD0,"
+    }
+
+    field "TOT.DB.TEXT" {
+        label {
+            en = "TOT.DB.BAL"
+        }
+
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"TOTAL DEBIT BALS\""
+    }
+
+    field "TOT.CR.TEXT" {
+        label {
+            en = "TOT.CR.BAL"
+        }
+
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"TOTAL CREDIT BALS\""
+    }
+
+    field "P.TOT.DB.TEXT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TOT.DB" NotEquals "NULL" process "TOT.DB.TEXT" "NULL"
+    }
+
+    field "P.TOT.CR.TEXT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TOT.CR" NotEquals "NULL" process "TOT.CR.TEXT" "NULL"
+    }
+
+    field "P.TOT.DB" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TOT.DB" NotEquals "NULL" process "TOT.DB" "NULL"
+    }
+
+    field "P.TOT.CR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TOT.CR" NotEquals "NULL" process "TOT.CR" "NULL"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "N.ENQ" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 9
+    }
+
+    field "SEL1" {
+        comma-separator: false
+        operation: field-number 10
+    }
+
+    field "SEL2" {
+        comma-separator: false
+        operation: field-number 11
+    }
+
+    field "SEL3" {
+        comma-separator: false
+        operation: field-number 12
+    }
+
+    field "P.LIAB" {
+        label {
+            en = "Liability Customer:"
+        }
+
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Page
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 1
+        }
+
+        operation: field-extract "LIAB"
+    }
+
+    field "N.LIAB" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "LIAB"
+        conversion: getFrom "CUSTOMER" "2" false
+    }
+
+    field "B.LIAB" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "LIAB"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Customer Selected\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Limit Details"
+        }
+
+        label-field: "P.REF"
+        image: "view.gif"
+        criteria: "SEL1"
+        criteria: "SEL2"
+        criteria: "SEL3"
+        from-field: "N.ENQ"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

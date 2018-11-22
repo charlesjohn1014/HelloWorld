@@ -1,0 +1,125 @@
+Enquiry "TC.PERIODIC.INTEREST" for "name:/ST_RateParameters:PERIODIC.INTEREST#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.EBR.FD.RATES"
+    }
+
+    custom-selection {
+
+        field "REF.CCY.DATE" {
+            mandatory: true
+            label {
+                en = "Ref Ccy Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "TERM" {
+        label {
+            en = "Term"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REST.PERIOD"
+    }
+
+    field "FD.AMOUNT" {
+        label {
+            en = "FD Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AMT"
+    }
+
+    field "FD.VALUE" {
+        label {
+            en = "FD Value"
+        }
+
+        comma-separator: false
+        operation: constant "\"Upto \""
+    }
+
+    field "FD.AMOUNT.VALUE" {
+        label {
+            en = "FD Amount Value"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "FD.VALUE":"FD.AMOUNT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "VALUE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "AMOUNT"
+        conversion: call
+        jBC: "@ E.MB.FD.RATES"
+    }
+
+    field "MULTI" {
+        label {
+            en = "Multi"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "AMOUNT" Equals "NULL" process "NULL" "VALUE"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: if "FD.AMOUNT" Equals "NULL" process "MULTI" "FD.AMOUNT.VALUE"
+    }
+
+    field "INTEREST.RATE" {
+        label {
+            en = "Interest Rate"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "BID.RATE"
+    }
+
+}

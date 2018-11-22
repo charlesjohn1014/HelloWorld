@@ -1,0 +1,456 @@
+Enquiry "NOSTRO.SUMMARY" for "name:/EB_Foundation:NOFILE.NOSTRO.SUM#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Nostro Summary"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "NOSTRO.CCY" {
+            mandatory: true
+            label {
+                en = "Ccy"
+            }
+
+        }
+
+        None
+    }
+
+    field "LOCAL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*LOCAL\""
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 0
+        }
+
+        operation: constant "\"Nostro \""
+    }
+
+    field "TITLE.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 45
+            line: 0
+        }
+
+        operation: constant "\" Summary \""
+    }
+
+    field "TITLE.2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 85
+            line: 0
+        }
+
+        operation: constant "\" By - Currency\""
+    }
+
+    field "HDR.2" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "HDR.3" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "HDR.4" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 95
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "HDR.4.02" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 115
+            line: 1
+        }
+
+        operation: constant "\"Amount in 000\'s\""
+    }
+
+    field "@ID" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ID.LOCAL" {
+        comma-separator: false
+        operation: calc "@ID":"LOCAL"
+    }
+
+    field "VDBAL" {
+        comma-separator: false
+        operation: field-extract "ID.LOCAL"
+        conversion: call
+        jBC: "@ E.BUILD.NOS.BAL"
+    }
+
+    field "CRNCY" {
+        comma-separator: false
+        operation: field-number 8
+    }
+
+    field "B.CH.CCY" {
+        comma-separator: false
+        operation: break-change "CRNCY"
+    }
+
+    field "ACCT" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "GEST" {
+        comma-separator: false
+        operation: field-extract "ACCT"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.OFFICER" false
+    }
+
+    field "P.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        break-condition {
+            field: "B.CH.CCY"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "CRNCY"
+    }
+
+    field "DT1" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+            line: + 1
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 1 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "DT2" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 26
+            line: + 1
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 2 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "DT3" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 39
+            line: + 1
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 3 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "DT4" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 52
+            line: + 1
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 4 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "DT5" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 65
+            line: + 1
+        }
+
+        operation: field-extract "VDBAL"
+        conversion: extract from 5 to 1 delimited by " "
+        conversion: julian
+        conversion: oconv "D2"
+    }
+
+    field "BAL1" {
+        label {
+            en = "Balance"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        operation: field-extract "VDBAL"
+        conversion: extract from 6 to 1 delimited by " "
+        conversion: oconv "MD0"
+    }
+
+    field "TBAL1" {
+        label {
+            en = "Balance"
+        }
+
+        break-condition {
+            field: "B.CH.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        position {
+            column: 13
+        }
+
+        operation: total "BAL1"
+        conversion: oconv "MD0"
+    }
+
+    field "BAL2" {
+        label {
+            en = "Balance"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        operation: field-extract "VDBAL"
+        conversion: extract from 7 to 1 delimited by " "
+        conversion: oconv "MD0"
+    }
+
+    field "TBAL2" {
+        label {
+            en = "Balance"
+        }
+
+        break-condition {
+            field: "B.CH.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        position {
+            column: 26
+        }
+
+        operation: total "BAL2"
+        conversion: oconv "MD0"
+    }
+
+    field "BAL3" {
+        label {
+            en = "Balance"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        operation: field-extract "VDBAL"
+        conversion: extract from 8 to 1 delimited by " "
+        conversion: oconv "MD0"
+    }
+
+    field "TBAL3" {
+        label {
+            en = "Balance"
+        }
+
+        break-condition {
+            field: "B.CH.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        position {
+            column: 39
+        }
+
+        operation: total "BAL3"
+        conversion: oconv "MD0"
+    }
+
+    field "BAL4" {
+        label {
+            en = "Balance"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        operation: field-extract "VDBAL"
+        conversion: extract from 9 to 1 delimited by " "
+        conversion: oconv "MD0"
+    }
+
+    field "TBAL4" {
+        label {
+            en = "Balance"
+        }
+
+        break-condition {
+            field: "B.CH.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        position {
+            column: 52
+        }
+
+        operation: total "BAL4"
+        conversion: oconv "MD0"
+    }
+
+    field "BAL5" {
+        label {
+            en = "Balance"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        operation: field-extract "VDBAL"
+        conversion: extract from 10 to 1 delimited by " "
+        conversion: oconv "MD0"
+    }
+
+    field "TBAL5" {
+        label {
+            en = "Balance"
+        }
+
+        break-condition {
+            field: "B.CH.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        fmtMask: "M"
+        position {
+            column: 65
+        }
+
+        operation: total "BAL5"
+        conversion: oconv "MD0"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Nostro Position"
+        }
+
+        label-field: "P.CCY"
+        image: "view.gif"
+        criteria: "CURRENCY" Equals "CRNCY"
+        enquiry: "NOSTRO.POSITION"
+    }
+
+}

@@ -1,0 +1,160 @@
+Enquiry "AA.DETAILS.MESSAGES.HISTORY" for "name:/AA_ModelBank:NOFILE.AA.DETAILS.MESSAGES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Messages"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99 fixed-selection "ARCHIVED.ONLY" {
+        Equals "YES"
+    }
+
+    fixed-sort: "EFFECTIVE.DATE" Descending
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 70
+        operation: constant "\"Messages - History\""
+    }
+
+    field "EFFECTIVE.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "ACTIVITY" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "#"
+    }
+
+    field "ACTIVITY.DESC" {
+        label {
+            en = "Activity"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 189
+        processing-mode: Multi
+        operation: field-extract "ACTIVITY"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "ACTIVITY.REF" {
+        label {
+            en = "Activity ID"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 120
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "#"
+    }
+
+    field "DELIVERY.REF" {
+        label {
+            en = "Delivery Reference"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 129
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "#"
+    }
+
+    field "PREVIEW" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DELIVERY.REF"
+        conversion: call
+        jBC: "@ E.AA.BUILD.DELIVERY.PREVIEW"
+    }
+
+    field "NO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 189
+        operation: constant "\"No Records Produced\""
+    }
+
+    toolbar: "ENQUIRY.SELECTION.PRINT" drilldown "1" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "DELIVERY.REF"
+        image: "view.gif"
+        from-field: "PREVIEW"
+    }
+
+    attributes: "ALLDATA" ; "SINGLE.BACKGROUND.COLOUR"
+}

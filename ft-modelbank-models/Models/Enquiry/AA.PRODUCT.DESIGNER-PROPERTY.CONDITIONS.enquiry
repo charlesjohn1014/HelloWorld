@@ -1,0 +1,186 @@
+Enquiry "AA.PRODUCT.DESIGNER-PROPERTY.CONDITIONS" for "name:/AA_ProductFramework:NOFILE.AA.PROPERTY.CONDITIONS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Property Conditions"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "GET.LIST" {
+        NotEquals "NULL"
+    }
+
+    fixed-selection "TARGET.PRODUCT" {
+        Equals "NULL"
+    }
+
+    fixed-sort: "EFFECTIVE.DATE" Null
+    custom-selection {
+
+        field "CLASS" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PCLASS" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "CLASS"
+    }
+
+    field "N.CLASS" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "CLASS"
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "FILE" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "_"
+    }
+
+    field "RECORD" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 2 to 2 delimited by "_"
+    }
+
+    field "CONDITIONS.VERSION" {
+        comma-separator: false
+        operation: field-extract "RECORD"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "CONDITIONS" {
+        label {
+            en = "Conditions"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "CONDITIONS.VERSION"
+    }
+
+    field "B.CONDS" {
+        comma-separator: false
+        operation: break-change "CONDITIONS"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.AA.GET.PROPERTY.COND.RECORD"
+        conversion: extract from 1 to 1 delimited by ">"
+    }
+
+    field "EFFECTIVE" {
+        label {
+            en = "Effective"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "RECORD"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "V.AA.PRD.DES" {
+        comma-separator: false
+        operation: calc "\"AA.PRD.DES.\"":"PCLASS":"\",AA\""
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"There are no Defined Property records.\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "EFFECTIVE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "RECORD"
+        }
+
+        from-field: "V.AA.PRD.DES"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "EFFECTIVE"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "RECORD"
+        }
+
+        from-field: "V.AA.PRD.DES"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "NO.BREADCRUMBS"
+}

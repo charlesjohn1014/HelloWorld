@@ -1,0 +1,193 @@
+Enquiry "AA.DETAILS.MESSAGES" for "name:/AA_ModelBank:NOFILE.AA.DETAILS.MESSAGES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Messages"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99
+    fixed-sort: "EFFECTIVE.DATE" Descending
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "CHK.HIST" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ACTIVITY.HISTORY" "ARC.ID" false
+    }
+
+    field "NULL" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TITLE1" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Messages\""
+    }
+
+    field "TITLE2" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Messages - Recent\""
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 70
+        operation: if "CHK.HIST" Equals "NULL" process "TITLE1" "TITLE2"
+    }
+
+    field "EFFECTIVE.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "ACTIVITY" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "#"
+    }
+
+    field "ACTIVITY.DESC" {
+        label {
+            en = "Activity"
+        }
+
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 230
+        processing-mode: Multi
+        operation: field-extract "ACTIVITY"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "ACTIVITY.REF" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "#"
+    }
+
+    field "DELIVERY.REF" {
+        label {
+            en = "Delivery Reference"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 190
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "#"
+    }
+
+    field "PREVIEW" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DELIVERY.REF"
+        conversion: call
+        jBC: "@ E.AA.BUILD.DELIVERY.PREVIEW"
+    }
+
+    field "AUTOFORM.PDF" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "DELIVERY.REF"
+        conversion: call
+        jBC: "@ E.AA.BUILD.DELIVERY.PREVIEW"
+    }
+
+    field "NO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 230
+        operation: constant "\"No Records Produced\""
+    }
+
+    toolbar: "ENQUIRY.SELECTION.PRINT" drilldown "1" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "DELIVERY.REF"
+        image: "view.gif"
+        from-field: "PREVIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "DELIVERY.REF"
+        image: "pdf.gif"
+        from-field: "AUTOFORM.PDF"
+    }
+
+    attributes: "ALLDATA" ; "SINGLE.BACKGROUND.COLOUR"
+}

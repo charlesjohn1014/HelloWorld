@@ -1,0 +1,328 @@
+Enquiry "STOCK.SUMMARY.BRK.DEP" for "name:/SC_SctStockRecord:SC.STOCK.POSITION#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Stock Record Summary For"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = " Settlement"
+        }
+
+        column: 50
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Security:"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "ISIN:"
+        }
+
+        column: 24
+        line: 1
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "SECURITY.NUMBER" Null
+    fixed-sort: "SECURITY.ACCOUNT" Null
+    custom-selection {
+
+        field "SECURITY.NUMBER" {
+        }
+
+        None
+    }
+
+    field "SYSTEM.DATE" {
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 62
+            line: 0
+        }
+
+        operation: today
+    }
+
+    field "ID" {
+        length: 80
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SECURITY.NO" {
+        break-condition {
+            break: Page
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "SECURITY.DESC" {
+        format: User break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 43
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SEC" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "B.SECURITY" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "SEC"
+    }
+
+    field "ISIN" {
+        break-condition {
+            break: Page
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "DATE.LAST.TRADED" {
+        label {
+            en = "Active"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.LAST.TRADED"
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+    }
+
+    field "PORTFOLIO.DESC" {
+        label {
+            en = "Client name"
+        }
+
+        break-condition {
+            field: "L"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+        conversion: extract from 0 to 1 delimited by "-"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "TRD.NOMINAL" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CLOSING.BAL.NO.NOM"
+    }
+
+    field "TRD.NOMINAL.LONG" {
+        label {
+            en = "Trade Long"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        operation: if "TRD.NOMINAL" GreaterOrEquals "ZERO" process "TRD.NOMINAL" "NULL"
+    }
+
+    field "TRD.NOMINAL.SHORT" {
+        label {
+            en = "Trade Short"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        operation: if "TRD.NOMINAL" LessThan "ZERO" process "TRD.NOMINAL" "NULL"
+    }
+
+    field "CBNN" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CLOSING.BAL.NO.NOM"
+    }
+
+    field "VALUE.DT.SHORT" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "VALUE.DT.SHORT.POS"
+    }
+
+    field "VALUE.DATE.LONG" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "VALUE.DT.LONG.POS"
+    }
+
+    field "UNSETT.TOT1" {
+        comma-separator: false
+        operation: calc "CBNN" - "VALUE.DT.SHORT"
+    }
+
+    field "UNSETT.TOT" {
+        comma-separator: false
+        operation: calc "UNSETT.TOT1" + "VALUE.DT.LONG"
+    }
+
+    field "UNSETT.LONG" {
+        label {
+            en = "Settle Long"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 93
+        }
+
+        operation: if "UNSETT.TOT" GreaterOrEquals "ZERO" process "UNSETT.TOT" "NULL"
+    }
+
+    field "UNSETT.SHORT" {
+        label {
+            en = "Settle Short"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 106
+        }
+
+        operation: if "UNSETT.TOT" LessThan "ZERO" process "UNSETT.TOT" "NULL"
+    }
+
+    drilldown "1" {
+        label-field: "DATE.LAST.TRADED" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        application: "SC.STOCK.POSITION"
+    }
+
+}

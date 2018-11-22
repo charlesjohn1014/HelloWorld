@@ -1,0 +1,176 @@
+Enquiry "EB.FREE.MESSAGE.MT799" for "name:/EB_Delivery:EB.FREE.MESSAGE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of MT799 Free Format Messages"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "TXN.REFERENCE" {
+            label {
+                en = "TXN.REFERENCE"
+            }
+
+        }
+
+        AND
+
+        field "EB.ADVICE.NO" {
+            label {
+                en = "EB Advice No"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of MT799 Free Messages\""
+    }
+
+    field "@ID" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TXN.REFERENCE" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TXN.REFERENCE"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NO"
+    }
+
+    field "RECV.ADDR" {
+        label {
+            en = "Receiver\'s Name & Addrs"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "RECV.ADDR"
+    }
+
+    field "OUR.REFERENCE" {
+        label {
+            en = "Our Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OUR.REFERENCE"
+    }
+
+    field "DEL.REF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DELIVERY.REF"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No MT799 Free Messages Sent\""
+    }
+
+    tool AM.ENQ.DETAIL {
+        label {
+            en = "Send MT799"
+        }
+
+        command: "docommand(\"EB.FREE.MESSAGE,FM799           I F3\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Delivery Msgs"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "DELIVERY.REF" Equals "DEL.REF"
+        enquiry: "DE.MSG.SUM"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Sent Message"
+        }
+
+        label-field: "@ID"
+        image: "full.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "EB.FREE.MESSAGE,FM599"
+    }
+
+}

@@ -1,0 +1,194 @@
+Enquiry "SWEEP.HIST.TODAY" for "name:/ST_ModelBank:NOFILE.SWEEP.HIST#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Customer Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "RETURN.VAL" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Account Sweeps Executed Today:\""
+    }
+
+    field "ID" {
+        label {
+            en = "Sweep Id"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "RETURN.VAL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "Main Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "RETURN.VAL"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Account Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "SWEEP.REF" {
+        label {
+            en = "Sweep Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "RETURN.VAL"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SWEEP.AMT" {
+        label {
+            en = "Sweep Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "RETURN.VAL"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "SWEEP.TYPE" {
+        label {
+            en = "Sweep Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "RETURN.VAL"
+        conversion: extract from 5 to 1 delimited by "*"
+        conversion: getFrom "AC.SWEEP.TYPE" "SHORT.DESCRIPTION" false
+    }
+
+    field "MAX.AMT" {
+        label {
+            en = "Maximum Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "RETURN.VAL"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "MINIMUM.AMT" {
+        label {
+            en = "Minimum Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "RETURN.VAL"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "CHARGE.AMT" {
+        label {
+            en = "Charge Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "RETURN.VAL"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+}

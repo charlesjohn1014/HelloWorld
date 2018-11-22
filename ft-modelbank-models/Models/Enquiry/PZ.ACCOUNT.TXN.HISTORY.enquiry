@@ -1,0 +1,573 @@
+Enquiry "PZ.ACCOUNT.TXN.HISTORY" for "name:/AC_EntryCreation:STMT.ENTRY#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Transaction History"
+    }
+
+    description {
+        en = "Transaction History"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 50
+    build-routines {
+        jBC: "E.PZ.TXN.HIST.BUILD"
+    }
+
+    fixed-sort: "DATE.TIME" Descending
+    fixed-sort: "@ID" Descending
+    custom-selection {
+
+        field "TXN.HIST.ACCT.ID" {
+            mandatory: true
+            label {
+                en = "Account Reference"
+            }
+
+        }
+
+        AND
+
+        field "IN.START.DATE" {
+            label {
+                en = "Date From"
+            }
+
+        }
+
+        AND
+
+        field "IN.END.DATE" {
+            label {
+                en = "Date To"
+            }
+
+        }
+
+        AND
+
+        field "NO.OF.ENTRIES" {
+            label {
+                en = "No of Entries"
+            }
+
+        }
+
+        AND
+
+        field "SUM.OR.DETAIL" {
+            label {
+                en = "Summary Option"
+            }
+
+        }
+
+        AND
+
+        field "IN.END.TIME" {
+            label {
+                en = "Time To"
+            }
+
+        }
+
+        None
+    }
+
+    field "OUTPUT" {
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.PZ.TXN.HIST.CONVERSION"
+    }
+
+    field "DESC" {
+        comma-separator: false
+        operation: field-extract "OUTPUT"
+        conversion: call
+        jBC: "@ E.GET.NARRATIVE"
+        conversion: call
+        jBC: "@ E.GET.SPECIAL.NARR"
+    }
+
+    field "VAL.DESC" {
+        comma-separator: false
+        operation: if "DESC" Equals "OUTPUT" process "NULL" "DESC"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Account Reference : \""
+    }
+
+    field "ACCOUNTREFERENCE" {
+        label {
+            en = "Account Reference"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 0
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Account Id : \""
+    }
+
+    field "ACCOUNTID" {
+        label {
+            en = "Account ID"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 1
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ACCOUNT.DESC" {
+        label {
+            en = "Account Description"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 1
+        }
+
+        operation: field-extract "ACCOUNTID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "HDR.3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\" IBAN : \""
+    }
+
+    field "IBAN" {
+        label {
+            en = "IBAN"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 2
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "HDR.SP.1" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 45
+            line: 2
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "HDR.OPENING.BAL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Opening Balance : \""
+    }
+
+    field "TOT.AMT" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        operation: total "AMOUNT"
+    }
+
+    field "OPEN.BALANCE" {
+        label {
+            en = "Opening Balance"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 3
+        }
+
+        operation: calc "CLOSE.BAL" - "TOT.AMT"
+    }
+
+    field "HDR.SP.2" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 3
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "HDR.CLOSING.BAL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 27
+            line: 3
+        }
+
+        operation: constant "\"Closing Balance : \""
+    }
+
+    field "CLOSE.BALANCE" {
+        label {
+            en = "Closing Balance"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 3
+        }
+
+        operation: calc "OPEN.BALANCE" + "TOT.AMT"
+    }
+
+    field "CLOSE.BAL" {
+        comma-separator: false
+        operation: field-extract "OUTPUT"
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "HDR.4" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\" Execute End Time : \""
+    }
+
+    field "EXEC.END.TIME" {
+        label {
+            en = "Execute End Time"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 4
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "BOOKING.DATE" {
+        label {
+            en = "Booking Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Transaction Type"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "TXN.CODE.DESC" {
+        label {
+            en = "Transaction Description"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: field-extract "TRANSACTION.CODE"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "STMT.ENTRY.ID" {
+        label {
+            en = "Stmt Entry Id"
+        }
+
+        length: 90
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "STMT.ENTRY.ID"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "TXN.CURRENCY" {
+        label {
+            en = "Transaction Currency"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "TXN.CCY" {
+        comma-separator: false
+        operation: field-extract "TXN.CURRENCY"
+    }
+
+    field "TXN.CURRENCY.AMOUNT" {
+        label {
+            en = "Transaction Currency Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "TXN.CCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "EXCHANGE.RATE" {
+        label {
+            en = "Exchange Rate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "PAYEE.ACCOUNT" {
+        label {
+            en = "Payee Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "PAYEE.CUSTOMER" {
+        label {
+            en = "Payee Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        operation: field-extract "OUTPUT"
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "REMITTANCE.INFORMATION" {
+        label {
+            en = "Payment Details"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NARRATIVE"
+    }
+
+    field "TRANS.REFERENCE" {
+        label {
+            en = "Transaction Reference"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Single
+        operation: field-extract "OUTPUT"
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+}

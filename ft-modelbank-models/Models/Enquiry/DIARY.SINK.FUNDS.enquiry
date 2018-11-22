@@ -1,0 +1,411 @@
+Enquiry "DIARY.SINK.FUNDS" for "name:/SC_SccEventCapture:DIARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Open Diaries"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "EVENT.STATUS" {
+        NotEquals "AUTHORISED"
+    }
+
+    fixed-selection "OLD.TO.RIGHT" {
+        Equals "NULL"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security"
+            }
+
+        }
+
+        AND
+
+        field "EVENT.TYPE" {
+            label {
+                en = "Event Type"
+            }
+
+        }
+
+        AND
+
+        field "EX.DATE" {
+            label {
+                en = "Ex Date"
+            }
+
+        }
+
+        AND
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Diary with Sink Funds\""
+    }
+
+    field "SECURITY.NO.DD" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "DESC" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: field-extract "SECURITY.NO.DD"
+        conversion: getFrom "SECURITY.MASTER" "DESCRIPT" false
+    }
+
+    field "EVENT.TYPE" {
+        label {
+            en = "Event type"
+        }
+
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EVENT.TYPE"
+    }
+
+    field "EVENT.NAME" {
+        label {
+            en = "Event"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "EVENT.TYPE"
+        conversion: getFrom "DIARY.TYPE" "EVENT.DESC" false
+    }
+
+    field "SETT.CURRENCY" {
+        label {
+            en = "Settle Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETT.CURRENCY"
+    }
+
+    field "EXCH.RATE" {
+        label {
+            en = "Exch Rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXCH.RATE"
+    }
+
+    field "EX.DATE" {
+        label {
+            en = "Ex Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EX.DATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "EVENT.STATUS" {
+        label {
+            en = "Event Status"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EVENT.STATUS"
+    }
+
+    field "SINK.FUNDS" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "SECURITY.NO.DD"
+        conversion: getFrom "SECURITY.MASTER" "SINKING.FUND" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "NO.DIS" {
+        comma-separator: false
+        operation: constant "\"No\""
+    }
+
+    field "YES.DIS" {
+        comma-separator: false
+        operation: constant "\"Yes\""
+    }
+
+    field "SINK.FUN.DIS" {
+        label {
+            en = "Sink Funds"
+        }
+
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        operation: if "SINK.FUNDS" Equals "NULL" process "NO.DIS" "YES.DIS"
+    }
+
+    field "OLD.FACT" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "OLD.FACTOR"
+    }
+
+    field "OLD.DISP" {
+        label {
+            en = "Old Factor"
+        }
+
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: if "SINK.FUNDS" Equals "NULL" process "NULL" "OLD.FACT"
+    }
+
+    field "NEW.FACT" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NEW.FACTOR"
+    }
+
+    field "NEW.DISP" {
+        label {
+            en = "New Factor"
+        }
+
+        comma-separator: false
+        position {
+            column: 58
+        }
+
+        operation: if "SINK.FUNDS" Equals "NULL" process "NULL" "NEW.FACT"
+    }
+
+    field "RATE" {
+        label {
+            en = "Rate"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "RATE"
+    }
+
+    field "RATE.DISP" {
+        label {
+            en = "Rate"
+        }
+
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        operation: if "SINK.FUNDS" Equals "NULL" process "NULL" "RATE"
+    }
+
+    field "DDOWN1" {
+        comma-separator: false
+        operation: constant "\"DIARY,INP I @ID\""
+    }
+
+    field "DDOWN2" {
+        comma-separator: false
+        operation: constant "\"ENQ ENT.MSG\""
+    }
+
+    field "DDOWN" {
+        comma-separator: false
+        operation: if "ENTL.AUTHORISED" Equals "\"\"" process "DDOWN1" "DDOWN2"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no diaries with factor rates\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Update Re-run Diary"
+        }
+
+        label-field: "@ID"
+        from-field: "DDOWN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Bulk Auth Ents"
+        }
+
+        label-field: "@ID"
+        criteria: "DIARY" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SC.ENT.AUTHORISE,INP.BR"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reverse Diary"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Reverse
+            field: "@ID"
+        }
+
+        screen: "DIARY,INP"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Diary Overview"
+        }
+
+        label-field: "@ID"
+        criteria: "CURRENT.DIARY" > "@ID" parameters {
+            field: "@ID"
+        }
+
+        composite-screen: "DIARY.OVERVIEW"
+    }
+
+}

@@ -1,0 +1,319 @@
+Enquiry "AA.MASS.BLOCK.BN.NAU" for "name:/AC_Config:CUSTOMER.MASS.BLOCK$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "UnAuthorised Mass Block on Pool"
+    }
+
+    description {
+        en = "UnAuthorised Mass Block on Pool"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RECORD.STATUS" {
+        NotEquals "IHLD"
+    }
+
+    fixed-selection "AA.BUNDLE.ID" {
+        NotEquals "NULL"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "AA.BUNDLE.ID" {
+            label {
+                en = "Master Account"
+            }
+
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+        }
+
+        AND
+
+        field "EXPIRY.DATE" {
+            label {
+                en = "Expiry Date"
+            }
+
+        }
+
+        AND
+
+        field "POSTING.RESTRICT" {
+            label {
+                en = "Posting Restriction"
+            }
+
+        }
+
+        AND
+
+        field "BLOCKING.TYPE" {
+            label {
+                en = "Blocking Type"
+            }
+
+        }
+
+        AND
+
+        field "BLOCKING.CODE" {
+            label {
+                en = "Block Code"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 45
+            line: 1
+        }
+
+        operation: constant "\"UnAuthorised Mass Block on Pool\""
+    }
+
+    field "CHKAPP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SEL.APPLICATION"
+        conversion: replace {
+            oldData: "CUSTOMER"
+            newData: "Customer Mass Block"
+        }
+
+        conversion: replace {
+            oldData: "ACCOUNT"
+            newData: "Account Mass Block"
+        }
+
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer ID"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AA.BUNDLE.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+    }
+
+    field "DISPLAY" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "POSTING.RESTRICT" {
+        label {
+            en = "Posting Restriction"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "POSTING.RESTRICT"
+        conversion: getFrom "POSTING.RESTRICT" "DESCRIPTION" false
+    }
+
+    field "BLOCKING.TYPE" {
+        label {
+            en = "Block Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BLOCKING.TYPE"
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "SELAP" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SEL.APPLICATION"
+    }
+
+    field "VERCHK1" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER.MASS.BLOCK,AUTH\""
+    }
+
+    field "VERCHK2" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER.MASS.BLOCK,MASS.UNBLOCK\""
+    }
+
+    field "VERCHK3" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER.MASS.BLOCK,AC.EXCLUDE.UNBLOCK\""
+    }
+
+    field "VERCHK4" {
+        comma-separator: false
+        operation: constant "\"CUSTOMER.MASS.BLOCK,BNPOOL.UNBLOCK.INPUT\""
+    }
+
+    field "VERDRILL" {
+        comma-separator: false
+        operation: if "AA.BUNDLE.ID" NotEquals "\"\"" process "VERCHK4" "VERDEC"
+    }
+
+    field "VERDEC" {
+        comma-separator: false
+        operation: if "CHKCUST" NotEquals "\"\"" process "VERCHK1" "VERDEC1"
+    }
+
+    field "VERDEC1" {
+        comma-separator: false
+        operation: if "SELAP" Equals "ACCOUNT" process "VERCHK3" "VERCHK2"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No record available for the selection criteria\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise "
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        from-field: "VERDRILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "VERDRILL"
+    }
+
+}

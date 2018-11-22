@@ -1,0 +1,195 @@
+Enquiry "AML.DISPO.CUS" for "name:/EB_OverrideProcessing:DISPO.ITEMS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "AML Processed records"
+    }
+
+    description {
+        en = "AML Processed records"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99 fixed-selection "DISPO.STATUS" {
+        Equals "\'APPROVED\'", "\'REJECTED\'"
+    }
+
+    fixed-selection "APPLICATION" {
+        Equals "\'CUSTOMER\'"
+    }
+
+    fixed-sort: "DISPO.STATUS" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        AND
+
+        field "DISPO.STATUS" {
+            label {
+                en = "Dispo Status"
+            }
+
+        }
+
+        AND
+
+        field "EVENT.REFERENCE" {
+            label {
+                en = "Event Reference"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"AML Processed records\""
+    }
+
+    field "Y.ID" {
+        label {
+            en = "Id"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "APPLICATION" {
+        label {
+            en = "Application"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICATION"
+    }
+
+    field "DISPO.STATUS" {
+        label {
+            en = "Dispo Status"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DISPO.STATUS"
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE"
+    }
+
+    field "REFERENCE" {
+        label {
+            en = "Reference"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "Y.ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "Y.APPL" {
+        comma-separator: false
+        operation: constant "\"DISPO.ITEMS$HIS\""
+    }
+
+    field "EVENT.REFERENCE" {
+        label {
+            en = "Event Reference"
+        }
+
+        length: 60
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "EVENT.REFERENCE"
+    }
+
+    field "ZERO RECORD DISPLAY" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No AML Records Processed \""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "APPLICATION"
+        image: "view.gif" parameters {
+            function:  See
+            field: "Y.ID"
+        }
+
+        from-field: "Y.APPL"
+    }
+
+}

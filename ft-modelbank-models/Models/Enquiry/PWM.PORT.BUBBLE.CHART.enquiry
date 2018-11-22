@@ -1,0 +1,230 @@
+Enquiry "PWM.PORT.BUBBLE.CHART" for "name:/AM_ModelBank:NOFILE.BUBBLE.CHART#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Cash Availability"
+    }
+
+    description {
+        en = "Cash Availability"
+    }
+
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 19 fixed-selection "PORT.VAL" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account Officer"
+            }
+
+        }
+
+        None
+    }
+
+    field "PORTFOLIO" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PORTFOLIO.02" {
+        format: User
+        length: 200
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Portfolio Cash Availability\""
+    }
+
+    field "INV.PGM" {
+        comma-separator: false
+        operation: field-extract "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "INVESTMENT.PROGRAM" false
+    }
+
+    field "INV.NAME" {
+        label {
+            en = "Investment Pgm"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "INV.PGM"
+        conversion: getFrom "INVESTMENT.PROGRAM" "SHORT.DESCR" false
+    }
+
+    field "NU" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "INV.MAT" {
+        label {
+            en = "Model"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "INV.PGM"
+        conversion: getFrom "INVESTMENT.PROGRAM" "MATRIX" false
+        conversion: getFrom "AM.MATRIX" "DESCRIPTION" false
+    }
+
+    field "VALUATION" {
+        label {
+            en = "Valuation Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 22
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "PORTFOLIO.CASH" {
+        label {
+            en = "Cash Balance"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 22
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CASH.PERC" {
+        label {
+            en = "Cash %"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "HYPHEN" {
+        length: 2
+        alignment: Right
+        comma-separator: false
+        operation: constant "\"--\""
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "CASH.PERCENT" {
+        label {
+            en = "Cash %"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: if "CASH.PERC" LessThan "ZERO" process "HYPHEN" "CASH.PERC"
+    }
+
+    field "DEVIATION" {
+        label {
+            en = "Deviation"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Buy Securities"
+        }
+
+        label-field: "PORTFOLIO"
+        image: "edit.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SEC.OPEN.ORDER,BUY.STP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Rebalance"
+        }
+
+        label-field: "PORTFOLIO"
+        image: "execute.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "AM.COMPARE,INP"
+    }
+
+    security {
+        abort: false
+    }
+
+}

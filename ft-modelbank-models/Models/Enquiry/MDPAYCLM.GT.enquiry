@@ -1,0 +1,265 @@
+Enquiry "MDPAYCLM.GT" for "name:/MD_Contract:MD.DEAL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Claims Received Under Guarantee"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "INV.STATUS" {
+        Equals "PROCESS"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Cutomer Number"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Guarantee Currency"
+            }
+
+        }
+
+        AND
+
+        field "PRINCIPAL.AMOUNT" {
+            label {
+                en = "Guarantee Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Claims Received Under Guarantee\""
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "DEAL.SUB.TYPE" {
+        label {
+            en = "Guarantee Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.SUB.TYPE"
+    }
+
+    field "DEAL.DATE" {
+        label {
+            en = "Date of Issue"
+        }
+
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.DATE"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 78
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "PRINCIPAL.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 84
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRINCIPAL.AMOUNT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "BENEF.CUST.1" {
+        label {
+            en = "Beneficiary"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BENEF.CUST.1"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BEN.ADDRESS" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BEN.ADDRESS"
+    }
+
+    field "BENEFICIARY" {
+        label {
+            en = "Beneficiary"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        operation: if "BENEF.CUST.1" Equals "NULL" process "BEN.ADDRESS" "BENEF.CUST.1"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 148
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "INV.AMOUNT" {
+        label {
+            en = "Invocation Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 160
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INV.AMOUNT"
+    }
+
+    field "INV.STATUS" {
+        label {
+            en = "Invocation Status"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 177
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INV.STATUS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "MD.DEAL"
+    }
+
+}

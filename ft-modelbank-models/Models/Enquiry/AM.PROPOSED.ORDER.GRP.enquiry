@@ -1,0 +1,770 @@
+Enquiry "AM.PROPOSED.ORDER.GRP" for "name:/AM_ModellingScenario:AM.SCENARIO#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Proposed Orders"
+    }
+
+    description {
+        en = "Proposed Orders"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "SCENARIO.CODE" {
+        }
+
+        AND
+
+        field "SESSION" {
+        }
+
+        None
+    }
+
+    field "PROPOSED.ORDERS" {
+        display-type: "CLASS-HEADER"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 0
+        }
+
+        operation: constant "\"Detail of Proposed Orders\""
+    }
+
+    field "DATE" {
+        display-type: "CLASS-FDLB"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 95
+            line: 1
+        }
+
+        operation: constant "\"Date : \""
+    }
+
+    field "DATE.DISPLAY" {
+        display-type: "CLASS-FDCT"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 105
+            line: 1
+        }
+
+        operation: today
+    }
+
+    field "STAR" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "CENT" {
+        comma-separator: false
+        operation: constant "\"100\""
+    }
+
+    field "BUY" {
+        comma-separator: false
+        operation: constant "\"BUY\""
+    }
+
+    field "FILTER.ORDER" {
+        length: 57
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SCENARIO.CODE"
+        conversion: call
+        jBC: "@ E.AM.FILTER.ORDER"
+    }
+
+    field "SCENARIO.CODE" {
+        length: 57
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SCENARIO.CODE"
+    }
+
+    field "SAM.CODE" {
+        label {
+            en = "Portfolio"
+        }
+
+        display-type: "CLASS-FDCT"
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SAM.CODE"
+        conversion: repeat-when-null
+    }
+
+    field "SAM.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SAM.CODE"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+        conversion: oconv "MCT"
+    }
+
+    field "SAM.VAL.CCY" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SAM.CODE"
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.CURRENCY" false
+    }
+
+    field "SAM.VALUATION" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SAM.VALUATION"
+        conversion: repeat-when-null
+    }
+
+    field "DIR" {
+        label {
+            en = "Type"
+        }
+
+        display-type: "CLASS-ITALIC"
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SC.DIRECTION"
+    }
+
+    field "SCA.SECURITY" {
+        label {
+            en = "Security"
+        }
+
+        display-type: "CLASS-FDCT"
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SCA.SECURITY"
+    }
+
+    field "SCA.PRICE" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SCA.PRICE"
+    }
+
+    field "SM.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SCA.SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SM.PRICE.CCY" {
+        label {
+            en = "Price Ccy"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SCA.SECURITY"
+        conversion: getFrom "SECURITY.MASTER" "PRICE.CURRENCY" false
+    }
+
+    field "SM.PRICE" {
+        label {
+            en = "Price"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 84
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SCA.PRICE"
+    }
+
+    field "SCA.VALUATION" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SCA.VALUATION"
+    }
+
+    field "PROP.NOM" {
+        label {
+            en = "Nominal"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SCA.NOMINAL"
+    }
+
+    field "PROP1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SCA.SECURITY":"STAR"
+    }
+
+    field "PROP2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PROP1":"SM.PRICE"
+    }
+
+    field "PROP3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PROP2":"STAR"
+    }
+
+    field "PROP.SM.CCY" {
+        label {
+            en = "Prop. Val in SecCcy"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "SCA.VALUATION"
+    }
+
+    field "PROP5" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SM.PRICE.CCY":"STAR"
+    }
+
+    field "PROP6" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PROP5":"PROP.SM.CCY"
+    }
+
+    field "PROP7" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PROP6":"STAR"
+    }
+
+    field "PROP.SAM.CCY" {
+        label {
+            en = "Prop. Val in PortCcy"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: calc "PROP7":"SAM.VAL.CCY"
+        conversion: call
+        jBC: "@ E.AM.EXCHRATE"
+    }
+
+    field "PROP.RATIO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PROP.SAM.CCY" / "SAM.VALUATION"
+    }
+
+    field "PROP.PCT" {
+        display-type: "CLASS-AMNUM"
+        length: 5
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        processing-mode: Multi
+        operation: calc "PROP.RATIO" * "CENT"
+    }
+
+    field "CURR.NOM" {
+        label {
+            en = "Current Nominal"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 144
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "SCA.NOM.HELD"
+    }
+
+    field "CURR.SAM.CCY" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SCA.AMT.HELD"
+    }
+
+    field "CURR5" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SAM.VAL.CCY":"STAR"
+    }
+
+    field "CURR6" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURR5":"CURR.SAM.CCY"
+    }
+
+    field "CURR7" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURR6":"STAR"
+    }
+
+    field "CURR.SM.CCY" {
+        label {
+            en = "Curr. Val in SecCcy"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: calc "CURR7":"SM.PRICE.CCY"
+        conversion: call
+        jBC: "@ E.AM.EXCHRATE"
+    }
+
+    field "DISP.CURR.SAM.CCY" {
+        label {
+            en = "Curr. Val in PortCcy"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "CURR.SAM.CCY"
+    }
+
+    field "CURR.RATIO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURR.SAM.CCY" / "SAM.VALUATION"
+    }
+
+    field "CURR.PCT" {
+        label {
+            en = "Current %"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 5
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 187
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: calc "CURR.RATIO" * "CENT"
+    }
+
+    field "PRJ.NOM.BUY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURR.NOM" + "PROP.NOM"
+    }
+
+    field "PRJ.NOM.SEL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURR.NOM" - "PROP.NOM"
+    }
+
+    field "PRJ.NOM" {
+        label {
+            en = "Projected Nominal"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 193
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: if "DIR" Equals "BUY" process "PRJ.NOM.BUY" "PRJ.NOM.SEL"
+    }
+
+    field "PRJ.SM.CCY.BUY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURR.SM.CCY" + "PROP.SM.CCY"
+    }
+
+    field "PRJ.SM.CCY.SELL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURR.SM.CCY" - "PROP.SM.CCY"
+    }
+
+    field "PRJ.SM.CCY" {
+        label {
+            en = "Proj. Val in SecCcy"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: if "DIR" Equals "BUY" process "PRJ.SM.CCY.BUY" "PRJ.SM.CCY.SELL"
+    }
+
+    field "PRJ.SAM.CCY.BUY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURR.SAM.CCY" + "PROP.SAM.CCY"
+    }
+
+    field "PRJ.SAM.CCY.SELL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CURR.SAM.CCY" - "PROP.SAM.CCY"
+    }
+
+    field "PRJ.SAM.CCY" {
+        label {
+            en = "Proj. Val in PortCcy"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: if "DIR" Equals "BUY" process "PRJ.SAM.CCY.BUY" "PRJ.SAM.CCY.SELL"
+    }
+
+    field "PRJ.RATIO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PRJ.SAM.CCY" / "SAM.VALUATION"
+    }
+
+    field "PRJ.PCT" {
+        label {
+            en = "Projected %"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 5
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        position {
+            column: 230
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: calc "PRJ.RATIO" * "CENT"
+    }
+
+    field "PTF.VALUATION" {
+        label {
+            en = "Portfolio Valuation"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "SAM.VAL.CCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "SAM.VALUATION"
+        conversion: repeat-when-null
+    }
+
+    field "SC.VIOLATION" {
+        label {
+            en = "Violation Code"
+        }
+
+        display-type: "CLASS-FDCT"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 254
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "SC.VIOLATION"
+    }
+
+    field "SC.VIOLATION.MSG" {
+        label {
+            en = "Violation Text"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 260
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "SC.VIOLATION"
+        conversion: getFrom "AM.VIOLATION" "MSG.TXT" false
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "VIOL.EXISTS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SC.VIOLATION" NotEquals "NUL" process "1" "0"
+    }
+
+    field "SC.MANOVR.STATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SC.VIOLATION"
+        conversion: getFrom "AM.VIOLATION" "MANUAL.OVR" false
+    }
+
+    field "SC.MANOVR.FLAG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SC.MANOVR.STATE" NotEquals "YES" process "1" "0"
+    }
+
+    field "SC.SEVERITY.STATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SC.VIOLATION"
+        conversion: getFrom "AM.VIOLATION" "SEVERITY" false
+    }
+
+    field "SC.SEVERITY.FLAG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SC.SEVERITY.STATE" Equals "ERROR" process "1" "0"
+    }
+
+    field "SC.BLOCKED.FLAG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SC.MANOVR.FLAG" + "SC.SEVERITY.FLAG"
+    }
+
+    field "SC.BLOCKED.FLAG1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SC.BLOCKED.FLAG" * "VIOL.EXISTS"
+    }
+
+    field "SC.VIEWED.STATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SC.VIOLATION"
+        conversion: getFrom "AM.VIOLATION" "VIEW.MARKER" false
+    }
+
+    field "SC.VIEWED.FLAG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SC.VIEWED.STATE" Equals "NUL" process "1" "0"
+    }
+
+    field "SC.TBR.STATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SC.VIOLATION"
+        conversion: getFrom "AM.VIOLATION" "REVIEW.MARKER" false
+    }
+
+    field "SC.TBR.FLAG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SC.TBR.STATE" NotEquals "NUL" process "1" "0"
+    }
+
+    field "SC.REVIEWED.FLAG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SC.VIEWED.FLAG" + "SC.TBR.FLAG"
+    }
+
+    field "SC.REVIEWED.FLAG1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SC.REVIEWED.FLAG" * "VIOL.EXISTS"
+    }
+
+    field "SC.BLOCKED" {
+        label {
+            en = "Blocked"
+        }
+
+        display-type: "CLASS-FDCT"
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 272
+        }
+
+        processing-mode: Multi
+        operation: if "SC.BLOCKED.FLAG1" Greater "0" process "YES" "NO"
+    }
+
+    field "SC.REVIEWED" {
+        label {
+            en = "To Review"
+        }
+
+        display-type: "CLASS-FDCT"
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 274
+        }
+
+        processing-mode: Multi
+        operation: if "SC.REVIEWED.FLAG1" Greater "0" process "YES" "NO"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Display Violations"
+        }
+
+        label-field: "SC.VIOLATION"
+        image: "view.gif"
+        criteria: "VIOLATION.CODE" Equals "SC.VIOLATION"
+        enquiry: "AM.VIOLATION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit Orders"
+        }
+
+        label-field: "SAM.CODE"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "SCENARIO.CODE"
+        }
+
+        screen: "AM.SCENARIO,NEW"
+    }
+
+}

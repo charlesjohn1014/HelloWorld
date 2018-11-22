@@ -1,0 +1,492 @@
+Enquiry "AA.DETAILS.SCHEDULE.SIM.COMPARE" for "name:/AA_ModelBank:NOFILE.AA.SCHEDULE.AL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Payment Schedule"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 6
+    end-line: 10 fixed-selection "XID" {
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SIM.REF" {
+            label {
+                en = "SIM.REF"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DATE.FROM" {
+            label {
+                en = "Date From"
+            }
+
+            operands: GreaterOrEquals
+        }
+
+        AND
+
+        field "DATE.TO" {
+            label {
+                en = "Date To"
+            }
+
+            operands: LessOrEquals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Payment Schedule\""
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "SIM.ID" {
+        comma-separator: false
+        operation: selection "SIM.REF"
+    }
+
+    field "ARR.CCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "PAYMENT" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: call
+        jBC: "@ E.AA.CONVERSION"
+    }
+
+    field "SCHEDULE.DATE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SCHEDULE.DATE"
+    }
+
+    field "D.SCHEDULE.DATE" {
+        label {
+            en = "Date"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: field-extract "SCHEDULE.DATE"
+        conversion: julian
+        conversion: oconv "D"
+    }
+
+    field "TOT.DUE" {
+        label {
+            en = "Total Due"
+        }
+
+        display-type: "CLASS-BOLD"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.DUE"
+        conversion: replace {
+            newData: "0"
+        }
+
+    }
+
+    field "TOT.CAP" {
+        label {
+            en = "Total Cap"
+        }
+
+        display-type: "CLASS-BOLD"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: application-field-name "TOTAL.CAP"
+        conversion: replace {
+            newData: "0"
+        }
+
+    }
+
+    field "D.TOTAL" {
+        label {
+            en = "Total"
+        }
+
+        display-type: "CLASS-BOLD"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: if "TOT.DUE" Equals "NULL" process "TOT.CAP" "TOT.DUE"
+    }
+
+    field "D.METHOD" {
+        comma-separator: false
+        operation: if "TOT.DUE" Equals "NULL" process "\"Cap\"" "\"Due\""
+    }
+
+    field "TOTAL.PRINCIPAL" {
+        label {
+            en = "Principal"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.PRINCIPAL"
+    }
+
+    field "TOTAL.INTEREST" {
+        label {
+            en = "Interest"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 60
+        processing-mode: Single
+        operation: application-field-name "TOTAL.INTEREST"
+    }
+
+    field "TOTAL.CHARGE" {
+        label {
+            en = "Charge"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.CHARGE"
+    }
+
+    field "TOTAL.TAX" {
+        label {
+            en = "Tax"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.TAX"
+    }
+
+    field "TOTAL.PAY" {
+        label {
+            en = "Total Pymt"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        column-width: 60
+        processing-mode: Single
+        operation: application-field-name "TOTAL.PAY"
+    }
+
+    field "OUTSTANDING" {
+        label {
+            en = "Outstanding"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: application-field-name "OUTSTANDING"
+    }
+
+    field "SIM.REF.1" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        column-width: 100
+        operation: constant "\"Schedule Details\""
+    }
+
+    field "SIMULATION.REF" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "SIMULATION.REF"
+    }
+
+    field "TITLE.MAT" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        column-width: 100
+        operation: constant "\"Tot Repayment Amount : \""
+    }
+
+    field "TOT.MAT.AMOUNT" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        display-section: Header
+        position {
+            column: 20
+            line: 4
+        }
+
+        operation: application-field-name "TOT.MAT.AMOUNT"
+    }
+
+    field "TITLE.02" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 4
+        }
+
+        column-width: 60
+        operation: constant "\" Total Interest Payable : \""
+    }
+
+    field "TOT.INT.AMT" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        display-section: Header
+        position {
+            column: 60
+            line: 4
+        }
+
+        operation: application-field-name "TOT.INT.AMT"
+    }
+
+    field "TITLE.03" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 4
+        }
+
+        column-width: 60
+        operation: constant "\"Next Payment Amount : \""
+    }
+
+    field "EMI" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        display-section: Header
+        position {
+            column: 80
+            line: 4
+        }
+
+        column-width: 70
+        operation: application-field-name "EMI"
+    }
+
+    field "TITLE.04" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        column-width: 100
+        operation: constant "\"O/s Principal Amount :\""
+    }
+
+    field "TOT.OS.AMOUNT" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 5
+        }
+
+        operation: application-field-name "TOT.OS.AMOUNT"
+        conversion: replace {
+            newData: "0"
+        }
+
+    }
+
+    field "TITLE.05" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 5
+        }
+
+        column-width: 60
+        operation: constant "\"O/s Interest Amount :\""
+    }
+
+    field "TOT.OS.INTEREST" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 30
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 5
+        }
+
+        operation: application-field-name "TOT.OS.INTEREST"
+        conversion: replace {
+            newData: "0"
+        }
+
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: constant "\"No Simulation selected to compare\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "D.SCHEDULE.DATE"
+        image: "view.gif"
+        criteria: "ARRANGEMENT.ID" Equals "ARR.ID"
+        criteria: "SIM.REF" Equals "SIM.ID"
+        criteria: "DATE.DUE" Equals "SCHEDULE.DATE"
+        enquiry: "AA.DETAILS.SCHEDULE.DETS"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.TOOLBAR"
+}

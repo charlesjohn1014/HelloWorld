@@ -1,0 +1,789 @@
+Enquiry "PWM.INVESTMENT.PROFILE" for "name:/AM_ValuationFrameWork:AM.VAL.EXTRACT.WRK#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Investment Proposal"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 20
+    end-line: 99
+    build-routines {
+        jBC: "E.AM.BUILD.VEX.WRK"
+    }
+
+    fixed-sort: "GROUP.CODE" Null
+    fixed-sort: "SECURITY.CCY" Null
+    custom-selection {
+
+        field "SAM.NO" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "FREE.SEL" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "S.CUST" {
+        format: User
+        length: 10
+        alignment: Right
+        comma-separator: false
+        operation: selection "FREE.SEL"
+    }
+
+    field "MIFID.ID" {
+        length: 77
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "S.CUST"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "CUS.ID" false
+    }
+
+    field "CU.ID" {
+        comma-separator: false
+        operation: field-extract "MIFID.ID"
+    }
+
+    field "MIFID" {
+        display-type: "CLASS-MODELSTATUS"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Investment Proposal Form\""
+    }
+
+    field "T.ASSET" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "GROUP.NAME"
+    }
+
+    field "VALUE.REF.CCY" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "VALUE.REF.CCY"
+    }
+
+    field "B.AG" {
+        comma-separator: false
+        operation: break-change "T.ASSET"
+    }
+
+    field "DATE" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 1
+        }
+
+        operation: constant "\"Generated On \""
+    }
+
+    field "DATE1" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: today
+    }
+
+    field "PICTURE" {
+        display-type: "IMAGE"
+        length: 100
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 1
+        }
+
+        operation: constant "\"./plaf/images/default/temenos-icon.gif\""
+    }
+
+    field "TOTAL.FLD" {
+        display-type: "PIELABEL" break-condition {
+            field: "B.AG"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "T.ASSET"
+    }
+
+    field "TOTAL.RCCY" {
+        display-type: "PIE" break-condition {
+            field: "B.AG"
+        }
+
+        comma-separator: false
+        display-section: NoDisplay
+        position {
+            column: 30
+        }
+
+        operation: total "VALUE.REF.CCY"
+    }
+
+    field "NAME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Name\""
+    }
+
+    field "CUST.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 2
+        }
+
+        operation: field-extract "CU.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+        conversion: oconv "MCT"
+    }
+
+    field "ADD" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Address\""
+    }
+
+    field "ADDRESS" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 3
+        }
+
+        operation: field-extract "CU.ID"
+        conversion: getFrom "CUSTOMER" "STREET" false
+        conversion: oconv "MCT"
+    }
+
+    field "ADD2" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 3
+        }
+
+        operation: field-extract "CU.ID"
+        conversion: getFrom "CUSTOMER" "TOWN.COUNTRY" false
+        conversion: oconv "MCT"
+    }
+
+    field "ADD3" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 3
+        }
+
+        operation: field-extract "CU.ID"
+        conversion: getFrom "CUSTOMER" "COUNTRY" false
+    }
+
+    field "LINE" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        operation: constant "\"_______________________________\""
+    }
+
+    field "LINE2" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 5
+        }
+
+        operation: constant "\"________________\""
+    }
+
+    field "LINE3" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 5
+        }
+
+        operation: constant "\"___________________\""
+    }
+
+    field "DOB" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 6
+        }
+
+        operation: constant "\"Date of Birth\""
+    }
+
+    field "BIRTH.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 6
+        }
+
+        operation: field-extract "CU.ID"
+        conversion: getFrom "CUSTOMER" "DATE.OF.BIRTH" false
+    }
+
+    field "LAB.CUSTOMER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 7
+        }
+
+        processing-mode: Single
+        operation: constant "\"Investment Profile\""
+    }
+
+    field "INVEST.PROFILE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "INVEST.PROFILE" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PERIOD" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 7
+        }
+
+        operation: constant "\"Investment Period\""
+    }
+
+    field "INVEST.PERIOD" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "INVEST.PERIOD" false
+    }
+
+    field "CAGE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 8
+        }
+
+        processing-mode: Single
+        operation: constant "\"Age\""
+    }
+
+    field "AGE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 8
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "AGE" false
+    }
+
+    field "RETURN" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 8
+        }
+
+        processing-mode: Single
+        operation: constant "\"Expected Return\""
+    }
+
+    field "EXPECT.RETURN" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 8
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "EXPECT.RETURN" false
+    }
+
+    field "INV.AMT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 9
+        }
+
+        operation: constant "\"Investment Amt\""
+    }
+
+    field "INVEST.AMT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 9
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "INVEST.AMT" false
+    }
+
+    field "PURPOSE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 9
+        }
+
+        operation: constant "\"Purpose Of Investment\""
+    }
+
+    field "PURPOSE.INVEST" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 9
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "PURPOSE.INVSET" false
+    }
+
+    field "AMT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 10
+        }
+
+        operation: constant "\"Reg Payment Amount\""
+    }
+
+    field "REG.PYMT.AMT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "REG.PYMT.AMT" false
+    }
+
+    field "PAY.FREQ" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 10
+        }
+
+        operation: constant "\"Reg Payment Fqy\""
+    }
+
+    field "FQY" {
+        comma-separator: false
+        operation: constant "\"FREQUENCY.GENERAL\""
+    }
+
+    field "REG.PAY.FREQ" {
+        length: 25
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "REG.PAY.FREQ" false
+    }
+
+    field "CONCAT1" {
+        comma-separator: false
+        operation: calc "FQY":"\"*\"":"REG.PAY.FREQ"
+    }
+
+    field "LINK.LOOKUP" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 10
+        }
+
+        operation: field-extract "CONCAT1"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "APPETITE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 11
+        }
+
+        operation: constant "\"Risk Appetite\""
+    }
+
+    field "RISK.APPETITE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 11
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "RISK.APPETITE" false
+    }
+
+    field "RPROFILE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 11
+        }
+
+        operation: constant "\"Risk Profile\""
+    }
+
+    field "RISK.PROFILE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 11
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "RISK.PROFILE" false
+    }
+
+    field "REQUD" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 12
+        }
+
+        processing-mode: Single
+        operation: constant "\"Mifid Required\""
+    }
+
+    field "MIFID.REQUIRED" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 12
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "MIFID.REQUIRED" false
+    }
+
+    field "DATE.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 13
+        }
+
+        operation: constant "\"Review Date\""
+    }
+
+    field "REVIEW.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 13
+        }
+
+        processing-mode: Single
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "REVIEW.DATE" false
+    }
+
+    field "INCOME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 13
+        }
+
+        operation: constant "\"Income\""
+    }
+
+    field "AMT.INCOME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 13
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "AMT.INCOME" false
+    }
+
+    field "ASSETS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 13
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Value Of Assets\""
+    }
+
+    field "VALUE.ASSETS" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 80
+            line: 13
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CU.ID"
+        conversion: getFrom "SC.MIFID.CLIENT.INFORMATION" "VALUE.ASSETS" false
+    }
+
+    field "INV.PGM" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 14
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Investment Strategy Suggested\""
+    }
+
+    field "SAM" {
+        comma-separator: false
+        operation: calc "CU.ID":"\"-\"":"\"1\""
+    }
+
+    field "PORT" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: field-extract "SAM"
+        conversion: getFrom "SEC.ACC.MASTER" "INVESTMENT.PROGRAM" false
+    }
+
+    field "INV.PGM.DESC" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 14
+        }
+
+        processing-mode: Multi
+        operation: field-extract "PORT"
+        conversion: getFrom "INVESTMENT.PROGRAM" "SHORT.DESCR" false
+    }
+
+    field "ZERORECORD" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"MiFID Details not Available\""
+    }
+
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER"
+}

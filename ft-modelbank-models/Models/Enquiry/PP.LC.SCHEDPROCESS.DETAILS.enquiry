@@ -1,0 +1,211 @@
+Enquiry "PP.LC.SCHEDPROCESS.DETAILS" for "name:/EB_Service:TSA.SERVICE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "LC Timescheduled process details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "ServiceName"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Local clearing time scheduled Process - Details\""
+    }
+
+    field "ID" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "COMP.ID" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "/"
+    }
+
+    field "EXT.DELIM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 4 to 1
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "SLASH" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"/\""
+    }
+
+    field "CompanyCode" {
+        label {
+            en = "Company Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "EXT.DELIM" Equals "SLASH" process "COMP.ID" "NULL"
+    }
+
+    field "ClearingId" {
+        label {
+            en = "Clearing Name"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Service Description"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "WORK.PROFILE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "WORK.PROFILE"
+    }
+
+    field "WORK.PROFILE.02" {
+        label {
+            en = "Scheduled Times"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "WORK.PROFILE"
+        conversion: getFrom "TSA.WORKLOAD.PROFILE" "TIME" false
+    }
+
+    field "BATCH.STATUS" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "BATCH" "PROCESS.STATUS" false
+    }
+
+    field "PROCESS.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "BATCH.STATUS"
+        conversion: call
+        jBC: "@ E.CONV.LC.PP.GET.STATUS"
+    }
+
+    field "STARTED" {
+        label {
+            en = "Start time"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STARTED"
+        conversion: extract from 1 to 19
+    }
+
+    field "STOPPED" {
+        label {
+            en = "End time"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STOPPED"
+        conversion: extract from 1 to 19
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

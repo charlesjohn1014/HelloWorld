@@ -1,0 +1,163 @@
+Enquiry "PP.QUEUE.MONITOR" for "name:/PP_PaymentFlowMonitorGUI:NOFILE.PP.POR.TRANSACTION#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Virtual Queue Monitor"
+    }
+
+    description {
+        en = "Virtual Queue Monitor"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "OUT.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            mandatory: true
+            label {
+                en = "Company"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Virtual Queue Monitor List\""
+    }
+
+    field "QUEUE.NAME" {
+        label {
+            en = "Queue Name"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "QUEUE.DESCRIPTION" {
+        label {
+            en = "Queue Description"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "QUEUE.COMPANY" {
+        label {
+            en = "Company"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TOTAL.RECORDS" {
+        label {
+            en = "Total # of payments"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "REFRESHTIME" {
+        label {
+            en = "Refresh Date Time"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "RECORD.IDS" {
+        label {
+            en = "Record Ids"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "NORECTODISPLAY" {
+        label {
+            en = "CLASS-ENQ.NORECS"
+        }
+
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: constant "\"No Payments in Queue\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "QUEUE.NAME"
+        image: "view.gif"
+        criteria: "@ID" Equals "RECORD.IDS"
+        from-field: "QUEUE.NAME"
+    }
+
+    attributes: "ALLDATA"
+}

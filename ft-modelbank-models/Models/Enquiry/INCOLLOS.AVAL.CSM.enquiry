@@ -1,0 +1,216 @@
+Enquiry "INCOLLOS.AVAL.CSM" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Outstanding Inward Doc Collection"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "LC.TYPE" {
+        Equals "CCIS", "CCIT", "CDIS", "CDIT"
+    }
+
+    fixed-selection "LIABILITY.AMT" {
+        Greater "0"
+    }
+
+    fixed-sort: "EXPIRY.DATE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "EXPIRY.DATE" {
+            label {
+                en = "Reversal Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "APPLICANT.CUSTNO" {
+            label {
+                en = "Drawee Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "Doc Currency"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 0
+        }
+
+        operation: constant "\"Amendment of Inward Collection\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 100
+        operation: application-field-name "@ID"
+    }
+
+    field "ADVISING.BK.CUSTNO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ADVISING.BK.CUSTNO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ADVISING.BK" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ADVISING.BK"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.REMBK" {
+        label {
+            en = "Remitting Bank"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 150
+        processing-mode: Single
+        operation: if "ADVISING.BK.CUSTNO" Equals "NULL" process "ADVISING.BK" "ADVISING.BK.CUSTNO"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 40
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "ADVICE.EXPIRY.DATE" {
+        label {
+            en = "Original Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: application-field-name "ADVICE.EXPIRY.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        column-width: 100
+        operation: constant "\"No Avaling Bill\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "LETTER.OF.CREDIT,INAMD"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

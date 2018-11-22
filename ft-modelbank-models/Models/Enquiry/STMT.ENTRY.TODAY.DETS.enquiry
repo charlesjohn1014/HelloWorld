@@ -1,0 +1,250 @@
+Enquiry "STMT.ENTRY.TODAY.DETS" for "name:/CR_ModelBank:NOFILE.STMT.ENT.DETS#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 5
+    end-line: 19 fixed-selection "SEL.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "AMOUNT.LCY" {
+            label {
+                en = "Amount.Lcy"
+            }
+
+            operands: Greater, LessThan, GreaterOrEquals, LessOrEquals, Equals
+        }
+
+        None
+    }
+
+    field "DATE" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        operation: company
+        conversion: getFrom "DATES" "LAST.WORKING.DAY" false
+    }
+
+    field "S" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "HD" {
+        comma-separator: false
+        operation: constant "\"Large Transactions since\""
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: calc "HD":"S":"DATE"
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "Account No."
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "LCY" {
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "AMT.LCY" {
+        label {
+            en = "Amount(LCcy)"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "FCCY" {
+        label {
+            en = "Txn Ccy"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "CCY" Equals "LCY" process "LCY" "CCY"
+    }
+
+    field "AMT.FCY" {
+        label {
+            en = "Txn Amount(FCcy)"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "AMT" {
+        label {
+            en = "Txn Amt"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: if "CCY" Equals "LCY" process "AMT.LCY" "AMT.FCY"
+    }
+
+    field "OUR.REF" {
+        label {
+            en = "Txn Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "PORT" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT.NO"
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "PORT"
+        conversion: getFrom "ACCOUNT" "PORTFOLIO.NO" false
+    }
+
+    field "CUST" {
+        comma-separator: false
+        operation: field-extract "PORT"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Single Customer View"
+        }
+
+        label-field: "PORTFOLIO"
+        criteria: "CURRENT.CUSTOMER" > "CUST" parameters {
+            field: "CUST"
+        }
+
+        composite-screen: "PVT.CUSTOMER.VIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Portfolio Overview"
+        }
+
+        label-field: "PORTFOLIO"
+        criteria: "CURRENT.SAM.NO" > "PORTFOLIO" parameters {
+            field: "PORTFOLIO"
+        }
+
+        composite-screen: "PORTFOLIO.OVERVIEW"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Portfolio Positions"
+        }
+
+        label-field: "PORTFOLIO"
+        criteria: "SECURITY.ACCOUNT" Equals "PORTFOLIO"
+        enquiry: "SC.HOLD.SUM.BY.PF"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Portfolio Holdings"
+        }
+
+        label-field: "PORTFOLIO"
+        criteria: "SECURITY.ACCOUNT" Equals "PORTFOLIO"
+        enquiry: "GB.AM.PORT.HOLDINGS"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

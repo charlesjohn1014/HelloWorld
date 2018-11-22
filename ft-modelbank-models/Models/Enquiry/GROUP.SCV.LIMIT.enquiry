@@ -1,0 +1,320 @@
+Enquiry "GROUP.SCV.LIMIT" for "name:/LI_ModelBank:CUSTOMER.LIMITS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Group Limit Exposure"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "RISK.GROUP.ID" {
+        Equals "!CURRENT.ID"
+    }
+
+    fixed-selection "LIMIT.TYPE" {
+        Equals "REPORTING"
+    }
+
+    fixed-selection "@ID" {
+        DoesNotContain "TOTAL"
+    }
+
+    fixed-selection "LIABILITY.NO" {
+        Equals "\"\""
+    }
+
+    fixed-sort: "LIMIT.PRODUCT" Null
+    fixed-sort: "TIME.BAND" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "ID"
+            }
+
+        }
+
+        AND
+
+        field "RISK.GROUP.ID" {
+            label {
+                en = "Risk Group Id"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.LIMITS.ID" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "LIMIT.ID" {
+            label {
+                en = "Limit Id"
+            }
+
+        }
+
+        AND
+
+        field "LIABILITY.NO" {
+            label {
+                en = "Liability No"
+            }
+
+        }
+
+        AND
+
+        field "LIMIT.CURRENCY" {
+            label {
+                en = "Limit Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Group Limit Exposure\""
+    }
+
+    field "LIM.PRODUCT1" {
+        comma-separator: false
+        operation: constant "\"Group Total\""
+    }
+
+    field "TIME.BAND" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TIME.BAND"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TEXT" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "LIM.PRODUCT2" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.PRODUCT"
+        conversion: getFrom "LIMIT.REFERENCE" "DESCRIPTION" false
+    }
+
+    field "DISP.PRODUCT" {
+        comma-separator: false
+        operation: if "LIM.PRODUCT2" Equals "NULL" process "LIM.PRODUCT1" "LIM.PRODUCT2"
+    }
+
+    field "CAT.DISP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: calc "DISP.PRODUCT":"TEXT":"TIME.BAND"
+    }
+
+    field "BRK.CAT" {
+        comma-separator: false
+        operation: break-change "CAT.DISP"
+    }
+
+    field "DISP.LIMREF" {
+        label {
+            en = "Category"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "CAT.DISP"
+    }
+
+    field "REPORT.CCY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REPORT.CURRENCY"
+    }
+
+    field "INTERNAL.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INTERNAL.AMT"
+    }
+
+    field "DISP.INTERNAL" {
+        label {
+            en = "Approved Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: calc "INTERNAL.AMT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "ADVISED.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ADVISED.AMT"
+    }
+
+    field "DISP.ADVISED" {
+        label {
+            en = "Advised Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: calc "ADVISED.AMT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "TOTAL.OS" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOTAL.OS"
+    }
+
+    field "DISP.OS" {
+        label {
+            en = "Utilised Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: calc "TOTAL.OS" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "AVAIL.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AVAIL.AMT"
+    }
+
+    field "DISP.AVAIL" {
+        label {
+            en = "Available Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: calc "AVAIL.AMT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "EXCESS.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXCESS.AMT"
+    }
+
+    field "DISP.EXCESS" {
+        label {
+            en = "Excess Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: calc "EXCESS.AMT" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "TOTAL.CR" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOTAL.CR"
+    }
+
+    field "DISP.CR" {
+        label {
+            en = "Deposits"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: calc "TOTAL.CR" / "1000"
+        conversion: oconv "MD0"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS"
+        comma-separator: false
+        operation: constant "\"No Records Available\""
+    }
+
+    attributes: "NO.TOOLBAR" ; "ALLDATA" ; "SHOWTREE" ; "SINGLE.BACKGROUND.COLOUR"
+}

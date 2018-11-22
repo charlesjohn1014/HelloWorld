@@ -1,0 +1,303 @@
+Enquiry "SL.BUY.SELL.AUTH.NAU" for "name:/SL_BuySell:SL.BUY.SELL$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "SL Buy Sell Unauth List"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "LINKED.TFDR.REF" {
+            label {
+                en = "Trading Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 24
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-HEADER"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised SL Trading transactions\""
+    }
+
+    field "LINKED.TFDR.REF" {
+        label {
+            en = "Trading Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: i-desc "LINKED.TFDR.REF"
+    }
+
+    field "VAL.DT" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "TXN.TYPE" {
+        label {
+            en = "Txn Type"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TXN.TYPE"
+        conversion: replace {
+            oldData: "BS"
+            newData: "Buy/Sell"
+        }
+
+        conversion: replace {
+            oldData: "Pm"
+            newData: "Principal Movement"
+        }
+
+    }
+
+    field "SELL.TYPE" {
+        label {
+            en = "Sell Type"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SELL.TYPE"
+        conversion: replace {
+            oldData: "C"
+            newData: "Contingent"
+        }
+
+        conversion: replace {
+            oldData: "NC"
+            newData: "Non-Contingent"
+        }
+
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "NC" {
+        comma-separator: false
+        operation: constant "\"NC\""
+    }
+
+    field "TRANS.TYPE" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TXN.TYPE"
+    }
+
+    field "SELL.TYP" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELL.TYPE"
+    }
+
+    field "CONCAT.VER" {
+        comma-separator: false
+        operation: calc "TRANS.TYPE":"SELL.TYP"
+        conversion: replace {
+            oldData: "BSC"
+            newData: "BS.CONT"
+        }
+
+        conversion: replace {
+            oldData: "PM"
+            newData: "PM.NC"
+        }
+
+        conversion: replace {
+            oldData: "TTC"
+            newData: "TRANCHE"
+        }
+
+        conversion: replace {
+            oldData: "BSNC"
+            newData: "BS.NONCONT"
+        }
+
+    }
+
+    field "APP" {
+        comma-separator: false
+        operation: constant "\"SL.BUY.SELL,\""
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: calc "APP":"CONCAT.VER"
+    }
+
+    field "VER.1" {
+        comma-separator: false
+        operation: constant "\"SL.TRADING.SL,NONCONT\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CHECK.TRADING" {
+        comma-separator: false
+        operation: if "LINKED.TFDR.REF" NotEquals "NULL" process "VER.1" "DRILL.VER"
+    }
+
+    field "VER.DECIDE" {
+        comma-separator: false
+        operation: if "SELL.TYP" Equals "NC" process "CHECK.TRADING" "DRILL.VER"
+    }
+
+    field "CHECK.TRADING.REF" {
+        comma-separator: false
+        operation: if "LINKED.TFDR.REF" NotEquals "NULL" process "LINKED.TFDR.REF" "@ID"
+    }
+
+    field "DECIDE.TXN.REF" {
+        comma-separator: false
+        operation: if "SELL.TYP" Equals "NC" process "CHECK.TRADING.REF" "@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View trading details"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "DECIDE.TXN.REF"
+        }
+
+        from-field: "VER.DECIDE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+}

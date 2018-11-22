@@ -1,0 +1,504 @@
+Enquiry "AC.INTERFACE.LIST" for "name:/FT_Clearing:AC.INWARD.ENTRY#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Generic Interface Entries"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Seq:"
+        }
+
+        column: 70
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Run:"
+        }
+
+        column: 56
+        line: 1
+    }
+
+    header {
+        label {
+            en = "File Type:"
+        }
+
+        column: 3
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Account / P&L"
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Reference"
+        }
+
+        column: 21
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CCY"
+        }
+
+        column: 56
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Local Amount"
+        }
+
+        column: 62
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Amount"
+        }
+
+        column: 47
+        line: 2
+    }
+
+    header {
+        label {
+            en = "PS"
+        }
+
+        column: 77
+        line: 2
+    }
+
+    full-description {
+        en = "Basic Enquiry on Generic accounting interface"
+    }
+
+    start-line: 4
+    end-line: 17 fixed-selection "INWARD.ENTRY.ID" {
+        Matches "\"1N0N\""
+    }
+
+    fixed-sort: "FILE.NAME" Null
+    fixed-sort: "SEQ.NO" Null
+    custom-selection {
+
+        field "FILE.NAME.NO" {
+        }
+
+        AND
+
+        field "ENTRY.POSTED" {
+        }
+
+        AND
+
+        field "SUSP.REASON" {
+        }
+
+        None
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "@ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NONE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"NONE\""
+    }
+
+    field "STAR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        escapeSequence: HI
+        operation: constant "\"*\""
+    }
+
+    field "FILE.NAME.NO" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "BRK.FILE.NO" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "FILE.NAME.NO"
+    }
+
+    field "FILE.NAME" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: i-desc "FILE.NAME"
+    }
+
+    field "FILE.NAME.DISP" {
+        format: User break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 13
+            line: 1
+        }
+
+        operation: field-extract "FILE.NAME"
+    }
+
+    field "FILE.DESC" {
+        format: User break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 21
+            line: 1
+        }
+
+        operation: field-extract "FILE.NAME"
+        conversion: getFrom "AC.ENTRY.PARAM" "DESCRIPTION" false
+    }
+
+    field "SEQ.NO" {
+        format: User
+        length: 4
+        alignment: Right
+        comma-separator: false
+        operation: i-desc "SEQ.NO"
+    }
+
+    field "SEQ.NO.DISP" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        position {
+            column: 74
+            line: 0
+        }
+
+        operation: field-extract "SEQ.NO"
+    }
+
+    field "RUN.DATE" {
+        break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 61
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE.TIME"
+        conversion: extract from 1 to 6
+        conversion: iconv "D2E"
+        conversion: oconv "D2E/"
+    }
+
+    field "RUN.TIME" {
+        break-condition {
+            break: NewPage
+        }
+
+        alignment: Left
+        comma-separator: false
+        fmtMask: "##:##"
+        display-section: Header
+        position {
+            column: 70
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.TIME"
+        conversion: extract from 7 to 4
+    }
+
+    field "ACCOUNT.NUMBER" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NUMBER"
+    }
+
+    field "PL.CATEGORY" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PL.CATEGORY"
+    }
+
+    field "DISP.PL.CATEGORY" {
+        comments: "Formatted PL code"
+        alignment: Left
+        comma-separator: false
+        fmtMask: "PL ##-###"
+        operation: field-extract "PL.CATEGORY"
+    }
+
+    field "DISP.PL.CAT2" {
+        comma-separator: false
+        operation: if "PL.CATEGORY" Equals "NULL" process "NONE" "DISP.PL.CATEGORY"
+    }
+
+    field "DISP.ACC.PL" {
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "ACCOUNT.NUMBER" Equals "NULL" process "DISP.PL.CAT2" "ACCOUNT.NUMBER"
+    }
+
+    field "OUR.REFERENCE" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OUR.REFERENCE"
+    }
+
+    field "THEIR.REFERENCE" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "THEIR.REFERENCE"
+    }
+
+    field "DISP.REF" {
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        operation: if "THEIR.REFERENCE" Equals "NULL" process "OUR.REFERENCE" "THEIR.REFERENCE"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 56
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT.FCY" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.FCY"
+    }
+
+    field "AMOUNT.LCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LCY"
+    }
+
+    field "DISP.AMT.LCY" {
+        format: Currency "LCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LCY"
+    }
+
+    field "DISP.AMT.FCY" {
+        format: Currency "CURRENCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 39
+        }
+
+        operation: if "CURRENCY" Equals "LCY" process "AMOUNT.LCY" "AMOUNT.FCY"
+    }
+
+    field "ENTRY.POSTED" {
+        comma-separator: false
+        position {
+            column: 77
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ENTRY.POSTED"
+        conversion: extract from 1 to 1
+    }
+
+    field "SUSP.REASON" {
+        comma-separator: false
+        position {
+            column: 6
+            line: + 1
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SUSP.REASON"
+    }
+
+    field "SUSP.FT.ID" {
+        comma-separator: false
+        position {
+            column: 67
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SUSP.FT.ID"
+    }
+
+    field "ERROR.MESSAGE" {
+        comma-separator: false
+        position {
+            column: 6
+            line: + 1
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ERROR.MESSAGE"
+    }
+
+    field "SUSP.IND" {
+        comma-separator: false
+        position {
+            column: 78
+        }
+
+        operation: if "SUSP.REASON" NotEquals "NULL" process "STAR" "NULL"
+    }
+
+    field "LINE" {
+        break-condition {
+            field: "BRK.FILE.NO"
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: constant "\"===============\""
+    }
+
+    field "TOTAL.NARR" {
+        break-condition {
+            field: "BRK.FILE.NO"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        operation: constant "\"File Total\""
+    }
+
+    field "TOTAL.LCY" {
+        format: Currency "LCY" negative-pattern #- break-condition {
+            field: "BRK.FILE.NO"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+            line: + 1
+        }
+
+        operation: total "AMOUNT.LCY"
+    }
+
+    drilldown "1" {
+        description {
+            en = "35"
+        }
+
+        label-field: "DISP.ACC.PL" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "AC.INWARD.ENTRY"
+    }
+
+}

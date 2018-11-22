@@ -1,0 +1,335 @@
+Enquiry "CUSTOMER.BASIC.CP" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Counterparty Basic Details"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 99 fixed-selection "CUSTOMER.CODE" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.CODE" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "LAB.CUSTOMER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\"Customer\""
+    }
+
+    field "CUSTOMER.NUM" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.CODE"
+    }
+
+    field "L.NICK.NAME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        operation: constant "\"Short Name\""
+    }
+
+    field "SHORT.NAME" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 1
+        }
+
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "IMAGE" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/restriction.gif\""
+    }
+
+    field "POST" {
+        length: 2
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "POSTING.RESTRICT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISPLAY" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 100
+            line: + 1
+        }
+
+        operation: if "POST" Equals "NULL" process "NULL" "IMAGE"
+    }
+
+    field "L.DOB" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 3
+        }
+
+        operation: constant "\"Date of Incorporation\""
+    }
+
+    field "DOB" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BIRTH.INCORP.DATE"
+    }
+
+    field "L.SECTOR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 4
+        }
+
+        operation: constant "\"Sector\""
+    }
+
+    field "SECTOR" {
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECTOR"
+        conversion: getFrom "SECTOR" "DESCRIPTION" false
+    }
+
+    field "L.TARGET" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 5
+        }
+
+        operation: constant "\"Target\""
+    }
+
+    field "TARGET" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TARGET"
+        conversion: getFrom "TARGET" "DESCRIPTION" false
+    }
+
+    field "L.INDUSTRY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 4
+        }
+
+        operation: constant "\"Industry\""
+    }
+
+    field "INDUSTRY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INDUSTRY"
+        conversion: getFrom "INDUSTRY" "DESCRIPTION" false
+    }
+
+    field "L.CUST.STATUS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 5
+        }
+
+        operation: constant "\"Customer Status\""
+    }
+
+    field "CUS.STATUS" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.STATUS"
+        conversion: getFrom "CUSTOMER.STATUS" "DESCRIPTION" false
+    }
+
+    field "SEC.TRADING.STATIC" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 6
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Securities Trading As\""
+        conversion: repeat-when-null
+    }
+
+    field "CUST.TYPES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CUSTOMER.NUM"
+        conversion: getFrom "CUSTOMER.SECURITY" "CUSTOMER.TYPE" false
+        conversion: call
+        jBC: "@ ENQ.C.MAKE.MULTIVALUE"
+    }
+
+    field "EMPTY" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "NO.SC.TRADING" {
+        comma-separator: false
+        operation: constant "\"No Securities Trading\""
+    }
+
+    field "CHECK.CUSTOMER.SECURITY" {
+        length: 21
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 6
+        }
+
+        processing-mode: Multi
+        operation: if "CUST.TYPES" Equals "EMPTY" process "NO.SC.TRADING" "CUST.TYPES"
+        conversion: replace {
+            oldData: "BROKER"
+            newData: "Broker"
+        }
+
+        conversion: replace {
+            oldData: "COUNTERPARTY"
+            newData: "Counterparty"
+        }
+
+        conversion: replace {
+            oldData: "CLIENT"
+            newData: "Client"
+        }
+
+        conversion: replace {
+            oldData: "CUSTOMER"
+            newData: "Customer"
+        }
+
+        conversion: replace {
+            oldData: "DEPOSITORY"
+            newData: "Depository"
+        }
+
+        conversion: replace {
+            oldData: "OTHERTRADER"
+            newData: "Other Trader"
+        }
+
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend Basic Details"
+        }
+
+        label-field: "CUSTOMER.NUM"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "CUSTOMER.NUM"
+        }
+
+        screen: "CUSTOMER,BASIC.CP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Posting Restriction"
+        }
+
+        label-field: "CUSTOMER.NUM"
+        image: "action.gif" parameters {
+            function:  Input
+            field: "CUSTOMER.NUM"
+        }
+
+        screen: "CUSTOMER,POST.SCV"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS"
+}

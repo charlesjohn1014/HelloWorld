@@ -1,0 +1,437 @@
+Enquiry "CL.COLL.ITEM.REP" for "name:/CL_ModelBank:NOFILE.CL.ENQ.COLL.ITEM.REP#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Collection Items per Days in OD"
+    }
+
+    description {
+        en = "Collection Items per Days in OD"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "DUE.START.FROM" {
+            mandatory: true
+            label {
+                en = "Due Days From"
+            }
+
+            operands: GreaterOrEquals
+        }
+
+        AND
+
+        field "DUE.DAYS.UPTO" {
+            label {
+                en = "Due Days Upto"
+            }
+
+            operands: LessOrEquals
+        }
+
+        None
+    }
+
+    field "COLL.HEAD" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 1
+        }
+
+        operation: constant "\"Collection Items\""
+    }
+
+    field "HEAD.1" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 36
+            line: 1
+        }
+
+        operation: constant "\"per Days in OD\""
+    }
+
+    field "START.FROM" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Due Days From:\""
+    }
+
+    field "START.VAL" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 2
+        }
+
+        operation: selection "DUE.START.FROM"
+    }
+
+    field "DAYS.UPTO" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 14 to 1 delimited by "*"
+    }
+
+    field "DUE.TO.DAYS" {
+        comma-separator: false
+        operation: constant "\"Due Days To:\""
+    }
+
+    field "END.FROM" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 2
+        }
+
+        operation: if "DAYS.UPTO" NotEquals "\"\"" process "DUE.TO.DAYS"
+    }
+
+    field "UPTO.DAYS" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 38
+            line: 2
+        }
+
+        operation: if "DAYS.UPTO" NotEquals "\"\"" process "DAYS.UPTO"
+    }
+
+    field "DAT.LABEL" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Printed On :\""
+    }
+
+    field "DATE" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 3
+        }
+
+        operation: today
+    }
+
+    field "CUSTOMER.NO" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer No"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        hidden: true
+        operation: field-extract "CUSTOMER.NO"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "OD Currency"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: local-currency
+    }
+
+    field "TOT.OD.AMT" {
+        label {
+            en = "Total OD Amt"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "TOT.OUTS.AMT" {
+        label {
+            en = "O/S Amount"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "NO.OF.DAYS.PD" {
+        label {
+            en = "Days in OD"
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ACTION.CODE" {
+        label {
+            en = "Last Action"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ACTION.DATE" {
+        label {
+            en = "Action Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "OUTCOME.CODE" {
+        label {
+            en = "Last Outcome"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+        conversion: getFrom "CL.OUTCOME" "DESCRIPTION" false
+    }
+
+    field "COLLECTOR" {
+        label {
+            en = "Collector"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+        conversion: getFrom "CL.COLLECTOR" "COLLECTOR.TYPE" false
+        conversion: getFrom "CL.COLLECTOR.TYPE" "DESCRIPTION" false
+    }
+
+    field "QUEUE" {
+        label {
+            en = "Queue"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+        conversion: getFrom "CL.QUEUE" "DESCRIPTION" false
+    }
+
+    field "CONTRACT.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "CONTRACT.IDS" {
+        label {
+            en = "Contract ID"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CONTRACT.ID"
+    }
+
+    field "OVERDUE.ID" {
+        label {
+            en = "Overdue ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "ID.DIFF" {
+        comma-separator: false
+        operation: field-extract "CONTRACT.IDS"
+        conversion: extract from 1 to 2
+    }
+
+    field "PD.VERSION" {
+        comma-separator: false
+        operation: constant "\"PD.PAYMENT.DUE\""
+    }
+
+    field "AA.VERSION" {
+        comma-separator: false
+        operation: constant "\"AA.OVERDUE.STATS,DETAILS\""
+    }
+
+    field "COMMON.VERSION" {
+        comma-separator: false
+        operation: if "ID.DIFF" Equals "\"AA\"" process "AA.VERSION" "PD.VERSION"
+    }
+
+    field "NORECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records to Display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Collection Item"
+        }
+
+        label-field: "OVERDUE.ID"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "CUSTOMER.NO"
+        }
+
+        application: "CL.COLLECTION.ITEM"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Overdue Record"
+        }
+
+        label-field: "OVERDUE.ID"
+        image: "action.gif" parameters {
+            function:  See
+            field: "OVERDUE.ID"
+        }
+
+        from-field: "COMMON.VERSION"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES" ; "NO.MORE.OPTIONS" ; "DISABLE.NO.SORT.OPTIONS"
+}

@@ -1,0 +1,539 @@
+Enquiry "AM.EXCLUSION.PREPARATION" for "name:/AM_ModelBank:NOFILE.AM.EXCLUSION.PREPARATION#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "         BANK"
+        }
+
+        column: 40
+        line: 0
+    }
+
+    header {
+        label {
+            en = "COMPOSITE EXCL PREPARATION GRID"
+        }
+
+        column: 40
+        line: 1
+    }
+
+    header {
+        label {
+            en = "--------------------------------"
+        }
+
+        column: 40
+        line: 2
+    }
+
+    header {
+        label {
+            en = "USER ID"
+        }
+
+        column: 80
+        line: 3
+    }
+
+    header {
+        label {
+            en = "DATE"
+        }
+
+        column: 80
+        line: 4
+    }
+
+    header {
+        label {
+            en = "COMPOSITE.NO"
+        }
+
+        column: 1
+        line: 3
+    }
+
+    header {
+        label {
+            en = "COMPOSITE.NAME"
+        }
+
+        column: 1
+        line: 4
+    }
+
+    header {
+        label {
+            en = "COMPOSITE PERIOD"
+        }
+
+        column: 1
+        line: 5
+    }
+
+    header {
+        label {
+            en = "NUMBER OF PORTFOLIOS"
+        }
+
+        column: 68
+        line: 5
+    }
+
+    header {
+        label {
+            en = "INVESTMENT PROGRAM"
+        }
+
+        column: 1
+        line: 6
+    }
+
+    header {
+        label {
+            en = "START DATE"
+        }
+
+        column: 79
+        line: 6
+    }
+
+    header {
+        label {
+            en = "REFERENCE CURRENCY"
+        }
+
+        column: 1
+        line: 7
+    }
+
+    header {
+        label {
+            en = ":"
+        }
+
+        column: 19
+        line: 3
+    }
+
+    header {
+        label {
+            en = ":"
+        }
+
+        column: 19
+        line: 4
+    }
+
+    header {
+        label {
+            en = ":"
+        }
+
+        column: 19
+        line: 5
+    }
+
+    header {
+        label {
+            en = ":"
+        }
+
+        column: 19
+        line: 6
+    }
+
+    header {
+        label {
+            en = ":"
+        }
+
+        column: 19
+        line: 7
+    }
+
+    header {
+        label {
+            en = ":"
+        }
+
+        column: 89
+        line: 3
+    }
+
+    header {
+        label {
+            en = ":"
+        }
+
+        column: 89
+        line: 4
+    }
+
+    header {
+        label {
+            en = ":"
+        }
+
+        column: 89
+        line: 5
+    }
+
+    header {
+        label {
+            en = ":"
+        }
+
+        column: 89
+        line: 6
+    }
+
+    start-line: 10
+    end-line: 23 fixed-selection "E.GET.EXCL.DETS" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "COMP.NO" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "COMP.PERIOD" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "COMPOSITE.NO" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 3
+        }
+
+        operation: selection "COMP.NO"
+    }
+
+    field "CURRENT.DATE" {
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 90
+            line: 4
+        }
+
+        operation: today
+    }
+
+    field "USER.ID" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 90
+            line: 3
+        }
+
+        operation: user
+    }
+
+    field "COMPANY.ID" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 54
+            line: 0
+        }
+
+        operation: company
+        conversion: getFrom "COMPANY" "COMPANY.NAME" false
+    }
+
+    field "COMPOSITE.NAME" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 4
+        }
+
+        operation: selection "COMP.NO"
+        conversion: getFrom "AM.COMPOSITE" "DESCRIPTION" false
+    }
+
+    field "CALC.PERIOD" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 5
+        }
+
+        operation: selection "COMP.PERIOD"
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "COMP.NO" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: selection "COMP.NO"
+    }
+
+    field "COMP.PERIOD" {
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: selection "COMP.PERIOD"
+    }
+
+    field "COMP.NO.DOT" {
+        comma-separator: false
+        operation: calc "COMP.NO":"DOT"
+    }
+
+    field "COMP.HIST.ID" {
+        comma-separator: false
+        operation: calc "COMP.NO.DOT":"COMP.PERIOD"
+    }
+
+    field "NBR.PORTFOLIO" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 90
+            line: 5
+        }
+
+        operation: field-extract "COMP.HIST.ID"
+        conversion: getFrom "AM.COMPOSITE.HIST" "NB.PORTFOLIOS" false
+    }
+
+    field "INVST.PRG" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 6
+        }
+
+        operation: selection "COMP.NO"
+        conversion: getFrom "AM.COMPOSITE" "INVESTMENT.PROGRAM" false
+        conversion: call
+        jBC: "@ E.AM.COMP.INV.PRG.SINGLE"
+    }
+
+    field "COMPOSITE.START" {
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 90
+            line: 6
+        }
+
+        operation: selection "COMP.NO"
+        conversion: getFrom "AM.COMPOSITE" "START.DATE" false
+    }
+
+    field "REFERENCE.CCY" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 7
+        }
+
+        operation: selection "COMP.NO"
+        conversion: getFrom "AM.COMPOSITE" "CURRENCY.REF" false
+    }
+
+    field "OUT.ARRAY" {
+        format: User
+        length: 100
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ID"
+    }
+
+    field "PORTFOLIO.NO" {
+        label {
+            en = "PORTFOLIO NO."
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "OUT.ARRAY"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "PLUG.DATE" {
+        label {
+            en = "PLUG.DATE"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        operation: field-extract "OUT.ARRAY"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PORT.BEG.VALUE" {
+        label {
+            en = "PORTFOLIO BEG VALUE"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        operation: field-extract "OUT.ARRAY"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "MAN.STATUS" {
+        label {
+            en = "MANUAL STATUS"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        operation: field-extract "OUT.ARRAY"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "AUTO.STATUS" {
+        label {
+            en = "AUTO STATUS"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 51
+        }
+
+        operation: field-extract "OUT.ARRAY"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "EXCL.CODE" {
+        label {
+            en = "EXCLUSION CODE"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: field-extract "OUT.ARRAY"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "EXCL.LABEL" {
+        label {
+            en = "EXCLUSION LABEL"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        operation: field-extract "OUT.ARRAY"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "EXCL.LOG" {
+        label {
+            en = "EXCLUSION LOG"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        operation: field-extract "OUT.ARRAY"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "DOT.PORTFOLIO" {
+        comma-separator: false
+        operation: calc "DOT":"PORTFOLIO.NO"
+    }
+
+    field "WORK.ID" {
+        comma-separator: false
+        operation: field-extract "OUT.ARRAY"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        label-field: "PORTFOLIO.NO" parameters {
+            field: "WORK.ID"
+        }
+
+        screen: "AM.COMP.HIST.DET.WORK,"
+    }
+
+}

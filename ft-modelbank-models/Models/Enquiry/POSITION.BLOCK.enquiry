@@ -1,0 +1,604 @@
+Enquiry "POSITION.BLOCK" for "name:/SC_ScoSecurityPositionUpdate:SECURITY.POSITION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Blocked Positions Summary"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CLOSING.BAL.NO.NOM" {
+        NotEquals "0"
+    }
+
+    fixed-selection "SECURITY.ACCOUNT" {
+        NotMatches "...-777"
+    }
+
+    fixed-selection "SECURITY.ACCOUNT" {
+        NotMatches "...-999"
+    }
+
+    fixed-selection "NOM.AMT.BLOCKED" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "NOM.AMT.BLOCKED" {
+        NotEquals "0"
+    }
+
+    custom-selection {
+
+        field "SECURITY.ACCOUNT" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NUMBER" {
+            label {
+                en = "Security No"
+            }
+
+        }
+
+        AND
+
+        field "DEPOSITORY" {
+            label {
+                en = "Depository"
+            }
+
+        }
+
+        AND
+
+        field "NOM.AMT.BLOCKED" {
+            label {
+                en = "Total Units Blocked"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Blocked Positions Summary\""
+    }
+
+    field "@ID" {
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "SEC.ACC" {
+        label {
+            en = "Port No"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+    }
+
+    field "PORT.NAME" {
+        label {
+            en = "Port Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: field-extract "SEC.ACC"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Security No"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "SEC.ALT" {
+        label {
+            en = "Telekurs No"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "ALT.SECURITY.NO" false
+        conversion: value 5
+    }
+
+    field "SEC.NAME" {
+        label {
+            en = "Sec Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "DEPO" {
+        label {
+            en = "Depository"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "DEP.NAME" {
+        label {
+            en = "Depository Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        hidden: true
+        operation: field-extract "DEPO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CLOSING.BAL.NO.NOM" {
+        label {
+            en = "Position"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CLOSING.BAL.NO.NOM"
+    }
+
+    field "VALUE.DATED.POSN" {
+        label {
+            en = "Value Dated Position"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "VALUE.DATED.POSN"
+    }
+
+    field "UNSETTLED.NOM.CR" {
+        label {
+            en = "Unsett In"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "UNSETTLED.NOM.CR"
+    }
+
+    field "UNSETTLED.NOM.DR" {
+        label {
+            en = "Unsett Out"
+        }
+
+        comments: " items as local, sc and ref ccy"
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "UNSETTLED.NOM.DR"
+    }
+
+    field "RATE.REC" {
+        comments: "Returns rate and value in 3 items as local, sc and ref ccy"
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.SC.MARKET.PRICE"
+    }
+
+    field "PORT.CCY" {
+        comma-separator: false
+        operation: field-extract "SEC.ACC"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "PRICE.CCY" {
+        comma-separator: false
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "PRICE.CURRENCY" false
+    }
+
+    field "SEC.CURR" {
+        comma-separator: false
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "SECURITY.CURRENCY" false
+    }
+
+    field "FREE.NOM.PEND" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FREE.NOM.PEND"
+    }
+
+    field "RATE.PRICE" {
+        comments: "Defines if price is a rate or a price"
+        comma-separator: false
+        operation: field-extract "RATE.REC"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "MARKET.PRICE" {
+        comments: "Market price in security ccy"
+        comma-separator: false
+        operation: field-extract "RATE.REC"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DISP.RATE" {
+        format: Rate
+        comma-separator: false
+        operation: field-extract "MARKET.PRICE"
+    }
+
+    field "DISP.PRICE" {
+        format: Rate
+        comma-separator: false
+        operation: field-extract "MARKET.PRICE"
+    }
+
+    field "DISP.RATE.PRICE" {
+        label {
+            en = "Price/Rate"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 12
+        }
+
+        operation: if "RATE.PRICE" Equals "RATE" process "DISP.RATE" "DISP.PRICE"
+    }
+
+    field "SEC.CCY" {
+        label {
+            en = "Sec Ccy"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "SEC.CURR"
+    }
+
+    field "VALUE" {
+        label {
+            en = "Value in Sec Ccy"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "SEC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 14
+        }
+
+        operation: field-extract "RATE.REC"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "PF.REF.CCY" {
+        label {
+            en = "Portf. Ref. Ccy"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "SEC.ACC"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "AST" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "CONV.CCY" {
+        comma-separator: false
+        operation: calc "AST":"SEC.CCY"
+    }
+
+    field "CONV.CCY.1" {
+        comma-separator: false
+        operation: calc "CONV.CCY":"AST"
+    }
+
+    field "CONV.CCY.2" {
+        comma-separator: false
+        operation: calc "CONV.CCY.1":"PRICE.CCY"
+    }
+
+    field "CONV.CCY.3" {
+        comma-separator: false
+        operation: calc "AST":"PRICE.CCY"
+    }
+
+    field "CONV.CCY.4" {
+        comma-separator: false
+        operation: calc "CONV.CCY.3":"AST"
+    }
+
+    field "CONV.CCY.5" {
+        comma-separator: false
+        operation: calc "CONV.CCY.4":"PORT.CCY"
+    }
+
+    field "VALUE.DIS.CCY" {
+        label {
+            en = "Value Ref Ccy"
+        }
+
+        format: Currency "SEC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        hidden: true
+        operation: calc "VALUE":"CONV.CCY.5"
+        conversion: call
+        jBC: "@ E.SC.PF.VALUE.REF"
+    }
+
+    field "REF.AMT" {
+        label {
+            en = "Value Ref Ccy"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "SEC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 16
+        }
+
+        hidden: true
+        operation: field-extract "VALUE.DIS.CCY"
+        conversion: call
+        jBC: "@ E.MB.SC.PF.HOLD.CONVERT"
+    }
+
+    field "DATA" {
+        length: 80
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "GROSS.COST.SEC.CCY" {
+        label {
+            en = "Realised PL"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "SEC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 17
+        }
+
+        hidden: true
+        operation: application-field-name "GROSS.COST.SEC.CCY"
+    }
+
+    field "UNREAL.PL" {
+        label {
+            en = "Unrealised PL"
+        }
+
+        format: Currency "SEC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 18
+        }
+
+        hidden: true
+        operation: calc "VALUE" - "GROSS.COST.SEC.CCY"
+    }
+
+    field "NET.OPEN.ORD.POS" {
+        label {
+            en = "S/B to Execute"
+        }
+
+        format: Currency "SEC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 19
+        }
+
+        hidden: true
+        operation: application-field-name "NET.OPEN.ORD.POS"
+    }
+
+    field "AMT.BLOCKED" {
+        label {
+            en = "Units Blocked"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMT.BLOCKED"
+    }
+
+    field "NOM.AMT.BLOCKED" {
+        label {
+            en = "Total Units Blocked"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 21
+        }
+
+        operation: application-field-name "NOM.AMT.BLOCKED"
+    }
+
+    field "NEW.BLOCK.AMT" {
+        label {
+            en = "Last Block/Unblock"
+        }
+
+        format: Currency "SEC.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 22
+        }
+
+        hidden: true
+        operation: application-field-name "NEW.BLOCK.AMT"
+    }
+
+    field "BLOCK.EFF.FROM" {
+        label {
+            en = "Next Block/Unblock"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        operation: application-field-name "BLOCK.EFF.FROM"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Blocking Detail"
+        }
+
+        label-field: "@ID"
+        image: "details.gif"
+        criteria: "TRANS.REFERENCE" Equals "@ID"
+        enquiry: "BLOCK.SEC.POS"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

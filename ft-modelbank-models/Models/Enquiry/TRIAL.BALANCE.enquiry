@@ -1,0 +1,340 @@
+Enquiry "TRIAL.BALANCE" for "name:/AC_ModelBank:NOFILE.TRIAL.BALANCE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Trial Balance"
+    }
+
+    start-line: 4
+    end-line: 10
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 16
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Account:\""
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: constant "\"Short Title:\""
+    }
+
+    field "HEADER3" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 1
+        }
+
+        operation: constant "\"Category:\""
+    }
+
+    field "HEADER4" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Currency:\""
+    }
+
+    field "ACCT.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BC.ACCT.ID" {
+        comma-separator: false
+        operation: break-change "ACCT.ID"
+    }
+
+    field "HEADER5" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 2
+        }
+
+        operation: constant "\"Opening Balance:\""
+    }
+
+    field "ACCT.NO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: field-extract "ACCT.ID"
+    }
+
+    field "SH.TITLE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: field-extract "ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CATEGORY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 5
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 75
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCT.NO"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "CURR" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCT.ID"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "T.OP.BAL" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "ACCT.ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "OP.BAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CURR" negative-pattern -#
+        length: 19
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: if "T.OP.BAL" Equals "NULL" process "ZERO" "T.OP.BAL"
+    }
+
+    field "AET.IDS" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "AET.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "AET.IDS"
+    }
+
+    field "AMT.LCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "AET.ID"
+        conversion: getFrom "STMT.ENTRY" "AMOUNT.LCY" false
+    }
+
+    field "AMT.FCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "AET.ID"
+        conversion: getFrom "STMT.ENTRY" "AMOUNT.FCY" false
+    }
+
+    field "VAL.DT" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "AET.ID"
+        conversion: getFrom "STMT.ENTRY" "VALUE.DATE" false
+    }
+
+    field "TXN.ID" {
+        label {
+            en = "Transaction Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Multi
+        operation: field-extract "AET.ID"
+        conversion: getFrom "STMT.ENTRY" "TRANS.REFERENCE" false
+    }
+
+    field "T.AMT" {
+        label {
+            en = "Transaction Amount"
+        }
+
+        format: Currency "CURR" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: if "AMT.FCY" Equals "NULL" process "AMT.LCY" "AMT.FCY"
+    }
+
+    field "T.CLOS.BAL" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "@ID"
+        conversion: getFrom "ACCOUNT" "OPEN.ACTUAL.BAL" false
+    }
+
+    field "CLOS.BAL" {
+        comma-separator: false
+        operation: if "T.CLOS.BAL" Equals "NULL" process "ZERO" "T.CLOS.BAL"
+    }
+
+    field "HEADER6" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            field: "BC.ACCT.ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+            line: + 1
+        }
+
+        operation: constant "\"Closing Balance:\""
+    }
+
+    field "CLOSING.BAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "CURR" negative-pattern -# break-condition {
+            field: "BC.ACCT.ID"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "CLOS.BAL"
+    }
+
+    field "END.OF.REPORT" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            field: "BC.ACCT.ID"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: + 2
+        }
+
+        operation: constant "\" *** End Of Report *** \""
+    }
+
+}

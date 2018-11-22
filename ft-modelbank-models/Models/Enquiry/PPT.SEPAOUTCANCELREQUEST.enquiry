@@ -1,0 +1,256 @@
+Enquiry "PPT.SEPAOUTCANCELREQUEST" for "name:/PP_PaymentWorkflowDASService:POR.TRANSACTION#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "SEPA Outward Cancellation Requests"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "StatusCode" {
+        Equals "706", "999"
+    }
+
+    fixed-selection "PaymentDirection" {
+        Equals "\"O\""
+    }
+
+    fixed-selection "OutputChannel" {
+        Equals "STEP2", "RPSSCL"
+    }
+
+    fixed-selection "OutgoingMessageType" {
+        Matches "\"pacs.008...\""
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            label {
+                en = "CompanyID"
+            }
+
+        }
+
+        AND
+
+        field "FTNumber" {
+            label {
+                en = "FTNumber"
+            }
+
+        }
+
+        AND
+
+        field "TransactionCurrencyCode" {
+            label {
+                en = "TransactionCurrency"
+            }
+
+        }
+
+        AND
+
+        field "TransactionAmount" {
+            label {
+                en = "TransactionAmount"
+            }
+
+        }
+
+        AND
+
+        field "MessageFormat" {
+            label {
+                en = "MessageFormat"
+            }
+
+        }
+
+        None
+    }
+
+    field "CompanyID" {
+        label {
+            en = "CompanyID"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CompanyID"
+    }
+
+    field "FTNumber" {
+        label {
+            en = "FTNumber"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FTNumber"
+    }
+
+    field "TransactionCurrencyCode" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TransactionCurrencyCode"
+    }
+
+    field "TransactionAmount" {
+        label {
+            en = "Amount"
+        }
+
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TransactionAmount"
+    }
+
+    field "MessageFormat" {
+        label {
+            en = "MessageFormat"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MessageFormat"
+    }
+
+    field "SenderAddress" {
+        label {
+            en = "SenderAddress"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SenderAddress"
+    }
+
+    field "OutgoingMessageType" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OutgoingMessageType"
+    }
+
+    field "ClearingTransactionType" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ClearingTransactionType"
+    }
+
+    field "CreditValueDate" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CreditValueDate"
+    }
+
+    field "OutputChannel" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OutputChannel"
+    }
+
+    field "NOZERORECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No Requests Available\""
+    }
+
+    field "VIEW.VERSION" {
+        comma-separator: false
+        operation: constant "\"PP.AUTH.ENTRY,VIEW\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Original Trn"
+        }
+
+        label-field: "FTNumber"
+        image: "drill.gif"
+        criteria: "CURRENT.CompanyID" > "CompanyID"
+        criteria: "CURRENT.FTNumber" > "FTNumber"
+        criteria: "CURRENT.View" > "VIEW" parameters {
+            function:  See
+            parameter: "111"
+        }
+
+        from-field: "VIEW.VERSION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Cancel"
+        }
+
+        label-field: "FTNumber"
+        image: "txndelete.gif"
+        criteria: "CURRENT.REL.REFERENCE" > "FTNumber"
+        criteria: "CURRENT.ORIG.MSG.TYPE" > "OutgoingMessageType"
+        criteria: "CURRENT.ORIG.TXN.TYPE" > "ClearingTransactionType"
+        criteria: "CURRENT.ORIG.INTBK.SET.DTE" > "CreditValueDate"
+        criteria: "CURRENT.CLEARING.ID" > "OutputChannel"
+        criteria: "CURRENT.ORIG.DEBTOR.AGENT.BIC" > "SenderAddress" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.QUERIES.ANSWERS,CREATE"
+    }
+
+}

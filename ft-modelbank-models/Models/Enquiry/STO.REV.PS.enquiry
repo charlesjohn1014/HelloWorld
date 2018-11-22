@@ -1,0 +1,199 @@
+Enquiry "STO.REV.PS" for "name:/AC_StandingOrders:STANDING.ORDER$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Reverse Standing Orders"
+    }
+
+    description {
+        en = "Reverse Standing Orders"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 1
+    end-line: 3 fixed-selection "RECORD.STATUS" {
+        Equals "RNAU"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Account"
+            }
+
+            operands: Contains
+        }
+
+        None
+    }
+
+    field "STANDING.ORDER" {
+        label {
+            en = "STO Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STANDING.ORDER"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Authorise Reversed Standing Orders\""
+    }
+
+    field "K.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "K.TYPE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "CCY"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "CURRENT.AMOUNT.BAL" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.AMOUNT.BAL"
+    }
+
+    field "CPTY.ACCT.NO" {
+        label {
+            en = "Cpty Account"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CPTY.ACCT.NO"
+    }
+
+    field "CURRENT.FREQUENCY" {
+        label {
+            en = "Frequency"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.FREQUENCY"
+        conversion: call
+        jBC: "@ E.MB.FREQ.TEXT"
+    }
+
+    field "PER.OVER.CAB" {
+        label {
+            en = "Per Over Cur Balance"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PER.OVER.CAB"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Standing Orders Available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "STANDING.ORDER"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "STANDING.ORDER"
+        }
+
+        screen: "STANDING.ORDER,REV"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "STANDING.ORDER"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "STANDING.ORDER"
+        }
+
+        screen: "STANDING.ORDER,REV"
+    }
+
+}

@@ -1,0 +1,391 @@
+Enquiry "SY.EVENT.DUE" for "name:/SY_Event:SY.EVENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Events due for automatic process"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "COB.PHASE" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "TERMINATED" {
+        NotEquals "\'YES\'"
+    }
+
+    fixed-sort: "TRANSACTION" Null
+    fixed-sort: "COB.PHASE" Null
+    fixed-sort: "EVENT.TYPE" Null
+    fixed-sort: "FREQUENCY" Null
+    fixed-sort: "DATE.RULES" Null
+
+    field "@ID" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "ERROR" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Error\""
+    }
+
+    field "LAST.RUN.DATE" {
+        display-type: "DATE"
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LAST.RUN.DATE"
+    }
+
+    field "LRUN" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: if "LAST.RUN.DATE" Equals "NULL" process "1" "LAST.RUN.DATE"
+    }
+
+    field "COB.ERR.TIME" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SY.EVENT.ERRORS" "TIME" false
+    }
+
+    field "COB.ERR.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "SY.EVENT.ERRORS" "SYSTEM.DATE" false
+    }
+
+    field "COB.ERR.EXIST" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "COB.ERR.TIME" NotEquals "NULL" process "1" "0"
+    }
+
+    field "RECENT.COB.ERR" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "COB.ERR.DATE" Greater "LRUN" process "1" "0"
+    }
+
+    field "COB.ERR" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "COB.ERR.EXIST" * "RECENT.COB.ERR"
+    }
+
+    field "EVENT.DEFINITION" {
+        label {
+            en = "Event Definition"
+        }
+
+        display-type: "CLASS-ITALIC"
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EVENT.DEFINITION"
+    }
+
+    field "TRANSACTION" {
+        label {
+            en = "Transaction"
+        }
+
+        display-type: "CLASS-DESCR"
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "DATE"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "EVENT.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        display-type: "ALPHANUMERIC"
+        length: 9
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EVENT.TYPE"
+    }
+
+    field "CREATE.DATE" {
+        label {
+            en = "Date Created"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CREATE.DATE"
+    }
+
+    field "DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DATE"
+    }
+
+    field "LAST.RUN" {
+        label {
+            en = "Date last run"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "LAST.RUN.DATE"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        display-type: "CLASS-MODELSTATUS"
+        format: Date
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: if "COB.ERR" Equals "1" process "ERROR" "NULL"
+    }
+
+    field "DATE.RULES" {
+        label {
+            en = "Date Rules"
+        }
+
+        display-type: "CLASS-ITALIC"
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DATE.RULES"
+    }
+
+    field "FREQUENCY" {
+        label {
+            en = "Frequency"
+        }
+
+        display-type: "CLASS-ITALIC"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "FREQUENCY"
+    }
+
+    field "INCLUDE.FIRST.DATE" {
+        label {
+            en = "Incl First Dt"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "INCLUDE.FIRST.DATE"
+    }
+
+    field "NEXT.RUN.DATE" {
+        label {
+            en = "Next Run Date"
+        }
+
+        display-type: "DATE"
+        length: 41
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.SY.GET.NEXT.EVENT.DATE"
+    }
+
+    field "COB.PHASE" {
+        label {
+            en = "Phase"
+        }
+
+        display-type: "ALPHANUMERIC"
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: application-field-name "COB.PHASE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "EVENT.DEFINITION" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "SY.EVENT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "EVENT.DEFINITION" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        application: "SY.EVENT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View Event Error"
+        }
+
+        label-field: "EVENT.DEFINITION" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "SY.EVENT.ERRORS"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Process Manually"
+        }
+
+        label-field: "EVENT.DEFINITION" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SY.EVENT,PROCESS"
+    }
+
+}

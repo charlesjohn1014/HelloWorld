@@ -1,0 +1,377 @@
+Enquiry "SC.PORT.HOLD.SUM" for "name:/SC_ScoSecurityPositionUpdate:SECURITY.POSITION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "SC Holdings by Portfolio"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "CLOSING.BAL.NO.NOM" {
+        NotEquals "0"
+    }
+
+    fixed-sort: "@ID" Null
+    fixed-sort: "BOND.OR.SHARE" Null
+    custom-selection {
+
+        field "CUSTOMER.NUMBER" {
+            label {
+                en = "Client Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"SC Holdings by\""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\" Porfolio\""
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Portfolio Number:\""
+    }
+
+    field "HDR5" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 67
+        }
+
+        processing-mode: Single
+        operation: constant "\" \""
+    }
+
+    field "HDR4" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Ccy:\""
+    }
+
+    field "@ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "RATE.REC" {
+        comments: "Returns rate and value in 3 items as local, sc and ref ccy"
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.SC.MARKET.PRICE"
+    }
+
+    field "PFOLIO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "PORTFOLIO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PFOLIO"
+    }
+
+    field "B.PORTFOLIO" {
+        comments: "Throw a page when pfolio changes" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Multi
+        operation: break-change "PORTFOLIO"
+    }
+
+    field "DISP.PORT" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        operation: field-extract "PORTFOLIO"
+    }
+
+    field "DISP.PORT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 1
+        }
+
+        operation: field-extract "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "DISP.CCY" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 76
+            line: 1
+        }
+
+        operation: field-extract "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Security"
+        }
+
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SEC.CURR" {
+        comma-separator: false
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SECURITY.CURRENCY" false
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "CLOSING.BAL.NO.NOM" {
+        label {
+            en = "Nominal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 10
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CLOSING.BAL.NO.NOM"
+        conversion: oconv "MD0"
+    }
+
+    field "RATE.PRICE" {
+        comments: "Defines if price is a rate or a price"
+        comma-separator: false
+        operation: field-extract "RATE.REC"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "MARKET.PRICE" {
+        comments: "Market price in security ccy"
+        comma-separator: false
+        operation: field-extract "RATE.REC"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DISP.RATE" {
+        format: Rate
+        comma-separator: false
+        operation: field-extract "MARKET.PRICE"
+    }
+
+    field "DISP.PRICE" {
+        format: Rate
+        comma-separator: false
+        operation: field-extract "MARKET.PRICE"
+    }
+
+    field "DISP.RATE.PRICE" {
+        label {
+            en = "Price/Rate"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 43
+        }
+
+        operation: if "RATE.PRICE" Equals "RATE" process "DISP.RATE" "DISP.PRICE"
+    }
+
+    field "SEC.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        operation: field-extract "SEC.CURR"
+    }
+
+    field "VALUE" {
+        label {
+            en = "Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 24
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 58
+        }
+
+        operation: field-extract "RATE.REC"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "MATURITY.DATE" false
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "RATE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"RATE\""
+    }
+
+    field "ID.FORMAT" {
+        length: 80
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.SEC.POS.ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "SECURITY.NAME"
+        image: "details.gif"
+        criteria: "REF.NO" Equals "ID.FORMAT"
+        enquiry: "SC.POS.DET2"
+    }
+
+}

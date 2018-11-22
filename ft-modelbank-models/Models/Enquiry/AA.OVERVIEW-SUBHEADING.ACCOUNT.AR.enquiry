@@ -1,0 +1,174 @@
+Enquiry "AA.OVERVIEW-SUBHEADING.ACCOUNT.AR" for "name:/AA_PaymentSchedule:AA.ACCOUNT.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Details"
+    }
+
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "ARR" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: field-extract "ARR"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "SIM.REF" {
+        comma-separator: false
+        operation: selection "SIMULATION.REF"
+    }
+
+    field "FILE.VER" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: selection "FILE.VERSION"
+        conversion: replace {
+            oldData: "SIM"
+            newData: "LIV SIM"
+        }
+
+    }
+
+    field "QUOTE" {
+        comma-separator: false
+        operation: constant "\"\'\""
+    }
+
+    field "P.FILE.VER" {
+        comma-separator: false
+        operation: calc "QUOTE":"FILE.VER":"QUOTE"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "C.NULL" {
+        comma-separator: false
+        operation: constant "\"\'\'\""
+    }
+
+    field "FV" {
+        comma-separator: false
+        operation: if "FILE.VER" Equals "\"\"" process "C.NULL" "P.FILE.VER"
+    }
+
+    field "SIM" {
+        comma-separator: false
+        operation: if "SIM.REF" Equals "\"\"" process "C.NULL" "SIM.REF"
+    }
+
+    field "C.COS.FIN.SUM" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.FINANCIAL.SUMMARY.AR \""
+    }
+
+    field "COS.FIN.SUM" {
+        comma-separator: false
+        operation: calc "C.COS.FIN.SUM":"ARR.ID":"SP":"FV":"SP":"SIM"
+    }
+
+    field "ENQ.INT.CON" {
+        comma-separator: false
+        operation: constant "\"COS AA.CURRENT.PREVIOUS.TOTAL.ACCRUALS \""
+    }
+
+    field "ENQ.ACCRUED.INT" {
+        comma-separator: false
+        operation: calc "ENQ.INT.CON":"ARR.ID":"SP":"FV":"SP":"SIM"
+    }
+
+    field "C.COS.LOCKED.FUNDS" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.LOCKED.FUNDS \""
+    }
+
+    field "COS.LOCKED.FUNDS1" {
+        comma-separator: false
+        operation: calc "C.COS.LOCKED.FUNDS":"ARR.ID":"SP":"FV":"SP":"SIM"
+    }
+
+    field "C.ENQ.LOCKED.FUNDS" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.LOCKED.FUNDS ACCOUNT.NUMBER EQ \""
+    }
+
+    field "ENQ.LOCKED.FUNDS" {
+        comma-separator: false
+        operation: calc "C.ENQ.LOCKED.FUNDS":"ARR.ID"
+    }
+
+    field "COS.LOCKED.FUNDS" {
+        comma-separator: false
+        operation: if "SIM" Equals "\"\"" process "COS.LOCKED.FUNDS1" "ENQ.LOCKED.FUNDS"
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-COS.SUBHEADING"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 227
+        operation: constant "\"Account Details\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Financial Summary"
+        }
+
+        label-field: "TITLE"
+        from-field: "COS.FIN.SUM"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Cashflow"
+        }
+
+        label-field: "TITLE"
+        criteria: "@ID" Equals "ARR.ID"
+        criteria: "FILE.VERSION" Equals "FILE.VER"
+        criteria: "SIMULATION.REF" Equals "SIM.REF"
+        enquiry: "AA.DETAILS.AVAILABLE.FUNDS"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Locked Funds"
+        }
+
+        label-field: "TITLE"
+        from-field: "COS.LOCKED.FUNDS"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Interest"
+        }
+
+        label-field: "TITLE"
+        from-field: "ENQ.ACCRUED.INT"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "HORIZONTAL.DRILLDOWNS" ; "SINGLE.BACKGROUND.COLOUR"
+}

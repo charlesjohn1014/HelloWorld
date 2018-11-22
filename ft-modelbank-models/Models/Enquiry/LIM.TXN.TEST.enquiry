@@ -1,0 +1,538 @@
+Enquiry "LIM.TXN.TEST" for "name:/LI_Reports:NOFILE.LIMIT.TXNS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Limit Transactions"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "LIAB.NO" {
+            mandatory: true
+        }
+
+        AND
+
+        field "REF.NO" {
+        }
+
+        AND
+
+        field "SER.NO" {
+        }
+
+        AND
+
+        field "CUST.NO" {
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 0
+        }
+
+        operation: constant "\"Limit - Transactions\""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer :\""
+    }
+
+    field "HDR.3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 47
+            line: 1
+        }
+
+        operation: constant "\"Product :\""
+    }
+
+    field "REC.ON" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.LIM.TXN"
+    }
+
+    field "TXN.REF" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 1
+        conversion: extract from 1 to 1 delimited by "\\"
+    }
+
+    field "CO.MNE" {
+        label {
+            en = "Company"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+        conversion: extract from 5 to 1 delimited by "\\"
+    }
+
+    field "BS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\\\""
+    }
+
+    field "TXN.CO.BS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "TXN.REF":"BS"
+    }
+
+    field "TXN.REF.CO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "TXN.CO.BS":"CO.MNE"
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "CUST" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "."
+    }
+
+    field "CUST.BS" {
+        comma-separator: false
+        operation: calc "CUST":"BS"
+    }
+
+    field "CUST.CO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "CUST.BS":"CO.MNE"
+    }
+
+    field "LIM.REF" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "LIM.SER" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 0 delimited by "."
+    }
+
+    field "P.L.REF" {
+        label {
+            en = "Product :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 55
+            line: 1
+        }
+
+        operation: field-extract "LIM.REF"
+        conversion: call
+        jBC: "@ LIMIT.FIND.REF"
+        conversion: getFrom "LIMIT.REFERENCE" "SHORT.NAME" true
+    }
+
+    field "SER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 71
+            line: 1
+        }
+
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "REF.S" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TXN.REF"
+        conversion: extract from 3 to 99
+    }
+
+    field "REF.A" {
+        comments: "check for SC.TRADING.POSITION"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TXN.REF"
+        conversion: call
+        jBC: "@ E.LIM.CHK.SCTP"
+        conversion: extract from 1 to 4
+        conversion: replace {
+            oldData: "FDOR"
+            newData: "FO"
+        }
+
+        conversion: extract from 1 to 2
+    }
+
+    field "AC" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AC\""
+    }
+
+    field "REF.P" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "REF.A" Equals "AC" process "REF.S" "TXN.REF"
+    }
+
+    field "REF" {
+        label {
+            en = "Txn.Ref"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "REF.P"
+    }
+
+    field "REF.CO" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TXN.REF.CO"
+    }
+
+    field "F.CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+        conversion: extract from 2 to 1 delimited by "\\"
+    }
+
+    field "AMT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "F.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 27
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+        conversion: extract from 3 to 1 delimited by "\\"
+    }
+
+    field "FULL.AMT" {
+        label {
+            en = "Full Amount"
+        }
+
+        format: Currency "F.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 47
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+        conversion: extract from 6 to 1 delimited by "\\"
+    }
+
+    field "DTE" {
+        label {
+            en = "Mat. Date"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+        conversion: extract from 4 to 1 delimited by "\\"
+        conversion: call
+        jBC: "@ E.LIM.DATE.TXN"
+    }
+
+    field "B.LIAB" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "ID"
+    }
+
+    field "P.CUST" {
+        label {
+            en = "Customer :"
+        }
+
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Page
+        }
+
+        length: 24
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 1
+        }
+
+        operation: field-extract "CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "N.ENQ" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "REF.A"
+        conversion: replace {
+            oldData: "TF"
+            newData: "LETTER.OF.CREDIT"
+        }
+
+        conversion: replace {
+            oldData: "FD"
+            newData: "FD.FIDUCIARY"
+        }
+
+        conversion: replace {
+            oldData: "FO"
+            newData: "FD.FID.ORDER"
+        }
+
+        conversion: replace {
+            oldData: "SW"
+            newData: "SWAP"
+        }
+
+        conversion: replace {
+            oldData: "PD"
+            newData: "PD.PAYMENT.DUE"
+        }
+
+        conversion: replace {
+            oldData: "SL"
+            newData: "SL.LOANS"
+        }
+
+        conversion: replace {
+            oldData: "FR"
+            newData: "FRA.DEAL"
+        }
+
+        conversion: replace {
+            oldData: "ST"
+            newData: "SC.TRADING.POSITION"
+        }
+
+        conversion: replace {
+            oldData: "SC"
+            newData: "SEC.TRADE"
+        }
+
+        conversion: replace {
+            oldData: "DX"
+            newData: "DX.TRADE"
+        }
+
+    }
+
+    field "W.AL1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"MB.ACCT.BAL.TODAY\""
+    }
+
+    field "LIT.SEE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"S\""
+    }
+
+    field "LIT.N" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "W.SEE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "N.ENQ" NotEquals "W.AL1" process "LIT.SEE" "LIT.N"
+    }
+
+    field "REF.SER" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 1
+        conversion: extract from 7 to 1 delimited by "\\"
+    }
+
+    field "REF.E" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "REF.CO"
+    }
+
+    field "W.REF" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "N.ENQ" NotEquals "W.AL1" process "REF.E" "LIT.N"
+    }
+
+    field "DR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"DRAWINGS\""
+    }
+
+    field "TF" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"TF\""
+    }
+
+    field "DRAW.SUFF" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TXN.REF"
+        conversion: extract from 13 to 2
+    }
+
+    field "CHK.DR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "REF.A" Equals "TF" process "DRAW.SUFF" "NULL"
+        conversion: call
+        jBC: "@ E.LC.MKN"
+    }
+
+    field "DR.REF" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "W.REF"
+        conversion: extract from 1 to 14
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "NDR.ENQ" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CHK.DR" NotEquals "NULL" process "DR" "N.ENQ"
+    }
+
+    field "WDR.REF" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CHK.DR" NotEquals "NULL" process "DR.REF" "W.REF"
+        conversion: call
+        jBC: "@ E.LC.MIX"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Contract Details"
+        }
+
+        label-field: "REF"
+        criteria: "CUSTOMER.CODE" Equals "CUST.CO"
+        criteria: "LIMIT.REF" Equals "REF.SER" parameters {
+            field: "W.SEE"
+            field: "WDR.REF"
+        }
+
+        from-field: "NDR.ENQ"
+    }
+
+}

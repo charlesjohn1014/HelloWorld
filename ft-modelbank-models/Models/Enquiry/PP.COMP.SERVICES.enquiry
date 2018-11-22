@@ -1,0 +1,224 @@
+Enquiry "PP.COMP.SERVICES" for "name:/PP_PaymentWorkflowGUI:NOFILE.PP.COMP.SERVICES#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Company Specific Services"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    full-description {
+        en = "Company Specific Services"
+    }
+
+    description {
+        en = "Company Specific Services"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "OUT.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            operands: Equals
+        }
+
+        AND
+
+        field "ServiceName" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "GroupName" {
+        label {
+            en = "Group"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "COMP.ID" {
+        label {
+            en = "Company Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "COMPANY.CODE" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BRK.COMP" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "COMP.ID"
+    }
+
+    field "ServiceDesc" {
+        label {
+            en = "Service Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "No.of.Services" {
+        label {
+            en = "No. of Services"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "Status" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "Interval" {
+        label {
+            en = "Interval Time"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "WorkProfile" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "TSA.ID" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Start/Stop"
+        }
+
+        label-field: "COMP.ID" parameters {
+            function:  Input
+            field: "TSA.ID"
+        }
+
+        screen: "TSA.SERVICE,PP.COMP.START.STOP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Auth Start/Stop"
+        }
+
+        label-field: "COMP.ID" parameters {
+            function:  Authorise
+            field: "TSA.ID"
+        }
+
+        screen: "TSA.SERVICE,PP.AUTH.COMP.START.STOP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Amend Agents"
+        }
+
+        label-field: "COMP.ID" parameters {
+            function:  Input
+            field: "WorkProfile"
+        }
+
+        screen: "TSA.WORKLOAD.PROFILE,PP.COMP.NO.OF.SERV"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Auth Agents"
+        }
+
+        label-field: "COMP.ID" parameters {
+            function:  Authorise
+            field: "WorkProfile"
+        }
+
+        screen: "TSA.WORKLOAD.PROFILE,PP.AUTH.COMP.NO.OF.SERV"
+    }
+
+    security {
+        application: "PP.COMPANY"
+        field: "COMPANY.CODE"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS" ; "ALLDATA"
+}

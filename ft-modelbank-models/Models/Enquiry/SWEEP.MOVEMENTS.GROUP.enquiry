@@ -1,0 +1,249 @@
+Enquiry "SWEEP.MOVEMENTS.GROUP" for "name:/PO_Cashpooling:NOFILE.SWEEP.MOVEMENTS.GROUP#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Sweep movements in a group"
+    }
+
+    description {
+        en = "Sweep movements in a group"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RETURN.ARRAY" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Group Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "FROM.DATE" {
+            label {
+                en = "From Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TO.DATE" {
+            label {
+                en = "To Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        length: 45
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+    }
+
+    field "VALUE" {
+        comma-separator: false
+        operation: field-extract "ID"
+    }
+
+    field "V.HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Sweep movements in a group\""
+    }
+
+    field "GROUP" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Group :\""
+    }
+
+    field "Y.GROUP" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        operation: selection "@ID"
+    }
+
+    field "MAIN MASTER" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Main Master :\""
+    }
+
+    field "Y.MAIN.MASTER" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 2
+        }
+
+        operation: field-extract "Y.GROUP"
+        conversion: getFrom "AC.CP.GROUP.PARAM" "MAIN.MASTER" false
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Currency : \""
+    }
+
+    field "Y.CURRENCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 3
+        }
+
+        operation: field-extract "Y.GROUP"
+        conversion: getFrom "AC.CP.GROUP.PARAM" "CURRENCY" false
+    }
+
+    field "Y.SUBGROUP" {
+        label {
+            en = "Sub group"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "VALUE"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "Y.FROM" {
+        label {
+            en = "From"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "VALUE"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "Y.TOACCT" {
+        label {
+            en = "To"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "VALUE"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "Y.TRANS.REF" {
+        label {
+            en = "Trans Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "VALUE"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "Y.SWEEP.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "Y.CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: field-extract "VALUE"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "Y.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: field-extract "VALUE"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No records to Display\""
+    }
+
+}

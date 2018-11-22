@@ -1,0 +1,197 @@
+Enquiry "SCV.OUTSTANDING.PROCESSES" for "name:/PW_Foundation:PW.PROCESS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Outstanding Processes"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "COMPLETION.DATE" {
+        Equals "NULL"
+    }
+
+    fixed-sort: "DUE.DATE" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+        }
+
+        None
+    }
+
+    field "PW.PROCESS.ID" {
+        label {
+            en = "Ref."
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PW.PROCESS.ID"
+    }
+
+    field "DEFINITION" {
+        label {
+            en = "Process Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PROCESS.DEFINITION"
+        conversion: getFrom "PW.PROCESS.DEFINITION" "SHORT.DESC" false
+    }
+
+    field "CUSTOMER" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "START.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "START.DATE"
+    }
+
+    field "DUE.DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DUE.DATE"
+    }
+
+    field "CHECK.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DUE.DATE"
+    }
+
+    field "STATUS" {
+        label {
+            en = "."
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: if "CHECK.DATE" LessThan "TODAY" process "RED.FLAG" "GREEN.FLAG"
+    }
+
+    field "DAYS.OD" {
+        comma-separator: false
+        operation: calc "CHECK.DATE" - "TODAY"
+    }
+
+    field "TODAY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: today
+    }
+
+    field "RED.FLAG" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/redlight.gif\""
+    }
+
+    field "GREEN.FLAG" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/greenlight.gif\""
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+        }
+
+        operation: constant "\"There are no Outstanding Processes\""
+    }
+
+    tool APP.EDIT {
+    }
+
+    drilldown "1" {
+        description {
+            en = "Activity Status"
+        }
+
+        label-field: "PW.PROCESS.ID"
+        image: "view.gif"
+        criteria: "PROCESS" Equals "PW.PROCESS.ID"
+        enquiry: "PROCESS.STATUS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update Txn"
+        }
+
+        label-field: "PW.PROCESS.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "PW.PROCESS.ID"
+        }
+
+        screen: "PW.PROCESS,INPUT"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

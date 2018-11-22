@@ -1,0 +1,216 @@
+Enquiry "MULTI.TILLS" for "name:/TT_ModelBank:NOFILE.MULTI.TILLS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "MULTI TILLS DETAILS"
+        }
+
+        column: 30
+        line: 0
+    }
+
+    header {
+        label {
+            en = "USER.ID:"
+        }
+
+        column: 50
+        line: 1
+    }
+
+    header {
+        label {
+            en = "TILL.ID"
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "STATUS"
+        }
+
+        column: 15
+        line: 2
+    }
+
+    header {
+        label {
+            en = "DESCRIPTION"
+        }
+
+        column: 25
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CCY"
+        }
+
+        column: 41
+        line: 2
+    }
+
+    header {
+        label {
+            en = "BALANCE"
+        }
+
+        column: 50
+        line: 2
+    }
+
+    description {
+        en = "MULTI.TILLS"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "USER.ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "USER.ID" {
+        format: User
+        length: 10
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        operation: application-field-name "@ID"
+    }
+
+    field "TILL.ID" {
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "USER.ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "STATUS" {
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: field-extract "USER.ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "DESC" {
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: field-extract "USER.ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "T.CCY" {
+        format: User
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Single
+        operation: field-extract "USER.ID"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "BALANCE" {
+        format: Currency "T.CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-extract "USER.ID"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "DISP.X" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"<EXCESS>\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "EXCESS" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        operation: if "BALANCE" Greater "ZERO" process "DISP.X" "NULL"
+    }
+
+    field "USER" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 59
+            line: 1
+        }
+
+        operation: field-extract "USER.ID"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "B.TILL" {
+        comma-separator: false
+        operation: break-change "TILL.ID"
+    }
+
+    field "BLANK.LINE" {
+        break-condition {
+            field: "B.TILL"
+        }
+
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: constant "\" \""
+    }
+
+}

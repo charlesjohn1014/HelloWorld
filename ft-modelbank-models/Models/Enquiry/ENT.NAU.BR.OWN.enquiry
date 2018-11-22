@@ -1,0 +1,288 @@
+Enquiry "ENT.NAU.BR.OWN" for "name:/SC_SccEntitlements:ENTITLEMENT$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised entitlements"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RECORD.STATUS" {
+        Matches "...NAU"
+    }
+
+    fixed-selection "PORTFOLIO.NO" {
+        Matches "...999999..."
+    }
+
+    custom-selection {
+
+        field "DIARY.ID" {
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 65
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Entitlements to Authorise\""
+    }
+
+    field "ENTITLEMENT.ID" {
+        length: 44
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ENTITLEMENT.ID"
+    }
+
+    field "PORTFOLIO.NO" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO.NO"
+    }
+
+    field "CUSTOMER" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "CUSTOMER.NUMBER" false
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Client"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "DESCRIPT" false
+    }
+
+    field "DEPOSITORY" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "QUALIFY.HOLDING" {
+        label {
+            en = "Qual holding"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "QUALIFY.HOLDING"
+    }
+
+    field "OPTION.DESC" {
+        label {
+            en = "Options"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OPTION.DESC"
+    }
+
+    field "OPTION" {
+        label {
+            en = "Option"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPTION"
+    }
+
+    field "SOURCE.TAX.PERC" {
+        label {
+            en = "Tax %"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SOURCE.TAX.PERC"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Settle Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ENTITLEMENT.AMT" {
+        label {
+            en = "Cash Amt Sett Ccy"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 120
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ENTITLEMENT.AMT"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no Entitlements to Authorise\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "ENTITLEMENT,BASIC"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "ENTITLEMENT,BASIC"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "ENTITLEMENT,BASIC"
+    }
+
+}

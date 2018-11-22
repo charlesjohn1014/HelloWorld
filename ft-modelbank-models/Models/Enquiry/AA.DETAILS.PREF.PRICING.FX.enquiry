@@ -1,0 +1,264 @@
+Enquiry "AA.DETAILS.PREF.PRICING.FX" for "name:/AA_PreferentialPricingFx:AA.ARR.PREFERENTIAL.PRICING.FX#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Preferential Pricing FX"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 75
+        processing-mode: Single
+        operation: constant "\"Preferential Pricing FX Details\""
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "ARR.CCY" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "CCY.PAIR.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 75
+        operation: constant "\"CCY Pair\""
+    }
+
+    field "MIDRATE.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 100
+        operation: constant "\"Mid Rate\""
+    }
+
+    field "SPREAD.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 100
+        operation: constant "\"Spread\""
+    }
+
+    field "BUYRATE.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 100
+        operation: constant "\"Buy Rate\""
+    }
+
+    field "SELLRATE.HEADER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 100
+        operation: constant "\"Sell Rate\""
+    }
+
+    field "CCY PAIR" {
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+            multiLine: true
+        }
+
+        column-width: 75
+        processing-mode: Multi
+        operation: application-field-name "CURRENCY.PAIR"
+    }
+
+    field "MID RATE" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+            multiLine: true
+        }
+
+        column-width: 100
+        processing-mode: Multi
+        operation: application-field-name "MID.RATE"
+    }
+
+    field "SPREAD" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+            multiLine: true
+        }
+
+        column-width: 100
+        processing-mode: Multi
+        operation: application-field-name "SPREAD"
+    }
+
+    field "BUY RATE" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+            line: + 2
+            multiLine: true
+        }
+
+        column-width: 100
+        processing-mode: Multi
+        operation: application-field-name "BUY.RATE"
+    }
+
+    field "SELL RATE" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 2
+            multiLine: true
+        }
+
+        column-width: 100
+        processing-mode: Multi
+        operation: application-field-name "SELL.RATE"
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ACT.VALUE" {
+        comma-separator: false
+        operation: constant "\"-UPDATE-\""
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"ACT.VALUE":"PROPERTY"
+    }
+
+    field "ARRANGEMENT.ID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+    }
+
+    field "REFRESH.INTERNAL.FX" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.PREF.PRICING.FX\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refresh"
+        }
+
+        label-field: "CCY.PAIR.HEADER"
+        image: "refresh.gif"
+        criteria: "ID.COMP.1" Equals "ARRANGEMENT.ID"
+        from-field: "REFRESH.INTERNAL.FX"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "CCY.PAIR.HEADER"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "DRILL.VER"
+    }
+
+    fileVersion: Live, Exception
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS"
+}

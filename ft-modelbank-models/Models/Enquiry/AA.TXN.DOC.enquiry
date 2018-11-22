@@ -1,0 +1,356 @@
+Enquiry "AA.TXN.DOC" for "name:/DM_Foundation:TRANS.DOCUMENT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Transaction Documents"
+        }
+
+        column: 10
+        line: 1
+    }
+
+    description {
+        en = "Transaction Documents"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 5
+    custom-selection {
+
+        field "APPLN.TXN.REF" {
+            label {
+                en = "Txn Ref"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Account.ID"
+            }
+
+            operands: NotEquals
+        }
+
+        None
+    }
+
+    field "ID.CHK" {
+        label {
+            en = "Id"
+        }
+
+        length: 57
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: selection "@ID"
+    }
+
+    field "@ID" {
+        length: 59
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "APPLN.TXN" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "APPLN.TXN.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "ARRANGEMENT" false
+    }
+
+    field "REFERENCE.NO" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "REFERENCE.NO"
+    }
+
+    field "IDCHECK" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 166
+        processing-mode: Multi
+        operation: if "ID.CHK" Equals "APPLN.TXN" process "REFERENCE.NO" "\"\""
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CUSTOMER.CHK" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        operation: if "ID.CHK" Equals "APPLN.TXN" process "CUSTOMER.ID" "\"\""
+    }
+
+    field "BEGIN.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BEGIN.DATE"
+    }
+
+    field "BEGIN.CHK" {
+        label {
+            en = "Start Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "ID.CHK" Equals "APPLN.TXN" process "BEGIN.DATE" "\"\""
+    }
+
+    field "SIG.DATE" {
+        label {
+            en = "Sig date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SIG.DATE"
+    }
+
+    field "SIGN.CHK" {
+        label {
+            en = "Sign date"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: if "ID.CHK" Equals "APPLN.TXN" process "SIG.DATE" "\"\""
+    }
+
+    field "EXP.DATE" {
+        label {
+            en = "End date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "END.DATE"
+    }
+
+    field "EXP.DATE.CHK" {
+        label {
+            en = "End date"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "ID.CHK" Equals "APPLN.TXN" process "EXP.DATE" "\"\""
+    }
+
+    field "LAST.UPD.DATE" {
+        label {
+            en = "Last update"
+        }
+
+        format: Date
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LAST.UPD.DATE"
+    }
+
+    field "LAST.UPD.DATE.CHK" {
+        label {
+            en = "Last update"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: if "ID.CHK" Equals "APPLN.TXN" process "LAST.UPD.DATE" "\"\""
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "STATUS"
+        conversion: getFrom "DOCUMENT.STATUS" "DESCRIPTION" false
+        conversion: replace {
+            oldData: "RECEIVED"
+            newData: "Received"
+        }
+
+        conversion: replace {
+            oldData: "NOT RECEIVED"
+            newData: "Not Received"
+        }
+
+        conversion: replace {
+            oldData: "EXPIRED"
+            newData: "Expired"
+        }
+
+        conversion: replace {
+            oldData: "COMPLETE"
+            newData: "Completed"
+        }
+
+    }
+
+    field "STATUS.CHK" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        column-width: 100
+        operation: if "ID.CHK" Equals "APPLN.TXN" process "STATUS" "\"\""
+    }
+
+    field "LAST.UPD.APPLN" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LAST.UPD.APPLN"
+    }
+
+    field "Account.Id" {
+        comma-separator: false
+        operation: field-extract "ID.CHK"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+    }
+
+    field "REC.ID" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 166
+        processing-mode: Single
+        operation: constant "\"No transaction document found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "STATUS.CHK"
+        enquiry: "AA.TXN.DOC.VIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "STATUS.CHK"
+        criteria: "CURRENT.ARR" > "ID.CHK" parameters {
+            function:  Input
+            field: "REC.ID"
+        }
+
+        screen: "TRANS.DOCUMENT,INPUT.AA"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "STATUS.CHK"
+        enquiry: "AA.TXN.DOC.REVERSE"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Upload"
+        }
+
+        label-field: "STATUS.CHK"
+        criteria: "CURRENT.ARR" > "ID.CHK" parameters {
+            function:  Input
+            field: "REC.ID"
+        }
+
+        screen: "TRANS.DOCUMENT,INPUT.UPLOAD.AA"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "NO.ENQUIRY.FAVOURITES" ; "SINGLE.BACKGROUND.COLOUR"
+}

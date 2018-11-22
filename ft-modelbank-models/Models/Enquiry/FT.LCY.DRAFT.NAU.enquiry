@@ -1,0 +1,240 @@
+Enquiry "FT.LCY.DRAFT.NAU" for "name:/FT_Contract:FUNDS.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised LCY Draft"
+    }
+
+    description {
+        en = "Unauthorised LCY Draft"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 4 fixed-selection "RECORD.STATUS" {
+        NotEquals "IHLD", "RNAU"
+    }
+
+    fixed-selection "ISSUE.CHEQUE.TYPE" {
+        Equals "DD"
+    }
+
+    fixed-selection "TRANSACTION.TYPE" {
+        Equals "OC"
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised LCY Draft\""
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Txn Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "Debit Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "DEBIT.CCY" {
+        label {
+            en = "Debit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.CURRENCY"
+    }
+
+    field "AMOUNT.DEBITED" {
+        label {
+            en = "Debit Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 22
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.DEBITED"
+        conversion: extract from 4 to 19
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit Account"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "CREDIT.CCY" {
+        label {
+            en = "Credit Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.CURRENCY"
+    }
+
+    field "AMOUNT.CREDITED" {
+        label {
+            en = "Credit Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 22
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.CREDITED"
+        conversion: extract from 4 to 19
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Transactions\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "FUNDS.TRANSFER,DRAFT.LCY"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        screen: "FUNDS.TRANSFER,DRAFT.LCY"
+    }
+
+}

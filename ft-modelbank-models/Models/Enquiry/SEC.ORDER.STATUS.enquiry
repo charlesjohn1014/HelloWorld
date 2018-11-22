@@ -1,0 +1,262 @@
+Enquiry "SEC.ORDER.STATUS" for "name:/SC_ModelBank:NOFILE.SEC.ORDER.STATUS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Order Status"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RET.VALUE" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "ORDER.NUMBER" {
+            label {
+                en = "Order No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUST.NUMBER" {
+            label {
+                en = "Client "
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SECURITY.NO" {
+            label {
+                en = "Security"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Status of Orders placed in the last 7 days\""
+    }
+
+    field "TRANS.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ORDER.TYPE" {
+        label {
+            en = "Order Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Order Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "CUST.NO" {
+        label {
+            en = "Client "
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Client "
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CUST.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ORDER.NOMINAL" {
+        label {
+            en = "Order Nominal"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "NOMINAL.FILLED" {
+        label {
+            en = "Nominal Filled"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "REF.NO" {
+        label {
+            en = "Reference No"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "ORDER.STATUS" {
+        label {
+            en = "Order Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "TRADED" {
+        comma-separator: false
+        operation: constant "\"TRADED\""
+    }
+
+    field "TRANS" {
+        comma-separator: false
+        operation: constant "\"TRANSMITTED\""
+    }
+
+    field "TRADE.APPLN" {
+        comma-separator: false
+        operation: constant "\"SEC.TRADE,INPUT\""
+    }
+
+    field "EXE.APPLN" {
+        comma-separator: false
+        operation: constant "\"SC.EXE.SEC.ORDERS,EXECUTE\""
+    }
+
+    field "ORDER.APPLN" {
+        comma-separator: false
+        operation: constant "\"SEC.OPEN.ORDER,INPUT\""
+    }
+
+    field "TRADE.DRILL" {
+        comma-separator: false
+        operation: if "ORDER.STATUS" Equals "TRADED" process "TRADE.APPLN" "TRANS.DRILL"
+    }
+
+    field "TRANS.DRILL" {
+        comma-separator: false
+        operation: if "ORDER.STATUS" Equals "TRANS" process "EXE.APPLN" "ORDER.APPLN"
+    }
+
+    field "NO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No Order\'s Found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "REF.NO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "REF.NO"
+        }
+
+        from-field: "TRADE.DRILL"
+    }
+
+}

@@ -1,0 +1,249 @@
+Enquiry "AA.DETAILS.SIM.COMPARE.HEADING" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Basic Arrangement Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.DETAILS"
+    }
+
+    field "L.ARRANGEMENT" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: constant "\"Arrangement\""
+    }
+
+    field "ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "FILE.VERSION" {
+        comma-separator: false
+        operation: application-field-name "!FILE.VERSION"
+    }
+
+    field "ARR.STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.STATUS"
+    }
+
+    field "ARRANGEMENT.ID" {
+        display-type: "CLASS-ENQ.H.ID"
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARR.ID"
+    }
+
+    field "LINKED.APPL.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: value 1
+    }
+
+    field "L.ACCOUNT" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        comma-separator: false
+        operation: if "LINKED.APPL.ID" NotEquals "\"\"" process "\"Account\"" "\"\""
+    }
+
+    field "ACCOUNT.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "LINKED.APPL.ID"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "C.DASH" {
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "ACCOUNT.CCY" {
+        comma-separator: false
+        operation: calc "ACCOUNT.ID":"C.DASH":"CURRENCY"
+    }
+
+    field "D.ACCOUNT.CCY" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        operation: if "LINKED.APPL.ID" NotEquals "\"\"" process "ACCOUNT.CCY" "\"\""
+    }
+
+    field "L.ARR.ID" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 230
+        operation: calc "ARRANGEMENT.ID":"C.DASH":"SP":"ACCOUNT.CCY"
+    }
+
+    field "L.CUSTOMER" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        operation: constant "\"Customer\""
+    }
+
+    field "CUSTOMER" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 160
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "L.PRODUCT" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        operation: constant "\"Product\""
+    }
+
+    field "PRODUCT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.PRODUCT"
+    }
+
+    field "D.PRODUCT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+            line: + 1
+        }
+
+        column-width: 192
+        processing-mode: Single
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "L.START.DATE" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 1
+        }
+
+        operation: constant "\"Compared by\""
+    }
+
+    field "USER" {
+        comma-separator: false
+        operation: user
+    }
+
+    field "L.USER" {
+        comma-separator: false
+        operation: field-extract "USER"
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "ON" {
+        comma-separator: false
+        operation: constant "\"on\""
+    }
+
+    field "L.TIME" {
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.MB.TIME"
+    }
+
+    field "DATE.TIME" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 75
+            line: + 1
+        }
+
+        column-width: 284
+        operation: calc "L.USER":"SP":"ON":"SP":"L.TIME"
+    }
+
+    toolbar: "ENQUIRY.PRINT"
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "SINGLE.BACKGROUND.COLOUR"
+}

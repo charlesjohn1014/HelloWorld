@@ -1,0 +1,518 @@
+Enquiry "CUST.RELATIONSHIP.BY.GROUP.MB" for "name:/ST_Customer:CUSTOMER.RELATIONSHIP#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Customer Relationship by Group"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 19 fixed-selection "GROUP.ID" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "ORIG.RELATION" Null
+    fixed-sort: "REL.RELATION" Null
+    custom-selection {
+
+        field "GROUP.ID" {
+            label {
+                en = "Cust Rel Group ID"
+            }
+
+        }
+
+        AND
+
+        field "GROUP.NAME" {
+            label {
+                en = "Cust Rel Group Name"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Customer Relationship by group\""
+    }
+
+    field "CUST.RELATION.ID" {
+        label {
+            en = "Cust Relation Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUST.RELATION.ID"
+    }
+
+    field "GROUP.ID" {
+        label {
+            en = "Group Id"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 38
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GROUP.ID"
+    }
+
+    field "GROUP.NAME" {
+        label {
+            en = "Group Name"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GROUP.NAME"
+    }
+
+    field "REFERENCE.NO" {
+        label {
+            en = "Reference No"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 97
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "REFERENCE.NO"
+    }
+
+    field "ORIG.RELATION" {
+        label {
+            en = "Orig Relation"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 134
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ORIG.RELATION"
+    }
+
+    field "ORIG.PARTY" {
+        label {
+            en = "Orig Party"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 148
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ORIG.PARTY"
+    }
+
+    field "ORIG.PARTY.ID" {
+        label {
+            en = "Orig Party Id"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 185
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ORIG.PARTY.ID"
+    }
+
+    field "ORIG.REL" {
+        label {
+            en = "Orig Rel"
+        }
+
+        comma-separator: false
+        position {
+            column: 186
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ORIG.REL"
+        conversion: getFrom "RELATION" "DESCRIPTION" false
+    }
+
+    field "ORIG.ROLE" {
+        label {
+            en = "Orig Role"
+        }
+
+        comma-separator: false
+        position {
+            column: 187
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ORIG.ROLE"
+        conversion: getFrom "EB.ROLE" "DESCRIPTION" false
+    }
+
+    field "ORIG.EFF.DATE" {
+        label {
+            en = "Orig Eff Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 188
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ORIG.EFF.DATE"
+    }
+
+    field "ORIG.RES.BRANCH" {
+        label {
+            en = "Orig Res Branch"
+        }
+
+        comma-separator: false
+        position {
+            column: 189
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ORIG.RES.BRANCH"
+    }
+
+    field "ORIG.RES.DEPT" {
+        label {
+            en = "Orig Res Dept"
+        }
+
+        comma-separator: false
+        position {
+            column: 190
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ORIG.RES.DEPT"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "CUSTOMER" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"CUSTOMER\""
+    }
+
+    field "STATUS.1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ORIG.PARTY.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "STATUS.2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ORIG.PARTY.ID"
+        conversion: getFrom "PERSON.ENTITY" "NAME" false
+    }
+
+    field "CONDITION.1" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 191
+        }
+
+        processing-mode: Multi
+        operation: if "ORIG.PARTY" Equals "CUSTOMER" process "STATUS.1" "STATUS.2"
+    }
+
+    field "REL.RELATION" {
+        label {
+            en = "Rel Relation"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 197
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REL.RELATION"
+    }
+
+    field "REL.PARTY" {
+        label {
+            en = "Rel Party"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 211
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REL.PARTY"
+    }
+
+    field "REL.PARTY.ID" {
+        label {
+            en = "Rel Party Id"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 248
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REL.PARTY.ID"
+    }
+
+    field "STATUS.3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "REL.PARTY.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "STATUS.4" {
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "REL.PARTY.ID"
+        conversion: getFrom "PERSON.ENTITY" "NAME" false
+    }
+
+    field "CONDITION.2" {
+        label {
+            en = "Rel Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 255
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: if "REL.PARTY" Equals "CUSTOMER" process "STATUS.3" "STATUS.4"
+    }
+
+    field "RELATION" {
+        label {
+            en = "Relation"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 260
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "RELATION"
+        conversion: getFrom "RELATION" "DESCRIPTION" false
+    }
+
+    field "ROLE" {
+        label {
+            en = "Role"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 262
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ROLE"
+        conversion: getFrom "EB.ROLE" "DESCRIPTION" false
+    }
+
+    field "REL.EFF.DATE" {
+        label {
+            en = "Rel Eff Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 284
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "REL.EFF.DATE"
+    }
+
+    field "RES.BRANCH" {
+        label {
+            en = "Res Branch"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 297
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "RES.BRANCH"
+    }
+
+    field "RES.DEPT" {
+        label {
+            en = "Res Dept"
+        }
+
+        comma-separator: false
+        position {
+            column: 310
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "RES.DEPT"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "OWNING.PER" {
+        label {
+            en = "Owning Per"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 312
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "OWNING.PER"
+    }
+
+    field "ORIG.OWNING.PER" {
+        label {
+            en = "Orig Owning Per"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 313
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ORIG.OWNING.PER"
+    }
+
+    field "REL.ID" {
+        comma-separator: false
+        operation: field-extract "CUST.RELATION.ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Customer Relationship records to Display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Customer Relation details"
+        }
+
+        label-field: "CUST.RELATION.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CUST.RELATION.ID"
+        }
+
+        screen: "CUSTOMER.RELATIONSHIP,MB.INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "CUST.RELATION.ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "REL.ID"
+        }
+
+        screen: "CUSTOMER.RELATIONSHIP,MB.INPUT"
+    }
+
+}

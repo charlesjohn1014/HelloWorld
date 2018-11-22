@@ -1,0 +1,264 @@
+Enquiry "CAMPAIGN.CUSTOMER.REPORT" for "name:/CR_Operational:CR.OPPORTUNITY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Campaign Customer Report"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 5
+    end-line: 99 fixed-selection "AVAIL.COMPANY" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "CAMPAIGN.ID" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "OPPOR.STATUS" {
+        NotEquals "\"SUPERCEDED\""
+    }
+
+    fixed-sort: "END.DATE" Descending
+    custom-selection {
+
+        field "CAMPAIGN.ID" {
+            mandatory: true
+            label {
+                en = "Campaign"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "CAMPAIGN.NAME" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Campaign Name: \""
+    }
+
+    field "CAMPAIGN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CAMPAIGN.ID"
+    }
+
+    field "CAMPAIGN.NAME.02" {
+        label {
+            en = "Campaign"
+        }
+
+        length: 90
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "CAMPAIGN"
+        conversion: getFrom "CR.CAMPAIGN.GENERATOR" "DESCRIPTION" false
+    }
+
+    field "START2" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Start Date: \""
+    }
+
+    field "START1" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: field-extract "CAMPAIGN"
+        conversion: getFrom "CR.CAMPAIGN.GENERATOR" "CAMP.START.DATE" false
+    }
+
+    field "END2" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: constant "\"End Date: \""
+    }
+
+    field "END1" {
+        label {
+            en = "End Date"
+        }
+
+        format: Date
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        operation: field-extract "CAMPAIGN"
+        conversion: getFrom "CR.CAMPAIGN.GENERATOR" "CAMP.END.DATE" false
+    }
+
+    field "BRANCH" {
+        label {
+            en = "Branch"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Branch: \""
+    }
+
+    field "AVAIL.COMPANY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AVAIL.COMPANY"
+    }
+
+    field "D.BRANCH.NAME" {
+        label {
+            en = "Branch"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 4
+        }
+
+        operation: field-extract "AVAIL.COMPANY"
+        conversion: getFrom "COMPANY" "COMPANY.NAME" false
+    }
+
+    field "CUSTOMER" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CR.OPPOR.ID" {
+        label {
+            en = "Opportunity ID"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CR.OPPOR.ID"
+    }
+
+    field "OPPOR.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPPOR.STATUS"
+        conversion: getFrom "CR.OPPORTUNITY.STATUS" "DESC" false
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Campaigns Generated for this Branch\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View this opportunity"
+        }
+
+        label-field: "OPPOR.STATUS"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CR.OPPOR.ID"
+        }
+
+        screen: "CR.OPPORTUNITY,CR"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS" ; "SHOWTREE"
+}

@@ -1,0 +1,545 @@
+Enquiry "WR.VALUATION.TOTALS" for "name:/WR_Foundation:WR.ENQUIRY.WORKFILE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "ValuationTotals"
+    }
+
+    description {
+        en = "ValuationTotals"
+    }
+
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "WR.BUILD.VAL.TOTALS"
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            mandatory: true
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "EXTRACT.DATE" {
+            label {
+                en = "Extract Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "EXTRACT.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        operation: selection "EXTRACT.DATE"
+        conversion: call
+        jBC: "@ E.WR.LBD.DATE"
+    }
+
+    field "START.MONTH" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "EXTRACT.DATE"
+        conversion: call
+        jBC: "@ E.WR.FBD.DATE"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "ClientID"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "F.001"
+        conversion: extract from 1 to 1 delimited by "^"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "ClientName"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "F.001"
+        conversion: extract from 2 to 1 delimited by "^"
+    }
+
+    field "GR.INCOME" {
+        label {
+            en = "GrossIncome"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "GR.YIELD" {
+        label {
+            en = "GrossYield"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "END.DATE" {
+        label {
+            en = "PeriodEndDate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-extract "EXTRACT.DATE"
+    }
+
+    field "PERIOD.START" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "END.DATE"
+        conversion: extract from 1 to 6
+    }
+
+    field "START.DATE" {
+        label {
+            en = "PeriodStartDate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: field-extract "PERIOD.START"
+        conversion: call
+        jBC: "@ E.WR.START.DATE"
+    }
+
+    field "PORTFOLIO.ID" {
+        label {
+            en = "PortfolioID"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "F.002"
+        conversion: extract from 1 to 1 delimited by "^"
+    }
+
+    field "POS.DATE" {
+        label {
+            en = "PositionDate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: field-extract "EXTRACT.DATE"
+    }
+
+    field "TOT.GL.REF.CCY" {
+        label {
+            en = "TotalGainLossValue"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Single
+        operation: application-field-name "F.024"
+    }
+
+    field "VAL.AMT.REF.CCY" {
+        label {
+            en = "TotalPortfolioValue"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: application-field-name "F.020"
+    }
+
+    field "TOT.COST.REF.CCY" {
+        label {
+            en = "ValuationBookcost"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: application-field-name "F.025"
+    }
+
+    field "GroupId" {
+        label {
+            en = "GroupId"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        processing-mode: Single
+        operation: application-field-name "F.087"
+    }
+
+    field "GroupName" {
+        label {
+            en = "GroupName"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        operation: field-extract "GroupId"
+        conversion: getFrom "AM.GROUP.PORT" "MNEMONIC" false
+    }
+
+    field "GRPCCY" {
+        label {
+            en = "GroupCCy"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        processing-mode: Single
+        operation: field-extract "GroupId"
+        conversion: getFrom "AM.GROUP.PORT" "VAL.CURRENCY" false
+    }
+
+    field "BKDOWN.ID" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ WR.GET.BKDOWN.VALUE"
+    }
+
+    field "BKDOWN.DES" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "BKDOWN.ID"
+        conversion: call
+        jBC: "@ WR.GET.BKDOWN.VALUE"
+    }
+
+    field "BreakdownId1" {
+        label {
+            en = "BreakdownId1"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BreakdownDes1" {
+        label {
+            en = "BreakdownDes1"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 160
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.DES"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BreakdownValue1" {
+        label {
+            en = "BreakdownValue1"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 170
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownId1"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownValueDes1" {
+        label {
+            en = "BreakdownValueDes1"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 180
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownDes1"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownId2" {
+        label {
+            en = "BreakdownId2"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 190
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BreakdownDes2" {
+        label {
+            en = "BreakdownDes2"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 200
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.DES"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BreakdownValue2" {
+        label {
+            en = "BreakdownValue2"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 210
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownId2"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownValueDes2" {
+        label {
+            en = "BreakdownValueDes2"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 220
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownDes2"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownId3" {
+        label {
+            en = "BreakdownId3"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 230
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "BreakdownDes3" {
+        label {
+            en = "BreakdownDes3"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 240
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.DES"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "BreakdownValue3" {
+        label {
+            en = "BreakdownValue3"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 250
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownId3"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownValueDes3" {
+        label {
+            en = "BreakdownValueDes3"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 260
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownDes3"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "VALUATION.CCY" {
+        label {
+            en = "ValuationCurrency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 270
+        }
+
+        processing-mode: Single
+        operation: field-extract "PORTFOLIO.ID"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    attributes: "ALLDATA"
+}

@@ -1,0 +1,539 @@
+Enquiry "TC.ACCOUNT" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Balances for TCIB Users"
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "CURRENCY" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "CATEGORY.ID" {
+        label {
+            en = "Category Id"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+    }
+
+    field "ACCOUNT.TYPE" {
+        label {
+            en = "Account Type"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "CATEGORY.ID"
+        conversion: getFrom "CATEGORY" "SHORT.NAME" false
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Account Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.TITLE.1"
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: i-desc "ACCOUNT.NO"
+    }
+
+    field "NICK.NAME" {
+        label {
+            en = "Nick Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.TITLE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "LOCKED.AMOUNT" {
+        label {
+            en = "Locked Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOCKED.AMOUNT"
+        conversion: call
+        jBC: "@ E.TOTAL.LOCK.AMT"
+    }
+
+    field "WORKING.BALANCE" {
+        label {
+            en = "Working Balance"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "ONLINE.ACTUAL.BAL" {
+        label {
+            en = "Online Actual Bal"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+    }
+
+    field "AVAIL.BALANCE" {
+        label {
+            en = "Available Balance"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: calc "WORKING.BALANCE" - "LOCKED.AMOUNT"
+    }
+
+    field "CURRENT.DATE" {
+        label {
+            en = "Current Date"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: today
+    }
+
+    field "PAST.DATE" {
+        label {
+            en = "Past Date"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: last-working-day
+    }
+
+    field "COMPANY" {
+        label {
+            en = "Company"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CO.CODE"
+    }
+
+    field "SORTCODE" {
+        label {
+            en = "Sort Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "COMPANY"
+        conversion: getFrom "COMPANY" "IBAN.BRANCH.ID" false
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer No"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: i-desc "CUSTOMER.NO"
+    }
+
+    field "ARRANGEMENT.ID" {
+        label {
+            en = "Arrangement Id"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "PRODUCT.GROUP" {
+        label {
+            en = "Product Group"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.GROUP" false
+    }
+
+    field "PRODUCT.LINE" {
+        label {
+            en = "Product Line"
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: field-extract "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "PRODUCT.NAME" {
+        label {
+            en = "Product Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: field-extract "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+    }
+
+    field "AVAIL.LIMIT" {
+        label {
+            en = "Avail Limit"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.AVAIL.LMT.UPD"
+    }
+
+    field "BAL.WITH.LIMIT" {
+        label {
+            en = "Bal With Limit"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "AVAIL.BALANCE" + "AVAIL.LIMIT" - "WORKING.BALANCE"
+    }
+
+    field "AVAIL.BAL.WITH.LIMIT" {
+        label {
+            en = "Avail Bal With Limit"
+        }
+
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: if "AVAIL.BALANCE" Greater "0" process "BAL.WITH.LIMIT" "AVAIL.LIMIT"
+    }
+
+    field "IBAN.ID" {
+        label {
+            en = "Iban Id"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.TC.CONV.IBAN.ID"
+    }
+
+    field "BRANCH" {
+        label {
+            en = "Branch"
+        }
+
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: field-extract "COMPANY"
+        conversion: getFrom "COMPANY" "COMPANY.NAME" false
+    }
+
+    field "ACCOUNT.ID" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ACCOUNT.PREFERENCES" {
+        label {
+            en = "Account Preferences"
+        }
+
+        comma-separator: false
+        operation: calc "ACCOUNT.ID":"\"-\"":"PRODUCT.LINE"
+        conversion: call
+        jBC: "@ E.TC.CONV.GET.VARIABLES"
+    }
+
+    field "ACCT.TRANS.RIGHTS" {
+        label {
+            en = "Acct Trans Rights"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.PREFERENCES"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "PORTFOLIO.NO" {
+        label {
+            en = "Portfolio No"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO.NO"
+    }
+
+    field "OPENING.DATE" {
+        label {
+            en = "Opening Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPENING.DATE"
+    }
+
+    field "PRODUCT.DESC" {
+        label {
+            en = "Product description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        operation: field-extract "PRODUCT.NAME"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "EXT.PRF.ACCOUNT" {
+        label {
+            en = "Ext Prf Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 24
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.PREFERENCES"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "EXT.PRF.ACCOUNT.LABEL" {
+        label {
+            en = "Ext Prf Account Label"
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.PREFERENCES"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "EXT.PRF.ACCOUNT.POS" {
+        label {
+            en = "Ext Prf Account Pos"
+        }
+
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.PREFERENCES"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ACCT.SEE.RIGHTS" {
+        label {
+            en = "Acct See Rights"
+        }
+
+        comma-separator: false
+        position {
+            column: 27
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.PREFERENCES"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+}

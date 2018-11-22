@@ -1,0 +1,268 @@
+Enquiry "DRAWINGS.EXMXPDISC" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Discounting of Mixed payment (Export)"
+    }
+
+    description {
+        en = "Discounting of Mixed payment"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DRAWING.TYPE" {
+        Equals "MX"
+    }
+
+    fixed-selection "DISCOUNT.AMT" {
+        Equals "\"\""
+    }
+
+    fixed-selection "TRANS.TYPE" {
+        Equals "EXPORTS"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "DRAW.CURRENCY" {
+            label {
+                en = "Draw Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DOCUMENT.AMOUNT" {
+            label {
+                en = "Draw Amount"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Negotiate/Discount Mixed payment (Export)\""
+    }
+
+    field "LC.CREDIT.TYPE" {
+        label {
+            en = "LC Types"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: getFrom "LC.TYPES" "DESCRIPTION" false
+    }
+
+    field "CUSTOMER.LINK" {
+        label {
+            en = "Issuing Bank"
+        }
+
+        length: 40
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.LINK"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "SETTLEMENT.TERMS" {
+        label {
+            en = "Settlement Terms"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.TERMS"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "PAYMENT.TYPE" {
+        label {
+            en = "Draw Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.TYPE"
+    }
+
+    field "PAY.TYPE" {
+        label {
+            en = "Draw Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: field-extract "PAYMENT.TYPE"
+        conversion: replace {
+            oldData: "AC"
+            newData: "Acceptance"
+        }
+
+        conversion: replace {
+            oldData: "DP"
+            newData: "Deferred"
+        }
+
+        conversion: replace {
+            oldData: "SP"
+            newData: "Sight"
+        }
+
+    }
+
+    field "INST.PAY.AMT" {
+        label {
+            en = "Payment Portion"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INST.PAY.AMT"
+    }
+
+    field "ACPT.TM.BAND" {
+        label {
+            en = "Acpt Tm Band"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACPT.TM.BAND"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records Pending for Discounting\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DRAWINGS,EXMXPDISC"
+    }
+
+}

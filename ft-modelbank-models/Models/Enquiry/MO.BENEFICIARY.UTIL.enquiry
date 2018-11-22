@@ -1,0 +1,108 @@
+Enquiry "MO.BENEFICIARY.UTIL" for "name:/ST_Payments:BENEFICIARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List Of Beneficiaries"
+    }
+
+    zero-records-display: true
+    show-all-books: true
+    start-line: 4
+    end-line: 25 fixed-selection "CATEGORY" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NICKNAME" {
+        label {
+            en = "Beneficiary Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "NICKNAME"
+    }
+
+    field "@ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"You have not setup any beneficiaries\""
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Category"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+    }
+
+    field "HINT.TEXT" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "HINT.TEXT"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Create new utility payee"
+        }
+
+        label-field: "NICKNAME"
+        criteria: "BENEFICIARY" > "@ID"
+        criteria: "BENEFICIARY" > "HINT.TEXT" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "BENEFICIARY,MO.UTIL"
+    }
+
+    attributes: "NO.BREADCRUMBS"
+}

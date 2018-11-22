@@ -1,0 +1,653 @@
+Enquiry "SEC.INV.POSITIONS" for "name:/SC_SctDealerBookPosition:SC.TRADING.POSITION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Propriety Positions"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 19
+    fixed-sort: "DEALER.BOOK" Null
+    fixed-sort: "ASSET.TYPE" Null
+    fixed-sort: "SUB.ASSET.TYPE" Null
+    fixed-sort: "SECURITY.CODE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        AND
+
+        field "DEALER.BOOK" {
+            label {
+                en = "Book"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SECURITY.CODE" {
+            label {
+                en = "Security"
+            }
+
+        }
+
+        AND
+
+        field "CURRENT.POSITION" {
+            label {
+                en = "Position"
+            }
+
+        }
+
+        None
+    }
+
+    field "PAGE" {
+        comma-separator: false
+        operation: break-line 0
+    }
+
+    field "KEY" {
+        length: 25
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEAD1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Dealer Book Positions\""
+    }
+
+    field "PORT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: constant "\"Portfolio\""
+    }
+
+    field "DEAL.BK" {
+        label {
+            en = "Portfolio"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 14
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: selection "DEALER.BOOK"
+    }
+
+    field "NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 2
+        }
+
+        operation: field-extract "DEAL.BK"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "H.RVAL.TYPE" {
+        comma-separator: false
+        operation: constant "\"LOSS\""
+    }
+
+    field "RVAL.TYPE" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEALER.BOOK"
+        conversion: getFrom "SEC.ACC.MASTER" "POST.UNREAL.PL" false
+    }
+
+    field "ASSET.TYPE" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: i-desc "ASSET.TYPE"
+        conversion: getFrom "ASSET.TYPE" "ASSET.DESC" false
+    }
+
+    field "DEALER.BOOK" {
+        label {
+            en = "Book"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEALER.BOOK"
+    }
+
+    field "BOOK.NAME" {
+        label {
+            en = "Descr"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        hidden: true
+        operation: field-extract "DEALER.BOOK"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "SUB.ASSET.TYPE" {
+        label {
+            en = "Sub Asset"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: i-desc "SUB.ASSET.TYPE"
+        conversion: getFrom "SUB.ASSET.TYPE" "DESCRIPTION" false
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CODE"
+    }
+
+    field "SEC.DES" {
+        label {
+            en = "Desc"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        hidden: true
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" true
+    }
+
+    field "CCY" {
+        label {
+            en = "Curr"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CCY"
+    }
+
+    field "INT.RATE" {
+        label {
+            en = "Int Rate"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: true
+        decimals: 3
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "INTEREST.RATE" false
+    }
+
+    field "AVG.LIFE.MAT.DATE" {
+        label {
+            en = "Avg Life Mat Date"
+        }
+
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "AVG.LIFE.MAT.DATE" false
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "MATURITY.DATE" false
+    }
+
+    field "CUR.POSN" {
+        label {
+            en = "Position"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.POSITION"
+    }
+
+    field "FACTOR" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "FACTOR" false
+    }
+
+    field "PAR.VALUE.1" {
+        format: Currency "CCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        operation: calc "CUR.POSN" * "FACTOR"
+    }
+
+    field "PV1" {
+        label {
+            en = "Par Value"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 42
+        }
+
+        hidden: true
+        operation: if "FACTOR" Greater "0" process "PAR.VALUE.1" "CUR.POSN"
+    }
+
+    field "CUR.COST.POSITION" {
+        label {
+            en = "Book Cost"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUR.COST.POSITION"
+    }
+
+    field "BOS" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "BOND.OR.SHARE" false
+    }
+
+    field "PRICE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    field "MV.CALC" {
+        comma-separator: false
+        operation: calc "CUR.POSN" * "PRICE"
+    }
+
+    field "MV2" {
+        comma-separator: false
+        operation: calc "MV.CALC" * "FACTOR"
+    }
+
+    field "MV.BOND" {
+        comma-separator: false
+        operation: calc "MV2" / "100"
+    }
+
+    field "UNREAL.PL" {
+        label {
+            en = "Unrealized P/L"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.SC.REVAL.PL"
+    }
+
+    field "CUR.REALIZED.PL" {
+        label {
+            en = "Realised PL"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUR.REALIZED.PL"
+    }
+
+    field "CPN.ACCR.POSTED" {
+        label {
+            en = "Accrued Int"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 85
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CPN.ACCR.POSTED"
+    }
+
+    field "DISCOUNT.ACCRUED" {
+        label {
+            en = "Accrued Disc"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DISCOUNT.ACCRUED"
+    }
+
+    field "DATE.LAST.TRADED" {
+        label {
+            en = "Last Trade"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 115
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.LAST.TRADED"
+    }
+
+    field "YIELD.TO.MAT" {
+        label {
+            en = "Yield to Mat"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 3
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.SUPP" "YIELD.TO.MAT" false
+    }
+
+    field "CURRENT.YIELD" {
+        label {
+            en = "Current Yield"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 3
+        position {
+            column: 145
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.SUPP" "CURRENT.YIELD" false
+    }
+
+    field "DURATION" {
+        label {
+            en = "Duration"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 3
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.SUPP" "DURATION" false
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 155
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "CUST" {
+        comma-separator: false
+        operation: field-extract "DEALER.BOOK"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "SEC.NO" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "SC.TRADING.POSITION"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Txns"
+        }
+
+        label-field: "SEC.NO"
+        criteria: "SECURITY.ACCOUNT" Equals "DEALER.BOOK"
+        criteria: "SECURITY.NUMBER" Equals "SEC.NO"
+        enquiry: "SC.POS.DET"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Buy More"
+        }
+
+        label-field: "@ID"
+        criteria: "SC.TRADING.POSITION" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SEC.TRADE,BUY.OWN.MORE"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Outstanding Settlements"
+        }
+
+        label-field: "@ID"
+        criteria: "SECURITY.NUMBER" Equals "SEC.NO"
+        criteria: "CU.PORTFOLIO" Equals "DEALER.BOOK"
+        enquiry: "SC.SETT.FRONT"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Sell this Security"
+        }
+
+        label-field: "@ID"
+        criteria: "SC.TRADING.POSITION" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SEC.TRADE,SELL.OWN.SEC"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Accounting Rules"
+        }
+
+        label-field: "SEC.NO" parameters {
+            function:  Input
+            field: "DEALER.BOOK"
+        }
+
+        screen: "SEC.ACC.MASTER,OWN.INP"
+    }
+
+}

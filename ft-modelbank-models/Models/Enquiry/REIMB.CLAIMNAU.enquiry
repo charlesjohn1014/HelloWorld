@@ -1,0 +1,328 @@
+Enquiry "REIMB.CLAIMNAU" for "name:/LC_Contract:DRAWINGS$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised Claims"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.NAU.NON.CIB.DR"
+    }
+
+    fixed-selection "DRAWING.TYPE" {
+        Equals "SP", "CO", "DC"
+    }
+
+    fixed-selection "LC.CREDIT.TYPE" {
+        Equals "REIM"
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "INAU", "RNAU"
+    }
+
+    fixed-sort: "DRAWING.TYPE" Null
+    fixed-sort: "LC.CREDIT.TYPE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "DRAW.CURRENCY" {
+            label {
+                en = "Draw Currency"
+            }
+
+        }
+
+        AND
+
+        field "DOCUMENT.AMOUNT" {
+            label {
+                en = "Document Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised Reimbursment Claims\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Tranaction Ref"
+        }
+
+        length: 17
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CO" {
+        comma-separator: false
+        operation: constant "\"Register Claim\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\"Pay Claim\""
+    }
+
+    field "DRAWING.TYPE" {
+        label {
+            en = "Draw Type"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "CLAIM TYPE" {
+        label {
+            en = "Pay/Register"
+        }
+
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        operation: if "DRAWING.TYPE" Equals "\"CO\"" process "CO" "SP"
+    }
+
+    field "LC.CREDIT.TYPE" {
+        label {
+            en = "Charge Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: extract from 1 to 1
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "VAL" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task is Pending\""
+    }
+
+    field "TXN.DRILLDOWN" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "DRAWING.TYPE"
+        conversion: replace {
+            oldData: "CO"
+            newData: "REIMB.CLAIMREGISTER"
+        }
+
+        conversion: replace {
+            oldData: "SP"
+            newData: "REIMB.CLAIM"
+        }
+
+        conversion: replace {
+            oldData: "DC"
+            newData: "REIMB.CLAIMREGISTER"
+        }
+
+    }
+
+    field "CURR.NO" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURR.NO"
+    }
+
+    field "INW.MSG.TYPE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INWARD.MSG.TYPE"
+    }
+
+    field "MT742" {
+        comma-separator: false
+        operation: constant "\"MT742\""
+    }
+
+    field "742.VERSION" {
+        comma-separator: false
+        operation: constant "\"MT742.INWARD\""
+    }
+
+    field "CHK.CURR.NO" {
+        comma-separator: false
+        operation: if "CURR.NO" LessOrEquals "1" process "742.VERSION" "TXN.DRILLDOWN"
+    }
+
+    field "VERSION.DECIDE" {
+        comma-separator: false
+        operation: if "INW.MSG.TYPE" Equals "MT742" process "CHK.CURR.NO" "TXN.DRILLDOWN"
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS,\""
+    }
+
+    field "VERSION.DRILL" {
+        comma-separator: false
+        operation: calc "APPL":"VERSION.DECIDE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        from-field: "VERSION.DRILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "VERSION.DRILL"
+    }
+
+}

@@ -1,0 +1,318 @@
+Enquiry "JOURNAL.CHECK.NON.CON" for "name:/RE_ReportGeneration:EB.JOURNAL.SUMMARY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "JOURNAL.CHECK"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 12
+    build-routines {
+        jBC: "E.BLD.COMP.ID"
+    }
+
+    custom-selection {
+
+        field "SYS.DATE" {
+            label {
+                en = "Sys Date"
+            }
+
+        }
+
+        AND
+
+        field "COMP.CODE" {
+            label {
+                en = "Company Code"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Non Contingent \""
+    }
+
+    field "HEADER.2" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 0
+        }
+
+        operation: constant "\"Journal\""
+    }
+
+    field "HEADER.CCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency :\""
+    }
+
+    field "@ID" {
+        length: 23
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "B.ID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "@ID"
+    }
+
+    field "HEADER.COMP" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 45
+            line: 1
+        }
+
+        operation: constant "\"Company :\""
+    }
+
+    field "COMPANY" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 75
+            line: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "CO.MNE" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "COMPANY"
+        conversion: getFrom "COMPANY" "MNEMONIC" false
+    }
+
+    field "HEADER.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Date :\""
+    }
+
+    field "SYS.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Page
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "CCY" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LOCAL.CURRENCY"
+    }
+
+    field "NON.CONT.APP" {
+        label {
+            en = "App"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NON.CONT.APP"
+    }
+
+    field "NC.CREDIT.TOT" {
+        label {
+            en = "Total Credit"
+        }
+
+        format: Currency "CCY" negative-pattern #-
+        length: 24
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NC.CREDIT.TOT"
+    }
+
+    field "NC.DEBIT.TOT" {
+        label {
+            en = "Total Debit"
+        }
+
+        format: Currency "CCY" negative-pattern #-
+        length: 24
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NC.DEBIT.TOT"
+    }
+
+    field "NON.CONT.TOT" {
+        label {
+            en = "Total"
+        }
+
+        format: Currency "CCY" negative-pattern #-
+        length: 24
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NON.CONT.TOT"
+    }
+
+    field "TOT.NARR" {
+        break-condition {
+            field: "B.ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        operation: constant "\"Total\""
+    }
+
+    field "TOT.CR.MVMT" {
+        format: Currency "CCY" negative-pattern #- break-condition {
+            field: "B.ID"
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+            line: + 1
+        }
+
+        operation: total "NC.CREDIT.TOT"
+    }
+
+    field "TOT.DR.MVMT" {
+        format: Currency "CCY" negative-pattern #- break-condition {
+            field: "B.ID"
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 34
+            line: + 1
+        }
+
+        operation: total "NC.DEBIT.TOT"
+    }
+
+    field "NON.CONT.TOT.02" {
+        format: Currency "CCY" negative-pattern #- break-condition {
+            field: "B.ID"
+        }
+
+        length: 24
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: calc "TOT.DR.MVMT" + "TOT.CR.MVMT"
+    }
+
+}

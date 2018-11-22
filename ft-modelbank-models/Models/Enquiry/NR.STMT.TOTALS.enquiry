@@ -1,0 +1,479 @@
+Enquiry "NR.STMT.TOTALS" for "name:/NR_Contract:NR.STATEMENTS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Statement totals"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 16
+    build-routines {
+        jBC: "E.MB.BUILD.NR.ACCT.NO"
+    }
+
+    fixed-selection "ITEMS.GENERATED" {
+        Equals "Y"
+    }
+
+    fixed-selection "@ID" {
+        Matches "...L..."
+    }
+
+    fixed-sort: "@ID" Null
+    fixed-sort: "STMT.OR.LEDGER" Null
+    fixed-sort: "OPEN.BAL.DATE" Null
+    fixed-sort: "STATEMENT.NO" Null
+    custom-selection {
+
+        field "NR.STMT" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.CURRENCY" {
+            label {
+                en = "Ccy"
+            }
+
+        }
+
+        AND
+
+        field "OPEN.BAL.DATE" {
+            label {
+                en = "Open Bal Date"
+            }
+
+        }
+
+        AND
+
+        field "CLOSE.BAL.DATE" {
+            label {
+                en = "Close Bal Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "KEY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 0
+        }
+
+        operation: constant "\"Reconciliation Statements\""
+    }
+
+    field "ACCOUNT.NO" {
+        format: User
+        comma-separator: false
+        operation: i-desc "ACCOUNT.NO"
+    }
+
+    field "STMT.NO" {
+        comma-separator: false
+        operation: field-extract "KEY"
+        conversion: extract from 4 to 0 delimited by "."
+    }
+
+    field "PAGE.NO" {
+        comma-separator: false
+        operation: field-extract "KEY"
+        conversion: extract from 5 to 0 delimited by "."
+    }
+
+    field "STMT.PAGE" {
+        comma-separator: false
+        operation: calc "STMT.NO":"PAGE.NO"
+    }
+
+    field "BR.PAGE" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "STMT.PAGE"
+    }
+
+    field "STMT.TEXT" {
+        comma-separator: false
+        operation: constant "\"Statement\""
+    }
+
+    field "LEDG.TEXT" {
+        comma-separator: false
+        operation: constant "\"Ledger\""
+    }
+
+    field "STMT.OR.LEDGER" {
+        format: User
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: i-desc "STMT.OR.LEDGER"
+    }
+
+    field "S" {
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "ACCOUNT.TEXT" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            field: "BR.PAGE"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        operation: constant "\"Account No.\""
+    }
+
+    field "STMT.TEXT.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "BR.PAGE"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 3
+        }
+
+        operation: constant "\"Statement No :\""
+    }
+
+    field "PAGE.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "BR.PAGE"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 24
+            line: 3
+        }
+
+        operation: constant "\"Page No. :\""
+    }
+
+    field "OPEN.BAL.TEXT" {
+        break-condition {
+            field: "BR.PAGE"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+            line: 5
+        }
+
+        operation: constant "\"Opening Balance\""
+    }
+
+    field "TOTAL.CR.TEXT" {
+        break-condition {
+            field: "BR.PAGE"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+            line: 6
+        }
+
+        operation: constant "\"Total Credit Items\""
+    }
+
+    field "TOTAL.DR.TEXT" {
+        break-condition {
+            field: "BR.PAGE"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+            line: 7
+        }
+
+        operation: constant "\"Total Debit Items\""
+    }
+
+    field "CLOSE.BAL.TEXT" {
+        break-condition {
+            field: "BR.PAGE"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+            line: 8
+        }
+
+        operation: constant "\"Closing Balance\""
+    }
+
+    field "ACC.NO" {
+        label {
+            en = "Account No."
+        }
+
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            field: "BR.PAGE"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 1
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+    }
+
+    field "ACCOUNT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User break-condition {
+            field: "BR.PAGE"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 28
+            line: 1
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "STATEMENT.NO" {
+        label {
+            en = "Statement No :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BR.PAGE"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 3
+        }
+
+        operation: field-extract "STMT.NO"
+    }
+
+    field "PAGE.NUMBER" {
+        label {
+            en = "Page No. :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BR.PAGE"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 3
+        }
+
+        operation: field-extract "PAGE.NO"
+    }
+
+    field "STMT.LEDGER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BR.PAGE"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 3
+        }
+
+        operation: if "STMT.OR.LEDGER" Equals "S" process "STMT.TEXT" "LEDG.TEXT"
+    }
+
+    field "CCY" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.CURRENCY"
+    }
+
+    field "OPEN.DATE" {
+        comma-separator: false
+        operation: application-field-name "OPEN.BAL.DATE"
+    }
+
+    field "OPEN.BALANCE.DATE" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 30
+            line: 5
+        }
+
+        operation: field-extract "OPEN.DATE"
+    }
+
+    field "OPEN.AMOUNT" {
+        comma-separator: false
+        operation: application-field-name "OPEN.BAL.AMOUNT"
+    }
+
+    field "OPEN.BAL.AMOUNT" {
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: 5
+        }
+
+        operation: field-extract "OPEN.AMOUNT"
+    }
+
+    field "CLOSE.DATE" {
+        comma-separator: false
+        operation: application-field-name "CLOSE.BAL.DATE"
+    }
+
+    field "CLOSE.BAL.DATE" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 30
+            line: 8
+        }
+
+        operation: field-extract "CLOSE.DATE"
+    }
+
+    field "CLOSE.AMOUNT" {
+        comma-separator: false
+        operation: application-field-name "CLOSE.BAL.AMOUNT"
+    }
+
+    field "CLOSE.BAL.AMOUNT" {
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: 8
+        }
+
+        operation: field-extract "CLOSE.AMOUNT"
+    }
+
+    field "AMOUNT" {
+        comma-separator: false
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "PROCESSING.CALL" {
+        comma-separator: false
+        operation: field-extract "ACC.NO"
+        conversion: call
+        jBC: "@ E.NR.TOTAL.ITEMS"
+    }
+
+    field "CR.ITEMS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+        conversion: value 3
+    }
+
+    field "DR.ITEMS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+        conversion: value 4
+    }
+
+    field "TOT.CR.ITEMS" {
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: 6
+        }
+
+        processing-mode: Single
+        operation: field-extract "CR.ITEMS"
+    }
+
+    field "TOT.DR.ITEMS" {
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: 7
+        }
+
+        operation: field-extract "DR.ITEMS"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Records Available\""
+    }
+
+}

@@ -1,0 +1,291 @@
+Enquiry "PPT.INSTCANCELREQUESTINWARDVIEW" for "name:/DE_Messaging:EB.QUERIES.ANSWERS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Inst Cancel Request Inward- View"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    full-description {
+        en = "Inst Cancel Request Inward- View"
+    }
+
+    description {
+        en = "Inst Cancel Request Inward- View"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "PP.BUILD.GET.CANCELREQLIST"
+    }
+
+    fixed-selection "DIRECTION" {
+        Equals "\"OUTWARD\""
+    }
+
+    fixed-selection "PAYMENT.METHOD" {
+        Equals "\"INST\"", "\"NRINST\""
+    }
+
+    fixed-selection "APPLICATION.ID" {
+        Equals "\"PP\""
+    }
+
+    fixed-selection "IN.TXN.REFERENCE" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "ORIG.TXN.TYPE" {
+        Equals "\"CT\""
+    }
+
+    custom-selection {
+
+        field "ORIG.MSG.TYPE" {
+            label {
+                en = "OriginalMessageType"
+            }
+
+        }
+
+        AND
+
+        field "REL.REFERENCE" {
+            label {
+                en = "OriginalTrnReference"
+            }
+
+        }
+
+        AND
+
+        field "ORIG.DEBTOR.AGENT.BIC" {
+            label {
+                en = "Orig Debtor BIC"
+            }
+
+        }
+
+        AND
+
+        field "ORIG.INTBK.SET.DTE" {
+            label {
+                en = "SettlementDate"
+            }
+
+        }
+
+        AND
+
+        field "CLEARING.ID" {
+            label {
+                en = "ClearingName"
+            }
+
+        }
+
+        AND
+
+        field "ORIG.TXN.TYPE" {
+            label {
+                en = "TransactionType"
+            }
+
+        }
+
+        None
+    }
+
+    field "ORIG.MSG.TYPE" {
+        label {
+            en = "OriginalMessageType"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORIG.MSG.TYPE"
+    }
+
+    field "REL.REFERENCE" {
+        label {
+            en = "OriginalTransactionReference"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REL.REFERENCE"
+    }
+
+    field "ORIG.DEBTOR.AGENT.BIC" {
+        label {
+            en = "Orig Debtor BIC"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORIG.DEBTOR.AGENT.BIC"
+    }
+
+    field "ORIG.INTBK.SET.DTE" {
+        label {
+            en = "SettlementDate"
+        }
+
+        format: Date
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORIG.INTBK.SET.DTE"
+    }
+
+    field "CLEARING.ID" {
+        label {
+            en = "ClearingName"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CLEARING.ID"
+    }
+
+    field "ORIG.TXN.TYPE" {
+        label {
+            en = "TransactionType"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORIG.TXN.TYPE"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "NOZERORECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Requests Available\""
+    }
+
+    field "VIEW.VERSION" {
+        comma-separator: false
+        operation: constant "\"PP.AUTH.ENTRY,VIEW\""
+    }
+
+    field "GET.FT.NUMBER" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REL.REFERENCE"
+        conversion: call
+        jBC: "@ E.PP.GET.ORG.TRANS.REF"
+    }
+
+    field "Company" {
+        comma-separator: false
+        operation: field-extract "GET.FT.NUMBER"
+        conversion: extract from 1 to 3
+    }
+
+    field "ID" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View EBQA Details"
+        }
+
+        label-field: "ORIG.MSG.TYPE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "EB.QUERIES.ANSWERS,VIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Return Trn"
+        }
+
+        label-field: "ORIG.MSG.TYPE"
+        image: "drill.gif"
+        criteria: "CURRENT.CompanyID" > "Company"
+        criteria: "CURRENT.FTNumber" > "GET.FT.NUMBER"
+        criteria: "CURRENT.View" > "VIEW" parameters {
+            function:  See
+            parameter: "111"
+        }
+
+        from-field: "VIEW.VERSION"
+    }
+
+}

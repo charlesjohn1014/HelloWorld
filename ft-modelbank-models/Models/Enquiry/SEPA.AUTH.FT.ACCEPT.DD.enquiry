@@ -1,0 +1,225 @@
+Enquiry "SEPA.AUTH.FT.ACCEPT.DD" for "name:/FT_Contract:FUNDS.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Authorisation of suspended"
+        }
+
+        column: 1
+        line: 0
+    }
+
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "EP.SEPA.SEL.IN.DB"
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "FNAU", "INAU", "INAO", "FNAO"
+    }
+
+    fixed-selection "SEPA.IN.CLEAR" {
+        NotEquals "\"\""
+    }
+
+    field "TITLE" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 0
+        }
+
+        operation: constant "\"Direct Debits\""
+    }
+
+    field "TODAY.DATE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: today
+        conversion: julian
+        conversion: oconv "D4/E"
+    }
+
+    field "SEPAIN" {
+        comma-separator: false
+        operation: constant "\"SEPAIN\""
+    }
+
+    field "@ID" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "DEBIT.ACCT.NO"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "DEBIT.CCY" {
+        label {
+            en = "Debit currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEBIT.CURRENCY"
+    }
+
+    field "DEBIT.AMOUNT" {
+        label {
+            en = "Debit amount"
+        }
+
+        format: Currency "DEBIT.CCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: getFrom "FUNDS.TRANSFER$NAU" "CREDIT.AMOUNT" false
+    }
+
+    field "DEBIT.CCY.PRINT" {
+        label {
+            en = "Debit CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        operation: field-extract "DEBIT.CCY"
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit Account"
+        }
+
+        length: 13
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 49
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "CREDIT.CCY" {
+        label {
+            en = "Credit currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CREDIT.CURRENCY"
+    }
+
+    field "CREDIT.AMOUNT" {
+        label {
+            en = "Credit Amount"
+        }
+
+        format: Currency "CREDIT.CCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.AMOUNT"
+    }
+
+    field "CREDIT.CCY.PRINT" {
+        label {
+            en = "Credit CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        operation: field-extract "CREDIT.CCY"
+    }
+
+    field "SEPA.IN.CLEAR" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.IN.CLEAR"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise FT"
+        }
+
+        label-field: "@ID"
+        criteria: "EQ" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "FUNDS.TRANSFER,SEPA.INWARD.DD"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View of inward transaction"
+        }
+
+        label-field: "SEPA.IN.CLEAR" parameters {
+            function:  See
+            field: "SEPA.IN.CLEAR"
+        }
+
+        screen: "SEPA.INWARD,VIEW"
+    }
+
+}

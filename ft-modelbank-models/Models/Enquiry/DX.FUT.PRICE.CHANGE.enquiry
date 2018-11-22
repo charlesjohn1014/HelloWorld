@@ -1,0 +1,343 @@
+Enquiry "DX.FUT.PRICE.CHANGE" for "name:/DX_Pricing:DX.MARKET.PRICE#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "DX Price Movements"
+    }
+
+    description {
+        en = "DX Price Movements"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 10
+    build-routines {
+        jBC: "E.MB.DX.BUILD.DATA"
+    }
+
+    fixed-selection "@ID" {
+        Matches "CLOSING..."
+    }
+
+    fixed-selection "QUOTE.PRICE" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Price Key"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"DX Price Movements\""
+    }
+
+    field "ID" {
+        label {
+            en = "Contract ID"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "HYPHEN" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "NAME" {
+        label {
+            en = "Contract Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "/"
+        conversion: getFrom "DX.CONTRACT.MASTER" "SHORT.NAME" false
+    }
+
+    field "DAT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "/"
+    }
+
+    field "CALL.PUT" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 5 to 1 delimited by "/"
+    }
+
+    field "PRICE" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 6 to 1 delimited by "/"
+        conversion: replace {
+            oldData: "^"
+        }
+
+    }
+
+    field "CON.1" {
+        comma-separator: false
+        operation: calc "NAME":"HYPHEN"
+    }
+
+    field "CON.2" {
+        comma-separator: false
+        operation: calc "CON.1":"DAT"
+    }
+
+    field "CON.3" {
+        comma-separator: false
+        operation: calc "CON.2":"HYPHEN"
+    }
+
+    field "CON.4" {
+        comma-separator: false
+        operation: calc "CON.3":"CALL.PUT"
+    }
+
+    field "CON.5" {
+        comma-separator: false
+        operation: calc "CON.4":"HYPHEN"
+    }
+
+    field "CON.6" {
+        label {
+            en = "Contract Name"
+        }
+
+        comma-separator: false
+        operation: calc "CON.5":"PRICE"
+    }
+
+    field "PRICE.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRICE.CCY"
+    }
+
+    field "CURRNO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURR.NO"
+    }
+
+    field "CUR" {
+        comma-separator: false
+        operation: calc "CURRNO" - "1"
+    }
+
+    field "COLON" {
+        comma-separator: false
+        operation: constant "\";\""
+    }
+
+    field "CONCAT1" {
+        comma-separator: false
+        operation: calc "ID":"COLON"
+    }
+
+    field "HIST.ID" {
+        label {
+            en = "Old Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Multi
+        operation: calc "CONCAT1":"CUR"
+        conversion: getFrom "DX.MARKET.PRICE$HIS" "PRICE" false
+    }
+
+    field "QUOTE.PRICE" {
+        label {
+            en = "Current Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Single
+        operation: application-field-name "QUOTE.PRICE"
+    }
+
+    field "RED" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/down.gif\""
+    }
+
+    field "AMBER" {
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/flat.gif\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "GREEN" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/enquiry/up.gif\""
+    }
+
+    field "CHANGE" {
+        comma-separator: false
+        operation: if "QUOTE.PRICE" Greater "HIST.ID" process "GREEN" "RED"
+    }
+
+    field "CHANGE.DISP" {
+        comma-separator: false
+        operation: if "QUOTE.PRICE" Equals "HIST.ID" process "AMBER" "CHANGE"
+    }
+
+    field "TREND" {
+        label {
+            en = "Trend"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: if "LAST.PRICE" Equals "NULL" process "NULL" "CHANGE.DISP"
+    }
+
+    field "ID.DISP" {
+        label {
+            en = "Contract ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: if "HIST.ID" LessOrEquals "0" process "NULL" "ID"
+    }
+
+    field "NAME.DISP" {
+        label {
+            en = "Contract Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: if "HIST.ID" LessOrEquals "0" process "NULL" "CON.6"
+    }
+
+    field "PRCCY.DISP" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: if "HIST.ID" LessOrEquals "0" process "NULL" "PRICE.CCY"
+    }
+
+    field "HISTID.DISP" {
+        label {
+            en = "Old Price"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "HIST.ID" LessOrEquals "0" process "NULL" "HIST.ID"
+    }
+
+    field "QP.DISP" {
+        label {
+            en = "Quote Price"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "HIST.ID" LessOrEquals "0" process "NULL" "QUOTE.PRICE"
+    }
+
+    field "TR.DISP" {
+        label {
+            en = "Trend"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: if "HIST.ID" LessOrEquals "NULL" process "NULL" "TREND"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Graph"
+        }
+
+        label-field: "ID.DISP"
+        image: "graph09.gif"
+        criteria: "PRICE.KEY" Equals "ID"
+        enquiry: "DX.PRICE.LATEST"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

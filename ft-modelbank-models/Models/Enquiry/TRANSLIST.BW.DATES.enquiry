@@ -1,0 +1,346 @@
+Enquiry "TRANSLIST.BW.DATES" for "name:/SC_ModelBank:NOFILE.TRANS.BW.DATES#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Transaction list between Dates"
+    }
+
+    description {
+        en = "Transaction list between Dates"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 99 fixed-selection "POS.BW.DATES" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "SECURITY.NUMBER" {
+            label {
+                en = "Security Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SECURITY.ACCOUNT" {
+            mandatory: true
+            label {
+                en = "Security Account"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DEPOSITORY" {
+            label {
+                en = "Depository"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "FROM.TRADE.DATE" {
+            label {
+                en = "From Trade Date"
+            }
+
+            operands: GreaterOrEquals
+        }
+
+        AND
+
+        field "TO.TRADE.DATE" {
+            label {
+                en = "To Trade Date"
+            }
+
+            operands: LessOrEquals
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Transaction list between Dates\""
+    }
+
+    field "PORTFOLIO.NO" {
+        label {
+            en = "Portfolio No"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CREDIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"CREDIT\""
+    }
+
+    field "MINUS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "PORTFOLIO.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        format: User
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "TRANSACTION.REF" {
+        label {
+            en = "Trans Ref No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Trans Code"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "PRICE" {
+        label {
+            en = "Price"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "TRAN.TYPE" {
+        comma-separator: false
+        operation: field-extract "TRANSACTION.CODE"
+        conversion: call
+        jBC: "@ E.CHECK.TRANS.TYPE"
+    }
+
+    field "N.NOM" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        operation: calc "NOMINAL" * "MINUS"
+    }
+
+    field "NOM" {
+        label {
+            en = "Nominal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 22
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 10
+        }
+
+        operation: if "TRAN.TYPE" Equals "CREDIT" process "NOMINAL" "N.NOM"
+    }
+
+    field "REVERSAL.MARKER" {
+        label {
+            en = "Rev Marker"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "EX" {
+        comma-separator: false
+        operation: field-extract "TRANSACTION.REF"
+        conversion: call
+        jBC: "@ E.SC.POS.DET"
+    }
+
+    field "EXAMPLE" {
+        comma-separator: false
+        operation: constant "\",INPUT\""
+    }
+
+    field "APPLICATION" {
+        comma-separator: false
+        operation: calc "EX":"EXAMPLE"
+    }
+
+    field "REF.ID" {
+        comma-separator: false
+        operation: field-extract "TRANSACTION.REF"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "TRANSACTION.REF"
+        image: "view.gif" parameters {
+            function:  See
+            field: "REF.ID"
+        }
+
+        from-field: "APPLICATION"
+    }
+
+}

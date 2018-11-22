@@ -1,0 +1,273 @@
+Enquiry "CHQ.TXN.DETAILS" for "name:/ST_ChqSubmit:CHEQUE.COLLECTION#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Cheque Transaction Details"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Cheque No."
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Sort Code"
+        }
+
+        column: 20
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Credit A/c No."
+        }
+
+        column: 32
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Susp A/c No."
+        }
+
+        column: 53
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Txn Id."
+        }
+
+        column: 74
+        line: 2
+    }
+
+    description {
+        en = "CHQ.TXN.DETAILS"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+        }
+
+        AND
+
+        field "TXN.ID" {
+        }
+
+        AND
+
+        field "CREDIT.ACC.NO" {
+        }
+
+        AND
+
+        field "SUSP.POSTED.TO" {
+        }
+
+        None
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "FT.LIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"FT\""
+    }
+
+    field "TT.LIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"TT\""
+    }
+
+    field "FT.APP" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER\""
+    }
+
+    field "DC.APP" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"DATA.CAPTURE\""
+    }
+
+    field "TT.APP" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"TELLER\""
+    }
+
+    field "@ID" {
+        length: 36
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CHEQUE.NO" {
+        label {
+            en = "Cheque No."
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CHEQUE.NO"
+    }
+
+    field "BANK.SORT.CODE" {
+        label {
+            en = "Sort Code"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BANK.SORT.CODE"
+    }
+
+    field "CREDIT.ACC.NO" {
+        label {
+            en = "Drawer\'s A/c"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.ACC.NO"
+    }
+
+    field "SUSP.POSTED.TO" {
+        label {
+            en = "Collection Susp."
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SUSP.POSTED.TO"
+    }
+
+    field "TXN.ID" {
+        label {
+            en = "Applic ID"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 74
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TXN.ID"
+    }
+
+    field "TXN.APP" {
+        length: 36
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TXN.ID"
+        conversion: extract from 1 to 2
+    }
+
+    field "DRILL.APP1" {
+        comma-separator: false
+        operation: if "TXN.APP" Equals "TT.LIT" process "TT.APP" "FT.APP"
+    }
+
+    field "DRILL.APP" {
+        comma-separator: false
+        operation: if "DRILL.APP1" Equals "NULL" process "DC.APP" "DRILL.APP1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View the Transaction Details"
+        }
+
+        label-field: "TXN.ID" parameters {
+            function:  See
+            field: "TXN.ID"
+        }
+
+        from-field: "DRILL.APP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Cheque Collection Record"
+        }
+
+        label-field: "CHEQUE.NO" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "CHEQUE.COLLECTION"
+    }
+
+}

@@ -1,0 +1,335 @@
+Enquiry "DX.PRICE.ETD" for "name:/DX_Pricing:DX.MARKET.PRICE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "DX Latest Prices"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.DX.BUILD.DATA"
+    }
+
+    custom-selection {
+
+        field "PRICE.KEY" {
+            label {
+                en = "Price Key"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PRICE.SET" {
+            label {
+                en = "Currnt/Closng/Whatif"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.CODE" {
+            label {
+                en = "Contract Code"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "PRICE.CODE" {
+        label {
+            en = "Price Code"
+        }
+
+        length: 68
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PRICE.KEY"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"ETD Latest Prices\""
+    }
+
+    field "PRICE.SET" {
+        label {
+            en = "Price Set"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PRICE.SET"
+    }
+
+    field "CONTRACT" {
+        label {
+            en = "Contract Code"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 6
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CONTRACT.CODE"
+    }
+
+    field "CONT" {
+        label {
+            en = "Contract"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CODE"
+        conversion: getFrom "DX.CONTRACT.MASTER" "SHORT.NAME" false
+    }
+
+    field "CONTR" {
+        label {
+            en = "Contract Name"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: calc "CONT":"HY":"CONTRACT.CODE":"HY":"MATURITY.DATE"
+    }
+
+    field "CONTR.1" {
+        comma-separator: false
+        operation: calc "CONTR":"HY":"OPTION.TYPE":"HY":"PRICE"
+    }
+
+    field "HY" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "CALC1" {
+        comma-separator: false
+        operation: calc "CONTRACT":"HYP"
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Mat Date"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "VOL" {
+        comma-separator: false
+        operation: calc "CALC1":"MAT.DATE"
+    }
+
+    field "DAY" {
+        label {
+            en = "Day"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "MATURITY.DATE"
+        conversion: extract from 7 to 2
+    }
+
+    field "MONTH" {
+        label {
+            en = "Month"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "MATURITY.DATE"
+        conversion: extract from 5 to 2
+    }
+
+    field "YEAR" {
+        label {
+            en = "Year"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "MATURITY.DATE"
+        conversion: extract from 1 to 4
+    }
+
+    field "TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CODE"
+        conversion: getFrom "DX.CONTRACT.MASTER" "EXCHANGE" false
+    }
+
+    field "EXCHNGE" {
+        label {
+            en = "Exchange"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "TYPE"
+        conversion: getFrom "DX.EXCHANGE.MASTER" "SHORT.NAME" false
+    }
+
+    field "CALL.PUT" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CALL.PUT"
+    }
+
+    field "OPTION.STRIKE" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STRIKE"
+    }
+
+    field "PRICE.CCY" {
+        label {
+            en = "Price Currency"
+        }
+
+        length: 68
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        column-width: 3
+        processing-mode: Single
+        operation: application-field-name "PRICE.KEY"
+        conversion: extract from 17 to 3
+    }
+
+    field "PRICE" {
+        label {
+            en = "Price"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRICE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Manually Update Price"
+        }
+
+        label-field: "PRICE.CODE"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "PRICE.CODE"
+        }
+
+        screen: "DX.MARKET.PRICE,UPDATE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Input New Price"
+        }
+
+        label-field: "PRICE.CODE"
+        image: "new.gif" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "DX.CREATE.PRICE,INPUT"
+    }
+
+}

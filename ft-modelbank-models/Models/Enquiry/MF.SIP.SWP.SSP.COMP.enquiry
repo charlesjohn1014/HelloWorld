@@ -1,0 +1,334 @@
+Enquiry "MF.SIP.SWP.SSP.COMP" for "name:/MF_Orders:MF.ORDER$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of orders to be completed"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "ORDER.TYPE" {
+        Equals "\'SINGLE\'"
+    }
+
+    fixed-selection "DEAL.STATUS" {
+        NotEquals "\'EXECUTE\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.ID" {
+            label {
+                en = "Client Id"
+            }
+
+        }
+
+        AND
+
+        field "ORDER.TYPE" {
+            label {
+                en = "Order Type"
+            }
+
+        }
+
+        AND
+
+        field "FUND.ID" {
+            label {
+                en = "Fund Id"
+            }
+
+        }
+
+        AND
+
+        field "TRANS.TYPE" {
+            label {
+                en = "Transaction Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        label {
+            en = "Trans Id"
+        }
+
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"List of SIP/SWP/SSP orders to be completed\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Reference"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "ORDER.DATE" {
+        label {
+            en = "Order Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ORDER.DATE"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Client Id"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        hidden: true
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ORDER.TYPE" {
+        label {
+            en = "Order Type"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        column-width: 5
+        processing-mode: Single
+        operation: application-field-name "ORDER.TYPE"
+    }
+
+    field "FUND.ID" {
+        label {
+            en = "Fund Id"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FUND.ID"
+    }
+
+    field "FUND.NAME" {
+        label {
+            en = "Fund Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        hidden: true
+        operation: field-extract "FUND.ID"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "AGENT" {
+        label {
+            en = "Agent"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AGENT"
+    }
+
+    field "AGENT.NAME" {
+        label {
+            en = "Agent Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        hidden: true
+        operation: field-extract "AGENT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "TRANS.TYPE" {
+        label {
+            en = "Trans Type"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 5
+        processing-mode: Single
+        operation: application-field-name "TRANS.TYPE"
+    }
+
+    field "ORDER.AMOUNT" {
+        label {
+            en = "Order Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        column-width: 6
+        processing-mode: Single
+        operation: application-field-name "ORDER.AMOUNT"
+    }
+
+    field "CUST.ORDER.ID" {
+        label {
+            en = "Client Order Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        hidden: true
+        operation: application-field-name "CUST.ORDER.ID"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Record Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Complete"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "MF.ORDER,COMPLETE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        screen: "MF.ORDER,COMPLETE"
+    }
+
+    attributes: "FASTPATH"
+}

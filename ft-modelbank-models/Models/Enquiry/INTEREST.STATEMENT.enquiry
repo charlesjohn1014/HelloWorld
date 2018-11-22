@@ -1,0 +1,402 @@
+Enquiry "INTEREST.STATEMENT" for "name:/AC_EntryCreation:STMT.ENTRY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Interest Statement"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.STMT.ENT.BUILD"
+    }
+
+    custom-selection {
+
+        field "STATEMENT.ID" {
+            label {
+                en = "Account Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Interest/Charge Conditions\""
+    }
+
+    field "INITIAL.DATA" {
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.ACCOUNT.STATEMENT"
+        conversion: call
+        jBC: "@ E.MB.GET.ARR.DETAILS"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HANDOFF.REC" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INITIAL.DATA"
+        conversion: extract from 2 to 1 delimited by ">"
+    }
+
+    field "ACC.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "HANDOFF.REC"
+        conversion: extract from 8 to 1 delimited by "~"
+    }
+
+    field "INT.DET" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INITIAL.DATA"
+        conversion: extract from 3 to 1 delimited by ">"
+    }
+
+    field "INT.PROP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INT.DET"
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "INT.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INT.DET"
+        conversion: extract from 2 to 1 delimited by "#"
+    }
+
+    field "INT.RATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INT.DET"
+        conversion: extract from 4 to 1 delimited by "#"
+    }
+
+    field "INT.KEY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INT.DET"
+        conversion: extract from 5 to 1 delimited by "#"
+    }
+
+    field "INT.FROM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INT.DET"
+        conversion: extract from 6 to 1 delimited by "#"
+    }
+
+    field "INT.TO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INT.DET"
+        conversion: extract from 7 to 1 delimited by "#"
+    }
+
+    field "CHG.DET" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "INITIAL.DATA"
+        conversion: extract from 4 to 1 delimited by ">"
+    }
+
+    field "CHG.PROP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CHG.DET"
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "CHG.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CHG.DET"
+        conversion: extract from 2 to 1 delimited by "#"
+    }
+
+    field "CHG.RATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CHG.DET"
+        conversion: extract from 4 to 1 delimited by "#"
+    }
+
+    field "CHG.KEY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CHG.DET"
+        conversion: extract from 5 to 1 delimited by "#"
+    }
+
+    field "CHG.FROM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CHG.DET"
+        conversion: extract from 6 to 1 delimited by "#"
+    }
+
+    field "CHG.TO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CHG.DET"
+        conversion: extract from 7 to 1 delimited by "#"
+    }
+
+    field "PROP" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "INT.PROP":"\"~\"":"CHG.PROP"
+        conversion: call
+        jBC: "@ E.CONV.SPL.TO.VM"
+        conversion: replace {
+            oldData: "INT"
+            newData: "Interest Rates"
+        }
+
+        conversion: replace {
+            oldData: "CHAR"
+            newData: "Fee and Charges"
+        }
+
+    }
+
+    field "PROP1" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PROP"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "PROP2" {
+        label {
+            en = "Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: if "PROP1" NotEquals "NULL" process "PROP1" "PROP"
+    }
+
+    field "KEY.FROM" {
+        format: Translate
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"from\""
+    }
+
+    field "DATE" {
+        format: Date
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "INT.DATE":"\"~\"":"CHG.DATE"
+        conversion: call
+        jBC: "@ E.CONV.SPL.TO.VM"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "KEY.CHK1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "DATE" NotEquals "SP" process "KEY.FROM" "NULL"
+    }
+
+    field "KEY.CON" {
+        label {
+            en = "\"\""
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: if "DATE" NotEquals "NULL" process "KEY.CHK1" "NULL"
+    }
+
+    field "DATE.VALUE" {
+        label {
+            en = "Effective Date"
+        }
+
+        format: Date
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DATE"
+    }
+
+    field "FROM.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "KEY.FROM":"DATE"
+    }
+
+    field "RATE" {
+        label {
+            en = "Rate or Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: calc "INT.RATE":"\"~\"":"CHG.RATE"
+        conversion: call
+        jBC: "@ E.CONV.SPL.TO.VM"
+    }
+
+    field "KEY" {
+        label {
+            en = "\"\""
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: calc "INT.KEY":"\"~\"":"CHG.KEY"
+        conversion: call
+        jBC: "@ E.CONV.SPL.TO.VM"
+        conversion: replace {
+            oldData: "BALANCE.BETWEEN"
+            newData: "on balances between"
+        }
+
+        conversion: replace {
+            oldData: "BALANCE.ABOVE"
+            newData: "on balances above"
+        }
+
+        conversion: replace {
+            oldData: "AMOUNT.BETWEEN"
+            newData: "for amounts between"
+        }
+
+        conversion: replace {
+            oldData: "AMOUNT.ABOVE"
+            newData: "for amounts above"
+        }
+
+    }
+
+    field "FROM" {
+        label {
+            en = "Amount From"
+        }
+
+        format: Currency "ACC.CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: calc "INT.FROM":"\"~\"":"CHG.FROM"
+        conversion: call
+        jBC: "@ E.CONV.SPL.TO.VM"
+    }
+
+    field "TO" {
+        label {
+            en = "Amount To"
+        }
+
+        format: Currency "ACC.CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: calc "INT.TO":"\"~\"":"CHG.TO"
+        conversion: call
+        jBC: "@ E.CONV.SPL.TO.VM"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Conditions available for the Account\""
+    }
+
+    attributes: "SINGLE.BACKGROUND.COLOUR"
+}

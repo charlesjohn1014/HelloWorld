@@ -1,0 +1,207 @@
+Enquiry "USANCE.LC.EXP.OVERVIEW.HDR" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "LC header"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "LD.HDR" {
+        display-type: "CLASS-COS.SUBHEADING"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 860
+        operation: constant "\"Export LC Overview\""
+    }
+
+    field "SL.REF.TRANCHE" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SL.REF.TRANCHE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "VER1" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,SL.EXAMDINT\""
+    }
+
+    field "VER2" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,EXAMDINT\""
+    }
+
+    field "VER.D1" {
+        comma-separator: false
+        operation: if "SL.REF.TRANCHE" NotEquals "NULL" process "VER1" "VER2"
+    }
+
+    field "VER3" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,SL.EXAMDEXT\""
+    }
+
+    field "VER4" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT,EXAMDEXT\""
+    }
+
+    field "VER.D2" {
+        comma-separator: false
+        operation: if "SL.REF.TRANCHE" NotEquals "NULL" process "VER3" "VER4"
+    }
+
+    field "VER5" {
+        comma-separator: false
+        operation: constant "\"LC.AMENDMENTS,SLEXPLC\""
+    }
+
+    field "VER6" {
+        comma-separator: false
+        operation: constant "\"LC.AMENDMENTS,EXPLC\""
+    }
+
+    field "VER.D3" {
+        comma-separator: false
+        operation: if "SL.REF.TRANCHE" NotEquals "NULL" process "VER5" "VER6"
+    }
+
+    field "ID" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Internal Amendment"
+        }
+
+        label-field: "LD.HDR" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        from-field: "VER.D1"
+    }
+
+    drilldown "2" {
+        description {
+            en = "External Amendment"
+        }
+
+        label-field: "LD.HDR" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        from-field: "VER.D2"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Amendment seeking Benef\'s Consent"
+        }
+
+        label-field: "LD.HDR" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        from-field: "VER.D3"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Cancellation of Export LC"
+        }
+
+        label-field: "LD.HDR" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "LETTER.OF.CREDIT,EXPCANCL"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Lodge Documents"
+        }
+
+        label-field: "LD.HDR" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "DRAWINGS,EXREG"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Acceptance"
+        }
+
+        label-field: "LD.HDR" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "DRAWINGS,EXPAC"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Usance Bill Negotiation/Discounting"
+        }
+
+        label-field: "LD.HDR" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        screen: "DRAWINGS,EXUSANDISC"
+    }
+
+    drilldown "8" {
+        description {
+            en = "Free Format Msg MT799"
+        }
+
+        label-field: "LD.HDR" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.FREE.MESSAGE,FM799.SCV"
+    }
+
+    drilldown "9" {
+        description {
+            en = "Free Format Msg MT999"
+        }
+
+        label-field: "LD.HDR" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.FREE.MESSAGE,FM999.SCV"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

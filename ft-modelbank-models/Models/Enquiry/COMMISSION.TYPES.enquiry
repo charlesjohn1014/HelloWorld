@@ -1,0 +1,138 @@
+Enquiry "COMMISSION.TYPES" for "name:/EB_ModelBank:NOFILE.COMMISSION.TYPES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Commission Types"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RET.ARR" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "COMMISSION.TYPE" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Commission Types\""
+    }
+
+    field "RET.ARR" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "COMM.TYPE" {
+        label {
+            en = "Comm Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "RET.ARR"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "FT.COMM" {
+        comma-separator: false
+        operation: constant "\"FT.COMMISSION.TYPE,ADMIN.INPUT\""
+    }
+
+    field "FT.CHRG" {
+        comma-separator: false
+        operation: constant "\"FT.CHARGE.TYPE,ADMIN.INPUT\""
+    }
+
+    field "DRILL.APP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: if "DRILL.APP" Equals "\"FT.CHARGE.TYPE\"" process "FT.CHRG" "FT.COMM"
+    }
+
+    field "DRILL.SEE" {
+        comma-separator: false
+        operation: constant "\" S \""
+    }
+
+    field "DRILL.VAR.CAT" {
+        comma-separator: false
+        operation: calc "DRILL.VER":"DRILL.SEE"
+    }
+
+    field "DRILL.DOWN" {
+        comma-separator: false
+        operation: calc "DRILL.VAR.CAT":"COMM.TYPE"
+    }
+
+    field "ZERO.RECS" {
+        label {
+            en = "Zero Recs display"
+        }
+
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Commission Types\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "COMM.TYPE"
+        image: "view.gif"
+        from-field: "DRILL.DOWN"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES"
+}

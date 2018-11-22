@@ -1,0 +1,88 @@
+Enquiry "AA.OVERVIEW-HEADING.LIV" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Overview Heading"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "TITLE" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Arrangement Overview\""
+    }
+
+    field "CATEGORY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+    }
+
+    field "@ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PRODUCT.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "PL" {
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PRODUCT.LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "C.DASH" {
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "D.TITLE" {
+        display-type: "CLASS-COS.HEADING"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 1069
+        operation: calc "TITLE":"C.DASH":"PL"
+    }
+
+    field "C.NEW" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.DETAILS.NEW.ACTIVITIES ARRANGEMENT EQ \""
+    }
+
+    field "DRILL" {
+        comma-separator: false
+        operation: calc "C.NEW":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "New Activity"
+        }
+
+        label-field: "D.TITLE"
+        from-field: "DRILL"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

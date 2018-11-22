@@ -1,0 +1,288 @@
+Enquiry "CUST.ADDRESS.NAU" for "name:/DE_Config:DE.ADDRESS$NAU#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = " Address List", fr = " Adressliste"
+        }
+
+        column: 1
+        line: 0
+    }
+
+    full-description {
+        en = "Customer Address"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.CUST.ADDRESS.BLD.RTN"
+    }
+
+    fixed-sort: "DELIVERY.ADDRESS" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Delivery Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "PART1" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "SIGN" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "CUST.ID" {
+        length: 8
+        alignment: Left
+        comma-separator: false
+        operation: i-desc "CUSTOMER"
+    }
+
+    field "PRINT.ID" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"PRINT\""
+    }
+
+    field "SWIFT.ID" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"SWIFT\""
+    }
+
+    field "PRINT.NO" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ID"
+        conversion: extract from 4 to 0 delimited by "."
+    }
+
+    field "ONE" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"1\""
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "NEXT.ID" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        operation: calc "ONE" + "PRINT.NO"
+    }
+
+    field "PART2" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: calc "PART1":"SIGN"
+    }
+
+    field "PART3" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: calc "PART2":"CUST.ID"
+    }
+
+    field "PART4" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: calc "PART3":"DOT":"PRINT.ID"
+    }
+
+    field "PART5" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: calc "PART4":"DOT":"NEXT.ID"
+    }
+
+    field "PART.S1" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: calc "PART3":"DOT":"SWIFT.ID":"DOT":"ONE"
+    }
+
+    field "ADDRESS.ID" {
+        label {
+            en = "Address ID", fr = "Adress-ID"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "CONC.STR" {
+        comma-separator: false
+        operation: constant "\"XXXX\""
+    }
+
+    field "CUST.CONC" {
+        label {
+            en = "Cust", fr = "Kund."
+        }
+
+        format: User
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        operation: i-desc "CUSTOMER"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Cust", fr = "Kund."
+        }
+
+        format: User
+        length: 10
+        alignment: Right
+        comma-separator: false
+        operation: calc "CUST.CONC":"CONC.STR"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        hidden: true
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "STREET.ADDR" {
+        label {
+            en = "Street", fr = "Strasse"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: application-field-name "STREET.ADDR"
+    }
+
+    field "TOWN.COUNTRY" {
+        label {
+            en = "Town", fr = "Ort"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: application-field-name "TOWN.COUNTRY"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Customers Address\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "ADDRESS.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ADDRESS.ID"
+        }
+
+        screen: "DE.ADDRESS,NAU"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "ADDRESS.ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "ADDRESS.ID"
+        }
+
+        screen: "DE.ADDRESS,NAU"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "ADDRESS.ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "ADDRESS.ID"
+        }
+
+        screen: "DE.ADDRESS,NAU"
+    }
+
+}

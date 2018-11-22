@@ -1,0 +1,329 @@
+Enquiry "DX.CDS.OUTSTAND.LIST" for "name:/EB_Reports:HOLD.CONTROL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "List of Credit Default Swaps"
+    }
+
+    description {
+        en = "List of Credit Default Swaps"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "REPORT.NAME" {
+        Equals "DX.CDS.LIST"
+    }
+
+    fixed-sort: "BATCH.DATE.TIME" Descending
+    fixed-sort: "DATE.CREATED" Null
+    fixed-sort: "TIME.CREATED" Null
+    custom-selection {
+
+        field "DATE.CREATED" {
+            label {
+                en = "Date Created"
+            }
+
+        }
+
+        AND
+
+        field "BANK.DATE" {
+            label {
+                en = "Bank Date"
+            }
+
+        }
+
+        AND
+
+        field "COMPANY.ID" {
+            label {
+                en = "Company Id"
+            }
+
+        }
+
+        AND
+
+        field "RUN.IN.BATCH" {
+            label {
+                en = "Run In Batch"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 0
+        }
+
+        operation: constant "\"List of Credit Default Swaps\""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Batch Run:\""
+    }
+
+    field "INIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.HOLD.INIT"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "BATCHRUN" {
+        comma-separator: false
+        operation: application-field-name "BATCH.DATE.TIME"
+    }
+
+    field "OPER" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "K.USER"
+    }
+
+    field "CO" {
+        label {
+            en = "Company Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "COMPANY.ID"
+        conversion: getFrom "COMPANY" "MNEMONIC" false
+    }
+
+    field "NAME" {
+        label {
+            en = "Report Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: application-field-name "REPORT.NAME"
+    }
+
+    field "CDATE" {
+        label {
+            en = "Date Created"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 24
+        }
+
+        operation: application-field-name "DATE.CREATED"
+    }
+
+    field "CTIME" {
+        label {
+            en = "Time Created"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        fmtMask: "##:##"
+        position {
+            column: 36
+        }
+
+        operation: application-field-name "TIME.CREATED"
+    }
+
+    field "INBATCH" {
+        label {
+            en = "Batch"
+        }
+
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        operation: application-field-name "RUN.IN.BATCH"
+        conversion: replace {
+            oldData: "Y"
+            newData: "Yes"
+        }
+
+        conversion: replace {
+            oldData: "N"
+            newData: "No"
+        }
+
+    }
+
+    field "REQ.BY" {
+        label {
+            en = "Requested By"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        operation: application-field-name "REPORT.NAME"
+        conversion: call
+        jBC: "@ E.HOLD.LIST"
+    }
+
+    field "B.BATCH" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "BATCHRUN"
+    }
+
+    field "D.BATCH" {
+        label {
+            en = "Batch Run:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Page
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: field-extract "BATCHRUN"
+        conversion: extract from 1 to 8
+    }
+
+    field "D.BTIME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        fmtMask: "##:##"
+        display-section: Header
+        position {
+            column: 27
+            line: 1
+        }
+
+        operation: field-extract "BATCHRUN"
+        conversion: extract from 9 to 4
+    }
+
+    field "R.OPER" {
+        comma-separator: false
+        operation: if "BATCHRUN" NotEquals "NULL" process "OPER" "NULL"
+    }
+
+    field "D.OPER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 34
+            line: 1
+        }
+
+        operation: field-extract "R.OPER"
+    }
+
+    field "@ID" {
+        label {
+            en = "Hold ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 78
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "REPORT.FILE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"&HOLD&>\""
+    }
+
+    field "REPORT.ID" {
+        comma-separator: false
+        operation: calc "REPORT.FILE":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Report"
+        }
+
+        label-field: "NAME"
+        image: "view.gif"
+        view: "REPORT.ID"
+    }
+
+}

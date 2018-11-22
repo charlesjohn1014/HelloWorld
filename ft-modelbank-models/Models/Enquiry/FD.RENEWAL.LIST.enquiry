@@ -1,0 +1,818 @@
+Enquiry "FD.RENEWAL.LIST" for "name:/FD_Contract:FD.FID.ORDER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "FD Renewal List"
+    }
+
+    no-selection: true
+    start-line: 7
+    end-line: 96
+    build-routines {
+        jBC: "E.BUILD.FD.RENEWAL.LIST"
+    }
+
+    fixed-selection "FID.TYPE" {
+        Equals "FIXED"
+    }
+
+    fixed-sort: "ACCT.OFFICER" Null
+    fixed-sort: "PRIN.LIQ.ACCT" Null
+    fixed-sort: "MATURITY.DATE" Null
+    fixed-sort: "VALUE.DATE" Null
+    custom-selection {
+
+        field "ACCT.OFFICER" {
+            label {
+                en = "Account Officer"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity date"
+            }
+
+        }
+
+        None
+    }
+
+    field "DAYS.CASH.FLOW" {
+        comments:
+        "The number of days cash flow for the liquidation account required. Note that the display of the cash flow should be repeated as the Enquiry system cannot display a multi value on a break"
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"3C\""
+    }
+
+    field "STAR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Renewals Preparation\""
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Account-Officer:\""
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 1
+        }
+
+        operation: constant "\"Date:\""
+    }
+
+    field "TOT" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"TOTAL\""
+    }
+
+    field "MN" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "UNPLACED" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"UNPLACED ORDER\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ARREARS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"ARREARS\""
+    }
+
+    field "TODAY" {
+        label {
+            en = "Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 67
+            line: 1
+        }
+
+        operation: today
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "ORDER.NO" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "FID.BANK" {
+        comma-separator: false
+        operation: application-field-name "FIDUCIARY.NO"
+        conversion: getFrom "FD.FIDUCIARY" "FID.BANK" false
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "DISP.BANK" {
+        label {
+            en = "Bank/Institution"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: if "FID.BANK" Equals "NULL" process "UNPLACED" "FID.BANK"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "MATURITY.DATE" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "AMOUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "COMMITTED.INT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COMMITTED.INT"
+    }
+
+    field "COMM.AMOUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COMM.AMOUNT"
+    }
+
+    field "COMM.TAKEN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COMM.TAKEN"
+    }
+
+    field "PRIN.INT" {
+        comma-separator: false
+        operation: calc "AMOUNT" + "COMMITTED.INT"
+    }
+
+    field "AMT2" {
+        comma-separator: false
+        operation: if "COMM.TAKEN" Equals "ARREARS" process "COMM.AMOUNT" "NULL"
+    }
+
+    field "TAX.AMT.COMM" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TAX.AMT.COMM"
+    }
+
+    field "AMT3" {
+        comma-separator: false
+        operation: if "COMM.TAKEN" Equals "ARREARS" process "TAX.AMT.COMM" "NULL"
+    }
+
+    field "COMM.END" {
+        comma-separator: false
+        operation: calc "AMT2" + "AMT3"
+    }
+
+    field "WITHOLD.TAX.AMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "WITHOLD.TAX.AMT"
+    }
+
+    field "DEDUCTIONS" {
+        comma-separator: false
+        operation: calc "COMM.END" + "WITHOLD.TAX.AMT"
+    }
+
+    field "MAT.AMT" {
+        label {
+            en = "Mat Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+        }
+
+        operation: calc "PRIN.INT" - "DEDUCTIONS"
+    }
+
+    field "ACCT.OFF.NOTES" {
+        comma-separator: false
+        position {
+            column: 15
+            line: + 1
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "ACCT.OFF.NOTES"
+    }
+
+    field "PRIN.LIQ.ACCT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRIN.LIQ.ACCT"
+    }
+
+    field "ACCT.OFFICER" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCT.OFFICER"
+    }
+
+    field "CUSTOMER" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "BK1" {
+        comma-separator: false
+        operation: calc "ACCT.OFFICER":"MN"
+    }
+
+    field "BK2" {
+        comma-separator: false
+        operation: calc "BK1":"MATURITY.DATE"
+    }
+
+    field "BK3" {
+        comma-separator: false
+        operation: calc "BK2":"MN"
+    }
+
+    field "BK4" {
+        comma-separator: false
+        operation: calc "BK3":"PRIN.LIQ.ACCT"
+    }
+
+    field "BK.FLD" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "BK4"
+    }
+
+    field "ACCT.OFF" {
+        label {
+            en = "Account-Officer:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK.FLD"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 1
+        }
+
+        operation: field-extract "ACCT.OFFICER"
+    }
+
+    field "ACCT.OFF.NAME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 26
+            line: 1
+        }
+
+        operation: field-extract "ACCT.OFF"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "CUST.NARR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\"Client:\""
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Client "
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK.FLD"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 4
+        }
+
+        operation: field-extract "CUSTOMER"
+    }
+
+    field "FID.MANDATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        operation: constant "\"Fiduciary Mandate:\""
+    }
+
+    field "YES" {
+        label {
+            en = "Fiduciary Mandate:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 5
+        }
+
+        operation: constant "\" Y \""
+    }
+
+    field "MANDATE.HELD" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 5
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "FD.CUST.DETAILS" "MANDATE.HELD" false
+    }
+
+    field "ACCT.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 21
+            line: 4
+        }
+
+        operation: constant "\"Account:\""
+    }
+
+    field "ACCT.NO" {
+        label {
+            en = "Account:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 32
+            line: 4
+        }
+
+        operation: field-extract "PRIN.LIQ.ACCT"
+    }
+
+    field "ACCT.CCY" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 45
+            line: 4
+        }
+
+        operation: field-extract "PRIN.LIQ.ACCT"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "MAT.TEXT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 54
+            line: 4
+        }
+
+        operation: constant "\"Maturity Date:\""
+    }
+
+    field "MAT.DATE" {
+        label {
+            en = "Maturity Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 69
+            line: 4
+        }
+
+        operation: field-extract "MATURITY.DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "TOT.TXT" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+            line: + 1
+        }
+
+        operation: field-extract "TOT"
+    }
+
+    field "TOT.CCY" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+            line: + 1
+        }
+
+        operation: field-extract "CURRENCY"
+    }
+
+    field "TOT.AMT" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BK.FLD"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+            line: + 1
+        }
+
+        operation: total "MAT.AMT"
+    }
+
+    field "ACCT.POS" {
+        format: Translate break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+            line: + 3
+        }
+
+        operation: constant "\"ACCOUNT POSITION AT \""
+    }
+
+    field "MDATE" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        operation: field-extract "MATURITY.DATE"
+    }
+
+    field "CF1" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        operation: calc "ACCT.NO":"STAR"
+    }
+
+    field "CF2" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        operation: calc "CF1":"MDATE"
+    }
+
+    field "CF3" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        operation: calc "CF2":"STAR"
+    }
+
+    field "CASH.FLOW" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        operation: calc "CF3":"DAYS.CASH.FLOW"
+        conversion: call
+        jBC: "@ E.FD.CASH.FLOW"
+    }
+
+    field "CASH.FLOW.DATE1" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        position {
+            column: 35
+            line: + 3
+        }
+
+        operation: field-extract "CASH.FLOW"
+        conversion: extract from 1 to 1 delimited by "\\"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "CASH.FLOW.BAL1" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BK.FLD"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+            line: + 3
+        }
+
+        operation: field-extract "CASH.FLOW"
+        conversion: extract from 1 to 1 delimited by "\\"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CASH.FLOW.DATE2" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        position {
+            column: 35
+            line: + 4
+        }
+
+        operation: field-extract "CASH.FLOW"
+        conversion: extract from 2 to 1 delimited by "\\"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "CASH.FLOW.BAL2" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BK.FLD"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+            line: + 4
+        }
+
+        operation: field-extract "CASH.FLOW"
+        conversion: extract from 2 to 1 delimited by "\\"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CASH.FLOW.DATE3" {
+        break-condition {
+            field: "BK.FLD"
+        }
+
+        comma-separator: false
+        position {
+            column: 35
+            line: + 5
+        }
+
+        operation: field-extract "CASH.FLOW"
+        conversion: extract from 3 to 1 delimited by "\\"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "CASH.FLOW.BAL3" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BK.FLD"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+            line: + 5
+        }
+
+        operation: field-extract "CASH.FLOW"
+        conversion: extract from 3 to 1 delimited by "\\"
+        conversion: extract from 2 to 2 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Order"
+        }
+
+        label-field: "VALUE.DATE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ORDER.NO"
+        }
+
+        screen: "FD.FID.ORDER,RENEW"
+    }
+
+}

@@ -1,0 +1,276 @@
+Enquiry "LC.EXPORT" for "name:/EB_ModelBank:NOFILE.LC#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Beneficiary LC\'s Summary"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "LC.BENEFICIARY" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"BENEFICIARY LCs\""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 46
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"SUMMARY\""
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 14
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 13
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"BENEFICIARY:\""
+    }
+
+    field "@ID" {
+        label {
+            en = "LC Number"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+    }
+
+    field "DUMMY" {
+        comments: "Read the record either Live or Unau files and load it into R.RECORD"
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.LC.READ.RECORD"
+    }
+
+    field "APPL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "DUMMY"
+    }
+
+    field "LC" {
+        comma-separator: false
+        operation: constant "\"LC\""
+    }
+
+    field "DR" {
+        comma-separator: false
+        operation: constant "\"DR\""
+    }
+
+    field "LC.BEN.CUST" {
+        label {
+            en = "BENEFICIARY:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 26
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: selection "LC.BENEFICIARY"
+    }
+
+    field "CUST.DESC" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 32
+            line: 1
+        }
+
+        operation: field-extract "LC.BEN.CUST"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "LC.TYPE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 2
+    }
+
+    field "DR.TYPE" {
+        comma-separator: false
+        operation: field-number 1
+    }
+
+    field "TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        operation: if "APPL" Equals "LC" process "LC.TYPE" "DR.TYPE"
+    }
+
+    field "LC.CURRENCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 20
+    }
+
+    field "DR.CURRENCY" {
+        comma-separator: false
+        operation: field-number 2
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: if "APPL" Equals "LC" process "LC.CURRENCY" "DR.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 21
+    }
+
+    field "DR.AMOUNT" {
+        comma-separator: false
+        operation: field-number 3
+    }
+
+    field "ORIG.AMOUNT" {
+        label {
+            en = "Orig. LC Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        operation: if "APPL" Equals "LC" process "LC.AMOUNT" "DR.AMOUNT"
+    }
+
+    field "LC.LIAB.AMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 133
+    }
+
+    field "DR.LIAB.AMT" {
+        comma-separator: false
+        operation: field-extract "DR.AMOUNT"
+    }
+
+    field "LIAB.AMT" {
+        label {
+            en = "Outs. LC Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        operation: if "APPL" Equals "LC" process "LC.LIAB.AMT" "DR.LIAB.AMT"
+    }
+
+    field "LC.APP" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT\""
+    }
+
+    field "DR.APP" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS\""
+    }
+
+    field "NEXT.APP" {
+        comma-separator: false
+        operation: if "APPL" Equals "LC" process "LC.APP" "DR.APP"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Transaction"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "NEXT.APP"
+    }
+
+}

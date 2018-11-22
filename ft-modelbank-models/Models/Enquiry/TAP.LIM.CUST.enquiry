@@ -1,0 +1,423 @@
+Enquiry "TAP.LIM.CUST" for "name:/LI_Config:LIMIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Limit Customer Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "LINE.ID" {
+            label {
+                en = "Line ID"
+            }
+
+        }
+
+        AND
+
+        field "LIMIT.PRODUCT" {
+            label {
+                en = "Limit Product"
+            }
+
+        }
+
+        AND
+
+        field "LIABILITY.NUMBER" {
+            label {
+                en = "Customer Number"
+            }
+
+        }
+
+        AND
+
+        field "ADJUST.AVAIL.AMT" {
+            label {
+                en = "Adjust Available Amt"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"Limits Customer\""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\" Details\""
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 75
+            line: 1
+        }
+
+        operation: constant "\" Amount in 000\'s\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0.00\""
+    }
+
+    field "ID" {
+        label {
+            en = "Limit ID"
+        }
+
+        length: 32
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LIAB" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "REF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 2 to 0 delimited by "."
+    }
+
+    field "ID.SER" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 3 to 0 delimited by "."
+    }
+
+    field "CUST" {
+        label {
+            en = "Limit Customer"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 4 to 1 delimited by "."
+    }
+
+    field "LT.PRODUCT" {
+        label {
+            en = "Limit Product"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LIMIT.PRODUCT"
+        conversion: getFrom "LIMIT.REFERENCE" "DESCRIPTION" false
+    }
+
+    field "P.CUST" {
+        length: 22
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "P.CUS" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: calc "CUST":"P.CUST"
+    }
+
+    field "COMM.AMT" {
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ONLINE.LIMIT"
+        conversion: call
+        jBC: "@ LIMIT.CALC.COMM"
+    }
+
+    field "OS.AMT" {
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TOTAL.OS"
+        conversion: call
+        jBC: "@ LIMIT.CALC.OS"
+    }
+
+    field "AVAIL" {
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AVAIL.AMT"
+        conversion: call
+        jBC: "@ LIMIT.CALC.AVAIL"
+    }
+
+    field "P.COMM" {
+        label {
+            en = "Online Limit"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: if "COMM.AMT" Equals "NULL" process "ZERO" "COMM.AMT"
+    }
+
+    field "POS.AMT" {
+        label {
+            en = "Outstanding Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 30
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: if "OS.AMT" Equals "NULL" process "ZERO" "OS.AMT"
+    }
+
+    field "P.AVAIL" {
+        label {
+            en = "Available / Excess"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 30
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: if "AVAIL" Equals "NULL" process "ZERO" "AVAIL"
+    }
+
+    field "OD.COND.ACCOUNT" {
+        label {
+            en = "OD Condition Account"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OD.COND.ACCOUNT"
+    }
+
+    field "P.LIAB" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 1
+        }
+
+        operation: field-extract "ID"
+        conversion: extract from 1 to 0 delimited by "."
+    }
+
+    field "N.LIAB" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 1
+        }
+
+        operation: field-extract "P.LIAB"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "B.LIAB" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "LIAB"
+        conversion: getFrom "LIMIT.REFERENCE" "SHORT.NAME" true
+    }
+
+    field "PREF" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "REF"
+        conversion: call
+        jBC: "@ LIMIT.FIND.REF"
+        conversion: getFrom "LIMIT.REFERENCE" "SHORT.NAME" true
+    }
+
+    field "B.REF" {
+        comma-separator: false
+        operation: break-change "REF"
+    }
+
+    field "P.NAME" {
+        length: 22
+        alignment: Left
+        comma-separator: false
+        operation: if "CUST" Equals "NULL" process "PREF" "P.CUST"
+    }
+
+    field "L.TYP" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FX.OR.TIME.BAND"
+    }
+
+    field "FX.TY" {
+        comma-separator: false
+        operation: constant "\"FX\""
+    }
+
+    field "FX.EN" {
+        comma-separator: false
+        operation: constant "\"TAP.LIM.FX1\""
+    }
+
+    field "OT.EN" {
+        comma-separator: false
+        operation: constant "\"TAP.LIM.TXN\""
+    }
+
+    field "N.ENQ" {
+        comma-separator: false
+        operation: if "L.TYP" Equals "FX.TY" process "FX.EN" "OT.EN"
+    }
+
+    field "C.ALL" {
+        comma-separator: false
+        operation: constant "\"ALL\""
+    }
+
+    field "N.CUST" {
+        comma-separator: false
+        operation: if "CUST" Equals "NULL" process "C.ALL" "CUST"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\" Invalid selection or no data available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "CUST"
+        image: "view.gif"
+        criteria: "LIAB.NO" Equals "LIAB"
+        criteria: "REF.NO" Equals "REF"
+        criteria: "SER.NO" Equals "ID.SER"
+        criteria: "CUST.NO" Equals "N.CUST"
+        from-field: "N.ENQ"
+    }
+
+}

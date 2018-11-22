@@ -1,0 +1,328 @@
+Enquiry "DATA.CAPTURE.BATCH" for "name:/DC_Contract:DC.BATCH.CONTROL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "DATA.CAPTURE.BATCH"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Batch"
+            }
+
+            operands: Contains
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Data Capture \""
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 0
+        }
+
+        operation: constant "\"Batch Control List\""
+    }
+
+    field "HEADER1.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"DEPT:-\""
+    }
+
+    field "DEPARTMENT.BATCH" {
+        comma-separator: false
+        operation: field-extract "@ID"
+    }
+
+    field "DEPARTMENT" {
+        label {
+            en = "Department"
+        }
+
+        comments: "Department code"
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 8 to 4
+    }
+
+    field "B.DEPT" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "DEPARTMENT"
+    }
+
+    field "D.DEPT" {
+        label {
+            en = "DEPT:-"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: field-extract "DEPARTMENT"
+    }
+
+    field "BATCH" {
+        label {
+            en = "Batch"
+        }
+
+        comments: "Batch number"
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: i-desc "BATCH"
+    }
+
+    field "ITEMS.USED" {
+        label {
+            en = "Items.Used"
+        }
+
+        comments: "Number of entries in batch"
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: i-desc "NUMBER.OF.ITEMS"
+    }
+
+    field "LCCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "YES" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "NO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"NO\""
+    }
+
+    field "POSITION.TYPE" {
+        label {
+            en = "Position Type"
+        }
+
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "POSITION.TYPE"
+    }
+
+    field "LCY.AMOUNT.DEBIT" {
+        label {
+            en = "Lcy.Amount.Debit"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LCY.AMOUNT.DEBIT"
+    }
+
+    field "LCY.AMOUNT.CREDIT" {
+        label {
+            en = "Lcy.Amount.Credit"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LCY.AMOUNT.CREDIT"
+    }
+
+    field "BALANCED" {
+        label {
+            en = "Balanced"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        operation: if "LCY.AMOUNT.DEBIT" Equals "LCY.AMOUNT.CREDIT" process "YES" "NO"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Record.Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 56
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "DOTS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"...\""
+    }
+
+    field "DEPT.BATCH.DOTS" {
+        comma-separator: false
+        operation: calc "DEPARTMENT.BATCH":"DOTS"
+    }
+
+    field "YREF" {
+        comma-separator: false
+        operation: field-extract "DEPT.BATCH.DOTS"
+    }
+
+    field "DC.ID" {
+        comma-separator: false
+        operation: calc "DOTS":"YREF"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No batch to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "List unauthorize"
+        }
+
+        label-field: "BATCH"
+        image: "view.gif"
+        criteria: "REF" Matches "DC.ID"
+        enquiry: "DATA.CAPTURE.NAU"
+    }
+
+    drilldown "2" {
+        description {
+            en = "List authorize"
+        }
+
+        label-field: "BATCH"
+        image: "details.gif"
+        criteria: "REF" Matches "DC.ID"
+        enquiry: "DATA.CAPTURE.AU"
+    }
+
+}

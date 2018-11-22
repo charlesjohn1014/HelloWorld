@@ -1,0 +1,207 @@
+Enquiry "WR.INVESTMENT.PROGRAM.DETAIL" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "InstrumentPerformanceDetail"
+    }
+
+    description {
+        en = "InstrumentPerformanceDetail"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Portfolio No"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "ProgID"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "INV.PGM" {
+        label {
+            en = "ProgID"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INVESTMENT.PROGRAM"
+    }
+
+    field "MATRIX" {
+        label {
+            en = "Code"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "INV.PGM"
+        conversion: getFrom "INVESTMENT.PROGRAM" "MATRIX" false
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Desc"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "MATRIX"
+        conversion: getFrom "AM.MATRIX" "DESCRIPTION" false
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "AXIS.X" {
+        comma-separator: false
+        operation: field-extract "MATRIX"
+        conversion: getFrom "AM.MATRIX" "AXIS.X" false
+    }
+
+    field "AXIS.Y" {
+        comma-separator: false
+        operation: field-extract "MATRIX"
+        conversion: getFrom "AM.MATRIX" "AXIS.Y" false
+    }
+
+    field "AXIS" {
+        label {
+            en = "AxisType"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "AXIS.X" NotEquals "NUL" process "AXIS.X" "AXIS.Y"
+    }
+
+    field "AXIS.DESC" {
+        label {
+            en = "AxisDesc"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "AXIS"
+        conversion: getFrom "AM.AXIS" "DESCRIPTION" false
+    }
+
+    field "WEIGHT" {
+        label {
+            en = "Weight"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "MATRIX"
+        conversion: getFrom "AM.MATRIX" "WEIGHT" false
+    }
+
+    field "DEVIATION.MAX" {
+        label {
+            en = "DeviationMax"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: field-extract "MATRIX"
+        conversion: getFrom "AM.MATRIX" "DEVIATION.MAX" false
+    }
+
+    field "DEVIATION.MIN" {
+        label {
+            en = "DeviationMin"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: field-extract "MATRIX"
+        conversion: getFrom "AM.MATRIX" "DEVIATION.MIN" false
+    }
+
+    field "REBALANCE" {
+        label {
+            en = "Rebalance"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: field-extract "MATRIX"
+        conversion: getFrom "AM.MATRIX" "REBALANCE" false
+    }
+
+    field "LINK" {
+        label {
+            en = "Link"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "MATRIX"
+        conversion: getFrom "AM.MATRIX" "LINK" false
+    }
+
+}

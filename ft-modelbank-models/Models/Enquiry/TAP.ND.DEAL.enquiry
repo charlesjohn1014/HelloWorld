@@ -1,0 +1,288 @@
+Enquiry "TAP.ND.DEAL" for "name:/FX_Contract:ND.DEAL#" {
+    metamodelVersion: "1.30.6"
+    start-line: 1
+    end-line: 99 fixed-selection "STATUS" {
+        Equals "OPN", "FIX"
+    }
+
+    fixed-selection "PORTFOLIO.NUMBER" {
+        NotEquals "NULL"
+    }
+
+    field "TYPE" {
+        label {
+            en = "Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Type7\""
+    }
+
+    field "ID" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "COMPANY" {
+        label {
+            en = "Company"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CO.CODE"
+        conversion: getFrom "COMPANY" "MNEMONIC" false
+    }
+
+    field "CODE" {
+        label {
+            en = "Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        operation: calc "ID":"\"_\"":"COMPANY"
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        processing-mode: Single
+        operation: calc "COUNTERPARTY":"\"-\"":"PORTFOLIO.NUMBER"
+    }
+
+    field "MEMO.ACCOUNT" {
+        label {
+            en = "Memo Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Single
+        operation: field-extract "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "MEMO.ACCOUNT" false
+    }
+
+    field "DEALER.BOOK" {
+        label {
+            en = "Dealer Book"
+        }
+
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        processing-mode: Single
+        operation: field-extract "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "DEALER.BOOK" false
+    }
+
+    field "DEAL.NO" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 500
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DEAL.CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEAL.CURRENCY"
+    }
+
+    field "SETTLEMENT.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.CCY"
+    }
+
+    field "INSTRUMENT" {
+        label {
+            en = "Instrument"
+        }
+
+        comma-separator: false
+        position {
+            column: 69
+        }
+
+        processing-mode: Single
+        operation: calc "\"NDF-\"":"DEAL.CURRENCY":"\"-\"":"SETTLEMENT.CCY"
+    }
+
+    field "BUY.SELL.IND" {
+        label {
+            en = "Buy Sell Ind"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 79
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BUY.SELL.IND"
+    }
+
+    field "VALUE.ZERO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"0\""
+    }
+
+    field "DEAL.AMT.NEG" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "VALUE.ZERO" - "DEAL.AMOUNT"
+    }
+
+    field "DEAL.AMT.POS" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEAL.AMOUNT"
+    }
+
+    field "DEAL.AMOUNT" {
+        label {
+            en = "Deal Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Single
+        operation: if "BUY.SELL.IND" Equals "\"BUY\"" process "DEAL.AMT.NEG" "DEAL.AMT.POS"
+    }
+
+    field "DEAL.CURRENCY2" {
+        label {
+            en = "Deal Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 105
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEAL.CURRENCY"
+    }
+
+    field "SETTLEMENT.CCY2" {
+        label {
+            en = "Settlement Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 115
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.CCY"
+    }
+
+    field "FIXED.DATE" {
+        label {
+            en = "Fixed Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FIXED.DATE"
+    }
+
+    field "SETTLEMENT.DATE" {
+        label {
+            en = "Settlement Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.DATE"
+    }
+
+    field "CUSTOMER.TYPE" {
+        label {
+            en = "Customer Type"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COUNTERPARTY"
+        conversion: getFrom "CUSTOMER.SECURITY" "CUSTOMER.TYPE" false
+    }
+
+}

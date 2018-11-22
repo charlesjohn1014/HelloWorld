@@ -1,0 +1,281 @@
+Enquiry "SCC.INCOMING.DETAILS" for "name:/FT_LocalClearing:FT.SCC.TAPE.DATA#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "SCC INCOMING DETAILS"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "TAPE NAME:"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "TAPE SEQ NO:"
+        }
+
+        column: 22
+        line: 1
+    }
+
+    header {
+        label {
+            en = "PROC DATE:"
+        }
+
+        column: 50
+        line: 1
+    }
+
+    header {
+        label {
+            en = "ACCOUNT.NO"
+        }
+
+        column: 4
+        line: 2
+    }
+
+    header {
+        label {
+            en = "ACCOUNT.NAME"
+        }
+
+        column: 21
+        line: 2
+    }
+
+    header {
+        label {
+            en = "TRANSFER.AMOUNT"
+        }
+
+        column: 43
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CLR.NO"
+        }
+
+        column: 59
+        line: 2
+    }
+
+    header {
+        label {
+            en = "GLOBUS.FT.NO"
+        }
+
+        column: 66
+        line: 2
+    }
+
+    description {
+        en = "SCC.INCOMING.DETAILS"
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "TAPE.NAME" Null
+    fixed-sort: "TAPE.SEQ.NO" Null
+    fixed-sort: "PROC.DATE" Null
+    custom-selection {
+
+        field "ACCOUNT.NO" {
+        }
+
+        AND
+
+        field "TAPE.NAME" {
+        }
+
+        AND
+
+        field "PROC.DATE" {
+        }
+
+        None
+    }
+
+    field "REC.ID" {
+        length: 38
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LCCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "TAPE.ID.SEQ" {
+        comma-separator: false
+        operation: field-extract "REC.ID"
+        conversion: extract from 1 to 3 delimited by "-"
+    }
+
+    field "BRK.SEQ" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "TAPE.ID.SEQ"
+    }
+
+    field "TAPE.NAME" {
+        break-condition {
+            field: "BRK.SEQ"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "REC.ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "TAPE.SEQ.NO" {
+        break-condition {
+            field: "BRK.SEQ"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 35
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "REC.ID"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "PROC.DATE" {
+        break-condition {
+            field: "BRK.SEQ"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 61
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "REC.ID"
+        conversion: extract from 3 to 1 delimited by "-"
+    }
+
+    field "ACCOUNT.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NO"
+    }
+
+    field "ACCOUNT.NAME" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "TRANSFER.AMOUNT" {
+        format: Currency "LCCY" negative-pattern -#
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSFER.AMOUNT"
+    }
+
+    field "CLEARING.REF.NO" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 59
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CLEARING.REF.NO"
+    }
+
+    field "GLOBUS.FT.NO" {
+        comma-separator: false
+        position {
+            column: 66
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GLOBUS.FT.NO"
+    }
+
+    field "TOT.AMT" {
+        format: Currency "LCCY" negative-pattern -# break-condition {
+            field: "BRK.SEQ"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 42
+            line: + 1
+        }
+
+        operation: total "TRANSFER.AMOUNT"
+    }
+
+    drilldown "1" {
+        label-field: "ACCOUNT.NO" parameters {
+            function:  See
+            field: "GLOBUS.FT.NO"
+        }
+
+        application: "FUNDS.TRANSFER"
+    }
+
+}

@@ -1,0 +1,336 @@
+Enquiry "PPL.BANKCONDITIONS.FUTURE" for "name:/:PPL.BANKCONDITIONS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Bank Conditions List - Future"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    description {
+        en = "Bank Conditions Search"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RACBankConditions" {
+        Equals "\'F\'"
+    }
+
+    fixed-selection "RSCBankConditions" {
+        Equals "\'L\'"
+    }
+
+    fixed-sort: "CompanyID" Null
+    fixed-sort: "CorrespondentBIC" Null
+    fixed-sort: "SLAID" Null
+    fixed-sort: "CurrencyCode" Null
+    custom-selection {
+
+        field "BankConditionsID" {
+            label {
+                en = "BankConditions ID"
+            }
+
+        }
+
+        AND
+
+        field "CompanyID" {
+            label {
+                en = "Company ID"
+            }
+
+        }
+
+        AND
+
+        field "CorrespondentBIC" {
+            label {
+                en = "Correspondent BIC"
+            }
+
+        }
+
+        AND
+
+        field "SLAID" {
+            label {
+                en = "SLA ID"
+            }
+
+        }
+
+        AND
+
+        field "CurrencyCode" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "BCID" {
+        label {
+            en = "Bank Conditions ID"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "BankConditionsID"
+    }
+
+    field "CompanyID" {
+        label {
+            en = "Company"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "CompanyID"
+    }
+
+    field "ID" {
+        length: 255
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "CorrespondentBIC" {
+        label {
+            en = "Correspondent BIC"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CorrespondentBIC"
+    }
+
+    field "SLAId" {
+        label {
+            en = "SLA ID"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SLAID"
+    }
+
+    field "CurrencyCode" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CurrencyCode"
+    }
+
+    field "StartDateBankConditions" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "StartDateBankConditions"
+    }
+
+    field "EndDateBankConditions" {
+        label {
+            en = "End Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EndDateBankConditions"
+    }
+
+    field "RSCBankConditions" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "RSCBankConditions"
+    }
+
+    field "RACBankConditions" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "RACBankConditions"
+    }
+
+    field "CaptureID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ PP.GET.CAPTURE.TABLE.ID"
+    }
+
+    field "AMENDVERSION" {
+        comma-separator: false
+        operation: constant "\"PP.BANK.CONDITIONS,FUTURE.AMEND I \""
+    }
+
+    field "REVERSEVERSION" {
+        comma-separator: false
+        operation: constant "\"PP.BANK.CONDITIONS,FUTURE.REVERSE I \""
+    }
+
+    field "NEWID" {
+        comma-separator: false
+        operation: constant "\"F3\""
+    }
+
+    field "CAPNEWID" {
+        comma-separator: false
+        operation: calc "AMENDVERSION":"NEWID"
+    }
+
+    field "CAPOLDID" {
+        comma-separator: false
+        operation: calc "AMENDVERSION":"CaptureID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CAPTUREAMEND" {
+        comma-separator: false
+        operation: if "CaptureID" Equals "NULL" process "CAPNEWID" "CAPOLDID"
+    }
+
+    field "CAPREVNEWID" {
+        comma-separator: false
+        operation: calc "REVERSEVERSION":"NEWID"
+    }
+
+    field "CAPREVOLDID" {
+        comma-separator: false
+        operation: calc "REVERSEVERSION":"CaptureID"
+    }
+
+    field "REVERSECAPTURE" {
+        comma-separator: false
+        operation: if "CaptureID" Equals "NULL" process "CAPREVNEWID" "CAPREVOLDID"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+        }
+
+        operation: constant "\"No records available\""
+    }
+
+    tool PP.ENQ.DETAIL {
+        label {
+            en = "Create New Record"
+        }
+
+        command: "docommand(\"PP.BANK.CONDITIONS,CREATE I F3\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "CompanyID"
+        image: "edit.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "CAPTUREAMEND"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "CompanyID"
+        image: "txnreverse.gif"
+        criteria: "CURRENT.IDVALUE" > "ID"
+        from-field: "REVERSECAPTURE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CompanyID"
+        image: "view.gif"
+        criteria: "CURRENT.IDVALUE" > "ID" parameters {
+            function:  See
+            parameter: "111"
+        }
+
+        screen: "PP.BANK.CONDITIONS,VIEW.COND"
+    }
+
+}

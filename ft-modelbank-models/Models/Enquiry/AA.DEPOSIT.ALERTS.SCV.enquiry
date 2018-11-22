@@ -1,0 +1,140 @@
+Enquiry "AA.DEPOSIT.ALERTS.SCV" for "name:/EB_Logging:TEC.ITEMS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Alerts For Customer"
+    }
+
+    description {
+        en = "Alerts for a Customer"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 10 fixed-selection "ITEM.CLASSIFICATION" {
+        Equals "BUSINESS"
+    }
+
+    fixed-selection "SUBSCRIPTION.LEVEL" {
+        Equals "EXTERNAL", "BOTH"
+    }
+
+    fixed-selection "K.TABLE" {
+        BeginsWith "AA.ARR..."
+    }
+
+    fixed-selection "@ID" {
+        NotMatches "...PAYOFF...", "...OVERDUE...", "...CHASER..."
+    }
+
+    fixed-selection "@ID" {
+        NotMatches "AR...", "...DISBURSE...", "...ISSUE..."
+    }
+
+    fixed-selection "@ID" {
+        NotMatches "AA.NEW.ARRANGEMENT.DAO"
+    }
+
+    fixed-sort: "EVENT.TYPE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Event Id"
+            }
+
+        }
+
+        AND
+
+        field "EVENT.TYPE" {
+            label {
+                en = "Event Type"
+            }
+
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Alert Subscription\""
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "ID" {
+        label {
+            en = "Event Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "EVENT.TYPE" {
+        label {
+            en = "Event Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "EVENT.TYPE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Subscribe"
+        }
+
+        label-field: "ID"
+        image: "new.gif"
+        criteria: "CURRENT.TEC.ITEM" > "ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "EB.ALERT.REQUEST,NEW.SCV"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

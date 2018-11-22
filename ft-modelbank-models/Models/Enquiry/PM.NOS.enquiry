@@ -1,0 +1,509 @@
+Enquiry "PM.NOS" for "name:/PM_Reports:NOFILE.PM.NOS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "PM.NOS"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "PM.ENQ.PARAM" {
+        Equals "PM.NOS"
+    }
+
+    fixed-sort: "RANK" Null
+    custom-selection {
+
+        field "RANK" {
+            label {
+                en = "Rank"
+            }
+
+        }
+
+        AND
+
+        field "CCY" {
+            mandatory: true
+            label {
+                en = "Ccy"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CCY.MARKET" {
+            label {
+                en = "Ccy Market"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DEALER.DESK" {
+            label {
+                en = "Dealer Desk"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TODAY" {
+        label {
+            en = "Today"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Once
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 0
+        }
+
+        operation: today
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Real Time \""
+    }
+
+    field "HEADER5" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 0
+        }
+
+        operation: constant "\"Nostro\""
+    }
+
+    field "HEADER3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency: \""
+    }
+
+    field "HEADER4" {
+        label {
+            en = "Currency:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "SPACE1" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "DESK" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 1
+        }
+
+        operation: constant "\"Dealer Desk : \""
+    }
+
+    field "DEALER.DESK" {
+        format: User
+        length: 2
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "DEALER.DESK"
+    }
+
+    field "ALL.DEAL" {
+        comma-separator: false
+        operation: constant "\"All\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SELECTION.DEAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: if "DEALER.DESK" NotEquals "NULL" process "DEALER.DESK" "ALL.DEAL"
+    }
+
+    field "TOM.NEXT" {
+        label {
+            en = "Tom Next"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Once
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+            line: + 0
+        }
+
+        operation: application-field-name "!TODAY+1W"
+    }
+
+    field "SPOT" {
+        label {
+            en = "Spot"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Once
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 0
+        }
+
+        operation: application-field-name "!TODAY+2W"
+    }
+
+    field "SPOTPLUSONE" {
+        label {
+            en = "Spot Next"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Once
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 85
+            line: + 0
+        }
+
+        operation: application-field-name "!TODAY+3W"
+    }
+
+    field "SPOTPLUSTWO" {
+        label {
+            en = "Spot +2"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Once
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 110
+            line: + 0
+        }
+
+        operation: application-field-name "!TODAY+4W"
+    }
+
+    field "INIT.COMMON" {
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "BUILD.DATA" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.NOS"
+    }
+
+    field "PM.AMT.FMT" {
+        format: User break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: selection "PM.ENQ.PARAM"
+        conversion: getFrom "PM.ENQ.PARAM" "AMOUNT.FORMAT" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        format: User
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "TODAY.AMT" {
+        label {
+            en = "Today Amount"
+        }
+
+        format: User
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TODAY.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.TODAY.AMT" {
+        label {
+            en = "Today Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-extract "TODAY.AMT"
+    }
+
+    field "TOM.AMT" {
+        label {
+            en = "Tom Amount"
+        }
+
+        format: User
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TOM.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.TOM.AMT" {
+        label {
+            en = "Tom Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Multi
+        operation: field-extract "TOM.AMT"
+    }
+
+    field "SPOT.AMT" {
+        label {
+            en = "Spot Amount"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SPOT.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.SPOT.AMT" {
+        label {
+            en = "Spot Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SPOT.AMT"
+    }
+
+    field "1D.AMT" {
+        label {
+            en = "1D Amount"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "1D.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.1D.AMT" {
+        label {
+            en = "1D Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 85
+        }
+
+        processing-mode: Multi
+        operation: field-extract "1D.AMT"
+    }
+
+    field "2D.AMT" {
+        label {
+            en = "2D Amount"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "2D.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.2D.AMT" {
+        label {
+            en = "2D Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Multi
+        operation: field-extract "2D.AMT"
+    }
+
+    field "TXN.REF" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.IDS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transactions"
+        }
+
+        label-field: "CURRENCY"
+        image: "view.gif"
+        criteria: "ID2" Equals "TXN.REF"
+        enquiry: "PM.NOSTRO.TXNS"
+    }
+
+}

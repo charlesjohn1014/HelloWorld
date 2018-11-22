@@ -1,0 +1,445 @@
+Enquiry "AM.PEND.PARENT.ORDERS" for "name:/SC_SctOrderCapture:SEC.OPEN.ORDER$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Rebalanced Orders to be completed"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "PARENT" {
+        Equals "YES"
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "IHLD"
+    }
+
+    custom-selection {
+
+        field "PARENT.REFERENCE" {
+            label {
+                en = "Parent Reference"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "SECURITY.ACCNT" {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 26
+            line: 0
+        }
+
+        operation: constant "\"Pending Parent Orders from Rebalancing\""
+    }
+
+    field "L." {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction No."
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Security Name"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SECURITY.ACCNT" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.ACCNT"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Buy/Sell"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.CODE"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "LAST.PRICE" {
+        label {
+            en = "Latest Price"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "LAST.PRICE" false
+    }
+
+    field "STOCK.EXCHANGE" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "STOCK.EXCHANGE"
+    }
+
+    field "ST.EXCH" {
+        label {
+            en = "Stock.Exc"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "STOCK.EXCHANGE"
+        conversion: getFrom "STOCK.EXCHANGE" "SHORT.DESCR" false
+    }
+
+    field "ST.EXCH.DAYS" {
+        label {
+            en = "Stk Exc Days"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "STOCK.EXCHANGE"
+        conversion: getFrom "STOCK.EXCHANGE" "SETTLEMENT.DAYS" false
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TRADE.CCY"
+    }
+
+    field "SETT.CCY" {
+        label {
+            en = "Sett. Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "SETTLEMENT.CCY"
+    }
+
+    field "CU.EX.RATE.ACC" {
+        label {
+            en = "Exch.Rate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "CU.EX.RATE.ACC"
+    }
+
+    field "CUST.ACC.NO" {
+        label {
+            en = "Account"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "CUST.ACC.NO"
+    }
+
+    field "VAL.IN.SETT.CCY" {
+        label {
+            en = "Approx Value"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "VAL.IN.SETT.CCY"
+    }
+
+    field "ORDER.TYPE" {
+        label {
+            en = "Order type"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ORDER.TYPE"
+    }
+
+    field "DEPOSITORY" {
+        label {
+            en = "Depository"
+        }
+
+        display-type: "EDIT"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "BROKER" {
+        label {
+            en = "Broker"
+        }
+
+        display-type: "EDIT"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "BROKER"
+    }
+
+    field "AUTHORISE.CHILD" {
+        label {
+            en = "Authorise Child"
+        }
+
+        display-type: "EDIT"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AUTHORISE.CHILD"
+    }
+
+    field "BULK.UPDATE" {
+        label {
+            en = "Bulk Update"
+        }
+
+        display-type: "EDIT"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BULK.UPDATE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "DEAL.NARRATIVE" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DEAL.NARRATIVE"
+        conversion: call
+        jBC: "@E.MB.GET.SOO.ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Complete"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SEC.OPEN.ORDER,INPUT"
+    }
+
+    attributes: "FASTPATH" ; "NO.BREADCRUMBS"
+}

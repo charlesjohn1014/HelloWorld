@@ -1,0 +1,105 @@
+Enquiry "MO.FD.RATES" for "name:/ST_RateParameters:PERIODIC.INTEREST#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Fixed Deposits Interest Rates"
+    }
+
+    description {
+        en = "Fixed Deposit Interest Rates"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.EBR.FD.RATES"
+    }
+
+    custom-selection {
+
+        field "REF.CCY.DATE" {
+            mandatory: true
+            label {
+                en = "PI Key"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TERM" {
+        label {
+            en = "Term"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "REST.PERIOD"
+    }
+
+    field "FD.AMT" {
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Multi
+        operation: application-field-name "AMT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "VALUE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "\">\"":"FD.AMOUNT"
+    }
+
+    field "MULTI" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "FD.AMOUNT" Equals "NULL" process "NULL" "VALUE"
+    }
+
+    field "FD.AMOUNT" {
+        label {
+            en = "Tiered Amount"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: if "FD.AMT" Equals "NULL" process "MULTI" "FD.AMT"
+    }
+
+    field "FD.RATES" {
+        label {
+            en = "Intt Rates"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "BID.RATE"
+    }
+
+}

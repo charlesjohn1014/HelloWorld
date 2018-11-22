@@ -1,0 +1,348 @@
+Enquiry "SCV.CONTACT.10" for "name:/EB_ModelBank:NOFILE.SCV.CONTACT.10#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Current Contact Log"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    fixed-sort: "CONTACT.DATE" Descending
+    custom-selection {
+
+        field "CONTACT.CLIENT" {
+            mandatory: true
+            label {
+                en = "Client"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CONTACT.STAFF" {
+            label {
+                en = "Staff"
+            }
+
+        }
+
+        AND
+
+        field "CONTACT.DATE" {
+            label {
+                en = "Date"
+            }
+
+        }
+
+        AND
+
+        field "CONTACT.TIME" {
+            label {
+                en = "Time"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.ID" {
+            label {
+                en = "Transaction Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "ENQ.TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Last Ten Transactions\""
+    }
+
+    field "@ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "APP" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 4
+    }
+
+    field "CONTACT.CLIENT" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CLIENT.NAME" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CONTACT.CLIENT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CONTACT.TYPE" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+        conversion: replace {
+            oldData: "CALLCENTRE"
+            newData: "Call Centre"
+        }
+
+        conversion: replace {
+            oldData: "EMAIL"
+            newData: "Email"
+        }
+
+        conversion: replace {
+            oldData: "LETTER"
+            newData: "Letter"
+        }
+
+        conversion: replace {
+            oldData: "MANUAL"
+            newData: "Manual"
+        }
+
+        conversion: replace {
+            oldData: "MEETING"
+            newData: "Meeting"
+        }
+
+        conversion: replace {
+            oldData: "TELEPHONE"
+            newData: "Phone"
+        }
+
+        conversion: replace {
+            oldData: "TEXT"
+            newData: "SMS"
+        }
+
+        conversion: replace {
+            oldData: "TRANSACTION"
+            newData: "Txn"
+        }
+
+        conversion: replace {
+            oldData: "BRANCH"
+            newData: "Branch"
+        }
+
+    }
+
+    field "CONTACT.CHANNEL" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "CONTACT.DESC" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "APPL.VERSION" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "LOWER1" {
+        comma-separator: false
+        operation: field-extract "APPL.VERSION"
+        conversion: oconv "MCC;.; ;"
+    }
+
+    field "LOWER" {
+        label {
+            en = "Transaction"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "LOWER1"
+        conversion: oconv "MCT"
+    }
+
+    field "CONTRACT.ID" {
+        label {
+            en = "Transaction ID"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "CONTACT.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "CONTACT.TIME" {
+        label {
+            en = "Time"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "S.TEXT" {
+        comma-separator: false
+        operation: constant "\"S \""
+    }
+
+    field "S.FUNC" {
+        comma-separator: false
+        operation: if "APPL.VERSION" Equals "NULL" process "NULL" "S.TEXT"
+    }
+
+    field "APP.SPACE" {
+        comma-separator: false
+        operation: calc "APPL.VERSION":"SPACE"
+    }
+
+    field "APP.SP.SEE" {
+        comma-separator: false
+        operation: calc "APP.SPACE":"S.FUNC"
+    }
+
+    field "APP.SEE.TXN" {
+        comma-separator: false
+        operation: calc "APP.SP.SEE":"CONTRACT.ID"
+    }
+
+    field "D.NO.APP.1" {
+        comma-separator: false
+        operation: constant "\"COS SCV.NO.TXN.DD \""
+    }
+
+    field "D.NO.APP.2" {
+        comma-separator: false
+        operation: calc "D.NO.APP.1":"@ID"
+    }
+
+    field "TXN.DD" {
+        comma-separator: false
+        operation: if "APPL.VERSION" Equals "NULL" process "D.NO.APP.2" "APP.SEE.TXN"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"No current contacts for this customer\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Txn Details"
+        }
+
+        label-field: "LOWER"
+        image: "details.gif"
+        from-field: "TXN.DD"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

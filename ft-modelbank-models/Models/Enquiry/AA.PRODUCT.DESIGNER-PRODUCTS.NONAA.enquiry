@@ -1,0 +1,235 @@
+Enquiry "AA.PRODUCT.DESIGNER-PRODUCTS.NONAA" for "name:/AA_ProductManagement:AA.PRODUCT.DESIGNER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Products"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "PRODUCT.GROUP" {
+        }
+
+        None
+    }
+
+    field "GROUP" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "PRODUCT.GROUP"
+    }
+
+    field "N.GROUP" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "PRODUCT.GROUP"
+    }
+
+    field "SYSGROUP" {
+        comma-separator: false
+        operation: field-extract "GROUP"
+        conversion: extract from 1 to 3
+    }
+
+    field "LINE" {
+        comma-separator: false
+        operation: field-extract "GROUP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "PRODUCT.LINE" false
+    }
+
+    field "ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT"
+    }
+
+    field "EFFECTIVE.DATE" {
+        label {
+            en = "Effective"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        hidden: true
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No Products defined.\""
+    }
+
+    field "SYSTEM.GROUP" {
+        comma-separator: false
+        operation: field-extract "GROUP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "SYSTEM.GROUP" false
+    }
+
+    field "V.PRODUCT.AA" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.DESIGNER,AA\""
+    }
+
+    field "V.PRODUCT.OTHER" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.DESIGNER,AA.OTHER\""
+    }
+
+    field "V.PRODUCT.NAA" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.DESIGNER,AA.NONAA\""
+    }
+
+    field "V.AA.PROD1" {
+        comma-separator: false
+        operation: if "LINE" Equals "\"OTHER\"" process "V.PRODUCT.OTHER" "V.PRODUCT.AA"
+    }
+
+    field "V.AA.PROD2" {
+        comma-separator: false
+        operation: if "SYSTEM.GROUP" Equals "\"YES\"" process "V.PRODUCT.NAA" "V.AA.PROD1"
+    }
+
+    field "V.AA.PRODUCT" {
+        comma-separator: false
+        operation: field-extract "V.AA.PROD2"
+    }
+
+    field "V.AA.PROD.MANAGER" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.MANAGER,AA\""
+    }
+
+    field "V.AA.PROD.LINK" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.LINK,AA\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "PRODUCT"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        from-field: "V.AA.PRODUCT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "PRODUCT"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "ID"
+        }
+
+        from-field: "V.AA.PRODUCT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Link"
+        }
+
+        label-field: "PRODUCT"
+        image: "link.gif" parameters {
+            function:  Input
+            field: "PRODUCT"
+        }
+
+        from-field: "V.AA.PROD.LINK"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Manage"
+        }
+
+        label-field: "PRODUCT"
+        image: "tools.gif" parameters {
+            function:  Input
+            field: "PRODUCT"
+        }
+
+        from-field: "V.AA.PROD.MANAGER"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "NO.BREADCRUMBS"
+}

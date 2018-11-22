@@ -1,0 +1,413 @@
+Enquiry "IS.CONTRACT.TRKDEL" for "name:/IS_Purchase:IS.CONTRACT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Track Delivery Contract List"
+    }
+
+    description {
+        en = "Delivery tracking of Assets"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "IS.E.BLD.TRACK.DELIVERY"
+    }
+
+    custom-selection {
+
+        field "IS.CONTRACT.ID" {
+            label {
+                en = "Contract Reference"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "PRODUCT" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        None
+    }
+
+    field "CUSTOMER ID" {
+        label {
+            en = "Customer ID"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PRODUCT ID" {
+        label {
+            en = "Product ID"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PRODUCT"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT"
+        conversion: getFrom "IS.PARAMETER" "DESCRIPTION" false
+    }
+
+    field "@ID" {
+        label {
+            en = "Purchase Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "STATUS.VALUE.DATE" {
+        label {
+            en = "Purchase Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS.VALUE.DATE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "COMM.REF" {
+        label {
+            en = "Commodity"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "COMMODITY"
+    }
+
+    field "COMMODITY.DESC" {
+        label {
+            en = "Commodity Desc"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "COMMODITY"
+        conversion: getFrom "IS.COMMODITY" "DESCRIPTION" false
+    }
+
+    field "ASSET.REF" {
+        label {
+            en = "Asset Reference"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ASSET.REF"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ASSET.COMM" {
+        label {
+            en = "Asset/Commodity Ref"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: if "ASSET.REF" Equals "NULL" process "COMM.REF" "ASSET.REF"
+    }
+
+    field "UNIT.PRICE" {
+        label {
+            en = "Unit Price"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "UNIT.PRICE"
+    }
+
+    field "QUANTITY" {
+        label {
+            en = "Purchase Quantity"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "QUANTITY"
+    }
+
+    field "PURCHASE.PRICE" {
+        label {
+            en = "Purchase Price"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PURCHASE.PRICE"
+    }
+
+    field "HYPEN" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "DELY.ID1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "@ID":"HYPEN":"COMMODITY"
+    }
+
+    field "DELY.ID2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "DELY.ID1":"HYPEN":"ASSET.REF"
+    }
+
+    field "CONT.DELY.ID" {
+        length: 100
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "ASSET.REF" NotEquals "NULL" process "DELY.ID2" "DELY.ID1"
+    }
+
+    field "TOT.DELIVERED.QTY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CONT.DELY.ID"
+        conversion: getFrom "IS.COMMODITY.POSITION" "TOT.DELIVERED.QTY" false
+    }
+
+    field "REVERSED.QTY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CONT.DELY.ID"
+        conversion: getFrom "IS.COMMODITY.POSITION" "REVERSED.QTY" false
+    }
+
+    field "TOT.DEL.QTY" {
+        label {
+            en = "Delivered Quantity"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Multi
+        operation: calc "TOT.DELIVERED.QTY" - "REVERSED.QTY"
+    }
+
+    field "PEN.QTY" {
+        label {
+            en = "Pending for Delivery"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: calc "QUANTITY" - "TOT.DEL.QTY"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Delivery tracking of Assets\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Purchase available for tracking\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Deliver Asset"
+        }
+
+        label-field: "ASSET.COMM"
+        image: "transferin.gif" parameters {
+            function:  Input
+            field: "CONT.DELY.ID"
+        }
+
+        screen: "IS.CONTRACT.DELIVERY,TXN.INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Reverse Delivery"
+        }
+
+        label-field: "ASSET.COMM"
+        image: "txnreverse.gif" parameters {
+            function:  Input
+            field: "CONT.DELY.ID"
+        }
+
+        screen: "IS.CONTRACT.DELIVERY,TXN.REVERSE"
+    }
+
+}

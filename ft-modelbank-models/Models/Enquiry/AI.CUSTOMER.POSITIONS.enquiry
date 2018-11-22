@@ -1,0 +1,364 @@
+Enquiry "AI.CUSTOMER.POSITIONS" for "name:/SC_ScoSecurityPositionUpdate:SECURITY.POSITION#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Portfolio Position"
+    }
+
+    description {
+        en = "Portfolio Position"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "SECURITY.ACCOUNT" {
+        Matches "!CURRENT.SEC.ACC"
+    }
+
+    fixed-selection "CLOSING.BAL.NO.NOM" {
+        NotEquals "0"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.ACCOUNT" {
+        }
+
+        AND
+
+        field "SECURITY.NUMBER" {
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 80
+        alignment: Right
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER.TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Securities Position - \""
+    }
+
+    field "HEADER.2.VALUE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 14
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+    }
+
+    field "SECURITY.NUMBER" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "ISIN" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "SEC.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "DEPOSITORY" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CLOSING.BAL.NO.NOM" {
+        label {
+            en = "Nominals"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CLOSING.BAL.NO.NOM"
+    }
+
+    field "SEC.CURR" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "SECURITY.CURRENCY" false
+    }
+
+    field "BOOK.COST.REF.CCY" {
+        label {
+            en = "Cost"
+        }
+
+        format: Currency "SEC.CURR" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BOOK.COST.REF.CCY"
+    }
+
+    field "AST" {
+        comments: " "
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "PORT.CCY" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "PRICE.CCY" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "PRICE.CURRENCY" false
+    }
+
+    field "SEC.CCY" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "SEC.CURR"
+    }
+
+    field "CONV.CCY" {
+        comma-separator: false
+        operation: calc "AST":"SEC.CCY"
+    }
+
+    field "CONV.CCY.1" {
+        comma-separator: false
+        operation: calc "CONV.CCY":"AST"
+    }
+
+    field "CONV.CCY.2" {
+        comma-separator: false
+        operation: calc "CONV.CCY.1":"PRICE.CCY"
+    }
+
+    field "CONV.CCY.3" {
+        comma-separator: false
+        operation: calc "AST":"PRICE.CCY"
+    }
+
+    field "CONV.CCY.4" {
+        comma-separator: false
+        operation: calc "CONV.CCY.3":"AST"
+    }
+
+    field "CONV.CCY.5" {
+        comma-separator: false
+        operation: calc "CONV.CCY.4":"PORT.CCY"
+    }
+
+    field "VALUE.DIS.CCY" {
+        comma-separator: false
+        operation: calc "VALUE":"CONV.CCY.5"
+        conversion: call
+        jBC: "@ E.SC.PF.VALUE.REF"
+    }
+
+    field "REF.AMT" {
+        label {
+            en = "Current valuation"
+        }
+
+        comments: "Value Ref Ccy"
+        format: Currency "PORT.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 9
+        }
+
+        operation: field-extract "VALUE.DIS.CCY"
+        conversion: call
+        jBC: "@ E.MB.SC.PF.HOLD.CONVERT"
+    }
+
+    field "RATE.REC" {
+        comments: "Returns rate and value in 3 items as local, sc and ref ccy"
+        length: 80
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.SC.MARKET.PRICE"
+    }
+
+    field "VALUE" {
+        comma-separator: false
+        operation: field-extract "RATE.REC"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "UNREAL.PL" {
+        label {
+            en = "Profit / loss"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "PORT.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 12
+        }
+
+        operation: calc "VALUE" - "GROSS.COST.REF.CCY"
+    }
+
+    field "CUST.NUMBER" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+        conversion: extract from 1 to 0 delimited by "-"
+    }
+
+    field "PORT" {
+        length: 14
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Buy More"
+        }
+
+        label-field: "ISIN"
+        criteria: "CURRENT.CU" > "CUST.NUMBER"
+        criteria: "CURRENT.PORT" > "PORT"
+        criteria: "CURRENT.SM" > "SECURITY.NUMBER"
+        criteria: "CURRENT.CCY" > "SEC.CCY" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SEC.OPEN.ORDER,AP.BUY.MORE.INP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Sell Part"
+        }
+
+        label-field: "ISIN"
+        criteria: "CURRENT.CU" > "CUST.NUMBER"
+        criteria: "CURRENT.PORT" > "PORT"
+        criteria: "CURRENT.SM" > "SECURITY.NUMBER"
+        criteria: "CURRENT.CCY" > "SEC.CCY" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SEC.OPEN.ORDER,AP.SELL.PART.INP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Sell All"
+        }
+
+        label-field: "ISIN"
+        criteria: "SECURITY.POSITION" > "@ID" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "SEC.OPEN.ORDER,AP.SELL.ALL.INP"
+    }
+
+    attributes: "NO.BREADCRUMBS"
+}

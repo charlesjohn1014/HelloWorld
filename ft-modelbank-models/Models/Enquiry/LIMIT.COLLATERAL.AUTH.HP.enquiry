@@ -1,0 +1,278 @@
+Enquiry "LIMIT.COLLATERAL.AUTH.HP" for "name:/LI_ModelBank:NOFILE.LIMIT.COLLATERAL.NAU#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "USER.RTN" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "USER" {
+            label {
+                en = "User"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised Transactions\""
+    }
+
+    field "TXN.ID" {
+        label {
+            en = "Transaction Id"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "APPL" {
+        label {
+            en = "Application"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "CUST" {
+        label {
+            en = "Customer"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "DATE.TIME" {
+        label {
+            en = "Date Time"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Pending Transactions\""
+    }
+
+    field "COLL" {
+        comma-separator: false
+        operation: constant "\"COLLATERAL\""
+    }
+
+    field "COLL.RIGHT" {
+        comma-separator: false
+        operation: constant "\"COLLATERAL.RIGHT\""
+    }
+
+    field "LIMIT" {
+        comma-separator: false
+        operation: constant "\"LIMIT\""
+    }
+
+    field "VERSION.LIMIT" {
+        comma-separator: false
+        operation: constant "\"LIMIT,NAU\""
+    }
+
+    field "VERSION.COLL" {
+        comma-separator: false
+        operation: constant "\"COLLATERAL,INP\""
+    }
+
+    field "VERSION.COLL.RIGHT" {
+        comma-separator: false
+        operation: constant "\"COLLATERAL.RIGHT,INP\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "COND" {
+        comma-separator: false
+        operation: if "APPL" Equals "COLL" process "VERSION.COLL" "NULL"
+    }
+
+    field "COND1" {
+        comma-separator: false
+        operation: if "APPL" Equals "COLL.RIGHT" process "VERSION.COLL.RIGHT" "COND"
+    }
+
+    field "DISP" {
+        comma-separator: false
+        operation: if "APPL" Equals "LIMIT" process "VERSION.LIMIT" "COND1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "TXN.ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "TXN.ID"
+        }
+
+        from-field: "DISP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "TXN.ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "TXN.ID"
+        }
+
+        from-field: "DISP"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View"
+        }
+
+        label-field: "TXN.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "TXN.ID"
+        }
+
+        from-field: "DISP"
+    }
+
+}

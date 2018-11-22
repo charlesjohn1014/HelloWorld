@@ -1,0 +1,241 @@
+Enquiry "BL.BLR.SETTLE" for "name:/BL_Foundation:BL.REGISTER#" {
+    metamodelVersion: "1.30.6"
+    start-line: 1
+    end-line: 99
+    build-routines {
+        jBC: "E.CONV.AMT.BLR.NUL"
+        jBC: "E.BUILD.BL.REG.SETTLE"
+    }
+
+    fixed-selection "BILL.TYPE" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "SYS.STATUS" {
+        NotEquals "\"LIQ\""
+    }
+
+    custom-selection {
+
+        field "CURRENCY" {
+            mandatory: true
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DOCUMENT.NO" {
+            label {
+                en = "Invoice Number"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DOCUMENT.DATE" {
+            label {
+                en = "Invoice Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "DRAWEE" {
+            label {
+                en = "Buyer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "BL Register"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "BL Register ID"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DOCUMENT.NO" {
+        label {
+            en = "Invoice Number"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.NO"
+    }
+
+    field "DOCUMENT.DATE" {
+        label {
+            en = "Invoice Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.DATE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "AVAILED.AMOUNT" {
+        label {
+            en = "Availed Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AVAILED.AMOUNT"
+    }
+
+    field "AMOUNT.SETTLED" {
+        label {
+            en = "Amount Settled"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.SETTLED"
+    }
+
+    field "SETTLEMENT.TYPE" {
+        label {
+            en = "Settlement Type"
+        }
+
+        display-type: "EDIT"
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.TYPE"
+    }
+
+    field "SETTLEMENT.AMT" {
+        label {
+            en = "Settlement Amount"
+        }
+
+        display-type: "EDIT"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SETTLEMENT.AMT"
+    }
+
+    tool AM.ENQ.DETAIL {
+        label {
+            en = "Settlement"
+        }
+
+        command: "docommand(\'BL,BR.SETTLE I F3\')"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Define Settlement Amount"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "BL.REGISTER,BLR.SETTLE"
+    }
+
+    attributes: "FASTPATH"
+}

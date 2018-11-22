@@ -1,0 +1,235 @@
+Enquiry "DE.XML" for "name:/DE_Config:DE.O.HISTORY#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "KEY" {
+            mandatory: true
+            label {
+                en = "Key"
+            }
+
+        }
+
+        AND
+
+        field "MESSAGE.TEXT" {
+            mandatory: true
+            label {
+                en = "CARRIER"
+            }
+
+        }
+
+        None
+    }
+
+    field "CARRIER.TYPE" {
+        comments: "To get the carrier type from selection"
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "MESSAGE.TEXT"
+    }
+
+    field "SECUREMSG" {
+        comma-separator: false
+        operation: constant "\"SECUREMSG\""
+    }
+
+    field "EMAIL" {
+        comma-separator: false
+        operation: constant "\"EMAIL\""
+    }
+
+    field "SMS" {
+        comma-separator: false
+        operation: constant "\"SMS\""
+    }
+
+    field "MSG.TAGS" {
+        comments: "The list of tags for SECUREMSG The values will be retrieved in the same order as above."
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"FromCustomerToCustomerSubjectMessage\""
+    }
+
+    field "EMAIL.TAGS" {
+        comments: "The list of tags for EMAIL Carrier The values will be retrieved in the same order as above."
+        comma-separator: false
+        operation: constant "\"FromToSubjectBody\""
+    }
+
+    field "SMS.TAGS" {
+        comments: "The list of tags for SMS Carrier The values will be retrieved in the same order as above."
+        comma-separator: false
+        operation: constant "\"senderreceivermessage\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DECISION1" {
+        comments: "If carrier is SMS then use SMS tags given above"
+        comma-separator: false
+        operation: if "CARRIER.TYPE" Equals "SMS" process "SMS.TAGS" "DECISION2"
+    }
+
+    field "DECISION2" {
+        comments: "If carrier is EMAIL then use EMAIL tags else use SECUREMSG tags"
+        comma-separator: false
+        operation: if "CARRIER.TYPE" Equals "EMAIL" process "EMAIL.TAGS" "MSG.TAGS"
+    }
+
+    field "TAG.VALUES" {
+        comments:
+        "Check the previous conditions and pass the tags to the routine to fetch tag values in the same order"
+        comma-separator: false
+        operation: if "DECISION1" NotEquals "NULL" process "DECISION1" "DECISION2"
+        conversion: call
+        jBC: "@ E.MB.DE.XML"
+    }
+
+    field "FROM.HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Message From:\""
+    }
+
+    field "FROM.E.S" {
+        comments: "For EMAIL and SMS"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TAG.VALUES"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "FROM.MSG" {
+        comments: "for SECUREMSG"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TAG.VALUES"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "FROM" {
+        label {
+            en = "Message From:"
+        }
+
+        comments: "display the value"
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 0
+        }
+
+        operation: if "CARRIER.TYPE" Equals "SECUREMSG" process "FROM.MSG" "FROM.E.S"
+    }
+
+    field "TO.HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Message To:\""
+    }
+
+    field "TO.MSG" {
+        comments: "For SECUREMSG"
+        comma-separator: false
+        operation: field-extract "TAG.VALUES"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TO.E.S" {
+        comments: "For EMAIL and SMS"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TAG.VALUES"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "TO" {
+        label {
+            en = "Message To:"
+        }
+
+        comments: "Display the value"
+        display-type: "CLASS-ENQ.H.ID"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: if "CARRIER.TYPE" Equals "SECUREMSG" process "TO.MSG" "TO.E.S"
+    }
+
+    field "SUB.MSG" {
+        comma-separator: false
+        operation: field-extract "TAG.VALUES"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "SUB.E.S" {
+        comma-separator: false
+        operation: field-extract "TAG.VALUES"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "SUBJECT" {
+        label {
+            en = "Subject"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "CARRIER.TYPE" Equals "SECUREMSG" process "SUB.MSG" "SUB.E.S"
+    }
+
+    field "MESS.E.S" {
+        comma-separator: false
+        operation: field-extract "TAG.VALUES"
+        conversion: extract from 4 to 2 delimited by "*"
+    }
+
+    field "MESS.MSG" {
+        comma-separator: false
+        operation: field-extract "TAG.VALUES"
+        conversion: extract from 6 to 2 delimited by "*"
+    }
+
+    field "MESSAGE" {
+        label {
+            en = "Message"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "CARRIER.TYPE" Equals "SECUREMSG" process "MESS.MSG" "MESS.E.S"
+    }
+
+}

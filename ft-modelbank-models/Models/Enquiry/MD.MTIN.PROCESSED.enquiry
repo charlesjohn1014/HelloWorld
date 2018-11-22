@@ -1,0 +1,343 @@
+Enquiry "MD.MTIN.PROCESSED" for "name:/MD_Contract:MD.DEAL$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Inward MT messages of MD processed"
+    }
+
+    description {
+        en = "MD Records in INAU"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99 fixed-selection "INWARD.MSG.REF" {
+        NotEquals "NULL"
+    }
+
+    fixed-selection "INWARD.MSG.TYPE" {
+        Equals "MT768", "MT769"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "INWARD.MSG.REF" {
+            label {
+                en = "Message Reference"
+            }
+
+        }
+
+        AND
+
+        field "INWARD.MSG.TYPE" {
+            label {
+                en = "MT Type"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "PRINCIPAL.AMOUNT" {
+            label {
+                en = "Guarantee Amount"
+            }
+
+        }
+
+        AND
+
+        field "DEAL.DATE" {
+            label {
+                en = "Issued Date"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        AND
+
+        field "RECEIVING.BANK" {
+            label {
+                en = "Receiving Bank ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "TXN.REF" {
+        label {
+            en = "Transaction Reference"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "REFERENCE.1" {
+        label {
+            en = "Other Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.1"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: constant "\"MD Records in INAU amended through SWIFT Msg\""
+    }
+
+    field "RECEIVING.BANK" {
+        label {
+            en = "Receiving Bank"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECEIVING.BANK"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "GET.INWARD.REF" {
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "TXN.REF"
+        conversion: call
+        jBC: "@ E.MB.CONV.MD.VERSION"
+    }
+
+    field "MESSAGE.TYPE" {
+        label {
+            en = "Message Type"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "GET.INWARD.REF"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "PRINCIPAL.AMOUNT" {
+        label {
+            en = "Guarantee Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRINCIPAL.AMOUNT"
+    }
+
+    field "NULL" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "VER.DEC" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"MD.DEAL,MT.IN\""
+    }
+
+    field "VER.DEC1" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"MD.DEAL,MT.IN769\""
+    }
+
+    field "STATUS" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 0 to 25
+    }
+
+    field "INWARD.REF" {
+        label {
+            en = "Inward.Ref"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "GET.INWARD.REF"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "INWARD.MSG.TYPE" {
+        length: 6
+        alignment: Left
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Multi
+        operation: field-extract "GET.INWARD.REF"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No MD Txn in INAU - Amended through Inward SWIFT\""
+    }
+
+    field "MT768" {
+        comma-separator: false
+        operation: constant "\"MT768\""
+    }
+
+    field "MT769" {
+        comma-separator: false
+        operation: constant "\"MT769\""
+    }
+
+    field "VER.FINAL" {
+        comma-separator: false
+        operation: if "INWARD.MSG.TYPE" Equals "MT768" process "VER.DEC" "VER.DEC1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "TXN.REF"
+        image: "edit.gif"
+        criteria: "INWARD.MSG.REF" parameters {
+            function:  Input
+            field: "TXN.REF"
+        }
+
+        from-field: "VER.FINAL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View SWIFT message"
+        }
+
+        label-field: "TXN.REF"
+        image: "view.gif"
+        criteria: "KEY" Equals "INWARD.REF"
+        enquiry: "INC.MSG.DETS"
+    }
+
+}

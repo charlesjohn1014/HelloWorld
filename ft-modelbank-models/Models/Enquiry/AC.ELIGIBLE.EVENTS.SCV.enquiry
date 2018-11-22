@@ -1,0 +1,140 @@
+Enquiry "AC.ELIGIBLE.EVENTS.SCV" for "name:/BE_ModelBank:NOFILE.AC.GET.EVENTS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Events"
+    }
+
+    description {
+        en = "Events"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ACCOUNT.NO" {
+        Equals "!CURRENT.ACCOUNT"
+    }
+
+    custom-selection {
+
+        field "ACCT.NUMBER" {
+            mandatory: true
+            label {
+                en = "Account Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "EVENT.TYPE" false
+    }
+
+    field "EXT" {
+        comma-separator: false
+        operation: constant "\"EXTERNAL\""
+    }
+
+    field "TEC.EXT" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "SUBSCRIPTION.LEVEL" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "EVENTS" {
+        label {
+            en = "Alert when"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "TEC.EXT" Equals "EXT" process "ID" "NULL"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "ACCT" {
+        comma-separator: false
+        operation: selection "ACCT.NUMBER"
+    }
+
+    field "INHERIT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "INHERIT" false
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"...YES...\""
+    }
+
+    field "VERSION.1" {
+        comma-separator: false
+        operation: constant "\"EB.ALERT.REQUEST,SCV\""
+    }
+
+    field "VERSION.2" {
+        comma-separator: false
+        operation: constant "\"EB.ALERT.REQUEST,SCV.INHERIT\""
+    }
+
+    field "VERSION.FINAL" {
+        comma-separator: false
+        operation: if "INHERIT" Matches "YES" process "VERSION.2" "VERSION.1"
+    }
+
+    field "ZERORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No events for this Account/Product\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Subscribe "
+        }
+
+        label-field: "EVENTS"
+        image: "new.gif"
+        criteria: "TEC.ITEMS" > "ID"
+        criteria: "ACCOUNT" > "ACCT"
+        criteria: "CURRENT.TYPE" > "TYPE" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        from-field: "VERSION.FINAL"
+    }
+
+    security {
+        application: "TEC.ITEMS"
+        field: "TYPE"
+        abort: true
+    }
+
+    attributes: "NO.BREADCRUMBS"
+}

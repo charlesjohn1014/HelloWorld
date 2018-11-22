@@ -1,0 +1,121 @@
+Enquiry "AA.SDB.BOX.AUTHORISATION" for "name:/BX_Framework:AA.SDB.BOX#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Update Safe Deposit Box Status"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "STATUS" {
+        NotEquals "AVAILABLE"
+    }
+
+    fixed-selection "ARRANGEMENT.ID" {
+        Equals "\"\""
+    }
+
+    custom-selection {
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+            operands: NotEquals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        label {
+            en = "Safe Deposit Box"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Translate
+        length: 16
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Safe Deposit Box\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Box Number"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "STATUS" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "EB.LOOKUP" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"AA.SDB.BOX.STATUS*\""
+    }
+
+    field "CON.DES" {
+        label {
+            en = "Status"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: calc "EB.LOOKUP":"STATUS"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "ZERORECS" {
+        display-type: "CLASS-ENQ.NORECS"
+        format: Translate break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        operation: constant "\"All Boxes are in available status\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Mark Box Available"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "AA.SDB.BOX,AA.STATUS.CHANGE"
+    }
+
+    attributes: "FASTPATH" ; "ALLDATA" ; "SINGLE.BACKGROUND.COLOUR"
+}

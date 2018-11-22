@@ -1,0 +1,736 @@
+Enquiry "DX.OPEN.POSITIONS.COS" for "name:/DX_Position:DX.REP.POSITION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Derivatives Open Positions"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    no-mandatory-selection: 1
+    fixed-sort: "CUSTOMER" Null
+    fixed-sort: "PORTFOLIO" Null
+    fixed-sort: "POSITION.TYPE" Null
+    fixed-sort: "OPTION.TYPE" Null
+    fixed-sort: "CONTRACT" Null
+    fixed-sort: "MATURITY.DATE" Null
+    fixed-sort: "STRIKE.PRICE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Position Key"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PORTFOLIO" {
+            label {
+                en = "Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT" {
+            label {
+                en = "Contract"
+            }
+
+        }
+
+        AND
+
+        field "MATURITY.DATE" {
+            label {
+                en = "Maturity Date"
+            }
+
+        }
+
+        AND
+
+        field "CALL.PUT" {
+            label {
+                en = "Call or Put"
+            }
+
+        }
+
+        AND
+
+        field "EXT.STRIKE.PRI" {
+            label {
+                en = "Strike Price"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Trade Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Trades Open against this Position\""
+    }
+
+    field "MKT.PRICE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COB.PRICE.ID"
+    }
+
+    field "NUL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "USER.PS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "PRICE.SET"
+    }
+
+    field "PART.KEY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "COB.PRICE.ID"
+        conversion: extract from 2 to 0 delimited by ":"
+    }
+
+    field "TRANSACTION.IDS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+    }
+
+    field "CONTRACT.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "CONTRACT.CODE" false
+    }
+
+    field "CONT.DESC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CONTRACT.ID"
+        conversion: getFrom "DX.CONTRACT.MASTER" "DESCRIPT" false
+    }
+
+    field "B.CONT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: break-change "CONTRACT.ID"
+    }
+
+    field "TRADE.ID" {
+        label {
+            en = "Trade Ref"
+        }
+
+        display-type: "CLASS-FDCT"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "SOURCE.ID" false
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "TRADE.DATE" false
+    }
+
+    field "TRADE.CCY" {
+        label {
+            en = "Trade Ccy"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "TRADE.CCY" false
+    }
+
+    field "DELIVERY.CURRENCY" {
+        label {
+            en = "Delivery Ccy"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DELIVERY.CURRENCY"
+    }
+
+    field "BUY.SELL" {
+        display-type: "CLASS-DESCR"
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "BUY.SELL" false
+    }
+
+    field "SIGN.M" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"-1\""
+    }
+
+    field "SIGN.P" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"1\""
+    }
+
+    field "BS.SIGN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "BUY.SELL" Equals "\"BUY\"" process "SIGN.P" "SIGN.M"
+    }
+
+    field "ORIG.LOTS.ABS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "ORIGINAL.LOTS" false
+    }
+
+    field "REMAIN.LOTS.ABS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "LOTS" false
+    }
+
+    field "PRICE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "PRICE" false
+    }
+
+    field "INI.PRICE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "INT.PRICE" false
+    }
+
+    field "TICK.FACTOR" {
+        comma-separator: false
+        operation: calc "INI.PRICE" / "PRICE"
+    }
+
+    field "TICK.F" {
+        comma-separator: false
+        operation: field-extract "TICK.FACTOR"
+    }
+
+    field "TRADE.PRICE.ABS" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PRICE" * "REMAIN.LOTS.ABS" * "TICK.F"
+    }
+
+    field "TRADE.PRICE" {
+        label {
+            en = "Trade Cost"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "TRADE.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: calc "TRADE.PRICE.ABS" * "BS.SIGN" * "SIGN.M"
+    }
+
+    field "ORIG.LOTS" {
+        label {
+            en = "Initial Lots"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: calc "ORIG.LOTS.ABS" * "BS.SIGN"
+    }
+
+    field "REMAIN.LOTS" {
+        label {
+            en = "Remaining Lots"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: calc "REMAIN.LOTS.ABS" * "BS.SIGN"
+    }
+
+    field "CLOSED.LOTS" {
+        label {
+            en = "Closed Out Lots"
+        }
+
+        display-type: "CLASS-AMNUM"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: calc "ORIG.LOTS" - "REMAIN.LOTS"
+    }
+
+    field "EVENT.TYPES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "EVENT.TYPE" false
+    }
+
+    field "EVENT.TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "EVENT.TYPES"
+        conversion: extract from 1 to 0 delimited by " "
+    }
+
+    field "EVENT.TYPE.DESC" {
+        label {
+            en = "Status"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "EVENT.TYPE"
+        conversion: getFrom "DX.EVENT.TYPE" "DESCRIPTION" false
+    }
+
+    field "STRATEGY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "STRATEGY" false
+    }
+
+    field "STRATEGY.DESC" {
+        label {
+            en = "Strategy"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "STRATEGY"
+        conversion: getFrom "DX.STRATEGY" "DESCRIPTION" false
+    }
+
+    field "CONTRACT.SIZE" {
+        display-type: "CLASS-AMNUM"
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "CONTRACT.SIZE" false
+    }
+
+    field "MT.PRICE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "MKT.PRICE"
+        conversion: getFrom "DX.MARKET.PRICE" "PRICE" false
+    }
+
+    field "MKT.PRICE.LOT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "MT.PRICE" NotEquals "NUL" process "MT.PRICE" "PRICE"
+    }
+
+    field "MKT.PRICE.TRADE" {
+        label {
+            en = "Market Cost"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "TRADE.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: calc "MKT.PRICE.LOT" * "REMAIN.LOTS" * "SIGN.M" * "TICK.F"
+    }
+
+    field "VAR.MAR.CCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "VAR.MAR.CCY"
+    }
+
+    field "VAR.MAR" {
+        label {
+            en = "Variation Margin"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "VAR.MAR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "VAR.MAR.REF.CCY" false
+    }
+
+    field "TOT.UNRL.PL" {
+        label {
+            en = "Unrealised P&L"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "VAR.MAR.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: getFrom "DX.TRANSACTION" "UOPT.PANDL.REF.CCY" false
+    }
+
+    field "TOTAL.FLD" {
+        display-type: "CLASS-DESCR" break-condition {
+            field: "B.CONT"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CONT.DESC"
+    }
+
+    field "TOTAL.CCY" {
+        break-condition {
+            field: "B.CONT"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "TRADE.CCY"
+    }
+
+    field "DEL.CCY" {
+        break-condition {
+            field: "B.CONT"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DELIVERY.CURRENCY"
+    }
+
+    field "TOTAL.TRADE.PRICE" {
+        display-type: "CLASS-TAMNUM"
+        format: Currency "TRADE.CCY" negative-pattern -# break-condition {
+            field: "B.CONT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: total "TRADE.PRICE"
+    }
+
+    field "TOTAL.ORIG.LOTS" {
+        display-type: "CLASS-TAMNUM" break-condition {
+            field: "B.CONT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: total "ORIG.LOTS"
+    }
+
+    field "TOTAL.REMAIN.LOTS" {
+        display-type: "CLASS-TAMNUM" break-condition {
+            field: "B.CONT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: total "REMAIN.LOTS"
+    }
+
+    field "TOTAL.CLOSED.LOTS" {
+        display-type: "CLASS-TAMNUM" break-condition {
+            field: "B.CONT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: total "CLOSED.LOTS"
+    }
+
+    field "TOTAL.MKT.PRICE.TR" {
+        display-type: "CLASS-TAMNUM"
+        format: Currency "TRADE.CCY" negative-pattern -# break-condition {
+            field: "B.CONT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: total "MKT.PRICE.TRADE"
+    }
+
+    field "TOTAL.VAR.MAR" {
+        display-type: "CLASS-TAMNUM"
+        format: Currency "VAR.MAR.CCY" negative-pattern -# break-condition {
+            field: "B.CONT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: total "VAR.MAR"
+    }
+
+    field "TOTAL.UNRL.PL" {
+        display-type: "CLASS-TAMNUM"
+        format: Currency "VAR.MAR.CCY" negative-pattern -# break-condition {
+            field: "B.CONT"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: total "TOT.UNRL.PL"
+    }
+
+    field "POS.TYPE" {
+        length: 6
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "POSITION.TYPE"
+    }
+
+    field "DD.1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"DX.OPTION.MONEY.MODEL\""
+    }
+
+    field "DD2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"DX.TRADES.OVERDUE\""
+    }
+
+    field "DRILLDOWN" {
+        label {
+            en = "Drilldown"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "POS.TYPE" Equals "\"FUTURE\"" process "DD2" "DD.1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "TRADE.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "TRADE.ID"
+        }
+
+        screen: "DX.TRADE,VIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "TRADE.ID"
+        image: "details.gif"
+        criteria: "@ID" Equals "TRADE.ID"
+        from-field: "DRILLDOWN"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

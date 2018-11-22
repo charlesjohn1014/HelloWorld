@@ -1,0 +1,325 @@
+Enquiry "PM.DPALII" for "name:/PM_Reports:NOFILE.PM.DPAL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "PM.DPALII"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "CCY" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "INIT.COMMON" {
+        comments: "Initialisw the PM.ENQ.COMMON common area and read the PM.ENQ.PARAM fil e using the ID passed."
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "HDRLINES1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"-----------------\""
+    }
+
+    field "HDRLINES2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 2
+        }
+
+        operation: constant "\"-------------------- Placings ------------------\""
+    }
+
+    field "HDRLINES3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 2
+        }
+
+        operation: constant "\"----------- Takings ------------\""
+    }
+
+    field "DIS" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Discounted Profit & Loss Analysis II\""
+    }
+
+    field "CCY" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency\""
+    }
+
+    field "BUILD.DATA" {
+        comments:
+        "Selects the correct POSN.CLASS file based on the contects of the PM.EN Q.PARAM record and builds R.RECORD."
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.DISCOUNTED.PL"
+    }
+
+    field "CURRENCY" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "PM.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        display-type: "CLASS-ENQ.H.ID"
+        format: User
+        length: 3
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "B.PM.CCY" {
+        comma-separator: false
+        operation: break-change "PM.CCY"
+    }
+
+    field "DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: User
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE"
+    }
+
+    field "PLACINGS" {
+        label {
+            en = "Amount"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PLACINGS"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.PLACINGS" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 12
+        }
+
+        processing-mode: Multi
+        operation: field-extract "PLACINGS"
+    }
+
+    field "PLAC.AVG.RATE" {
+        label {
+            en = "Avg. Rate"
+        }
+
+        format: User
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PLAC.AVG.RATE"
+        conversion: iconv "MD4"
+        conversion: oconv "MD4"
+    }
+
+    field "MKT.MID.RATE1" {
+        label {
+            en = "Mkt. Rate"
+        }
+
+        format: User
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 38
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MKT.MID.RATE"
+        conversion: iconv "MD4"
+        conversion: oconv "MD4"
+    }
+
+    field "TAKINGS" {
+        label {
+            en = "Amount"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TAKINGS"
+        conversion: call
+        jBC: "@ E.PM.FMT.AMT"
+    }
+
+    field "DISP.TAKINGS" {
+        label {
+            en = "Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 46
+        }
+
+        processing-mode: Multi
+        operation: field-extract "TAKINGS"
+    }
+
+    field "TAK.AVG.RATE" {
+        label {
+            en = "Avg. Rate"
+        }
+
+        format: User
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 64
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TAK.AVG.RATE"
+        conversion: iconv "MD4"
+        conversion: oconv "MD4"
+    }
+
+    field "MKT.MID.RATE2" {
+        label {
+            en = "Mkt. Rate"
+        }
+
+        format: User
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "MKT.MID.RATE"
+        conversion: iconv "MD4"
+        conversion: oconv "MD4"
+    }
+
+    field "TXN.REF" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.IDS"
+    }
+
+    field "TXN.REF1" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TXN.REF"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transaction Details"
+        }
+
+        label-field: "DATE"
+        image: "view.gif"
+        criteria: "ID2" Equals "TXN.REF1"
+        enquiry: "DPC.TXNS"
+    }
+
+}

@@ -1,0 +1,578 @@
+Enquiry "NR.MATCHED.ITEMS" for "name:/NR_Contract:NR.ITEMS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Matched items"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.MB.BUILD.NR.ACCT.NO"
+    }
+
+    fixed-selection "MATCHED.ID" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "STMT.OR.LEDGER" {
+        Equals "S"
+    }
+
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "NR.ITEM" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "DATE.MATCHED" {
+            label {
+                en = "Date Matched"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACCOUNT.NO" {
+        length: 27
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "@ID" {
+        length: 27
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 0
+        }
+
+        operation: constant "\"Reconciled Item Reports For\""
+    }
+
+    field "KEY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: convert {
+            oldData: "."
+            newData: "-"
+        }
+
+    }
+
+    field "BREAK.ITEM" {
+        comma-separator: false
+        operation: break-change "KEY"
+    }
+
+    field "EXCESS.TEXT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Excess Cents\""
+    }
+
+    field "REVERSAL.TEXT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Reversal\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "CCY" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.CURRENCY"
+    }
+
+    field "ACC.NO" {
+        label {
+            en = "Reconciled Item Reports For"
+        }
+
+        display-type: "CLASS-ENQ.H.ID"
+        length: 16
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 41
+            line: 0
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NO"
+    }
+
+    field "ACCOUNT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 68
+            line: 0
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "ACCOUNT.CCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 59
+            line: 0
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "PROCESS.RECORD" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "KEY"
+        conversion: call
+        jBC: "@ E.NR.BUILD.MATCHES"
+    }
+
+    field "MATCHED.TO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATCHED.TO"
+    }
+
+    field "KEY.1" {
+        label {
+            en = "Item ID"
+        }
+
+        length: 22
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 1
+    }
+
+    field "ENTRY.DATE" {
+        label {
+            en = "Entry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ENTRY.DATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "DEBIT.OR.CREDIT" {
+        label {
+            en = "Dr / Cr"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEBIT.OR.CREDIT"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "AMOUNT.2" {
+        format: Currency "CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 10
+    }
+
+    field "DEB.OR.CRED.2" {
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 9
+    }
+
+    field "VALUE.DATE.2" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 7
+    }
+
+    field "ENTRY.DATE.2" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 8
+    }
+
+    field "KEY.2" {
+        length: 22
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 2
+    }
+
+    field "REVERSAL.1" {
+        length: 2
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REVERSAL"
+    }
+
+    field "REVERSE.1" {
+        comma-separator: false
+        position {
+            column: 1
+            line: + 3
+        }
+
+        operation: if "REVERSAL.1" NotEquals "NULL" process "REVERSAL.TEXT" "NULL"
+    }
+
+    field "ACC.OWNER.REF" {
+        label {
+            en = "Acc Owner Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACC.OWNER.REF"
+    }
+
+    field "TRANS.TYPE" {
+        label {
+            en = "Trans Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.TYPE"
+    }
+
+    field "TRANS.TYPE.2" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+            line: + 1
+        }
+
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 11
+    }
+
+    field "ACC.OWN.REF.2" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+            line: + 1
+        }
+
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 12
+    }
+
+    field "REVERSAL.2" {
+        length: 2
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 16
+    }
+
+    field "REVERSE.2" {
+        comma-separator: false
+        position {
+            column: 120
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: if "REVERSAL.2" NotEquals "NULL" process "REVERSAL.TEXT" "NULL"
+    }
+
+    field "EXCESS.CENTS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXCESS.CENTS"
+    }
+
+    field "EXCESS.TITLE.1" {
+        comma-separator: false
+        position {
+            column: 39
+            line: + 4
+        }
+
+        operation: if "EXCESS.CENTS" NotEquals "NULL" process "EXCESS.TEXT" "NULL"
+    }
+
+    field "EXCESS.AMOUNT.1" {
+        format: Currency "CCY" negative-pattern -#
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: if "EXCESS.CENTS" NotEquals "NULL" process "EXCESS.CENTS" "NULL"
+    }
+
+    field "EXCESS.CENTS.2" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATCHED.TO"
+        conversion: value 18
+    }
+
+    field "EXCESS.CENTS.2.02" {
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 86
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: if "EXCESS.CENTS.2" NotEquals "NULL" process "EXCESS.CENTS.2" "NULL"
+    }
+
+    field "EXCESS.TITLE.2" {
+        comma-separator: false
+        position {
+            column: 103
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: if "EXCESS.CENTS.2" NotEquals "NULL" process "EXCESS.TEXT" "NULL"
+    }
+
+    field "MATCHED.TEXT" {
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        operation: constant "\"Matched\""
+    }
+
+    field "DATE.MATCHED" {
+        label {
+            en = "Date Matched"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.MATCHED"
+    }
+
+    field "AUTHORISER" {
+        label {
+            en = "Authoriser"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AUTHORISER"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "BLANK.LINE" {
+        break-condition {
+            field: "BREAK.ITEM"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Matched Items Found\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "KEY.1"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "NR.ITEMS"
+    }
+
+}

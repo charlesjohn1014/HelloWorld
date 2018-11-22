@@ -1,0 +1,147 @@
+Enquiry "VOSTRO.CP" for "name:/ST_Config:AGENCY#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Vostro Account Details"
+    }
+
+    description {
+        en = "Vostro Account Details"
+    }
+
+    zero-records-display: true
+    start-line: 6
+    end-line: 99 fixed-selection "AGENCY" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "THEIR.ACCT.NO" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "AGENCY" {
+            label {
+                en = "Counterparty"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Vostro Account Details\""
+    }
+
+    field "PK.VOSTRO.ACCT.NO" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Vostro Account\""
+    }
+
+    field "THEIR.ACCT.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "THEIR.ACCT.NO"
+    }
+
+    field "CURRENCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Currency\""
+    }
+
+    field "VOSTRO.CCY" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Multi
+        operation: field-extract "THEIR.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "PK.VOSTRO.ONLINE.BAL" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        operation: constant "\"Vostro Online Balance\""
+    }
+
+    field "VOSTRO.ONLINE.BAL" {
+        display-type: "CLASS-AMNUM"
+        format: Currency "VOSTRO.CCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 66
+        }
+
+        processing-mode: Multi
+        operation: field-extract "THEIR.ACCT.NO"
+        conversion: getFrom "EB.CONTRACT.BALANCES" "ONLINE.ACTUAL.BAL" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Vostro Accounts Found For Counterparty\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Forward Movements"
+        }
+
+        label-field: "PK.VOSTRO.ACCT.NO"
+        image: "view.gif"
+        criteria: "ACCOUNT.NUMBER" Contains "THEIR.ACCT.NO"
+        enquiry: "NOSTRO.FWD.BAL"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

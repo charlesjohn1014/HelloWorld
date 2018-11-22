@@ -1,0 +1,537 @@
+Enquiry "AA.DETAILS.WAIVE.CHARGE" for "name:/AA_ModelBank:NOFILE.CHARGE.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Waive Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "RET.LIST" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "ID"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "GET.BILL" {
+        comma-separator: false
+        operation: selection "BILL.ID"
+    }
+
+    field "BILL.ID" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "RET.LIST"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 125
+        no-header: true
+        operation: constant "\"Charge Details\""
+    }
+
+    field "L.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        operation: constant "\"Payment Date\""
+    }
+
+    field "C.L.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        column-width: 125
+        operation: if "BILL.ID" Equals "GET.BILL" process "L.DATE" "\"\""
+    }
+
+    field "PAYMENT.DATE" {
+        label {
+            en = "Payment Date"
+        }
+
+        format: Date
+        length: 19
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "D.PAYMENT.DATE" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 80
+        operation: if "BILL.ID" Equals "GET.BILL" process "PAYMENT.DATE" "\"\""
+    }
+
+    field "L.TYPE" {
+        comma-separator: false
+        operation: constant "\"Type\""
+    }
+
+    field "C.L.TYPE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 45
+        operation: if "BILL.ID" Equals "GET.BILL" process "L.TYPE" "\"\""
+    }
+
+    field "PROPERTY" {
+        label {
+            en = "Type"
+        }
+
+        format: User
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "D.PROPERTY" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 37
+            line: + 1
+        }
+
+        column-width: 180
+        operation: if "BILL.ID" Equals "GET.BILL" process "PROPERTY" "\"\""
+    }
+
+    field "L.BILL.ID" {
+        comma-separator: false
+        operation: constant "\"Bill Id\""
+    }
+
+    field "C.L.BILL.ID" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+            line: + 1
+        }
+
+        column-width: 45
+        operation: if "BILL.ID" Equals "GET.BILL" process "L.BILL.ID" "\"\""
+    }
+
+    field "BILL.ID.02" {
+        label {
+            en = "Bill Field"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "D.BILL.ID.ONLY" {
+        comma-separator: false
+        operation: if "BILL.ID" Equals "GET.BILL" process "BILL.ID" "\"\""
+    }
+
+    field "D.BILL.ID" {
+        comma-separator: false
+        position {
+            column: 60
+            line: + 1
+        }
+
+        column-width: 100
+        operation: field-extract "D.BILL.ID.ONLY"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "L.DEFAULT.AMOUNT" {
+        comma-separator: false
+        operation: constant "\"Calculated Amount\""
+    }
+
+    field "C.L.DEFAULT.AMOUNT" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        column-width: 125
+        operation: if "BILL.ID" Equals "GET.BILL" process "L.DEFAULT.AMOUNT" "\"\""
+    }
+
+    field "DEFAULT.AMT" {
+        label {
+            en = "Default"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        operation: field-extract "RET.LIST"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "D.DEFAULT.AMT" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 80
+        operation: if "BILL.ID" Equals "GET.BILL" process "DEFAULT.AMT" "\"\""
+    }
+
+    field "L.WAVED.AMOUNT" {
+        comma-separator: false
+        operation: constant "\"Waived Amount\""
+    }
+
+    field "L.ADJ.AMOUNT" {
+        comma-separator: false
+        operation: constant "\"Adjustment Amount\""
+    }
+
+    field "C.L.WAVED.AMOUNT" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 3
+        }
+
+        column-width: 125
+        operation: if "BILL.ID" Equals "GET.BILL" process "L.WAVED.AMOUNT" "\"\""
+    }
+
+    field "MINUS.1" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "ADJUSTMENT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "RET.LIST"
+        conversion: extract from 13 to 1 delimited by "*"
+        conversion: call
+        jBC: "@ E.AA.CHARGE.DETAILS.CONV"
+    }
+
+    field "ADJ.TOTAL" {
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "WAIVE.AMT" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "WAIVE" {
+        comma-separator: false
+        operation: calc "WAIVE.AMT" * "MINUS.1"
+    }
+
+    field "D.WAIVE.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 20
+            line: + 3
+        }
+
+        column-width: 80
+        operation: if "BILL.ID" Equals "GET.BILL" process "WAIVE" "\"\""
+    }
+
+    field "WAIVE.REASON" {
+        length: 99
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 10 to 1 delimited by "*"
+        conversion: oconv "MCT"
+    }
+
+    field "ADJ.REASON" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "RET.LIST"
+        conversion: extract from 15 to 1 delimited by "*"
+        conversion: call
+        jBC: "@ E.AA.CHARGE.DETAILS.CONV"
+    }
+
+    field "L.REASON" {
+        comma-separator: false
+        operation: constant "\"Reason\""
+    }
+
+    field "C.REASON.1" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        operation: if "WAIVE.REASON" Equals "\"\"" process "\"\"" "L.REASON"
+    }
+
+    field "C.REASON.2" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        operation: if "ADJ.REASON" Equals "\"\"" process "\"\"" "L.REASON"
+    }
+
+    field "C.WAIVE.REASON" {
+        display-type: "CLASS-BOLD"
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 3
+        }
+
+        column-width: 45
+        processing-mode: Single
+        operation: if "BILL.ID" Equals "GET.BILL" process "C.REASON.1" "\"\""
+    }
+
+    field "D.WAIVE.REASON" {
+        comma-separator: false
+        position {
+            column: 37
+            line: + 3
+        }
+
+        column-width: 180
+        processing-mode: Multi
+        operation: if "BILL.ID" Equals "GET.BILL" process "WAIVE.REASON" "\"\""
+    }
+
+    field "L.ADJ.AMOUNT.02" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 4
+        }
+
+        column-width: 125
+        processing-mode: Single
+        operation: if "BILL.ID" Equals "GET.BILL" process "L.ADJ.AMOUNT" "\"\""
+    }
+
+    field "ADJ.AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 20
+            line: + 4
+            multiLine: true
+        }
+
+        column-width: 80
+        processing-mode: Multi
+        operation: if "BILL.ID" Equals "GET.BILL" process "ADJUSTMENT" "\"\""
+    }
+
+    field "C.ADJ.REASON" {
+        display-type: "CLASS-BOLD"
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 4
+        }
+
+        column-width: 45
+        operation: if "BILL.ID" Equals "GET.BILL" process "C.REASON.2" "\"\""
+    }
+
+    field "D.ADJ.REASON" {
+        comma-separator: false
+        position {
+            column: 37
+            line: + 4
+            multiLine: true
+        }
+
+        column-width: 180
+        processing-mode: Multi
+        operation: if "BILL.ID" Equals "GET.BILL" process "ADJ.REASON" "\"\""
+        conversion: oconv "MCT"
+    }
+
+    field "L.FINAL.AMT" {
+        comma-separator: false
+        operation: constant "\"Final Amount\""
+    }
+
+    field "C.L.FINAL.AMT" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        column-width: 125
+        operation: if "BILL.ID" Equals "GET.BILL" process "L.FINAL.AMT" "\"\""
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Final Amount"
+        }
+
+        format: User
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "FINAL" {
+        comma-separator: false
+        operation: calc "AMOUNT" - "ADJ.TOTAL"
+    }
+
+    field "D.AMOUNT" {
+        break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 80
+        operation: if "BILL.ID" Equals "GET.BILL" process "FINAL" "\"\""
+    }
+
+    field "L.OUT" {
+        comma-separator: false
+        operation: constant "\"Outstanding\""
+    }
+
+    field "C.L.OUT" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        column-width: 125
+        operation: if "BILL.ID" Equals "GET.BILL" process "L.OUT" "\"\""
+    }
+
+    field "OUTSTANDING" {
+        label {
+            en = "Outstanding"
+        }
+
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "D.OUTSTANDING" {
+        break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: if "BILL.ID" Equals "GET.BILL" process "OUTSTANDING" "\"\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "D.BILL.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "BILL.ID"
+        }
+
+        screen: "AA.BILL.DETAILS,AA"
+    }
+
+    attributes: "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

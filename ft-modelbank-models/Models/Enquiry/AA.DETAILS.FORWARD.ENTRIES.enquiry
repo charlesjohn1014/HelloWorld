@@ -1,0 +1,809 @@
+Enquiry "AA.DETAILS.FORWARD.ENTRIES" for "name:/AC_EntryCreation:STMT.ENTRY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Forward Account Statement"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.FORWARD.ENTRIES"
+    }
+
+    fixed-selection "REVERSAL.MARKER" {
+        Equals "\"\""
+    }
+
+    fixed-sort: "VALUE.DATE" Null
+    custom-selection {
+
+        field "VALUE.DATE" {
+            label {
+                en = "Value Date"
+            }
+
+            operands: LessThan, LessOrEquals
+        }
+
+        AND
+
+        field "ACCOUNT.NUMBER" {
+            mandatory: true
+            label {
+                en = "Account Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "LONG.POS.SIGN" {
+            label {
+                en = "Long Position Sign"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 90
+        operation: constant "\"Forward Entries\""
+    }
+
+    field "L.DATE" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 90
+        operation: constant "\"Date\""
+    }
+
+    field "L.REFERENCE" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 100
+        operation: constant "\"Reference\""
+    }
+
+    field "L.DESCRIPTION" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 150
+        operation: constant "\"Description\""
+    }
+
+    field "L.VALUE.DATE" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 80
+        operation: constant "\"Value Date\""
+    }
+
+    field "L.AMOUNT" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 78
+        processing-mode: Single
+        operation: constant "\"Amount\""
+    }
+
+    field "ACCOUNT.NUMBER" {
+        break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NUMBER"
+    }
+
+    field "BBFWD" {
+        display-type: "CLASS-ITALIC" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 150
+        operation: constant "\"Balance Brought Forward \""
+    }
+
+    field "OPENING.BALANCE" {
+        break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NUMBER"
+        conversion: call
+        jBC: "@ ENQ.GET.BAL"
+    }
+
+    field "CURRENCY" {
+        break-condition {
+            break: Once
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "EQU.CCY" {
+        break-condition {
+            break: Once
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+        conversion: getFixedCcy "CURRENCY"
+    }
+
+    field "OPE.BRACK" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"(\""
+    }
+
+    field "CLS.BRACK" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\")\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "AC.NO" {
+        break-condition {
+            break: Once
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NUMBER"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "BACK.DATED" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"B/DATED\""
+    }
+
+    field "TODAY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: today
+    }
+
+    field "PLUS" {
+        comments: "Used for running tota;" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"PLUS\""
+    }
+
+    field "LONG.POS.SIGN" {
+        comments: "Used for running tota;"
+        format: User break-condition {
+            break: Once
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "LONG.POS.SIGN"
+    }
+
+    field "MIN.SIGN.NARR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\'-\' = Credit\""
+    }
+
+    field "MIN.NARR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        escapeSequence: RV
+        operation: if "LONG.POS.SIGN" Equals "PLUS" process "MIN.SIGN.NARR" "NULL"
+    }
+
+    field "MINUS1" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "MIN.OPEN.BAL" {
+        comments: "Used for running tota;" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: calc "OPENING.BALANCE" * "MINUS1"
+    }
+
+    field "ADD.OPEN.BAL" {
+        comments: "Used for running tota;" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: if "LONG.POS.SIGN" Equals "PLUS" process "MIN.OPEN.BAL" "OPENING.BALANCE"
+    }
+
+    field "BGT.FWD" {
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: Once
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        escapeSequence: RV
+        position {
+            column: 50
+            line: + 1
+        }
+
+        column-width: 78
+        operation: if "LONG.POS.SIGN" Equals "PLUS" process "MIN.OPEN.BAL" "OPENING.BALANCE"
+    }
+
+    field "@ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "VALUE.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "BOOKING.DATE" {
+        label {
+            en = "Booking Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 90
+        processing-mode: Single
+        operation: application-field-name "BOOKING.DATE"
+    }
+
+    field "TRANS.REFERENCE" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANS.REFERENCE"
+    }
+
+    field "COMPANY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "TRANS.REFERENCE"
+        conversion: extract from 2 to 1 delimited by "\\"
+    }
+
+    field "D.TRANS.REFERENCE" {
+        label {
+            en = "Reference"
+        }
+
+        comments: "Used for running total calc."
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: calc "COMPANY":"TRANS.REFERENCE"
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Narrative"
+        }
+
+        comments: "Used for running total calc."
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        column-width: 150
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" true
+    }
+
+    field "D.VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        comments: "Used for running total calc."
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 2
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: field-extract "VALUE.DATE"
+    }
+
+    field "AMOUNT.FCY" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.FCY"
+    }
+
+    field "AMOUNT.LCY" {
+        comments: "Used for running total calc."
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LCY"
+    }
+
+    field "AMOUNT" {
+        comments: "Used for running total calc."
+        comma-separator: false
+        operation: if "AMOUNT.FCY" Equals "NULL" process "AMOUNT.LCY" "AMOUNT.FCY"
+    }
+
+    field "MIN.AMOUNT" {
+        comments: "Used for running total calc."
+        comma-separator: false
+        operation: calc "MINUS1" * "AMOUNT"
+    }
+
+    field "ADD.AMOUNT" {
+        comments: "Running balance includes this entry"
+        comma-separator: false
+        operation: if "LONG.POS.SIGN" Equals "PLUS" process "MIN.AMOUNT" "AMOUNT"
+    }
+
+    field "DISP.AMOUNT" {
+        comments: "Running balance includes this entry"
+        format: Currency "CURRENCY" negative-pattern #-
+        length: 16
+        alignment: Right
+        comma-separator: false
+        operation: if "LONG.POS.SIGN" Equals "PLUS" process "MIN.AMOUNT" "AMOUNT"
+    }
+
+    field "BALANCE" {
+        comments: "Running balance includes this entry"
+        display-type: "CLASS-AMNUM"
+        length: 16
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 50
+            line: + 2
+        }
+
+        column-width: 78
+        operation: field-extract "DISP.AMOUNT"
+    }
+
+    field "TOTAL.AMOUNT" {
+        comments: "Running balance includes this entry"
+        comma-separator: false
+        operation: calc "TOTAL.AMOUNT" + "ADD.AMOUNT"
+    }
+
+    field "RUNNING.BALANCE" {
+        comments: "Running balance includes this entry"
+        comma-separator: false
+        operation: calc "ADD.OPEN.BAL" + "TOTAL.AMOUNT"
+    }
+
+    field "DATE.TEST" {
+        comments: "Running balance includes this entry"
+        comma-separator: false
+        operation: if "VALUE.DATE" LessThan "TODAY" process "BACK.DATED" "VALUE.DATE"
+        conversion: oconv "D2E"
+        conversion: convert {
+            oldData: " "
+        }
+
+        conversion: replace {
+            newData: "B/DATED"
+        }
+
+    }
+
+    field "B.VALUE.DATE" {
+        comments: "Running balance includes this entry"
+        comma-separator: false
+        operation: break-change "DATE.TEST"
+        conversion: convert {
+            oldData: " "
+        }
+
+        conversion: replace {
+            newData: "B/DATED"
+        }
+
+    }
+
+    field "L.BALANCE" {
+        comments: "Running balance includes this entry"
+        display-type: "CLASS-ITALIC" break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+            line: + 3
+        }
+
+        column-width: 150
+        operation: constant "\"Balance\""
+    }
+
+    field "VALUE.DATED.BAL" {
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        escapeSequence: RV
+        position {
+            column: 50
+            line: + 3
+        }
+
+        column-width: 78
+        operation: field-extract "RUNNING.BALANCE"
+    }
+
+    field "EURO.NARR1" {
+        label {
+            en = "NARRATION"
+        }
+
+        comma-separator: false
+        operation: if "EQU.CCY" Equals "NULL" process "NULL" "EQU.CCY"
+    }
+
+    field "EURO.BAL.DISP" {
+        label {
+            en = "BALANCE"
+        }
+
+        comma-separator: false
+        operation: if "EQU.CCY" Equals "NULL" process "NULL" "EURO.BAL"
+    }
+
+    field "SYSTEM.ID" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SYSTEM.ID"
+    }
+
+    field "STMT.ENTRY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"STMT.ENTRY\""
+    }
+
+    field "FILE" {
+        comma-separator: false
+        operation: field-extract "SYSTEM.ID"
+        conversion: getFrom "EB.SYSTEM.ID" "APPLICATION" false
+    }
+
+    field "STR.ID" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANS.REFERENCE"
+        conversion: extract from 1 to 3
+    }
+
+    field "DETAIL" {
+        comma-separator: false
+        operation: constant "\"COS STMT.DETAIL.DRILL \""
+    }
+
+    field "FILE1" {
+        comma-separator: false
+        operation: if "STR.ID" Equals "\"NET\"" process "DETAIL" "FILE"
+    }
+
+    field "APPLICATION" {
+        comma-separator: false
+        operation: if "FILE" Equals "NULL" process "STMT.ENTRY" "FILE1"
+    }
+
+    field "DRILL1" {
+        comma-separator: false
+        operation: constant "\"STMT.ENTRY.DETAIL\""
+    }
+
+    field "TRAN1" {
+        comma-separator: false
+        operation: field-extract "TRANS.REFERENCE"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "TRAN2" {
+        comma-separator: false
+        operation: field-extract "TRANS.REFERENCE"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "YR.MONTH" {
+        comma-separator: false
+        operation: field-extract "TRAN2"
+        conversion: extract from 1 to 6
+    }
+
+    field "MINUS" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "TRAN3" {
+        comma-separator: false
+        operation: calc "TRAN1":"MINUS"
+    }
+
+    field "TRAN.REF" {
+        comma-separator: false
+        operation: calc "TRAN3":"YR.MONTH"
+    }
+
+    field "TXN.REF" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "STMT.ENTRY" process "@ID" "TRANS.REFERENCE"
+    }
+
+    field "STMT.ACCT" {
+        comma-separator: false
+        operation: constant "\"STMT.ACCT.CH\""
+    }
+
+    field "PASS.TXN.REF" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "STMT.ACCT" process "TRAN.REF" "TXN.REF"
+    }
+
+    field "PASS.TXN.REF1" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "DETAIL" process "TRAN2" "PASS.TXN.REF"
+    }
+
+    field "TXN.REF.02" {
+        comma-separator: false
+        operation: if "APPLICATION" Equals "STMT.ENTRY" process "@ID" "TRANS.REFERENCE"
+    }
+
+    field "NO.DETAILS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 150
+        processing-mode: Single
+        operation: constant "\"No Forward Movements for Account\""
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+        }
+
+        column-width: 150
+        operation: constant "\"No Forward Movement\""
+    }
+
+    field "SEE" {
+        comma-separator: false
+        operation: constant "\" S \""
+    }
+
+    field "APPL.TXN1" {
+        comma-separator: false
+        operation: calc "APPLICATION":"SEE"
+    }
+
+    field "APPL.TXN" {
+        comma-separator: false
+        operation: calc "APPL.TXN1":"PASS.TXN.REF1"
+    }
+
+    field "ENQ.TXN" {
+        comma-separator: false
+        operation: calc "APPLICATION":"PASS.TXN.REF1"
+    }
+
+    field "NEXT.APPL" {
+        comma-separator: false
+        operation: if "STR.ID" Equals "\"NET\"" process "ENQ.TXN" "APPL.TXN"
+    }
+
+    field "DRILL.APP" {
+        comma-separator: false
+        operation: constant "\"STMT.ENTRY S\""
+    }
+
+    field "DRILL" {
+        comma-separator: false
+        operation: calc "DRILL.APP":"SP":"@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Transaction"
+        }
+
+        label-field: "BALANCE"
+        image: "view.gif"
+        from-field: "DRILL"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

@@ -1,0 +1,221 @@
+Enquiry "AI.TXN.AUTH.LIST" for "name:/FT_Contract:FUNDS.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Transactions awaiting approval"
+    }
+
+    zero-records-display: true
+    show-all-books: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.MB.CHECK.MANDATE"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Transactions\""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 0
+        }
+
+        operation: constant "\"awaiting\""
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 31
+            line: 0
+        }
+
+        operation: constant "\"approval\""
+    }
+
+    field "REF.NO" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REF.NO"
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Transaction Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "TRANSACTION.TYPE"
+        conversion: getFrom "FT.TXN.TYPE.CONDITION" "1" false
+    }
+
+    field "DEBIT.ACCT.NO" {
+        label {
+            en = "From Account"
+        }
+
+        length: 36
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "DEBIT.ACCT.NO"
+    }
+
+    field "AMOUNT.DEBITED" {
+        label {
+            en = "Amount Debited"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.DEBITED"
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "To Account"
+        }
+
+        format: Date
+        length: 36
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: application-field-name "CREDIT.ACCT.NO"
+    }
+
+    field "AMOUNT.CREDITED" {
+        label {
+            en = "Amount Credited"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "AMOUNT.CREDITED"
+    }
+
+    field "DEBIT.VALUE.DATE" {
+        label {
+            en = "Debit Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DEBIT.VALUE.DATE"
+    }
+
+    field "SIGNATORY" {
+        label {
+            en = "Signed By"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SIGNATORY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no records to authorise\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise txn"
+        }
+
+        label-field: "REF.NO"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "REF.NO"
+        }
+
+        screen: "FUNDS.TRANSFER,ARC.AUTH"
+    }
+
+    attributes: "UNDERLINE.HEADER.ROW"
+}

@@ -1,0 +1,612 @@
+Enquiry "WR.REPORTS" for "name:/WR_Foundation:WR.IMAGE.MANAGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Wealth Reports"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "IM.DOCUMENT.UPLOAD" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "REPORT.INSTANCE" {
+            label {
+                en = "Client/Ac/Portfolio"
+            }
+
+        }
+
+        AND
+
+        field "REPORT.TYPE" {
+            label {
+                en = "Report Type"
+            }
+
+        }
+
+        AND
+
+        field "REPORT.KEY" {
+            label {
+                en = "Report ID"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account Officer"
+            }
+
+        }
+
+        AND
+
+        field "IM.DOCUMENT.UPLOAD" {
+            label {
+                en = "Upload ID"
+            }
+
+        }
+
+        AND
+
+        field "STATUS" {
+            label {
+                en = "Status"
+            }
+
+        }
+
+        AND
+
+        field "FROM.DATE" {
+            label {
+                en = "From Date"
+            }
+
+        }
+
+        AND
+
+        field "TO.DATE" {
+            label {
+                en = "To Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "T.CUST" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"CUSTOMER\""
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Wealth Reports\""
+    }
+
+    field "T.PORT" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"PORTFOLIO\""
+    }
+
+    field "T.ACCT" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"ACCOUNT\""
+    }
+
+    field "NUL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "IM.DOCUMENT.UPLOAD" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "IM.DOCUMENT.UPLOAD"
+    }
+
+    field "UPLOAD.ID" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "IM.DOCUMENT.UPLOAD"
+        conversion: getFrom "IM.DOCUMENT.UPLOAD" "UPLOAD.ID" false
+    }
+
+    field "IMAGE.TYPE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "UPLOAD.ID"
+        conversion: getFrom "IM.DOCUMENT.IMAGE" "IMAGE.TYPE" false
+    }
+
+    field "PATH" {
+        length: 100
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "IMAGE.TYPE"
+        conversion: getFrom "IM.IMAGE.TYPE" "PATH" false
+    }
+
+    field "REPORT.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REPORT.TYPE"
+    }
+
+    field "REPORT.INSTANCE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REPORT.INSTANCE"
+    }
+
+    field "REP.CUST" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "REPORT.TYPE" Equals "T.CUST" process "REPORT.INSTANCE" "NUL"
+        conversion: call
+        jBC: "@ E.WR.TRIM"
+    }
+
+    field "REP.PORT" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "REPORT.TYPE" Equals "T.PORT" process "REPORT.INSTANCE" "NUL"
+        conversion: call
+        jBC: "@ E.WR.TRIM"
+    }
+
+    field "REP.ACCT" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: if "REPORT.TYPE" Equals "T.ACCT" process "REPORT.INSTANCE" "NUL"
+        conversion: call
+        jBC: "@ E.WR.TRIM"
+    }
+
+    field "PORT.CUST" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REP.PORT"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ACCT.CUST" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REP.ACCT"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "CUST.NO" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "REP.CUST":"PORT.CUST":"ACCT.CUST"
+        conversion: call
+        jBC: "@ E.WR.TRIM"
+    }
+
+    field "ACCT.PORT" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REP.ACCT"
+        conversion: getFrom "ACCOUNT" "PORTFOLIO.NO" false
+    }
+
+    field "PORTFOLIO.NO" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "REP.PORT":"ACCT.PORT"
+        conversion: call
+        jBC: "@ E.WR.TRIM"
+    }
+
+    field "ACCOUNT.NO" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REP.ACCT"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Client"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUST.NO"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PORTFOLIO.ID" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "PORTFOLIO.NO"
+    }
+
+    field "PORTFOLIO.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "PORTFOLIO.ID"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "REPORT.SHORT.NAME" {
+        label {
+            en = "Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REPORT.SHORT.NAME"
+    }
+
+    field "FRD" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FROM.DATE"
+    }
+
+    field "TDA" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TO.DATE"
+    }
+
+    field "N" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "FR.TO" {
+        label {
+            en = "Date From/To"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: calc "FRD":"N":"\"-\"":"N":"TDA"
+    }
+
+    field "ACCOUNT.ID" {
+        label {
+            en = "Account"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "ACCOUNT.NO"
+    }
+
+    field "SHORT.TITLE" {
+        label {
+            en = "Account Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "ACCOUNT.ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "FUND.MANAGER" {
+        label {
+            en = "Fund Manager"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "FUND.MANAGER"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Account Officer"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "REQUESTOR" {
+        label {
+            en = "Requested By"
+        }
+
+        comma-separator: false
+        display-section: NoDisplay
+        processing-mode: Single
+        operation: application-field-name "REQUESTOR"
+    }
+
+    field "BASIS" {
+        label {
+            en = "Report Basis"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        hidden: true
+        operation: field-extract "REPORT.TYPE"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Report Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "LOCK.DATE" {
+        label {
+            en = "Locking Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "PORTFOLIO.NO"
+        conversion: getFrom "WR.KYR.INFO" "LOCKING.DATE" false
+    }
+
+    field "UPLOAD.REF" {
+        label {
+            en = "Upload Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "IM.DOCUMENT.UPLOAD"
+    }
+
+    field "LINK" {
+        label {
+            en = "Link"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "UPLOAD.ID"
+    }
+
+    field "REPORT.KEY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REPORT.KEY"
+    }
+
+    field "PDF" {
+        comma-separator: false
+        operation: field-extract "REPORT.KEY"
+    }
+
+    field "ZERONORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: constant "\"No Reports available. Please generate\""
+    }
+
+    tool AM.DETS {
+        label {
+            en = "Generate Report"
+        }
+
+        command: "docommand(\"WR.REQUEST.REPORT,INPUT I F3\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Report"
+        }
+
+        label-field: "UPLOAD.REF"
+        image: "pdf.gif"
+        criteria: "CURRENT.PATH" > "PDF"
+        download: "PDF"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Lock/Unlock Client"
+        }
+
+        label-field: "UPLOAD.REF"
+        image: "lock.gif" parameters {
+            function:  Input
+            field: "PORTFOLIO.ID"
+        }
+
+        screen: "WR.KYR.INFO,INPUT"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Gen Adhoc Rep"
+        }
+
+        label-field: "UPLOAD.REF"
+        image: "new.gif"
+        criteria: "CURRENT.SAM.NO" > "PORTFOLIO.NO" parameters {
+            function:  Input
+            auto-F3: true
+        }
+
+        screen: "WR.REQUEST.REPORT,INPUT"
+    }
+
+    attributes: "DRILLDOWNS.AS.HYPERLINKS" ; "NO.ENQUIRY.FAVOURITES"
+}

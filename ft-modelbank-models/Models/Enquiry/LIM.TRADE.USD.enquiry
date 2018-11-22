@@ -1,0 +1,359 @@
+Enquiry "LIM.TRADE.USD" for "name:/LI_Config:LIMIT#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "LIMITS - TRADE - SUMMARY", fr = "LIMITES - RESUME TRADE"
+        }
+
+        column: 29
+        line: 0
+    }
+
+    header {
+        label {
+            en = "LIABILITY", fr = "GARANTIE"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "000\'S OF USD", fr = "EN MILLIERS DE USD"
+        }
+
+        column: 63
+        line: 1
+    }
+
+    header {
+        label {
+            en = "LIMIT TYPE", fr = "TYPE DE LIMITE"
+        }
+
+        column: 4
+        line: 2
+    }
+
+    header {
+        label {
+            en = "LIMIT.AMT.", fr = "DEV"
+        }
+
+        column: 30
+        line: 2
+    }
+
+    header {
+        label {
+            en = "OUTST.AMT.", fr = "MONT LIMITE"
+        }
+
+        column: 42
+        line: 2
+    }
+
+    header {
+        label {
+            en = "AVAIL.<EXC>", fr = "MONT DU"
+        }
+
+        column: 54
+        line: 2
+    }
+
+    header {
+        label {
+            en = "EXPIRY.DATE", fr = "DISPO <EXC>"
+        }
+
+        column: 66
+        line: 2
+    }
+
+    header {
+        label {
+            en = "F.", fr = "DATE EXPIR"
+        }
+
+        column: 78
+        line: 2
+    }
+
+    header {
+        label {
+            fr = "F."
+        }
+
+        column: 78
+        line: 2
+    }
+
+    description {
+        en = "LIM.TRADE.USD"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "LINE.ID" {
+            label {
+                en = "Line ID"
+            }
+
+        }
+
+        AND
+
+        field "CUST.NO" {
+            label {
+                en = "Customer Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "ID" {
+        length: 32
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LIAB" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "REF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ID"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "P.REF" {
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "REF"
+        conversion: call
+        jBC: "@ LIMIT.FIND.REF"
+        conversion: getFrom "LIMIT.REFERENCE" "SHORT.NAME" true
+    }
+
+    field "SER" {
+        length: 32
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "COMM.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ONLINE.LIMIT"
+        conversion: call
+        jBC: "@ LIM.COMM.USD"
+    }
+
+    field "OS.AMT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TOTAL.OS"
+        conversion: call
+        jBC: "@ LIM.CALC.OS.USD"
+    }
+
+    field "AVAIL" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AVAIL.AMT"
+        conversion: call
+        jBC: "@ LIMIT.CALC.AVAIL"
+    }
+
+    field "P.COMM" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        processing-mode: Multi
+        operation: field-extract "COMM.AMT"
+        conversion: oconv "MD0,"
+    }
+
+    field "POS.AMT" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Multi
+        operation: field-extract "OS.AMT"
+        conversion: oconv "MD0,"
+    }
+
+    field "P.AVAIL" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        processing-mode: Multi
+        operation: field-extract "AVAIL"
+        conversion: oconv "MD0,<"
+    }
+
+    field "EXP" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 66
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "EXPIRY.DATE"
+        conversion: call
+        jBC: "@ LIMIT.CONV.DATE"
+    }
+
+    field "OD.COND.ACCOUNT" {
+        label {
+            en = "OD Condition Account"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 76
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OD.COND.ACCOUNT"
+    }
+
+    field "P.LIAB" {
+        break-condition {
+            break: Page
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 11
+            line: 1
+        }
+
+        operation: field-extract "LIAB"
+    }
+
+    field "N.LIAB" {
+        break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 1
+        }
+
+        operation: field-extract "LIAB"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "DATE" {
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+            line: 0
+        }
+
+        operation: today
+        conversion: call
+        jBC: "@ LIMIT.CONV.DATE"
+    }
+
+    field "B.LIAB" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "LIAB"
+    }
+
+    field "L.EQ" {
+        comma-separator: false
+        operation: constant "\"EQ\""
+    }
+
+    field "L.NE" {
+        comma-separator: false
+        operation: constant "\"NE\""
+    }
+
+    field "L.NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "L.ALL" {
+        comma-separator: false
+        operation: constant "\"ALL\""
+    }
+
+    field "W.ID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ LIMIT.FIND.PARENT"
+    }
+
+    drilldown "1" {
+        label-field: "P.REF"
+        image: "view.gif"
+        criteria: "LINE.ID" Equals "W.ID"
+        enquiry: "LIM.CUST.USD"
+    }
+
+}

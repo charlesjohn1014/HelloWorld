@@ -1,0 +1,387 @@
+Enquiry "MF.REDM.TODAY" for "name:/MF_Contract:MF.TRADE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "MF Redemption List"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "TRANS.TYPE" {
+        Equals "FRD", "FSO"
+    }
+
+    fixed-sort: "FUND.ID" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "FUND.ID" {
+            label {
+                en = "Fund ID"
+            }
+
+        }
+
+        AND
+
+        field "AGENT" {
+            label {
+                en = "Agent"
+            }
+
+        }
+
+        AND
+
+        field "TRANS.CCY" {
+            label {
+                en = "Trans Ccy"
+            }
+
+        }
+
+        AND
+
+        field "EXIT.LOAD" {
+            label {
+                en = "Exit Load"
+            }
+
+        }
+
+        None
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"MF Redemptions\""
+    }
+
+    field "FUND.ID" {
+        label {
+            en = "Fund ID"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FUND.ID"
+    }
+
+    field "FUND.NAME" {
+        label {
+            en = "Fund Name"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FUND.ID"
+        conversion: getFrom "MF.FUND.MASTER" "FUND.NAME" false
+    }
+
+    field "AGENT" {
+        label {
+            en = "Agent"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 49
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AGENT"
+    }
+
+    field "AGENT.NAME" {
+        label {
+            en = "Agent Name"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 59
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "AGENT"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BREAK.FUNDID" {
+        comma-separator: false
+        operation: break-change "FUND.ID"
+    }
+
+    field "TOTAL" {
+        break-condition {
+            field: "BREAK.FUNDID"
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 59
+            line: + 2
+        }
+
+        operation: constant "\"TOTAL\""
+    }
+
+    field "TRANS.UNITS" {
+        label {
+            en = "No.of Units"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 95
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.UNITS"
+    }
+
+    field "BREAK.LINE1" {
+        break-condition {
+            field: "BREAK.FUNDID"
+        }
+
+        comma-separator: false
+        position {
+            column: 95
+            line: + 1
+        }
+
+        operation: constant "\"------------------\""
+    }
+
+    field "BREAK.LINE3" {
+        break-condition {
+            field: "BREAK.FUNDID"
+        }
+
+        comma-separator: false
+        position {
+            column: 95
+            line: + 3
+        }
+
+        operation: constant "\"------------------\""
+    }
+
+    field "TOT.TRANS.UNITS" {
+        break-condition {
+            field: "BREAK.FUNDID"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 95
+            line: + 2
+        }
+
+        operation: total "TRANS.UNITS"
+    }
+
+    field "TRANS.PRICE" {
+        label {
+            en = "Price"
+        }
+
+        display-type: "CLASS-DESCR"
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 4
+        position {
+            column: 113
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.PRICE"
+    }
+
+    field "TRANS.CCY" {
+        label {
+            en = "Trans Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 129
+        }
+
+        operation: application-field-name "TRANS.CCY"
+    }
+
+    field "TRANS.NET.AMT" {
+        label {
+            en = "Net Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "TRANS.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 132
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.NET.AMT"
+    }
+
+    field "BREAK.LINE2" {
+        break-condition {
+            field: "BREAK.FUNDID"
+        }
+
+        comma-separator: false
+        position {
+            column: 132
+            line: + 1
+        }
+
+        operation: constant "\"------------------\""
+    }
+
+    field "BREAK.LINE4" {
+        break-condition {
+            field: "BREAK.FUNDID"
+        }
+
+        comma-separator: false
+        position {
+            column: 132
+            line: + 3
+        }
+
+        operation: constant "\"------------------\""
+    }
+
+    field "TOT.TRANS.NET.AMT" {
+        display-type: "CLASS-POSNEG"
+        format: Currency "TRANS.CCY" negative-pattern -# break-condition {
+            field: "BREAK.FUNDID"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 132
+            line: + 2
+        }
+
+        operation: total "TRANS.NET.AMT"
+    }
+
+    field "EXIT.LOAD" {
+        label {
+            en = "Exit Load"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXIT.LOAD"
+    }
+
+    field "AGENT.FEE" {
+        label {
+            en = "Agent Fee"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 168
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AGENT.FEE"
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 186
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Transaction"
+        }
+
+        label-field: "@ID"
+        image: "details.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "MF.TRADE,INP"
+    }
+
+}

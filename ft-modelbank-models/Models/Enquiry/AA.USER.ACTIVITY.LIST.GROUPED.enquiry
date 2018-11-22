@@ -1,0 +1,260 @@
+Enquiry "AA.USER.ACTIVITY.LIST.GROUPED" for "name:/AA_ProductFramework:AA.ACTIVITY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "User Activities"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "@ID" {
+        NotMatches "...AMEND...", "...CREDIT...", "...DEBIT..."
+    }
+
+    fixed-selection "@ID" {
+        NotMatches "...MAKEDUE...", "...UPDATE...FEE"
+    }
+
+    fixed-selection "@ID" {
+        NotMatches "...UPDATE...INT", "...ACCRUE..."
+    }
+
+    fixed-selection "@ID" {
+        NotMatches "...CALCULATE...", "...CAPITALISE..."
+    }
+
+    fixed-sort: "ATTRIBUTE" Null
+    fixed-sort: "PROPERTY.CLASS" Null
+    custom-selection {
+
+        field "ARRANGEMENT" {
+            mandatory: true
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Activity ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 55
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"New Activity\""
+    }
+
+    field "ARR" {
+        comma-separator: false
+        operation: constant "\"Arrangement\""
+    }
+
+    field "ATT.FILE" {
+        comma-separator: false
+        operation: constant "\"AA.ACTIVITY.ATTRIBUTE*\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ARRANGEMENT.ID" {
+        format: User
+        comma-separator: false
+        operation: selection "ARRANGEMENT"
+    }
+
+    field "@ID" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "PROPERTY.CLASS" {
+        format: User
+        comma-separator: false
+        operation: i-desc "PROPERTY.CLASS"
+    }
+
+    field "D.PC" {
+        format: User
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "PROPERTY.CLASS"
+        conversion: getFrom "AA.PROPERTY.CLASS" "DESCRIPTION" false
+    }
+
+    field "ATTRIBUTE" {
+        format: User
+        comma-separator: false
+        operation: application-field-name "ATTRIBUTE"
+    }
+
+    field "ATTRIBUTE.ID" {
+        format: User
+        comma-separator: false
+        operation: calc "ATT.FILE":"ATTRIBUTE"
+    }
+
+    field "D.ATTRIBUTE" {
+        format: User
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ATTRIBUTE.ID"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "TYPE.1" {
+        format: User
+        comma-separator: false
+        operation: if "ATTRIBUTE" NotEquals "NULL" process "D.ATTRIBUTE" "D.PC"
+    }
+
+    field "TYPE" {
+        label {
+            en = "Type"
+        }
+
+        display-type: "STARTTREE"
+        format: User
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "TYPE.1" Equals "NULL" process "ARR" "TYPE.1"
+    }
+
+    field "B.TYPE" {
+        format: User
+        comma-separator: false
+        operation: break-change "TYPE"
+    }
+
+    field "ACTIVITY.DESC" {
+        label {
+            en = "Activity"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "D.TYPE" {
+        display-type: "ENDTREE"
+        format: User break-condition {
+            field: "B.TYPE"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "TYPE"
+    }
+
+    field "PROCESS.ID" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PROCESS.ID"
+    }
+
+    field "V.AAA.1" {
+        format: User
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3 \""
+    }
+
+    field "V.AAA.2" {
+        format: User
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL.CP I F3 \""
+    }
+
+    field "V.AAA.3" {
+        format: User
+        comma-separator: false
+        operation: if "PROCESS.ID" Equals "\"CHANGE.PRODUCT\"" process "V.AAA.2" "V.AAA.1"
+    }
+
+    field "V.AAA.4" {
+        format: User
+        comma-separator: false
+        operation: calc "V.AAA.3":"\"EFFECTIVE.DATE=\""
+    }
+
+    field "TODAY" {
+        format: User
+        comma-separator: false
+        operation: today
+    }
+
+    field "V.AAA" {
+        format: User
+        comma-separator: false
+        operation: calc "V.AAA.4":"TODAY"
+    }
+
+    field "V.AAA.DATE" {
+        comma-separator: false
+        operation: field-extract "V.AAA.3"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Do Activity Today"
+        }
+
+        label-field: "ACTIVITY.DESC"
+        image: "execute.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "@ID"
+        from-field: "V.AAA"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Do Activity"
+        }
+
+        label-field: "ACTIVITY.DESC"
+        image: "../../deal/calendar.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "@ID"
+        from-field: "V.AAA.DATE"
+    }
+
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

@@ -1,0 +1,171 @@
+Enquiry "STMT.ENTRY.TODAY.STAFF" for "name:/CR_ModelBank:NOFILE.STMT.ENT.SECT#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    start-line: 5
+    end-line: 19 fixed-selection "SEL.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "AMOUNT.LCY" {
+            label {
+                en = "Amount.Lcy"
+            }
+
+            operands: Greater, LessThan, GreaterOrEquals, LessOrEquals, Equals
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Transactions in Staff Accounts\""
+    }
+
+    field "ACCOUNT.NO" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CUST" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "CUSTOMER" false
+    }
+
+    field "ACCOUNT" {
+        label {
+            en = "Account No"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "ACCOUNT.NO"
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "AMT.LCY" {
+        label {
+            en = "Amount Lcy"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 0 delimited by "*4"
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "FCCY" {
+        label {
+            en = "Foreign Ccy"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "CCY" Equals "\"USD\"" process "NUL" "CCY"
+    }
+
+    field "AMT.FCY" {
+        label {
+            en = "Amount(Fccy)"
+        }
+
+        format: User
+        length: 15
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "OUR.REF" {
+        label {
+            en = "Txn Reference"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "INPUTT" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No transactions in Staff Accounts Today\""
+    }
+
+    attributes: "NO.TOOLBAR"
+}

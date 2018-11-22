@@ -1,0 +1,217 @@
+Enquiry "AA.DETAILS.POST.RESTRICTION" for "name:/AA_Account:AA.ARR.ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    fixed-selection "POSTING.RESTRICT" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "MERGE.SELECTION" {
+        Equals "\"YES\""
+    }
+
+    custom-selection {
+
+        field "ID.COMP.1" {
+            label {
+                en = "Arrangement ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "POSTING.RESTRICT" {
+        label {
+            en = "Posting Restriction"
+        }
+
+        display-type: "CLASS-BOLD.RED"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "POSTING.RESTRICT"
+        conversion: getFrom "POSTING.RESTRICT" "DESCRIPTION" false
+    }
+
+    field "ARR.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "EB.BLOCK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"BLOCK.REASON.CODES*\""
+    }
+
+    field "EB.UNBLOCK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"UNBLOCK.REASON.CODES*\""
+    }
+
+    field "BLOCK.CODE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BLOCKING.CODE"
+    }
+
+    field "BLK.FINAL" {
+        label {
+            en = "Blocking Code"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: calc "EB.BLOCK":"BLOCK.CODE"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "BLOCKING.REASON" {
+        label {
+            en = "Blocking Reason"
+        }
+
+        format: Translate
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "BLOCKING.REASON"
+    }
+
+    field "UNBLOCK.CODE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "UNBLOCKING.CODE"
+    }
+
+    field "UNBLK.FINAL" {
+        label {
+            en = "Unblocking Code"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: calc "EB.UNBLOCK":"UNBLOCK.CODE"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "UNBLOCKING.REASON" {
+        label {
+            en = "Unblocking Reason"
+        }
+
+        format: Translate
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "UNBLOCKING.REASON"
+    }
+
+    field "S.DATE" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "START.DATE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "NA" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\" ---\""
+    }
+
+    field "S.DATE.DES" {
+        label {
+            en = "Start Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: if "S.DATE" Equals "NULL" process "NA" "S.DATE"
+    }
+
+    field "E.DATE" {
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "E.DATE.DES" {
+        label {
+            en = "Expiry Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: if "E.DATE" Equals "NULL" process "NA" "E.DATE"
+    }
+
+    fileVersion: Live
+    attributes: "NO.BREADCRUMBS" ; "ALLDATA" ; "NO.TOOLBAR" ; "NO.ENQUIRY.FAVOURITES" ; "SINGLE.BACKGROUND.COLOUR"
+}

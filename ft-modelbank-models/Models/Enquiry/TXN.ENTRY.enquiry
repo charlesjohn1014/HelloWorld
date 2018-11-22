@@ -1,0 +1,324 @@
+Enquiry "TXN.ENTRY" for "name:/AC_ModelBank:NOFILE.TXN.ENTRY#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "TRANSACTION REF :"
+        }
+
+        column: 5
+        line: 1
+    }
+
+    header {
+        label {
+            en = "TRANSACTION ENTRY ENQUIRY"
+        }
+
+        column: 26
+        line: 0
+    }
+
+    description {
+        en = "TRANSACTION ENTRY ENQUIRY"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "TRANSACTION.REF" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "DC.BATCH.DATE" {
+        }
+
+        AND
+
+        field "APPLICATION" {
+        }
+
+        None
+    }
+
+    field "FILL.REC" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DC.BATCH.DATE"
+        conversion: call
+        jBC: "@ E.TXN.ENTRY.FILL"
+    }
+
+    field "TXN.REF" {
+        break-condition {
+            break: Page
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 24
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 23
+    }
+
+    field "THEIR.REF" {
+        comma-separator: false
+        operation: field-number 5
+    }
+
+    field "TFS.REF" {
+        comma-separator: false
+        operation: field-extract "THEIR.REF"
+        conversion: extract from 1 to 3
+    }
+
+    field "TFS.PREFIX" {
+        comma-separator: false
+        operation: constant "\"TFS\""
+    }
+
+    field "DISP.REF" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 24
+            line: 1
+        }
+
+        operation: if "TFS.REF" Equals "TFS.PREFIX" process "THEIR.REF" "TXN.REF"
+    }
+
+    field "VDATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 11
+    }
+
+    field "BDATE" {
+        comma-separator: false
+        operation: field-number 25
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DATE" {
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "VDATE" Equals "NULL" process "BDATE" "VDATE"
+        conversion: julian
+    }
+
+    field "PL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"PL\""
+    }
+
+    field "ACC.CAT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 1
+    }
+
+    field "CAT" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 7
+    }
+
+    field "DCAT" {
+        comma-separator: false
+        operation: calc "PL":"CAT"
+    }
+
+    field "DACC.CAT" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: if "ACC.CAT" NotEquals "NULL" process "ACC.CAT" "DCAT"
+    }
+
+    field "CUS" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: field-number 8
+    }
+
+    field "LCCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "CCY" {
+        comma-separator: false
+        operation: field-number 12
+    }
+
+    field "DEF.CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 38
+        }
+
+        processing-mode: Single
+        operation: if "CCY" Equals "NULL" process "LCCY" "CCY"
+    }
+
+    field "CO.CODE" {
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DC.BATCH.DATE"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "FCY.AMT" {
+        format: Currency "CCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-number 13
+    }
+
+    field "LCY.AMT" {
+        format: Currency "LCCY" negative-pattern -#
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        processing-mode: Single
+        operation: field-number 3
+    }
+
+    field "NEXT.FILE" {
+        comma-separator: false
+        operation: field-extract "FILL.REC"
+        conversion: extract from 1 to 1
+        conversion: replace {
+            oldData: "S"
+            newData: "STMT.ENTRY"
+        }
+
+        conversion: replace {
+            oldData: "C"
+            newData: "CATEG.ENTRY"
+        }
+
+        conversion: replace {
+            oldData: "N"
+            newData: "CATEG.ENTRY.DETAIL"
+        }
+
+        conversion: replace {
+            oldData: "T"
+            newData: "STMT.ENTRY.DETAIL"
+        }
+
+    }
+
+    field "ENT.ID" {
+        comma-separator: false
+        operation: application-field-name "DC.BATCH.DATE"
+        conversion: extract from 2 to 99
+        conversion: convert {
+            oldData: "*"
+            newData: "\\"
+        }
+
+    }
+
+    field "NOT.FOUND" {
+        format: Translate break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+            line: 11
+        }
+
+        operation: constant "\"No entries found for deal \""
+    }
+
+    field "SEL.TRANS.REF" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 51
+            line: 11
+        }
+
+        operation: selection "TRANSACTION.REF"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "DATE"
+        image: "view.gif" parameters {
+            function:  See
+            field: "ENT.ID"
+        }
+
+        from-field: "NEXT.FILE"
+    }
+
+}

@@ -1,0 +1,242 @@
+Enquiry "CHQ.BATCH" for "name:/ST_ChqSubmit:CHEQUE.BATCH#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Cheque Batch Details"
+        }
+
+        column: 20
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Cheque Batch No :"
+        }
+
+        column: 2
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Cheque Coll Id"
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Cheque Amount"
+        }
+
+        column: 27
+        line: 2
+    }
+
+    header {
+        label {
+            en = "CCY"
+        }
+
+        column: 42
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Cheque Status"
+        }
+
+        column: 47
+        line: 2
+    }
+
+    description {
+        en = "CHQ.BATCH"
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "CHQ.COLL.ID" Null
+    fixed-sort: "CHQ.CURRENCY" Null
+    custom-selection {
+
+        field "@ID" {
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 36
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "BRK.BATCH.ID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "@ID"
+    }
+
+    field "DISP.BATCH.ID" {
+        label {
+            en = "Batch ID"
+        }
+
+        break-condition {
+            field: "BRK.BATCH.ID"
+        }
+
+        length: 36
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+    }
+
+    field "CHQ.COLL.ID" {
+        label {
+            en = "Collection ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHQ.COLL.ID"
+    }
+
+    field "CHQ.AMOUNT" {
+        label {
+            en = "Cheque Amt"
+        }
+
+        format: Currency "CHCCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHQ.AMOUNT"
+    }
+
+    field "CHCCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHQ.CURRENCY"
+    }
+
+    field "CHQ.CURRENCY" {
+        label {
+            en = "Cheque CCY"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHQ.CURRENCY"
+    }
+
+    field "CHQ.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 47
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHQ.STATUS"
+    }
+
+    field "TOT.CHQ.DISP" {
+        break-condition {
+            field: "BRK.BIDCCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+            line: + 1
+        }
+
+        operation: constant "\"Total for Currency\""
+    }
+
+    field "TOT.CHQ.AMT" {
+        format: Currency "CHCCY" negative-pattern #- break-condition {
+            field: "BRK.BIDCCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 21
+            line: + 1
+        }
+
+        operation: total "CHQAMT"
+    }
+
+    field "BATCH.ID.CCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "@ID":"CHQ.CURRENCY"
+    }
+
+    field "BRK.BIDCCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: break-change "BATCH.ID.CCY"
+    }
+
+    field "CHQAMT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CHQ.AMOUNT"
+    }
+
+    drilldown "1" {
+        label-field: "CHQ.COLL.ID" parameters {
+            function:  See
+            field: "CHQ.COLL.ID"
+        }
+
+        application: "CHEQUE.COLLECTION"
+    }
+
+}

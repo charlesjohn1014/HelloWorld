@@ -1,0 +1,359 @@
+Enquiry "SC.PORT.TOP.UP.CALL" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Between Topup and Closeout"
+    }
+
+    description {
+        en = "Between Topup and Closeout"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.SC.MARGIN.TOPSELL"
+    }
+
+    fixed-selection "SEC.MARGIN.RATIO" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "DEALER.BOOK" {
+        Equals "\"\""
+    }
+
+    fixed-sort: "@ID" Null
+
+    field "@ID" {
+        label {
+            en = "Portfolio Id"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Portfolios with Ratio between Topup and Closeout\""
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Account Manager"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "AM.TEAM" {
+        label {
+            en = "AM Team"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "DEPT.PARENT" false
+    }
+
+    field "CUST" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NUMBER"
+    }
+
+    field "LIM.AMT" {
+        label {
+            en = "Limit Amount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ SC.MAR.O.LIM.AMT"
+    }
+
+    field "SHORT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SHORT.POS.MGN.AMT"
+    }
+
+    field "LOAN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOAN.MARGIN.AMT"
+    }
+
+    field "MARGIN.VAL" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MARGIN.VALUE"
+    }
+
+    field "PORT.LIAB" {
+        label {
+            en = "Liabilities"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 6
+        }
+
+        operation: calc "SHORT" + "LOAN"
+    }
+
+    field "AVAIL.LIM" {
+        label {
+            en = "Available Limit"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 7
+        }
+
+        operation: calc "LIM.AMT" + "PORT.LIAB"
+    }
+
+    field "ASSET.ESTM" {
+        label {
+            en = "Market Value"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ASSET.ESTMTN"
+    }
+
+    field "SECOND.MRKT.VALUE" {
+        label {
+            en = "Mkt Val of Collat Assets"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECOND.MRKT.VALUE"
+    }
+
+    field "PF.MAR.VAL" {
+        label {
+            en = "Margin Value Assets"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: calc "MARGIN.VAL" - "PORT.LIAB"
+    }
+
+    field "MARGIN.VALUE" {
+        label {
+            en = "Net Lombard"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MARGIN.VALUE"
+    }
+
+    field "SEC.MARGIN.RATIO" {
+        label {
+            en = "Security Margin %"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 12
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SEC.MARGIN.RATIO"
+    }
+
+    field "CO" {
+        comma-separator: false
+        operation: company
+    }
+
+    field "CO.TOP" {
+        comma-separator: false
+        operation: field-extract "CO"
+        conversion: getFrom "OV.PARAMETER" "TOP.UP.MGN.RATE" false
+    }
+
+    field "CO.SELL" {
+        comma-separator: false
+        operation: field-extract "CO"
+        conversion: getFrom "OV.PARAMETER" "SELL.OUT.MGN.RATE" false
+    }
+
+    field "PF.TOP" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOP.UP.MGN.RATE"
+    }
+
+    field "NU" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TOP.RATE" {
+        label {
+            en = "Top Up %"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 13
+        }
+
+        operation: if "PF.TOP" NotEquals "NU" process "PF.TOP" "CO.TOP"
+    }
+
+    field "PF.SELL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SELL.OUT.MGN.RATE"
+    }
+
+    field "SELL.RATE" {
+        label {
+            en = "Close Out %"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 14
+        }
+
+        operation: if "PF.SELL" NotEquals "NU" process "PF.SELL" "CO.SELL"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Portfolios Listed\""
+    }
+
+}

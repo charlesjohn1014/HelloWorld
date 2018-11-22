@@ -1,0 +1,300 @@
+Enquiry "SC.DEP.TRADE" for "name:/SC_SctSettlement:SEC.DEL.CONTROL$NAU#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "LIST OF UNSETTLED TRADES-DEPOSITORY"
+        }
+
+        column: 29
+        line: 0
+    }
+
+    header {
+        label {
+            en = "DEPOSITORY :"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "NAME :"
+        }
+
+        column: 27
+        line: 1
+    }
+
+    header {
+        label {
+            en = "SECURITY NO. SECURITY NAME"
+        }
+
+        column: 2
+        line: 2
+    }
+
+    header {
+        label {
+            en = "PURCHASES"
+        }
+
+        column: 44
+        line: 2
+    }
+
+    header {
+        label {
+            en = "SALES"
+        }
+
+        column: 65
+        line: 2
+    }
+
+    description {
+        en = "SC.DEP.TRADE"
+    }
+
+    start-line: 4
+    end-line: 18
+    fixed-sort: "DEPOSITORY" Null
+    custom-selection {
+
+        field "DEPOSITORY" {
+        }
+
+        None
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "DEP" {
+        comma-separator: false
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "DEP.NO" {
+        break-condition {
+            break: Page
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+            line: 1
+        }
+
+        operation: field-extract "DEP"
+    }
+
+    field "B.DEP" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "DEP"
+    }
+
+    field "DEP.DESC" {
+        break-condition {
+            break: Page
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 34
+            line: 1
+        }
+
+        operation: field-extract "DEP.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "SEC.NO" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "SEC.DESC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" true
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "TOT.NOM" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TOTAL.NO.NOMINAL"
+    }
+
+    field "REC.DEL" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NO.NOM.RECD.DEL"
+    }
+
+    field "TOT.REC.DEL" {
+        comma-separator: false
+        operation: total "REC.DEL"
+    }
+
+    field "DIFF.AMT" {
+        length: 18
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "TOT.NOM" - "TOT.REC.DEL"
+    }
+
+    field "TYPE.02" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+    }
+
+    field "TRA.CD" {
+        comma-separator: false
+        operation: field-extract "TYPE"
+        conversion: getFrom "SC.TRA.CODE" "1" false
+    }
+
+    field "DR.CD" {
+        comma-separator: false
+        operation: field-extract "TRA.CD"
+        conversion: getFrom "SC.TRANS.TYPE" "1" false
+    }
+
+    field "PURCH" {
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 35
+        }
+
+        operation: if "DR.CD" NotEquals "TYPE" process "DIFF.AMT" "ZERO"
+    }
+
+    field "SALES" {
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+        }
+
+        operation: if "DR.CD" Equals "TYPE" process "DIFF.AMT" "ZERO"
+    }
+
+    field "LIT" {
+        break-condition {
+            field: "B.DEP"
+        }
+
+        comma-separator: false
+        position {
+            column: 26
+            line: + 1
+        }
+
+        operation: constant "\"TOTAL \""
+    }
+
+    field "TOT.CR" {
+        break-condition {
+            field: "B.DEP"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 35
+            line: + 1
+        }
+
+        operation: total "PURCH"
+    }
+
+    field "TOT.DR" {
+        break-condition {
+            field: "B.DEP"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+            line: + 1
+        }
+
+        operation: total "SALES"
+    }
+
+    field "REF.NO" {
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "EXAMPLE" {
+        comma-separator: false
+        operation: field-extract "REF.NO"
+        conversion: call
+        jBC: "@ E.SC.POS.DET"
+    }
+
+    field "REF.ID" {
+        comma-separator: false
+        operation: application-field-name "REFERENCE.NO"
+    }
+
+    drilldown "1" {
+        label-field: "SEC.NO" parameters {
+            function:  See
+            field: "REF.ID"
+        }
+
+        from-field: "EXAMPLE"
+    }
+
+}

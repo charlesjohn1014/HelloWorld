@@ -1,0 +1,330 @@
+Enquiry "EXPDR.OTH.INWARD.MSG" for "name:/LC_Contract:DRAWINGS$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Inward Delivery Header"
+    }
+
+    description {
+        en = "Inward Delivery Header"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 10
+    build-routines {
+        jBC: "E.MB.BUILD.INWARD.DRNAU"
+    }
+
+    fixed-selection "INWARD.MSG.TYPE" {
+        Equals "MT752", "MT756", "MT732"
+    }
+
+    custom-selection {
+
+        field "MESSAGE.TYPE" {
+            label {
+                en = "Message Type"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Inward Swift Messages - Export\""
+    }
+
+    field "INWARD.MSG.REF" {
+        label {
+            en = "Delivery ID"
+        }
+
+        length: 45
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INWARD.MSG.REF"
+    }
+
+    field "PRESENTOR.CUST" {
+        label {
+            en = "Received From"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "INWARD.MSG.TYPE" {
+        label {
+            en = "Msg Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INWARD.MSG.TYPE"
+    }
+
+    field "MSG.TYPE" {
+        label {
+            en = "Message Name"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "INWARD.MSG.TYPE"
+        conversion: extract from 3 to 3
+        conversion: getFrom "DE.MESSAGE" "DESCRIPTION" false
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Received Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE.TIME"
+        conversion: extract from 1 to 6
+        conversion: iconv "D"
+        conversion: oconv "D4"
+    }
+
+    field "MINUTES" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DATE.TIME"
+        conversion: extract from 7 to 2
+    }
+
+    field "SECS" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "DATE.TIME"
+        conversion: extract from 9 to 2
+    }
+
+    field "CONCAT" {
+        comma-separator: false
+        operation: constant "\":\""
+    }
+
+    field "DATE.TIME" {
+        label {
+            en = "Received Time"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: calc "MINUTES":"CONCAT":"SECS"
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LC.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "OLD.LC.NO" {
+        comma-separator: false
+        operation: field-extract "LC.NO"
+        conversion: getFrom "LETTER.OF.CREDIT" "OLD.LC.NUMBER" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "LC.NUMBER" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: if "OLD.LC.NO" Equals "NULL" process "LC.NO" "OLD.LC.NO"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Document Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "GET.VERSION" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.MB.CONV.DRAW.VERSION"
+    }
+
+    field "VERSION.DECIDE" {
+        comma-separator: false
+        operation: field-extract "GET.VERSION"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "MSG.REF" {
+        comma-separator: false
+        operation: field-extract "GET.VERSION"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: constant "\"DRAWINGS,\""
+    }
+
+    field "VERSION.DRILL" {
+        comma-separator: false
+        operation: calc "APPL":"VERSION.DECIDE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Inward Messages available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View SWIFT message"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "KEY" Equals "MSG.REF"
+        enquiry: "INC.MSG.DETS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Process the Message"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "VERSION.DRILL"
+    }
+
+}

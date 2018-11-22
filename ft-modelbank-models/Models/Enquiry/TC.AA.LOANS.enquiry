@@ -1,0 +1,375 @@
+Enquiry "TC.AA.LOANS" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Loan Details"
+    }
+
+    description {
+        en = "Loan Details"
+    }
+
+    start-line: 4
+    end-line: 5 fixed-selection "PRODUCT.LINE" {
+        Equals "\'LENDING\'"
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "UNAUTH", "CANCELLED", "MATURED", "CLOSE"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Id"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Loan Reference"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PRODUCT.LINE" {
+        label {
+            en = "Product Line"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "PRODUCT.GROUP" {
+        label {
+            en = "Product Group"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.GROUP"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT"
+    }
+
+    field "LINKED.APPL.ID" {
+        label {
+            en = "Account Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+    }
+
+    field "ACCOUNT.TITE" {
+        label {
+            en = "Account Title"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "ACCOUNT.TITLE.1" false
+    }
+
+    field "SHORT.TITLE" {
+        label {
+            en = "Short Title"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Category"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "CATEGORY" false
+    }
+
+    field "CATEGORY.DESCRIPTION" {
+        label {
+            en = "Category Descritption"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+    }
+
+    field "ARR.BAL.DETAILS" {
+        format: User
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "LINKED.APPL.ID":"\"*\"":"ARR.ID"
+        conversion: call
+        jBC: "@ E.TC.CONV.AA.LOAN.DETAILS"
+    }
+
+    field "APPROVED.AMOUNT" {
+        label {
+            en = "Approved Amount"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: field-extract "ARR.BAL.DETAILS"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: abs
+    }
+
+    field "AMOUNT.OUTSTANDING" {
+        label {
+            en = "Amount Outstanding"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: field-extract "ARR.BAL.DETAILS"
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: abs
+    }
+
+    field "AMOUNT.PAIDOUT" {
+        label {
+            en = "AmountPaidOut"
+        }
+
+        display-type: "AMOUNT"
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: field-extract "ARR.BAL.DETAILS"
+        conversion: extract from 3 to 1 delimited by "*"
+        conversion: abs
+    }
+
+    field "ACCOUNT.OPEN.DATE" {
+        label {
+            en = "Account Open Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "OPENING.DATE" false
+    }
+
+    field "ARR.STATUS" {
+        label {
+            en = "Arr Status"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARR.STATUS"
+    }
+
+    field "LOAN.PREFERENCES" {
+        label {
+            en = "Loan Preferences"
+        }
+
+        comma-separator: false
+        operation: calc "@ID":"\"-\"":"PRODUCT.LINE"
+        conversion: call
+        jBC: "@ E.TC.CONV.GET.VARIABLES"
+    }
+
+    field "LOAN.TRANS.RIGHTS" {
+        label {
+            en = "Loan Trans Rights"
+        }
+
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: field-extract "LOAN.PREFERENCES"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "EXT.PRF.LOAN" {
+        label {
+            en = "Ext Prf Loan"
+        }
+
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: field-extract "LOAN.PREFERENCES"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "EXT.PRF.LOAN.LABEL" {
+        label {
+            en = "Ext Prf Loan Label"
+        }
+
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        operation: field-extract "LOAN.PREFERENCES"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "EXT.PRF.LOAN.POS" {
+        label {
+            en = "Ext Prf Loan Pos"
+        }
+
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: field-extract "LOAN.PREFERENCES"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "LOAN.SEE.RIGHTS" {
+        label {
+            en = "Loan See Rights"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: field-extract "LOAN.PREFERENCES"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+}

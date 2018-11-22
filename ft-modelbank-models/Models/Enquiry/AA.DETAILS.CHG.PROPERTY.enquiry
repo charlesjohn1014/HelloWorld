@@ -1,0 +1,314 @@
+Enquiry "AA.DETAILS.CHG.PROPERTY" for "name:/AA_PreferentialPricing:AA.ARR.PREFERENTIAL.PRICING#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Pricing Conditions"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "ARR.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "ARR.PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "FILE.VERSION" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "!FILE.VERSION"
+    }
+
+    field "NEGOTIATED.FLDS" {
+        length: 19
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NEGOTIATED.FLDS"
+    }
+
+    field "NEG.TXT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\" (negotiated)\""
+    }
+
+    field "CHG.NEG" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "NEGOTIATED.FLDS" Matches "...CHARGE...." process "NEG.TXT" "\"\""
+    }
+
+    field "HDR.TXT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Charges\""
+    }
+
+    field "HEADER" {
+        format: Translate
+        length: 20
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: calc "HDR.TXT":"CHG.NEG"
+    }
+
+    field "HEADER.ONE" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"Charge Property\""
+    }
+
+    field "HEADER.TWO" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: constant "\"Product Line\""
+    }
+
+    field "HEADER.THREE" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: constant "\"Product Group\""
+    }
+
+    field "HEADER.FOUR" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: constant "\"Product\""
+    }
+
+    field "HEADER.FIVE" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: constant "\"Ccy\""
+    }
+
+    field "HEADER.SIX" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: constant "\"Discount\""
+    }
+
+    field "HEADER.SEVEN" {
+        display-type: "CLASS-ENQ.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: constant "\"Amount\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "CHG.PROP" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.PROPERTY"
+    }
+
+    field "CHG.DESC" {
+        display-type: "CLASS-ITALIC"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CHG.PROP"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "CHG.PROD.LINE" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.PROD.LINE"
+        conversion: repeat-sub
+    }
+
+    field "CHG.LINE" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        operation: field-extract "CHG.PROD.LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "CHG.PROD.GROUP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.PROD.GROUP"
+        conversion: repeat-sub
+    }
+
+    field "CHG.GRP" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        operation: field-extract "CHG.PROD.GROUP"
+        conversion: getFrom "AA.PRODUCT.GROUP" "DESCRIPTION" false
+    }
+
+    field "CHG.PROD" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.PRODUCT"
+        conversion: repeat-sub
+    }
+
+    field "CHG.PROD.DESC" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: field-extract "CHG.PROD"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.CURRENCY"
+    }
+
+    field "CHG.DISCOUNT" {
+        length: 10
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 60
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.DISCOUNT"
+    }
+
+    field "CHG.AMOUNT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+            line: + 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.AMOUNT"
+    }
+
+    fileVersion: Live, Exception
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.COLUMN.HEADER"
+}

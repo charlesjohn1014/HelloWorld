@@ -1,0 +1,245 @@
+Enquiry "SEPA.INWARD.NOSTRO.RECONCILE" for "name:/EP_ModelBank:NOFILE.SEPA.NOSTRO.RECONCILE#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Inward SEPA Files"
+        }
+
+        column: 2
+        line: 0
+    }
+
+    start-line: 4
+    end-line: 99 fixed-selection "ENQ.IN.DATA" {
+        NotEquals "\'\'"
+    }
+
+    field "PROCESS.DATE" {
+        label {
+            en = "Process Date"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "TIME" {
+        label {
+            en = "Time"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "#"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "#"
+    }
+
+    field "FIL.NAME" {
+        label {
+            en = "File Name"
+        }
+
+        length: 51
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "#"
+    }
+
+    field "PEACH.ID" {
+        label {
+            en = "Peach ID"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "#"
+    }
+
+    field "FT.ID" {
+        label {
+            en = "FT ID"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 13 to 1 delimited by "#"
+    }
+
+    field "FT.RECORD.STATUS" {
+        label {
+            en = "FT Record Status"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 14 to 1 delimited by "#"
+    }
+
+    field "ID" {
+        label {
+            en = "ID"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        hidden: true
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "#"
+    }
+
+    field "TRANS.CODE" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "#"
+    }
+
+    field "IN1" {
+        length: 1000
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "#"
+    }
+
+    field "IN2" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 12 to 1 delimited by "#"
+    }
+
+    field "DMYFIELD1" {
+        label {
+            en = "Message ID(complete)"
+        }
+
+        comma-separator: false
+        operation: calc "\"...\"":"MSGG.ID"
+    }
+
+    field "DMYFIELD2" {
+        comma-separator: false
+        operation: if "MSGG.ID" NotEquals "\"\"" process "DMYFIELD1"
+    }
+
+    field "MSG.TYPE" {
+        comma-separator: false
+        operation: constant "\"Cstmr...\""
+    }
+
+    field "PAIN.ENQ" {
+        comma-separator: false
+        operation: constant "\"SEPA.INWARD.PAIN.MSG\""
+    }
+
+    field "PACS.ENQ" {
+        comma-separator: false
+        operation: constant "\"SEPA.VIEW.INWARD.MSG\""
+    }
+
+    field "NEXT.ENQ.MAIN" {
+        comma-separator: false
+        operation: if "MESSAGE.TYPE" Matches "MSG.TYPE" process "PAIN.ENQ" "PACS.ENQ"
+    }
+
+    field "FT.VERSION" {
+        comma-separator: false
+        operation: constant "\"FUNDS.TRANSFER,SEPA.PAIN.RECONCILE\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "ID"
+        criteria: "EQ" parameters {
+            function:  See
+            field: "ID"
+        }
+
+        screen: "SEPA.INWARD.FILES,OVERVIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Amend Payment"
+        }
+
+        label-field: "FT.ID" parameters {
+            function:  Input
+            field: "FT.ID"
+        }
+
+        from-field: "FT.VERSION"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Accept Payment"
+        }
+
+        label-field: "FT.ID" parameters {
+            function:  Authorise
+            field: "FT.ID"
+        }
+
+        from-field: "FT.VERSION"
+    }
+
+}

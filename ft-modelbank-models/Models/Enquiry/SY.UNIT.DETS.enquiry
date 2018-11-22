@@ -1,0 +1,218 @@
+Enquiry "SY.UNIT.DETS" for "name:/SY_Unit:SY.UNIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Units"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "SY.TRANSACTION" {
+        }
+
+        None
+    }
+
+    field "EHEAD" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Product Units\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Unit ID"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "SHORT.DESC" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "CLASS-DESCR"
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.DESC"
+    }
+
+    field "T24.APP.ID" {
+        label {
+            en = "Deal No."
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "T24.APP.ID"
+    }
+
+    field "T24.APP" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "T24.APPLICATION"
+    }
+
+    field "PROD.DEF" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "PRODUCT.DEFINITION"
+    }
+
+    field "D" {
+        comma-separator: false
+        operation: constant "\"DCD\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "X1" {
+        comma-separator: false
+        operation: constant "\"DX\""
+    }
+
+    field "X2" {
+        comma-separator: false
+        operation: constant "\"MM\""
+    }
+
+    field "X3" {
+        comma-separator: false
+        operation: constant "\"DX.TRADE\""
+    }
+
+    field "X4" {
+        comma-separator: false
+        operation: constant "\"MM.MONEY.MARKET\""
+    }
+
+    field "UNIT" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "UNIT.NAME"
+    }
+
+    field "C1" {
+        comma-separator: false
+        operation: if "PROD.DEF" Equals "D" process "C2"
+    }
+
+    field "C2" {
+        comma-separator: false
+        operation: if "UNIT" Equals "X1" process "X3" "C3"
+    }
+
+    field "C3" {
+        comma-separator: false
+        operation: if "UNIT" Equals "X2" process "X4" "T24.APP"
+    }
+
+    field "T24" {
+        comma-separator: false
+        operation: if "C2" NotEquals "NULL" process "C2" "C3"
+    }
+
+    field "EVENT.ID" {
+        length: 52
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "C.S.TEXT" {
+        comma-separator: false
+        operation: constant "\" S \""
+    }
+
+    field "C.SEE" {
+        comma-separator: false
+        operation: calc "T24":"C.S.TEXT"
+    }
+
+    field "DD.SEE" {
+        label {
+            en = "DRILLDOWN"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        operation: calc "C.SEE":"T24.APP.ID"
+    }
+
+    field "LOG.ID" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 4 delimited by "."
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Unit"
+        }
+
+        label-field: "SHORT.DESC"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "SY.UNIT,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Deal"
+        }
+
+        label-field: "SHORT.DESC"
+        image: "details.gif"
+        from-field: "DD.SEE"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

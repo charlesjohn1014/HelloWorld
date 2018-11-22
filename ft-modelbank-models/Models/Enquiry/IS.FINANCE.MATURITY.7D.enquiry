@@ -1,0 +1,234 @@
+Enquiry "IS.FINANCE.MATURITY.7D" for "name:/AA_PaymentSchedule:AA.ACCOUNT.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Finance expiring in 7 days"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.MB.AA.LOAN.MATURITY.7D"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Arrangement Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "F.HEADER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Finance Expiring in next 7 days\""
+    }
+
+    field "F.ARR.ID" {
+        label {
+            en = "Arrangement Id"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "F.ACCOUNT.NO" {
+        label {
+            en = "Account"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "F.ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+    }
+
+    field "F.CUS.NAME" {
+        label {
+            en = "Customer"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "F.ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "F.PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "F.ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "F.CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "F.ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "D.STRING" {
+        comma-separator: false
+        operation: constant "\".1\""
+    }
+
+    field "D.PROP" {
+        comma-separator: false
+        operation: constant "\"-COMMITMENT-\""
+    }
+
+    field "D.DATE" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "F.ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PROD.EFF.DATE" false
+    }
+
+    field "D.CONCATE" {
+        comma-separator: false
+        operation: calc "D.PROP":"D.DATE":"D.STRING"
+    }
+
+    field "D.VALUE" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "F.CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: calc "F.ARR.ID":"D.CONCATE"
+        conversion: getFrom "AA.ARR.TERM.AMOUNT" "AMOUNT" false
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "C.VIEW" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.AL \""
+    }
+
+    field "VIEW.ARR" {
+        comma-separator: false
+        operation: calc "C.VIEW":"@ID"
+    }
+
+    field "ZERONORECORD" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"No Finance Expiring in the next 7 days\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Over View"
+        }
+
+        label-field: "F.ARR.ID"
+        image: "view.gif"
+        from-field: "VIEW.ARR"
+    }
+
+}

@@ -1,0 +1,209 @@
+Enquiry "TF.EXLCTRFBLE" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "List of Transferable Export LC\'s"
+    }
+
+    description {
+        en = "List of Transferable Export LCs"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.EXPLCTRF"
+    }
+
+    fixed-selection "LC.TYPE" {
+        NotEquals "ETRF"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "LC Currency"
+            }
+
+        }
+
+        AND
+
+        field "LC.AMOUNT" {
+            label {
+                en = "LC Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 0
+        }
+
+        operation: constant "\"List of Transferable Export LC\'s\""
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        operation: application-field-name "LC.TYPE"
+        conversion: getFrom "LC.TYPES" "1" false
+    }
+
+    field "ISSUING.BANK.NO" {
+        label {
+            en = "Issuing Bank"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ISSUING.BANK.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BEN.CUST" {
+        label {
+            en = "Beneficiary"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY.CUSTNO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NULL.1" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "BENEFICIARY" {
+        comma-separator: false
+        operation: application-field-name "BENEFICIARY"
+    }
+
+    field "BENEFICIARY.DISP" {
+        label {
+            en = "Beneficiary"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        operation: if "BEN.CUST" NotEquals "NULL.1" process "BEN.CUST" "BENEFICIARY"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        label {
+            en = "LC Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are No Transferable LCs\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "LETTER.OF.CREDIT"
+    }
+
+}

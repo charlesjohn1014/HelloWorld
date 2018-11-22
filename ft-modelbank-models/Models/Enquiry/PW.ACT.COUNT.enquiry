@@ -1,0 +1,190 @@
+Enquiry "PW.ACT.COUNT" for "name:/PW_Foundation:PW.ACTIVITY.TXN#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Pending Activities"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.GET.CORP.USERS"
+    }
+
+    fixed-selection "PW.ACTIVITY.STATUS" {
+        Equals "PENDING"
+    }
+
+    fixed-sort: "OWNER" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Activity ID"
+            }
+
+        }
+
+        AND
+
+        field "OWNER" {
+            label {
+                en = "Owner"
+            }
+
+        }
+
+        None
+    }
+
+    field "ACTIVITIES.HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Pending Activities\""
+    }
+
+    field "OWNER" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OWNER"
+    }
+
+    field "OWN.BRK" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OWNER"
+    }
+
+    field "OWNER.DISP" {
+        label {
+            en = "Owner"
+        }
+
+        break-condition {
+            field: "BRK.OWNER"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "OWNER"
+        conversion: getFrom "PW.PARTICIPANT" "DESCRIPTION" false
+    }
+
+    field "BRK.OWNER" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: break-change "OWN.BRK"
+    }
+
+    field "PW" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "REC.COUNT" {
+        label {
+            en = "Count"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.MB.CNT.PEND.ACTIVITY"
+    }
+
+    field "TOT.CNT" {
+        label {
+            en = "Process"
+        }
+
+        display-type: "BAR" break-condition {
+            field: "BRK.OWNER"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: total "REC.COUNT"
+    }
+
+    field "DISP.COUNT" {
+        label {
+            en = "Pending"
+        }
+
+        break-condition {
+            field: "BRK.OWNER"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: total "REC.COUNT"
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Pending Activity\""
+    }
+
+    field "OWNER.ID" {
+        comma-separator: false
+        operation: field-extract "OWNER.DISP"
+    }
+
+    field "PW.OWNER" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OWNER"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Activities"
+        }
+
+        label-field: "TOT.CNT"
+        image: "action.gif"
+        criteria: "OWNER" Equals "OWNER"
+        enquiry: "PW.ACT.LIST"
+    }
+
+}

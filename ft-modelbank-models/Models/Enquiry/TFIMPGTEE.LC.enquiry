@@ -1,0 +1,371 @@
+Enquiry "TFIMPGTEE.LC" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Import LCs Linked to Shipping Gtee"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "GTEE.REFERENCE" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "APPLICANT.CUSTNO" {
+            label {
+                en = "Applicant Customer"
+            }
+
+        }
+
+        AND
+
+        field "GTEE.REFERENCE" {
+            label {
+                en = "Guarantee Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: constant "\"Import LCs Linked to Shipping Guarantee\""
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Customer :\""
+    }
+
+    field "CUSTOMER.NAME" {
+        display-type: "CLASS-TITLE"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICANT.CUSTNO"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "OLD.LC.NUMBER" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "OLD.LC.NUMBER"
+    }
+
+    field "GTEE.REFERENCE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "GTEE.REFERENCE"
+    }
+
+    field "GTEE.CCY" {
+        comma-separator: false
+        operation: field-extract "GTEE.REFERENCE"
+        conversion: getFrom "MD.DEAL" "CURRENCY" false
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LC.TYPE"
+        conversion: getFrom "LC.TYPES" "DESCRIPTION" false
+    }
+
+    field "DUM.SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "APPLICANT.CUSTNO" {
+        label {
+            en = "Applicant"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "APPLICANT.CUSTNO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "LC.CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "DISP.LC.CCY.AMT" {
+        label {
+            en = "LC Ccy Amt"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: calc "LC.CURRENCY":"DUM.SP":"LC.AMOUNT"
+    }
+
+    field "ADVICE.EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ADVICE.EXPIRY.DATE"
+    }
+
+    field "DISP.GTEE.REF" {
+        label {
+            en = "Guarantee Ref"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: field-extract "GTEE.REFERENCE"
+    }
+
+    field "GTEE.MARGIN.AMT" {
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "GTEE.MARGIN.AMT"
+    }
+
+    field "GTEE.MGN" {
+        label {
+            en = "Gtee Mgn Amt"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: calc "GTEE.CCY":"DUM.SP":"GTEE.MARGIN.AMT"
+    }
+
+    field "GTEE.CUS" {
+        label {
+            en = "Gtee Customer"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "GTEE.REFERENCE"
+        conversion: getFrom "MD.DEAL" "CUSTOMER" false
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "GTEE.AMT" {
+        comma-separator: false
+        operation: field-extract "GTEE.REFERENCE"
+        conversion: getFrom "MD.DEAL" "PRINCIPAL.AMOUNT" false
+    }
+
+    field "DUM.SP.02" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "GTEE.CCY.AMT" {
+        label {
+            en = "Gtee Ccy Amount"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: calc "GTEE.CCY":"DUM.SP":"GTEE.AMT"
+    }
+
+    field "LC.MGN.APPOR" {
+        label {
+            en = "LC Margin"
+        }
+
+        comma-separator: false
+        operation: field-extract "GTEE.REFERENCE"
+        conversion: getFrom "MD.DEAL" "LC.MARGIN.AMT" false
+    }
+
+    field "DISP.LC.MGN" {
+        label {
+            en = "LC Margin"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: calc "LC.CURRENCY":"DUM.SP":"LC.MGN.APPOR"
+    }
+
+    field "DR.REF" {
+        label {
+            en = "Drawing Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "GTEE.REFERENCE"
+        conversion: getFrom "MD.DEAL" "DR.REFERENCE" false
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no LCs linked to Shipping Guarantee\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View LC"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "LETTER.OF.CREDIT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Guarantee"
+        }
+
+        label-field: "@ID"
+        image: "drill.gif"
+        criteria: "GTEE.REFERENCE" parameters {
+            function:  See
+            field: "GTEE.REFERENCE"
+        }
+
+        application: "MD.DEAL"
+    }
+
+}

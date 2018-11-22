@@ -1,0 +1,208 @@
+Enquiry "PVT.COLLATERAL.TO.EXPIRE" for "name:/CO_Contract:COLLATERAL#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Collaterals Expiring in next 7 Days"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    full-description {
+        en = "Collateral due to Expire"
+    }
+
+    description {
+        en = "Collateral due to Expire"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "@ID" {
+        Contains "!CURRENT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "@ID"
+            }
+
+            operands: Contains
+        }
+
+        AND
+
+        field "COLLATERAL.TYPE" {
+            label {
+                en = "Collateral Type"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "EXPIRY.DATE" {
+            label {
+                en = "Expiry Date"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Collateral Ref"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "COLLATERAL.TYPE" {
+        label {
+            en = "Collateral Type"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "COLLATERAL.TYPE"
+        conversion: getFrom "COLLATERAL.TYPE" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "NOMINAL.VALUE" {
+        label {
+            en = "Nominal Value"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOMINAL.VALUE"
+    }
+
+    field "EXECUTION.VALUE" {
+        label {
+            en = "Execution value"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXECUTION.VALUE"
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Expiry Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "ERR.MSG" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Collateral due to Expire\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Collateral"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "COLLATERAL,INP"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

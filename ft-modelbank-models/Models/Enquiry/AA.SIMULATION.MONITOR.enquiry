@@ -1,0 +1,570 @@
+Enquiry "AA.SIMULATION.MONITOR" for "name:/AA_Framework:AA.SIMULATION.RUNNER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Sim Runner Status"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "AUTOREFRESH" {
+        Equals "10"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Simulation"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        format: Translate
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: constant "\"Simulation Status\""
+    }
+
+    field "PERC" {
+        comma-separator: false
+        operation: constant "\"%\""
+    }
+
+    field "STATUS" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "STAT.DEF" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+        conversion: replace {
+            oldData: "COMPLETED - SUCCESSFULLY"
+            newData: "C"
+        }
+
+        conversion: replace {
+            oldData: "EXECUTED - SUCCESSFULLY"
+            newData: "E"
+        }
+
+    }
+
+    field "STATUS.PART" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "STATUS"
+        conversion: extract from 1 to 9
+    }
+
+    field "COMPLETED" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"EXECUTED\""
+    }
+
+    field "@ID" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "C.SIMULATION" {
+        display-type: "CLASS-ENQ.H.ID"
+        length: 40
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "L.ARRANGEMENT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: constant "\"Arrangement\""
+    }
+
+    field "ARRANGEMENT.REF" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.REF"
+    }
+
+    field "LIVE.PRODUCT" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT.REF"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "SIM.ARR.ID" {
+        comma-separator: false
+        operation: calc "ARRANGEMENT.REF":"PERC":"@ID"
+    }
+
+    field "SIM.PRODUCT" {
+        comma-separator: false
+        operation: field-extract "SIM.ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT$SIM" "PRODUCT.LINE" false
+    }
+
+    field "PRODUCT" {
+        comma-separator: false
+        operation: if "SIM.PRODUCT" Equals "\"\"" process "LIVE.PRODUCT" "SIM.PRODUCT"
+    }
+
+    field "PROD.OTH" {
+        comma-separator: false
+        operation: field-extract "PRODUCT"
+        conversion: replace {
+            oldData: "ACCOUNTS"
+            newData: "AR"
+        }
+
+        conversion: replace {
+            oldData: "DEPOSITS"
+            newData: "AD"
+        }
+
+        conversion: replace {
+            oldData: "LENDING"
+            newData: "AL"
+        }
+
+        conversion: replace {
+            oldData: "SAFE.DEPOSIT.BOX"
+            newData: "BX"
+        }
+
+    }
+
+    field "PROD.EXT" {
+        comma-separator: false
+        operation: constant "\"AX\""
+    }
+
+    field "PROD.CODE" {
+        comma-separator: false
+        operation: if "PROD.OTH" Matches "\"X...\"" process "PROD.EXT" "PROD.OTH"
+    }
+
+    field "D.ACT" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "U.ACTIVITY"
+        conversion: value 1
+    }
+
+    field "L.RUN.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: constant "\"Run Date\""
+    }
+
+    field "SIM.RUN.DATE" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: Date
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SIM.RUN.DATE"
+    }
+
+    field "L.END.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 3
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: constant "\"End Date\""
+    }
+
+    field "SIM.END.DATE" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: Date
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SIM.END.DATE"
+    }
+
+    field "C.ACTIVITY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Activity\""
+    }
+
+    field "SIM.CAPTURE.REF" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SIM.CAPTURE.REF"
+    }
+
+    field "L.ACTIVITY" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+            line: + 4
+            multiLine: true
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: if "SIM.CAPTURE.REF" NotEquals "\"\"" process "C.ACTIVITY" "\"\""
+    }
+
+    field "SIM.ACTIVITY" {
+        display-type: "CLASS-ENQ.DATA.VALUE"
+        format: User
+        comma-separator: false
+        position {
+            column: 2
+            line: + 4
+            multiLine: true
+        }
+
+        processing-mode: Multi
+        operation: field-extract "SIM.CAPTURE.REF"
+        conversion: getFrom "AA.SIMULATION.CAPTURE" "ACTIVITY" false
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "L.STATUS" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 100
+        processing-mode: Single
+        operation: constant "\"Status\""
+    }
+
+    field "D.STATUS" {
+        display-type: "CLASS-BOLD.ITALIC"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+        conversion: oconv "MCT"
+    }
+
+    field "OVERVIEW1" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.\""
+    }
+
+    field "OVERVIEW2" {
+        comma-separator: false
+        operation: calc "OVERVIEW1":"PROD.CODE"
+    }
+
+    field "OVERVIEW.SIM" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.SIM.\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "SIM1" {
+        comma-separator: false
+        operation: constant "\"SIM\""
+    }
+
+    field "ACC.DRILL" {
+        comma-separator: false
+        operation: constant "\"COS AR.CLOSURE.STATEMENT \""
+    }
+
+    field "OVER.DRILL" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.AR \""
+    }
+
+    field "OVER.BX" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.BX \""
+    }
+
+    field "OVERVIEW" {
+        comma-separator: false
+        operation: calc "OVERVIEW2":"SP":"ARRANGEMENT.REF":"SP":"@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SIM.OVER1" {
+        comma-separator: false
+        operation: calc "OVERVIEW.SIM":"PROD.CODE"
+    }
+
+    field "SIM.OVER2" {
+        comma-separator: false
+        operation: calc "SIM.OVER1":"SP":"ARRANGEMENT.REF"
+    }
+
+    field "SIM.OVER" {
+        comma-separator: false
+        operation: calc "SIM.OVER2":"SP":"@ID":"SP":"SIM1"
+    }
+
+    field "RED.STMT.1" {
+        comma-separator: false
+        operation: constant "\"COS AA.REDEEM.STATEMENT \""
+    }
+
+    field "DEP.WIT.OVER" {
+        comma-separator: false
+        operation: constant "\"COS AA.WITHDRAWAL.STATEMENT \""
+    }
+
+    field "DEP.PO.WIT" {
+        comma-separator: false
+        operation: calc "DEP.WIT.OVER":"ARRANGEMENT.REF"
+    }
+
+    field "RED.STMT" {
+        comma-separator: false
+        operation: calc "RED.STMT.1":"ARRANGEMENT.REF"
+    }
+
+    field "U.ACT" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "U.ACTIVITY"
+    }
+
+    field "ACT.PO" {
+        comma-separator: false
+        operation: constant "\"DEPOSITS-WITHDRAW-PO.EARLY.WITHDRAWAL\""
+    }
+
+    field "W.DRAW.DES" {
+        comma-separator: false
+        operation: if "STAT.DEF" Equals "C" process "DEP.PO.WIT" "OVERVIEW2"
+    }
+
+    field "SIM.WITH" {
+        comma-separator: false
+        operation: if "U.ACT" Equals "ACT.PO" process "W.DRAW.DES" "SIM.OVER"
+    }
+
+    field "SIM.COMP" {
+        comma-separator: false
+        operation: if "U.ACT" Matches "\"DEPOSITS-REDEEM...\"" process "RED.STMT" "SIM.WITH"
+    }
+
+    field "ACT.OVER" {
+        comma-separator: false
+        operation: calc "OVERVIEW2":"SP":"ARRANGEMENT.REF"
+    }
+
+    field "D.OTH" {
+        comma-separator: false
+        operation: if "STAT.DEF" Equals "C" process "SIM.COMP" "ACT.OVER"
+    }
+
+    field "D.PAY" {
+        comma-separator: false
+        operation: calc "ACC.DRILL":"ARRANGEMENT.REF"
+    }
+
+    field "D.OVER" {
+        comma-separator: false
+        operation: calc "OVER.DRILL":"ARRANGEMENT.REF"
+    }
+
+    field "D.VIEW.BX" {
+        comma-separator: false
+        operation: calc "OVER.BX":"ARRANGEMENT.REF"
+    }
+
+    field "DRILL.ACC" {
+        comma-separator: false
+        operation: if "D.ACT" Matches "\"ACCOUNTS-NEW-...\"" process "D.OVER" "D.PAY"
+    }
+
+    field "D.BX" {
+        comma-separator: false
+        operation: if "D.ACT" Matches "\"...CAL...PAYOFF\"" process "D.PAY" "D.VIEW.BX"
+    }
+
+    field "OVERVIEW4" {
+        comma-separator: false
+        operation: if "LIVE.PRODUCT" Equals "SAFE.DEPOSIT.BOX" process "D.BX" "D.OTH"
+    }
+
+    field "OVERVIEW3" {
+        comma-separator: false
+        operation: if "LIVE.PRODUCT" Equals "ACCOUNTS" process "DRILL.ACC" "D.OTH"
+    }
+
+    field "V.SIM.RUNNER1" {
+        comma-separator: false
+        operation: constant "\"AA.SIMULATION.RUNNER,AA I \""
+    }
+
+    field "V.SIM.RUNNER" {
+        comma-separator: false
+        operation: calc "V.SIM.RUNNER1":"@ID"
+    }
+
+    field "QUOTE1" {
+        comma-separator: false
+        operation: constant "\"COS AA.PAYOFF.STATEMENT \""
+    }
+
+    field "QUOTE" {
+        comma-separator: false
+        operation: calc "QUOTE1":"ARRANGEMENT.REF"
+    }
+
+    field "COMPLETED.S" {
+        comma-separator: false
+        operation: constant "\"COMPLETED - SUCCESSFULLY\""
+    }
+
+    field "EXECUTED.S" {
+        comma-separator: false
+        operation: constant "\"EXECUTED - SUCCESSFULLY\""
+    }
+
+    field "EXECUTED.P" {
+        comma-separator: false
+        operation: constant "\"EXLENDING-CALCULATE-PAYOFF\""
+    }
+
+    field "STATUS.PART.2" {
+        comma-separator: false
+        operation: field-extract "STATUS"
+        conversion: extract from 1 to 2
+    }
+
+    field "U.ACT.02" {
+        length: 80
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "U.ACTIVITY"
+        conversion: value 1 1
+    }
+
+    field "P.STATUS" {
+        comma-separator: false
+        operation: calc "STATUS.PART.2":"U.ACT"
+    }
+
+    field "DRILLDOWN.3" {
+        comma-separator: false
+        operation: if "STATUS" Equals "EXECUTED.S" process "OVERVIEW3" "V.SIM.RUNNER"
+    }
+
+    field "DRILLDOWN.2" {
+        comma-separator: false
+        operation: if "P.STATUS" Equals "EXECUTED.P" process "QUOTE" "DRILLDOWN.3"
+    }
+
+    field "DRILLDOWN" {
+        comma-separator: false
+        operation: if "STATUS" Equals "COMPLETED.S" process "OVERVIEW3" "DRILLDOWN.2"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "D.STATUS"
+        image: "view.gif"
+        from-field: "DRILLDOWN"
+    }
+
+    attributes: "NO.COLUMN.HEADER"
+}

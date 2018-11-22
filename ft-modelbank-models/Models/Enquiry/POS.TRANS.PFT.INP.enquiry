@@ -1,0 +1,225 @@
+Enquiry "POS.TRANS.PFT.INP" for "name:/SC_SctPositionTransfer:POSITION.TRANSFER#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Position Transfer Between Portfolios - Live List"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    description {
+        en = "Position Trfs-Portfolios"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "SEC.ACCT.FROM" {
+        NotEquals "NULL"
+    }
+
+    fixed-selection "SEC.ACCT.TO" {
+        NotEquals "NULL"
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Position Transfer Between Portfolios\""
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "SECURITY.CODE" {
+        label {
+            en = "Security"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.CODE"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "SEC.ACCT.FROM" {
+        label {
+            en = "From Portfolio"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SEC.ACCT.FROM"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "DEPOSITORY.FROM" {
+        label {
+            en = "From Custodian"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DEPOSITORY.FROM"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "SEC.ACCT.TO" {
+        label {
+            en = "To Portfolio"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SEC.ACCT.TO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "DEPOSITORY.TO" {
+        label {
+            en = "To Custodian"
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "DEPOSITORY.TO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "INPUTTER"
+    }
+
+    field "DATE.TIME" {
+        label {
+            en = "Date-Time Stamp"
+        }
+
+        format: Date
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "DATE.TIME"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "POSITION.TRANSFER,PFT.INP"
+    }
+
+    attributes: "ALLDATA"
+}

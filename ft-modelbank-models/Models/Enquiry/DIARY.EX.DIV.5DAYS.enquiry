@@ -1,0 +1,128 @@
+Enquiry "DIARY.EX.DIV.5DAYS" for "name:/SC_SccEventCapture:DIARY#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Upcoming Diaries-Next 5 days"
+    }
+
+    description {
+        en = "Upcoming Diaries-Next 5 days"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "EX.DATE" {
+        Between "!TODAY", "!TODAY+5C"
+    }
+
+    fixed-sort: "EX.DATE" Null
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Upcoming Diaries-Next 5 days\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "EVENT.TYPE" {
+        label {
+            en = "Event Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EVENT.TYPE"
+    }
+
+    field "DOT.OPERATOR" {
+        comma-separator: false
+        operation: constant "\"...\""
+    }
+
+    field "CA.MONITOR.DRILL" {
+        comma-separator: false
+        operation: calc "DOT.OPERATOR":"@ID":"DOT.OPERATOR"
+    }
+
+    field "NO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: constant "\"No Diaries in next 5 days\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Upcoming Diaries"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "DIARY,INP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "CA Monitor"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "NARRATIVE" Matches "CA.MONITOR.DRILL"
+        enquiry: "SC.EX.DATE.MTR"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

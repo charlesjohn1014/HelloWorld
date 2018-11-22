@@ -1,0 +1,192 @@
+Enquiry "AC.DETAILS.ADD.SCV" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Additional Detials"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "ARR" {
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        hidden: true
+        operation: field-extract "ARR"
+        conversion: extract from 1 to 1 delimited by "%"
+    }
+
+    field "ADDITIONAL.DETAILS" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Account Enquiries\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Statement entries today"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT.NUMBER" Equals "ARR"
+        enquiry: "STMT.ENT.TODAY.SCV"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Forward Movement"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT.ID" Equals "ARR"
+        enquiry: "NOSTRO.FWD.BAL.SCV"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Average Account Balance"
+        }
+
+        label-field: "ARR"
+        criteria: "CURRENT.AC.NO" > "ARR"
+        composite-screen: "ACCT.AVERAGE.BAL.HP.SCV"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Credit Interest Posted"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT" Equals "ARR"
+        enquiry: "STMT.ACCT.CR.SCV"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Debit Interest Posted"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT" Equals "ARR"
+        enquiry: "STMT.ACCT.DR.SCV"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Entries for given dates"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT" Equals "ARR"
+        enquiry: "STMT.ENT.BOOK.SCV"
+    }
+
+    drilldown "7" {
+        description {
+            en = "Balance on Statement Date"
+        }
+
+        label-field: "ARR"
+        criteria: "STMT.ACCOUNT.NO" Equals "ARR"
+        enquiry: "ACCT.STMT.HIST.SCV"
+    }
+
+    drilldown "8" {
+        description {
+            en = "Credit Interest Corrected"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT" Equals "ARR"
+        enquiry: "CORR.ACCT.CR.SCV"
+    }
+
+    drilldown "9" {
+        description {
+            en = "Debit Interest Corrected"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT" Equals "ARR"
+        enquiry: "CORR.ACCT.DR.SCV"
+    }
+
+    drilldown "10" {
+        description {
+            en = "Interest Rate Changes"
+        }
+
+        label-field: "ARR"
+        criteria: "CURRENT.AC.NO" > "ARR"
+        composite-screen: "ACC.CURRENT.INTEREST.SCV"
+    }
+
+    drilldown "11" {
+        description {
+            en = "Cheques Issued"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT.NO" Equals "ARR"
+        enquiry: "CHQ.ISSUES.SCV"
+    }
+
+    drilldown "12" {
+        description {
+            en = "Cheques Presented"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT.NO" Equals "ARR"
+        should-be-changed: "CHQ.PRESENTED.SCV"
+    }
+
+    drilldown "13" {
+        description {
+            en = "Stopped Cheques"
+        }
+
+        label-field: "ARR"
+        criteria: "@ID" Contains "ARR"
+        enquiry: "CHQ.STOPPED.SCV"
+    }
+
+    drilldown "14" {
+        description {
+            en = "Revoked Cheques"
+        }
+
+        label-field: "ARR"
+        criteria: "ACCOUNT.NUMBER" Equals "ARR"
+        enquiry: "CHQ.REVOKE.SCV"
+    }
+
+    drilldown "15" {
+        description {
+            en = "Generate Account Statement"
+        }
+
+        label-field: "ARR"
+        criteria: "CURRENT.ACCOUNT" > "ARR"
+        composite-screen: "AC.ACCOUNT.STATEMENT.SCV"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+    introspection-messages: "Error in drilldown 12: ENQ \'CHQ.PRESENTED.SCV\' does not exist, broken reference"
+}

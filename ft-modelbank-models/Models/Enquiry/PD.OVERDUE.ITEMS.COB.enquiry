@@ -1,0 +1,590 @@
+Enquiry "PD.OVERDUE.ITEMS.COB" for "name:/PD_Config:PD.BALANCES#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Contract Id"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Customer No"
+        }
+
+        column: 20
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Customer Name"
+        }
+
+        column: 37
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Value Date"
+        }
+
+        column: 65
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Principal"
+        }
+
+        column: 80
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Interest"
+        }
+
+        column: 100
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Penality Interest"
+        }
+
+        column: 120
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Penality Spread"
+        }
+
+        column: 140
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Others"
+        }
+
+        column: 160
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Total Overdue"
+        }
+
+        column: 180
+        line: 1
+    }
+
+    full-description {
+        en = "PD Overdue Items"
+    }
+
+    description {
+        en = "PD Overdue Items"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.BUILD.PD.BALANCES"
+    }
+
+    fixed-sort: "PERIOD" Descending
+    custom-selection {
+
+        field "CUSTOMER.NO" {
+            operands: Equals
+        }
+
+        AND
+
+        field "PERIODS" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"PD Balances\""
+    }
+
+    field "FIELD.ID" {
+        label {
+            en = "Contract Id"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 0 to 0 delimited by "-"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer No"
+        }
+
+        format: User
+        length: 13
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: i-desc "CUSTOMER.NO"
+    }
+
+    field "CUSTOMERID" {
+        label {
+            en = "Customer Name"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 37
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ID" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 0 delimited by "-"
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Contract ID :\""
+    }
+
+    field "FIELD ID" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 0 to 0 delimited by "-"
+    }
+
+    field "CALC.PERIOD" {
+        comma-separator: false
+        operation: selection "PERIODS"
+        conversion: call
+        jBC: "@ E.PD.BALANCES.PERIODS"
+    }
+
+    field "THIS.PERIOD" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "CALC.PERIOD"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "NEXT.PERIOD" {
+        comma-separator: false
+        operation: field-extract "CALC.PERIOD"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "BREAK.PERIOD" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "THIS.PERIOD"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"ZERO\""
+    }
+
+    field "LESS.THAN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Less Than \""
+    }
+
+    field "GREATER.THAN" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Greater Than \""
+    }
+
+    field "PERIOD.TEXT" {
+        comma-separator: false
+        operation: if "THIS.PERIOD" Equals "ZERO" process "LESS.THAN" "GREATER.THAN"
+    }
+
+    field "LT.TEXT" {
+        comma-separator: false
+        operation: calc "PERIOD.TEXT":"NEXT.PERIOD"
+    }
+
+    field "GT.TEXT" {
+        comma-separator: false
+        operation: calc "PERIOD.TEXT":"THIS.PERIOD"
+    }
+
+    field "BUILD.PERIOD.TEXT" {
+        comma-separator: false
+        operation: if "THIS.PERIOD" Equals "ZERO" process "LT.TEXT" "GT.TEXT"
+    }
+
+    field "SHOW.PERIOD.TEXT" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 0
+        }
+
+        operation: calc "BUILD.PERIOD.TEXT":"DAYS.TEXT"
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"Customer :\""
+    }
+
+    field "CUSTOMER.NO.02" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: i-desc "CUSTOMER.NO"
+    }
+
+    field "CUSTOMER.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: application-field-name "FILED CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURR.OS.AMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURR.OS.AMT"
+    }
+
+    field "PROCESSING.CALL" {
+        comma-separator: false
+        operation: field-extract "CUSTOMER.NO"
+        conversion: call
+        jBC: "@ E.PD.BALANCES.CHECK"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "PRINCIPAL" {
+        label {
+            en = "Principal"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURR.OS.AMT"
+        conversion: value 1 1
+    }
+
+    field "INTEREST" {
+        label {
+            en = "Interest"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURR.OS.AMT"
+        conversion: value 2 1
+    }
+
+    field "PENALTY.INTEREST" {
+        label {
+            en = "Penality Interest"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 120
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURR.OS.AMT"
+        conversion: value 3 1
+    }
+
+    field "PENALTY.SPREAD" {
+        label {
+            en = "Penality Spread"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 140
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURR.OS.AMT"
+        conversion: value 4 1
+    }
+
+    field "OTHERS" {
+        label {
+            en = "Others"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 160
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURR.OS.AMT"
+        conversion: value 5 1
+    }
+
+    field "TOTAL.OVERDUE" {
+        label {
+            en = "Total Overdue"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 180
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURR.OS.AMT"
+        conversion: value 6 1
+    }
+
+    field "TOTAL.TEXT" {
+        break-condition {
+            field: "BREAK.PERIOD"
+        }
+
+        comma-separator: false
+        position {
+            column: 65
+            line: + 2
+        }
+
+        operation: constant "\"Totals\""
+    }
+
+    field "TOTAL.PRINCIPAL" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BREAK.PERIOD"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 80
+            line: + 2
+        }
+
+        operation: total "PRINCIPAL"
+    }
+
+    field "TOTAL.INTEREST" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BREAK.PERIOD"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 100
+            line: + 2
+        }
+
+        operation: total "INTEREST"
+    }
+
+    field "TOTAL.PEN.INTEREST" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BREAK.PERIOD"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 120
+            line: + 2
+        }
+
+        operation: total "PENALTY.INTEREST"
+    }
+
+    field "TOTAL.PEN.SPREAD" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BREAK.PERIOD"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 140
+            line: + 2
+        }
+
+        operation: total "PENALTY.SPREAD"
+    }
+
+    field "TOTAL.OTHERS" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BREAK.PERIOD"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 160
+            line: + 2
+        }
+
+        operation: total "OTHERS"
+    }
+
+    field "TOTAL.LINE" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "BREAK.PERIOD"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 180
+            line: + 2
+        }
+
+        operation: total "TOTAL.OVERDUE"
+    }
+
+    field "DAYS.TEXT" {
+        comma-separator: false
+        display-section: Header
+        processing-mode: Single
+        operation: constant "\"Days Overdue.\""
+    }
+
+}

@@ -1,0 +1,107 @@
+Enquiry "%STANDING.ORDER" for "name:/AC_StandingOrders:STANDING.ORDER#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Current Standing Orders"
+        }
+
+        column: 35
+        line: 0
+    }
+
+    description {
+        en = "STANDING.ORDER Default List"
+    }
+
+    start-line: 4
+    end-line: 19
+
+    field "@ID" {
+        label {
+            en = "STO Reference"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "Type" {
+        format: User
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: application-field-name "K.TYPE"
+        conversion: getFrom "STO.TYPE" "DESCRIPTION" false
+    }
+
+    field "Currency" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "Current Balance" {
+        format: Currency "Currency" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 58
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.AMOUNT.BAL"
+    }
+
+    field "Frequency Date" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.FREQUENCY"
+        conversion: extract from 1 to 8
+    }
+
+    field "Frequency" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 74
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.FREQUENCY"
+        conversion: call
+        jBC: "@ E.MB.FREQ.TEXT"
+    }
+
+    drilldown "1" {
+        label-field: "@ID"
+        quit-SEE: "@ID"
+    }
+
+}

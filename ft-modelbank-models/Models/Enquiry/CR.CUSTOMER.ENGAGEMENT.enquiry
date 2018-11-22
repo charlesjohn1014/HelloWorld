@@ -1,0 +1,334 @@
+Enquiry "CR.CUSTOMER.ENGAGEMENT" for "name:/CR_Analytical:CR.CUST.ENGAGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Customers in Branch"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "TIME.OUT" {
+        Equals "\"\""
+    }
+
+    fixed-selection "DATE" {
+        Equals "!TODAY"
+    }
+
+    fixed-selection "ASSIGNED.USER" {
+        Equals "!USER"
+    }
+
+    fixed-sort: "TIME.IN" Null
+
+    field "@ID" {
+        label {
+            en = "Key"
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "L.LABEL" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Customers in Branch\""
+    }
+
+    field "IMAGE.TYPE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"PHOTOS\""
+    }
+
+    field "PATH" {
+        comma-separator: false
+        operation: field-extract "IMAGE.TYPE"
+        conversion: getFrom "IM.IMAGE.TYPE" "PATH" false
+    }
+
+    field "PATH.PREFIX" {
+        comma-separator: false
+        operation: constant "\"../\""
+    }
+
+    field "FULL.PATH" {
+        comma-separator: false
+        operation: calc "PATH.PREFIX":"PATH"
+    }
+
+    field "IMAGE" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "IMAGE.TYPE"
+        conversion: call
+        jBC: "@ E.SCV.CUST.ENGAGEMENT.PW.CONV.IMAGE"
+        conversion: getFrom "IM.DOCUMENT.IMAGE" "IMAGE" false
+    }
+
+    field "IMAGE.WITH.PATH" {
+        comma-separator: false
+        operation: calc "FULL.PATH":"IMAGE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "D.IMAGE" {
+        label {
+            en = "Customer"
+        }
+
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        hidden: true
+        operation: if "IMAGE" NotEquals "NULL" process "IMAGE.WITH.PATH" "NULL"
+    }
+
+    field "Z.LABEL" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Customers in Branch\""
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No Engagements.\""
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "LOCATION" {
+        label {
+            en = "Location"
+        }
+
+        format: User
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LOCATION"
+        conversion: getFrom "COMPANY" "COMPANY.NAME" false
+    }
+
+    field "DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE"
+    }
+
+    field "ACCOUNT.OFFICER" {
+        label {
+            en = "Officer"
+        }
+
+        comma-separator: false
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "TIME.IN" {
+        label {
+            en = "Time"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TIME.IN"
+    }
+
+    field "TIME.OUT" {
+        label {
+            en = "Time Out"
+        }
+
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TIME.OUT"
+    }
+
+    field "COMMON.ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "COMMON.ACTIVITY"
+        conversion: getFrom "CR.COMMON.ACTIVITY" "DESC" false
+    }
+
+    field "NOTES" {
+        label {
+            en = "Notes"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "NOTES"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Checked In By"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 1 delimited by "_"
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "CHECK.OUT.1" {
+        comma-separator: false
+        operation: constant "\"CR.CUSTOMER.IN.BRANCH,CHECK.OUT I \""
+    }
+
+    field "CHECK.OUT" {
+        comma-separator: false
+        operation: calc "CHECK.OUT.1":"@ID"
+    }
+
+    tool ENQ.NEW {
+        label {
+            en = "Check In"
+        }
+
+        command: "CR.CUSTOMER.IN.BRANCH,CHECK.IN I F3"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Single Customer View"
+        }
+
+        label-field: "CUSTOMER"
+        image: "custscv.gif"
+        criteria: "CURRENT.CUSTOMER" > "CUSTOMER" parameters {
+            field: "CUSTOMER"
+        }
+
+        composite-screen: "CUSTOMER.OVERVIEW.CSM"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Check Out"
+        }
+
+        label-field: "CUSTOMER"
+        image: "launch.gif"
+        criteria: "CURRENT.CUSTOMER" > "CUSTOMER" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "CR.CUST.ENGAGEMENT,CHECK.OUT"
+    }
+
+    attributes: "NO.TOOLBAR" ; "NO.BREADCRUMBS"
+}

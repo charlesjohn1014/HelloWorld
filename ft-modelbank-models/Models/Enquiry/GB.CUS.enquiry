@@ -1,0 +1,497 @@
+Enquiry "GB.CUS" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Customer List"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    fixed-sort: "ACCOUNT.OFFICER" Null
+    custom-selection {
+
+        field "SECTOR" {
+            label {
+                en = "Sector"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "ACCOUNT.OFFICER" {
+            label {
+                en = "Account.Officer"
+            }
+
+        }
+
+        AND
+
+        field "INDUSTRY" {
+            label {
+                en = "Industry"
+            }
+
+        }
+
+        AND
+
+        field "NATIONALITY" {
+            label {
+                en = "Nationality"
+            }
+
+        }
+
+        AND
+
+        field "RESIDENCE" {
+            label {
+                en = "Residence"
+            }
+
+        }
+
+        AND
+
+        field "LANGUAGE" {
+            label {
+                en = "Language"
+            }
+
+        }
+
+        None
+    }
+
+    field "BLANK" {
+        label {
+            en = "Client"
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "MINUS1" {
+        comma-separator: false
+        operation: constant "\"-1\""
+    }
+
+    field "ACCT.OFF" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+    }
+
+    field "ACCT.OFF.NAME" {
+        comma-separator: false
+        operation: field-extract "ACCT.OFF"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+        conversion: oconv "MCU"
+    }
+
+    field "COUNT" {
+        comma-separator: false
+        operation: constant "\"1\""
+    }
+
+    field "AO.1" {
+        comma-separator: false
+        operation: calc "ACCT.OFF":"BLANK"
+    }
+
+    field "AO.2" {
+        label {
+            en = "Officer"
+        }
+
+        display-type: "STARTTREE"
+        length: 40
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        operation: calc "AO.1":"ACCT.OFF.NAME"
+    }
+
+    field "CUS.NO" {
+        label {
+            en = "No."
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "MNEMONIC" {
+        label {
+            en = "Mnemonic"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MNEMONIC"
+    }
+
+    field "SHORT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        display-type: "CLASS-DESCR"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.NAME"
+    }
+
+    field "NATIONALITY" {
+        label {
+            en = "Nationality"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NATIONALITY"
+    }
+
+    field "RESIDENCE" {
+        label {
+            en = "Residence"
+        }
+
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RESIDENCE"
+    }
+
+    field "LANGUAGE" {
+        label {
+            en = "Lang."
+        }
+
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LANGUAGE"
+        conversion: getFrom "LANGUAGE" "DESCRIPTION" false
+    }
+
+    field "INDUSTRY" {
+        label {
+            en = "Industry"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INDUSTRY"
+        conversion: getFrom "INDUSTRY" "DESCRIPTION" false
+    }
+
+    field "SECTOR" {
+        label {
+            en = "Sector"
+        }
+
+        format: User
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECTOR"
+        conversion: getFrom "SECTOR" "SHORT.NAME" false
+    }
+
+    field "PF.NO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "CUS.NO":"MINUS1"
+    }
+
+    field "INV.PROG" {
+        label {
+            en = "Invest Prog"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PF.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "INVESTMENT.PROGRAM" false
+    }
+
+    field "INV.PROG.DESCR" {
+        label {
+            en = "Invest. Prog."
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Single
+        operation: field-extract "INV.PROG"
+        conversion: getFrom "INVESTMENT.PROGRAM" "SHORT.DESCR" false
+    }
+
+    field "MANAGED.ACC" {
+        format: User
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PF.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "MANAGED.ACCOUNT" false
+    }
+
+    field "MANAGED.ACC.DECR" {
+        label {
+            en = "Managed"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 120
+        }
+
+        processing-mode: Single
+        operation: field-extract "MANAGED.ACC"
+        conversion: getFrom "MANAGED.ACCOUNT" "SHORT.DESCR" false
+    }
+
+    field "VAL.AMT" {
+        label {
+            en = "Valuation"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "REF.CCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 130
+        }
+
+        processing-mode: Single
+        operation: field-extract "PF.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.AMT" false
+    }
+
+    field "REF.CCY" {
+        label {
+            en = "Ref Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 140
+        }
+
+        processing-mode: Single
+        operation: field-extract "PF.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "VAL.CCY" {
+        label {
+            en = "Val Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        operation: field-extract "PF.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "VALUATION.CURRENCY" false
+    }
+
+    field "B.ACCT.OFF" {
+        comma-separator: false
+        operation: break-change "AO.2"
+    }
+
+    field "T.AO2" {
+        label {
+            en = "Officer"
+        }
+
+        display-type: "ENDTREE" break-condition {
+            field: "B.ACCT.OFF"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "AO.2"
+    }
+
+    field "T.CUST" {
+        break-condition {
+            field: "B.ACCT.OFF"
+        }
+
+        comma-separator: false
+        operation: constant "\" Customer(s)\""
+    }
+
+    field "T.COUNT" {
+        break-condition {
+            field: "B.ACCT.OFF"
+        }
+
+        comma-separator: false
+        operation: total "COUNT"
+    }
+
+    field "T.CUSTCOUNT" {
+        label {
+            en = "No."
+        }
+
+        display-type: "CLASS-FDLB" break-condition {
+            field: "B.ACCT.OFF"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        operation: calc "T.COUNT":"T.CUST"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Customer Details"
+        }
+
+        label-field: "CUS.NO" parameters {
+            function:  See
+            field: "CUS.NO"
+        }
+
+        screen: "CUSTOMER,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "List of Accounts"
+        }
+
+        label-field: "CUS.NO"
+        criteria: "CUSTOMER" Equals "CUS.NO"
+        enquiry: "ACCOUNT.DETAILS"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Portfolios Holdings"
+        }
+
+        label-field: "CUS.NO"
+        criteria: "CUSTOMER.NUMBER" Equals "CUS.NO"
+        enquiry: "SC.PORT.HOLD.SUM"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Portfolio Valuation"
+        }
+
+        label-field: "CUS.NO"
+        criteria: "SECURITY.ACC" Equals "PF.NO"
+        criteria: "ONLINE.YNO" Equals "\"Y\""
+        enquiry: "SC.VAL.COST"
+    }
+
+    drilldown "5" {
+        description {
+            en = "New Valuation"
+        }
+
+        label-field: "CUS.NO"
+        criteria: "SAM.NO" Equals "PF.NO"
+        enquiry: "GB.AM.SAM.INFO"
+    }
+
+    attributes: "ALLDATA"
+}

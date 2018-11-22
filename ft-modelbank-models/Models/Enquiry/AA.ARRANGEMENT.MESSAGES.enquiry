@@ -1,0 +1,128 @@
+Enquiry "AA.ARRANGEMENT.MESSAGES" for "name:/AA_Framework:AA.ARRANGEMENT.ACTIVITY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Messages"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DELIVERY.REF" {
+        NotEquals "NULL"
+    }
+
+    fixed-sort: "EFFECTIVE.DATE" Descending
+    custom-selection {
+
+        field "ARRANGEMENT" {
+            mandatory: true
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ARR.SEQUENCE" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARR.SEQUENCE"
+    }
+
+    field "ARRANGEMENT" {
+        comma-separator: false
+        operation: application-field-name "ARRANGEMENT"
+    }
+
+    field "EFFECTIVE.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "ACTIVITY" {
+        length: 55
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACTIVITY"
+    }
+
+    field "DESC.ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "ACTIVITY"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "D.ACTIVITY" {
+        label {
+            en = "Activity ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        hidden: true
+        operation: field-extract "ARR.SEQUENCE"
+    }
+
+    field "DELIVERY.REF" {
+        label {
+            en = "Delivery Reference"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DELIVERY.REF"
+    }
+
+    field "PREVIEW" {
+        comma-separator: false
+        operation: field-extract "DELIVERY.REF"
+        conversion: call
+        jBC: "@ E.AA.BUILD.DELIVERY.PREVIEW"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "DESC.ACTIVITY"
+        image: "view.gif"
+        from-field: "PREVIEW"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

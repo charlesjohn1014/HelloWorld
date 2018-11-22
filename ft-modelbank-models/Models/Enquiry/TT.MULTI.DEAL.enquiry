@@ -1,0 +1,363 @@
+Enquiry "TT.MULTI.DEAL" for "name:/TT_Contract:TELLER$NAU#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Detail of Teller Deal"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Transaction Type"
+        }
+
+        column: 2
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Rate"
+        }
+
+        column: 3
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Currency"
+        }
+
+        column: 4
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Fcy Amt"
+        }
+
+        column: 5
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Lcy Amt"
+        }
+
+        column: 6
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Lcy Chg Amt"
+        }
+
+        column: 7
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Lcy Amt Due"
+        }
+
+        column: 8
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Toatal for Deal"
+        }
+
+        column: 30
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Total Charges"
+        }
+
+        column: 30
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Total plus charges"
+        }
+
+        column: 30
+        line: 2
+    }
+
+    description {
+        en = "TT.MULTI.DEAL"
+    }
+
+    start-line: 4
+    end-line: 19
+    fixed-sort: "SEQ.NO" Descending
+    custom-selection {
+
+        field "MAIN.DEAL" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "SEQ.NO" {
+        label {
+            en = "Leg"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 14 to 2
+    }
+
+    field "MAIN.DEAL" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "TXN.CODE" {
+        format: User
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: getFrom "TELLER.TRANSACTION" "SHORT.DESC" false
+    }
+
+    field "DISP.TXN.CODE" {
+        label {
+            en = "Txn Code"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "TXN.CODE" NotEquals "NULL" process "TXN.CODE" "NULL"
+    }
+
+    field "RATE.1" {
+        label {
+            en = "Rate"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RATE.1"
+    }
+
+    field "CURRENCY.1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY.1"
+    }
+
+    field "AMOUNT.FCY.1" {
+        label {
+            en = "Amount Fcy"
+        }
+
+        format: Currency "CURRENCY.1" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.FCY.1"
+    }
+
+    field "AMOUNT.LOCAL.1" {
+        label {
+            en = "Amount Lcy"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LOCAL.1"
+    }
+
+    field "DISP.AMT.LCY.1" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        operation: if "TXN.CODE" NotEquals "NULL" process "AMOUNT.LOCAL.1" "TOT.AMT.LCY.1"
+    }
+
+    field "CHRG.AMT" {
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHRG.AMT.LOCAL"
+    }
+
+    field "DISP.CHG" {
+        label {
+            en = "Charges"
+        }
+
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "CHRG.AMT.LOCAL"
+    }
+
+    field "TOT.AMT.LCY.1" {
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 48
+            line: 0
+        }
+
+        operation: total "AMOUNT.LOCAL.1"
+    }
+
+    field "TOTAL.CHG" {
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 48
+            line: 1
+        }
+
+        processing-mode: Multi
+        operation: total "CHRG.AMT"
+    }
+
+    field "TOTAL.NET.AMOUNT" {
+        format: Currency "LCCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 48
+            line: 2
+        }
+
+        processing-mode: Multi
+        operation: calc "TOT.AMT.LCY.1" + "TOTAL.CHG"
+    }
+
+    field "LCCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise Deal"
+        }
+
+        label-field: "SEQ.NO" parameters {
+            function:  Authorise
+            field: "MAIN.DEAL"
+        }
+
+        application: "TELLER"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View record"
+        }
+
+        label-field: "SEQ.NO"
+        quit-SEE: "@ID"
+    }
+
+}

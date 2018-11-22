@@ -1,0 +1,133 @@
+Enquiry "GET.CUSTOMER.AML.STATUS" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Check if AML update is required"
+    }
+
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        None
+    }
+
+    field "AML.CHECK" {
+        length: 4
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AML.CHECK"
+    }
+
+    field "AML.RESULT.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LAST.AML.RESULT.DATE"
+        conversion: julian
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        operation: today
+        conversion: julian
+    }
+
+    field "DIFFERENCE" {
+        comma-separator: false
+        operation: constant "\"90\""
+    }
+
+    field "DATE.DIFF" {
+        comma-separator: false
+        operation: calc "TODAY" - "AML.RESULT.DATE"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SENT" {
+        comma-separator: false
+        operation: constant "\"SENT\""
+    }
+
+    field "RUN" {
+        comma-separator: false
+        operation: constant "\"RUN.AML.CHECK\""
+    }
+
+    field "DONT.RUN" {
+        comma-separator: false
+        operation: constant "\"DO.NOT.RUN.AML.CHECK\""
+    }
+
+    field "DIFF.RESULT" {
+        comma-separator: false
+        operation: if "DATE.DIFF" GreaterOrEquals "DIFFERENCE" process "RUN" "DONT.RUN"
+    }
+
+    field "EXPIRED" {
+        comma-separator: false
+        operation: constant "\"Expired\""
+    }
+
+    field "VALID" {
+        comma-separator: false
+        operation: constant "\"Valid\""
+    }
+
+    field "EXPIRY.DISP" {
+        comma-separator: false
+        operation: if "DIFF.RESULT" Equals "RUN" process "EXPIRED" "VALID"
+    }
+
+    field "DATE.RESULT" {
+        comma-separator: false
+        operation: if "AML.RESULT.DATE" Equals "NULL" process "RUN" "DIFF.RESULT"
+    }
+
+    field "AML.STATUS.FINAL" {
+        comma-separator: false
+        operation: if "AML.CHECK" Equals "SENT" process "DONT.RUN" "DATE.RESULT"
+    }
+
+    field "POSITIVE" {
+        comma-separator: false
+        operation: constant "\"POSITIVE\""
+    }
+
+    field "AML.RESULT" {
+        length: 14
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AML.RESULT"
+    }
+
+    field "AML.STATUS.1" {
+        comma-separator: false
+        operation: if "AML.CHECK" Equals "NULL" process "RUN" "AML.STATUS.FINAL"
+    }
+
+    field "AML.STATUS" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "AML.RESULT" Equals "POSITIVE" process "RUN" "AML.STATUS.1"
+    }
+
+}

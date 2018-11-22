@@ -1,0 +1,737 @@
+Enquiry "SW.CCY.REVAL" for "name:/SW_Reports:NOFILE.SW.CCY.REVAL#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "SWAPS - Currency Revaluations"
+        }
+
+        column: 52
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Currency :"
+        }
+
+        column: 108
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Leg ID"
+        }
+
+        column: 5
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Maturity"
+        }
+
+        column: 18
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Date"
+        }
+
+        column: 20
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Principal"
+        }
+
+        column: 40
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Original"
+        }
+
+        column: 63
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Equivalent"
+        }
+
+        column: 61
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Current"
+        }
+
+        column: 86
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Equivalent"
+        }
+
+        column: 83
+        line: 2
+    }
+
+    header {
+        label {
+            en = "P & L to"
+        }
+
+        column: 107
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Date"
+        }
+
+        column: 111
+        line: 2
+    }
+
+    header {
+        label {
+            en = "P & L to"
+        }
+
+        column: 123
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Today"
+        }
+
+        column: 126
+        line: 2
+    }
+
+    header {
+        label {
+            en = "------------------------------------"
+        }
+
+        column: 1
+        line: 3
+    }
+
+    header {
+        label {
+            en = "-----------------------------------"
+        }
+
+        column: 37
+        line: 3
+    }
+
+    header {
+        label {
+            en = "-----------------------------------"
+        }
+
+        column: 72
+        line: 3
+    }
+
+    header {
+        label {
+            en = "------------------------"
+        }
+
+        column: 107
+        line: 3
+    }
+
+    description {
+        en = "SW.CCY.REVAL"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "R.SW.BAL.REVAL" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CURRENCY" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "CCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "INIT.RATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "BREAK.CCY" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "CCY"
+    }
+
+    field "@ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CCY.DISP" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 121
+            line: 0
+        }
+
+        operation: application-field-name "FLD CCY"
+    }
+
+    field "DISP.ID" {
+        label {
+            en = "Leg Id"
+        }
+
+        length: 14
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD @ID"
+    }
+
+    field "CONTRACT.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "MAT.DATE" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "FLD CONTRACT.ID"
+        conversion: getFrom "SWAP" "MATURITY.DATE" false
+    }
+
+    field "DISP.MAT.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD MAT.DATE"
+    }
+
+    field "AORL" {
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "PRINCIPAL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "PRIN1" {
+        comma-separator: false
+        operation: application-field-name "FLD PRINCIPAL"
+        conversion: value 1
+    }
+
+    field "PRINL" {
+        comma-separator: false
+        operation: calc "VAR0" - "PRIN1"
+    }
+
+    field "PRIN" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: if "AORL" Equals "VARL" process "PRINL" "PRIN1"
+    }
+
+    field "DISP.PRIN" {
+        label {
+            en = "Principal"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: application-field-name "FLD PRIN"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "CURR.EQU1" {
+        comma-separator: false
+        operation: calc "CCY":"STAR"
+    }
+
+    field "CURR.EQU2" {
+        comma-separator: false
+        operation: calc "CURR.EQU1":"PRIN"
+    }
+
+    field "CURR.EQU3" {
+        comma-separator: false
+        operation: calc "CURR.EQU2":"STAR"
+        conversion: call
+        jBC: "@ E.SW.REVAL.CALC"
+    }
+
+    field "CURR.EQU" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FLD CURR.EQU3"
+    }
+
+    field "VAR0" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "VARL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"L\""
+    }
+
+    field "CCY.REV.PL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "CCY.RE.PL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "VAR0" - "CCY.REV.PL"
+    }
+
+    field "PL.TO.DATE1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "AORL" Equals "VARL" process "CCY.RE.PL" "CCY.REV.PL"
+    }
+
+    field "OUTPRIN.LC" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "OUTS.PRIN.LC" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: application-field-name "FLD OUTPRIN.LC"
+        conversion: value 1
+    }
+
+    field "A.PL.TODAY" {
+        comma-separator: false
+        operation: calc "CURR.EQU" - "OUTS.PRIN.LC"
+    }
+
+    field "L.PL.TODAY" {
+        comma-separator: false
+        operation: calc "OUTS.PRIN.LC" + "CURR.EQU"
+    }
+
+    field "PL.TODAY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "AORL" Equals "VARL" process "L.PL.TODAY" "A.PL.TODAY"
+    }
+
+    field "PL.TO.DATE" {
+        comma-separator: false
+        operation: calc "PL.TO.DATE1" + "PL.TODAY"
+    }
+
+    field "ORIG.EQU1" {
+        comma-separator: false
+        operation: calc "CCY":"STAR"
+    }
+
+    field "ORIG.EQU2" {
+        comma-separator: false
+        operation: calc "ORIG.EQU1":"PRIN"
+    }
+
+    field "ORIG.EQU3" {
+        comma-separator: false
+        operation: calc "ORIG.EQU2":"STAR"
+    }
+
+    field "ORIG.EQU4" {
+        comma-separator: false
+        operation: calc "ORIG.EQU3":"INIT.RATE"
+        conversion: call
+        jBC: "@ E.SW.REVAL.CALC"
+    }
+
+    field "DISP.ORIG.EQU" {
+        label {
+            en = "Original equivalent"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        operation: application-field-name "FLD ORIG.EQU4"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DISP.CURR.EQU" {
+        label {
+            en = "Current Equivalent"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 74
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD CURR.EQU"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DISP.PL.TO.DATE" {
+        label {
+            en = "P & L to Date"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 96
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD PL.TO.DATE"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DISP.PL.TODAY" {
+        label {
+            en = "P & L Today"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 118
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FLD PL.TODAY"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "LINES1" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "LINES2" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 52
+            line: + 1
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "LINES3" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 74
+            line: + 1
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "LINES4" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 96
+            line: + 1
+        }
+
+        operation: application-field-name "FLD DASHES"
+    }
+
+    field "LINES5" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 118
+            line: + 1
+        }
+
+        operation: application-field-name "FLD DASHES13"
+    }
+
+    field "TOTAL.TEXT" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        comma-separator: false
+        position {
+            column: 17
+            line: + 2
+        }
+
+        operation: constant "\"Totals\""
+    }
+
+    field "DISP.TOT.PRIN" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        operation: total "PRIN"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DISP.TOT.ORIG.EQU" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: + 2
+        }
+
+        operation: total "ORIG.EQU4"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DISP.TOT.CURR.EQU" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 74
+            line: + 2
+        }
+
+        operation: total "CURR.EQU"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DSP.TOT.PL.TO.DATE" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 96
+            line: + 2
+        }
+
+        operation: total "PL.TO.DATE"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "DISP.TOT.PL.TODAY" {
+        break-condition {
+            field: "BREAK.CCY"
+        }
+
+        length: 13
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 118
+            line: + 2
+        }
+
+        operation: total "PL.TODAY"
+        conversion: iconv "MD0,"
+        conversion: oconv "MD0,"
+    }
+
+    field "STAR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "DASHES" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-------------------\""
+    }
+
+    field "DASHES13" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"-------------\""
+    }
+
+    drilldown "1" {
+        label-field: "DISP.ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "SWAP.BALANCES"
+    }
+
+}

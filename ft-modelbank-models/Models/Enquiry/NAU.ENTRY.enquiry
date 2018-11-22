@@ -1,0 +1,304 @@
+Enquiry "NAU.ENTRY" for "name:/AC_EntryCreation:ENTRY.HOLD#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Unauthorised entries"
+        }
+
+        column: 20
+        line: 0
+    }
+
+    header {
+        label {
+            en = " Transaction Ref:"
+        }
+
+        column: 3
+        line: 1
+    }
+
+    description {
+        en = "NAU.ENTRY"
+    }
+
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.BUILD.NAU.ENTRY"
+    }
+
+    custom-selection {
+
+        field "TRANSACTION.REF" {
+        }
+
+        None
+    }
+
+    field "@ID" {
+        format: User
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DISP.ID" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 21
+            line: 1
+        }
+
+        operation: field-extract "@ID"
+    }
+
+    field "BID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "@ID"
+    }
+
+    field "FULL.REC" {
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.CONSTRUCT.ENTRY"
+    }
+
+    field "ACCOUNT.NO" {
+        label {
+            en = "A/C or P/L"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+    }
+
+    field "PL.CATEGORY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 7
+    }
+
+    field "FULL.PL.CAT" {
+        alignment: Left
+        comma-separator: false
+        fmtMask: "## ##-###"
+        processing-mode: Multi
+        operation: calc "PL":"PL.CATEGORY"
+    }
+
+    field "DISP.PL.CAT" {
+        label {
+            en = "A/C or P/L"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: if "PL.CATEGORY" NotEquals "NULL" process "FULL.PL.CAT" "NULL"
+    }
+
+    field "AMOUNT.LCY" {
+        label {
+            en = "Amount Lcy"
+        }
+
+        format: Currency "LCY" negative-pattern #-
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: field-number 3
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 12
+    }
+
+    field "DISP.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 36
+        }
+
+        processing-mode: Multi
+        operation: if "CURRENCY" Equals "NULL" process "LCY" "CURRENCY"
+    }
+
+    field "AMOUNT.FCY" {
+        label {
+            en = "Amount Fcy"
+        }
+
+        format: Currency "DISP.CCY" negative-pattern #-
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: field-number 13
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Multi
+        operation: field-number 11
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "CRF.TYPE" {
+        label {
+            en = "CRF Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 69
+        }
+
+        processing-mode: Multi
+        operation: field-number 36
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Txn Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 72
+        }
+
+        processing-mode: Multi
+        operation: field-number 4
+    }
+
+    field "CRF.TXN.CODE" {
+        label {
+            en = "CRF Txn Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 76
+        }
+
+        processing-mode: Multi
+        operation: field-number 37
+    }
+
+    field "MASTER.ACCOUNT" {
+        label {
+            en = "Master Acct"
+        }
+
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Multi
+        operation: field-number 92
+    }
+
+    field "BALANCE.TYPE" {
+        label {
+            en = "Balance Type"
+        }
+
+        comma-separator: false
+        position {
+            column: 97
+        }
+
+        processing-mode: Multi
+        operation: field-number 101
+    }
+
+    field "AA.REF" {
+        label {
+            en = "AA Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 110
+        }
+
+        processing-mode: Multi
+        operation: field-number 102
+    }
+
+    field "LCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"PL\""
+    }
+
+}

@@ -1,0 +1,233 @@
+Enquiry "AA.DETAILS.CHARGE.DATE" for "name:/AA_ModelBank:NOFILE.CHARGE.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Details By Date"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 10
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "SIM.REF" {
+            label {
+                en = "Simulation"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "RET.LIST" {
+        format: User
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+    }
+
+    field "SIM.ID" {
+        comma-separator: false
+        operation: selection "SIM.REF"
+    }
+
+    field "FILE.VERS" {
+        comma-separator: false
+        operation: selection "FILE.VER"
+    }
+
+    field "ID" {
+        format: User
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "PREV.DATE" {
+        comma-separator: false
+        operation: field-extract "DATE"
+    }
+
+    field "DATE" {
+        label {
+            en = "Payment Date"
+        }
+
+        format: Date
+        length: 19
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "EFF.DATE" {
+        label {
+            en = "Payment Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 100
+        operation: if "DATE" Equals "PREV.DATE" process "\"\"" "DATE"
+    }
+
+    field "PROPERTY" {
+        label {
+            en = "Type"
+        }
+
+        format: User
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 180
+        processing-mode: Single
+        operation: field-extract "RET.LIST"
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "ADJ.AMT" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "RET.LIST"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "DEFAULT" {
+        label {
+            en = "Default"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 30
+        }
+
+        column-width: 45
+        operation: field-extract "RET.LIST"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "WAIVE.AMT" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "RET.LIST"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "WAIVE" {
+        label {
+            en = "Waive"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 40
+        }
+
+        column-width: 45
+        operation: calc "WAIVE.AMT" + "ADJ.AMT"
+    }
+
+    field "AMOUNT" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "RET.LIST"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "FINAL" {
+        label {
+            en = "Final Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 50
+        }
+
+        column-width: 45
+        operation: calc "AMOUNT" - "ADJ.AMT"
+    }
+
+    field "OUTSTANDING" {
+        label {
+            en = "Outstanding"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 70
+        }
+
+        column-width: 45
+        operation: field-extract "RET.LIST"
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "ID.BILL" {
+        comma-separator: false
+        operation: field-extract "RET.LIST"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    toolbar: "ENQUIRY.SELECTION.PRINT" drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "PROPERTY"
+        image: "view.gif"
+        criteria: "ARRANGEMENT.ID" Equals "ID"
+        criteria: "BILL.ID" Equals "ID.BILL"
+        criteria: "SIM.REF" Equals "SIM.ID"
+        criteria: "FILE.VER" Equals "FILE.VERS"
+        enquiry: "AA.DETAILS.WAIVE.CHARGE"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS" ; "NO.ENQUIRY.FAVOURITES" ; "SINGLE.BACKGROUND.COLOUR"
+}

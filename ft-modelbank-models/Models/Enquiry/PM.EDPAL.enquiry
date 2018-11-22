@@ -1,0 +1,1042 @@
+Enquiry "PM.EDPAL" for "name:/PM_Reports:NOFILE.PM.EDPAL#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "ESTIMATED DAILY PROFIT OR LOSS"
+        }
+
+        column: 26
+        line: 1
+    }
+
+    header {
+        label {
+            en = "CCY:"
+        }
+
+        column: 1
+        line: 2
+    }
+
+    description {
+        en = "PM.EDPAL"
+    }
+
+    show-all-books: false
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "CCY" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "RATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "PM.ENQ.PARAM" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "CCY.MARKET" {
+            operands: Equals
+        }
+
+        AND
+
+        field "DEALER.DESK" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "INIT.COMMON" {
+        comments: "Initialise copmmon area and read PM .ENQ.PARAM record for PM.EDPAL" break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PM.ENQ.PARAM"
+        conversion: call
+        jBC: "@ E.PM.INIT.COMMON"
+    }
+
+    field "BUILD.DATA" {
+        comments: "Select PM.XX.POSN.CLASS file based on details from PM.ENQ.PARAM, and b uild R.RECORD."
+        break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.PM.DAILY.PL"
+    }
+
+    field "PM.CCY" {
+        break-condition {
+            break: Once
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 7
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PM.CCY"
+    }
+
+    field "APPLICATION.LIST" {
+        label {
+            en = "Application"
+        }
+
+        comments: "mv application names ie FX"
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "APPLICATION.LIST"
+    }
+
+    field "APP.ASSET.AMT" {
+        label {
+            en = "Placings Principal"
+        }
+
+        comments: "mv asset amounts per application"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "APP.ASSET.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "APP.ASSET.RATE" {
+        label {
+            en = "Placings Rate"
+        }
+
+        comments: "mv asset rate per appl"
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "APP.ASSET.RATE"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "APP.LIAB.AMT" {
+        label {
+            en = "Takings Principal"
+        }
+
+        comments: "mv liab amounts per application"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "APP.LIAB.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "APP.LIAB.RATE" {
+        label {
+            en = "Takings Rate"
+        }
+
+        comments: "mv liab rates per application"
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "APP.LIAB.RATE"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "APP.ASSET.INT" {
+        label {
+            en = "Interest Income"
+        }
+
+        comments: "mv liab interest per application"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "APP.ASSET.INT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "APP.LIAB.INT" {
+        label {
+            en = "Interest Outgoing"
+        }
+
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "APP.LIAB.INT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "TOT.LINE.1" {
+        break-condition {
+            break: Once
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+            line: 10
+        }
+
+        operation: constant "\"===============\""
+    }
+
+    field "TOT.LINE.2" {
+        break-condition {
+            break: Once
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+            line: 10
+        }
+
+        processing-mode: Single
+        operation: constant "\"================\""
+    }
+
+    field "TOT.LINE.3" {
+        break-condition {
+            break: Once
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: 10
+        }
+
+        processing-mode: Single
+        operation: constant "\"============\""
+    }
+
+    field "TOT.LINE.4" {
+        break-condition {
+            break: Once
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOT.LINE.3"
+    }
+
+    field "TOT.APP.ASSET.AMT" {
+        comments: "Total assets excluding nostros"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+            line: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.APP.ASSET.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "AVG.APP.ASSET.RATE" {
+        comments: "Average asset rate excluding nostro"
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+            line: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AVG.APP.ASSET.RATE"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "TOT.APP.LIAB.AMT" {
+        comments: "Total liabilites exlcuding nostros"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+            line: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.APP.LIAB.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "AVG.APP.LIAB.RATE" {
+        comments: "Average liab rate excluding nostros"
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 46
+            line: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AVG.APP.LIAB.RATE"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "TOT.APP.ASSET.INT" {
+        comments: "Total asset interest excl. nostros"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.APP.ASSET.INT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "TOT.APP.LIAB.INT" {
+        comments: "Total liab interest excl. nostros"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.APP.LIAB.INT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "LAB1" {
+        break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: 13
+        }
+
+        processing-mode: Single
+        operation: constant "\"Nos\""
+    }
+
+    field "1ST.NOSTRO" {
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+            line: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOSTRO.RANK"
+        conversion: value 1
+    }
+
+    field "2ND.NOSTRO" {
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+            line: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOSTRO.RANK"
+        conversion: value 2
+    }
+
+    field "1ST.NOS.ASSET.AMT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+            line: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.ASSET.AMT"
+        conversion: value 1
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "2ND.NOS.ASSET.AMT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+            line: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.ASSET.AMT"
+        conversion: value 2
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "1ST.NOS.ASSET.RATE" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+            line: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.ASSET.RATE"
+        conversion: value 1
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "2ND.NOS.ASSET.RATE" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+            line: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.ASSET.RATE"
+        conversion: value 2
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "1ST NOS.LIAB.AMT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+            line: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.LIAB.AMT"
+        conversion: value 1
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "2ND.NOS.LIAB.AMT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+            line: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.LIAB.AMT"
+        conversion: value 2
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "1ST.NOS.LIAB.RATE" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 46
+            line: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.LIAB.RATE"
+        conversion: value 1
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "2ND.NOS.LIAB.RATE" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 46
+            line: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.LIAB.RATE"
+        conversion: value 2
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "1ST.NOS.ASSET.INT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.ASSET.INT"
+        conversion: value 1
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "2ND.NOS.ASSET.INT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.ASSET.INT"
+        conversion: value 2
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "1ST.NOS.LIAB.INT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.LIAB.INT"
+        conversion: value 1
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "2ND.NOS.LIAB.INT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NOS.LIAB.INT"
+        conversion: value 2
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "TOT.LINE.A" {
+        break-condition {
+            break: Once
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+            line: 15
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOT.LINE.1"
+    }
+
+    field "TOT.LINE.B" {
+        break-condition {
+            break: Once
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+            line: 15
+        }
+
+        operation: field-extract "TOT.LINE.2"
+    }
+
+    field "TOT.LINE.C" {
+        break-condition {
+            break: Once
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: 15
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOT.LINE.3"
+    }
+
+    field "TOT.LINE.D" {
+        break-condition {
+            break: Once
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: 15
+        }
+
+        processing-mode: Single
+        operation: field-extract "TOT.LINE.3"
+    }
+
+    field "TOT.NOS.ASSET.AMT" {
+        comments: "Total nostro assets"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+            line: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.NOS.ASSET.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "AVG.NOS.ASSET.RATE" {
+        comments: "Average nostro asset rate"
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+            line: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AVG.NOS.ASSET.RATE"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "TOT.NOS.LIAB.AMT" {
+        comments: "Total nostro liabilities"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+            line: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.NOS.LIAB.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "AVG.NOS.LIAB.RATE" {
+        comments: "Average nostro liab rate"
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 46
+            line: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AVG.NOS.LIAB.RATE"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "TOT.NOS.ASSET.INT" {
+        comments: "Total nostro asset interest"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.NOS.ASSET.INT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "TOT.NOS.LIAB.INT" {
+        comments: "Total nostro liab interest"
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: 16
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.NOS.LIAB.INT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "CURR.PL.LAB1" {
+        length: 7
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+            line: 18
+        }
+
+        processing-mode: Single
+        operation: constant "\"CURRENT\""
+    }
+
+    field "ACTUAL.P&L" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ACTUAL.P&L"
+    }
+
+    field "CURR.LAB2" {
+        comments: "Print PROFIT or LOSS accordingly"
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 46
+            line: 18
+        }
+
+        operation: if "ACTUAL.P&L" GreaterOrEquals "ZERO" process "PROFIT" "LOSS"
+    }
+
+    field "DISP.ACTUAL.PROFIT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: 18
+        }
+
+        processing-mode: Single
+        operation: if "ACTUAL.P&L" GreaterOrEquals "ZERO" process "ACTUAL.P&L" "NULL"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "DISP.ACTUAL,LOSS" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: 18
+        }
+
+        processing-mode: Single
+        operation: if "ACTUAL.P&L" LessThan "ZERO" process "ACTUAL.P&L" "NULL"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "POT.PL.LAB1" {
+        break-condition {
+            break: Once
+        }
+
+        length: 9
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+            line: 19
+        }
+
+        processing-mode: Single
+        operation: constant "\"POTENTIAL\""
+    }
+
+    field "NOTIONAL.P&L" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NOTIONAL.P&L"
+    }
+
+    field "POT.PL.LAB2" {
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 46
+            line: 19
+        }
+
+        processing-mode: Single
+        operation: if "NOTIONAL.P&L" GreaterOrEquals "ZERO" process "PROFIT" "LOSS"
+    }
+
+    field "DISP.NOTIONAL.PRFT" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 52
+            line: 19
+        }
+
+        processing-mode: Single
+        operation: if "NOTIONAL.P&L" GreaterOrEquals "ZERO" process "NOTIONAL.P&L" "NULL"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "DISP.NOTIONAL.LOSS" {
+        format: Currency "PM.CCY" negative-pattern #-
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: 19
+        }
+
+        processing-mode: Single
+        operation: if "NOTIONAL.P&L" LessThan "ZERO" process "NOTIONAL.P&L" "NULL"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "ASSUMP.LAB" {
+        break-condition {
+            break: Once
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+            line: 19
+        }
+
+        processing-mode: Single
+        operation: constant "\"Nostro rate of\""
+    }
+
+    field "NOTIONAL.NOST.RATE" {
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+            line: 19
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RATE"
+        conversion: iconv "MD2"
+        conversion: oconv "MD2"
+    }
+
+    field "TXN.IDS" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.IDS"
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"0\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "PROFIT" {
+        break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"PROFIT\""
+    }
+
+    field "LOSS" {
+        break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"LOSS\""
+    }
+
+    drilldown "1" {
+        label-field: "APPLICATION.LIST"
+        criteria: "ID2" Equals "TXN.IDS"
+        enquiry: "DPC.TXNS"
+    }
+
+}

@@ -1,0 +1,260 @@
+Enquiry "SC.PFO.TAX.SCV" for "name:/ST_ChargeConfig:CUSTOMER.CHARGE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Client Tax Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "@ID" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Client "
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Tax Details\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Client Id"
+        }
+
+        length: 21
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUST.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        length: 21
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "TAX.TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TAX.TYPE"
+    }
+
+    field "TAX.DESC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TAX.TYPE"
+        conversion: value 1 1
+        conversion: getFrom "TAX.TYPE" "DESCRIPTION" false
+    }
+
+    field "TAX.ACT.GROUP" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TAX.ACT.GROUP"
+    }
+
+    field "SEPARATOR" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "CALC.RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "TAX.TYPE":"SEPARATOR":"TAX.ACT.GROUP"
+        conversion: call
+        jBC: "@ E.MB.TAX.CHARGE"
+    }
+
+    field "TAX.TYPE.CONDITION" {
+        format: Date
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALC.RATE"
+        conversion: extract from 2 to 1 delimited by "."
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "RATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALC.RATE"
+        conversion: extract from 2 to 0 delimited by "*"
+    }
+
+    field "NU" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "Z" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "S.TAX.TYPE" {
+        label {
+            en = "Tax Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: if "RATE" Greater "Z" process "TAX.TYPE" "NU"
+    }
+
+    field "S.TAX.DESC" {
+        label {
+            en = "Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: if "S.TAX.TYPE" NotEquals "NU" process "TAX.DESC"
+    }
+
+    field "S.TAX.ACT.GROUP" {
+        label {
+            en = "Group"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: if "S.TAX.TYPE" NotEquals "NU" process "TAX.ACT.GROUP"
+    }
+
+    field "S.DATE" {
+        label {
+            en = "Effective Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: if "S.TAX.TYPE" NotEquals "NU" process "TAX.TYPE.CONDITION"
+    }
+
+    field "S.RATE" {
+        label {
+            en = "Rate %"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        fmtMask: "Z"
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: if "S.TAX.TYPE.CONDITION" NotEquals "NU" process "RATE"
+    }
+
+    field "TAX.CALC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALC.RATE"
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "PLAIN" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\" \""
+    }
+
+    field "TAX.DISP" {
+        label {
+            en = "."
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: if "S.RATE" NotEquals "Z" process "PLAIN"
+    }
+
+    field "NORECTODISPLAY" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No tax details available\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Details"
+        }
+
+        label-field: "TAX.DISP"
+        image: "view.gif" parameters {
+            function:  See
+            field: "TAX.CALC"
+        }
+
+        screen: "TAX,ADMIN.INPUT"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

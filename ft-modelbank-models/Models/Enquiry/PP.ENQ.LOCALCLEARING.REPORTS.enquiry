@@ -1,0 +1,116 @@
+Enquiry "PP.ENQ.LOCALCLEARING.REPORTS" for "name:/PP_LocalClearingGUI:NOFILE.LOCALCLEARING.REPORTS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Settlement Transaction Report"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    full-description {
+        en = "Settlement Transaction Status Report"
+    }
+
+    description {
+        en = "Settlement Transaction Report"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 16 fixed-selection "Y.REPORT.LIST" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            mandatory: true
+            label {
+                en = "Company ID"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "Date" {
+            label {
+                en = "Date"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "COMPANY.ID" {
+        label {
+            en = "Company ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: selection "CompanyID"
+    }
+
+    field "REPORT.NAME" {
+        label {
+            en = "Report Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Reports Available\""
+    }
+
+    field "ERR.MSG" {
+        display-type: "CLASS-ENQ.NORECS"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Report"
+        }
+
+        label-field: "REPORT.NAME"
+        image: "details.gif"
+        criteria: "ID" Equals "REPORT.NAME"
+        enquiry: "PP.ENQ.LOCALCLEARING.REPORT.VIEW"
+    }
+
+    attributes: "NO.MORE.OPTIONS" ; "DISABLE.NO.SORT.OPTIONS"
+}

@@ -1,0 +1,192 @@
+Enquiry "AI.TXN.BULK.LIST" for "name:/FT_BulkProcessing:FT.BULK.MASTER$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Transactions awaiting approval"
+    }
+
+    zero-records-display: true
+    show-all-books: true
+    start-line: 4
+    end-line: 19 fixed-selection "ACTIVE.ACCOUNT" {
+        Equals "!EXT.SMS.ACCOUNTS"
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "REJECTED"
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Transactions\""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 23
+            line: 0
+        }
+
+        operation: constant "\"awaiting\""
+    }
+
+    field "HDR3" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 31
+            line: 0
+        }
+
+        operation: constant "\"approval\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "14" {
+        label {
+            en = "File ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "UPLOAD.REFERENCE"
+    }
+
+    field "TOTAL.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.VALUE.UPLOADED"
+    }
+
+    field "SIGNATORY" {
+        label {
+            en = "Signed By"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SIGNATORY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "PAYMENT.VALUE.DATE" {
+        label {
+            en = "Value date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.VALUE.DATE"
+    }
+
+    field "18" {
+        label {
+            en = "Status"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Rec Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "ZERO.RECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"There are no records to authorise\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Approve Payment"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "FT.BULK.MASTER,AUTH"
+    }
+
+}

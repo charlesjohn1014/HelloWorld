@@ -1,0 +1,193 @@
+Enquiry "EU.CUSTOMER.DETAILS" for "name:/SC_ModelBank:NOFILE.EU.TAX.CUS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "EU Client Details"
+    }
+
+    description {
+        en = "EU Client Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RET.VAL" {
+        NotEquals "\'\'"
+    }
+
+    fixed-selection "TAX.TYPE" {
+        Equals "EUSD"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Client No"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUST.TYPE" {
+            label {
+                en = "Client Type"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "COUNTRY" {
+            label {
+                en = "Residence"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Client Id"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"EU Client Details\""
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Client Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 36
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "TAX.TYPE" {
+        label {
+            en = "Tax Type"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 71
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "TAX.NAME" {
+        label {
+            en = "Tax"
+        }
+
+        comma-separator: false
+        position {
+            column: 81
+        }
+
+        operation: field-extract "TAX.TYPE"
+        conversion: getFrom "TAX.TYPE" "DESCRIPTION" false
+    }
+
+    field "TAX.ACCT.GRP" {
+        label {
+            en = "Tax Group"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 101
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "RATE" {
+        label {
+            en = "Tax Rate"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 131
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CUST.TYPE" {
+        label {
+            en = "Client Type"
+        }
+
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 152
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CUSTOMER.NO"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CUSTOMER.NO"
+        }
+
+        screen: "CUSTOMER.CHARGE,INPUT"
+    }
+
+}

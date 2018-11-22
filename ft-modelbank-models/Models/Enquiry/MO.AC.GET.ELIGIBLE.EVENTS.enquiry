@@ -1,0 +1,119 @@
+Enquiry "MO.AC.GET.ELIGIBLE.EVENTS" for "name:/MO_ModelBank:NOFILE.MO.AC.GET.EVENTS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Events"
+    }
+
+    description {
+        en = "Events"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 10 fixed-selection "RESULT.SET" {
+    }
+
+    fixed-selection "ACCT.NUMBER" {
+        Equals "!EXT.SMS.ACCOUNTS"
+    }
+
+    custom-selection {
+
+        field "ACCT.NUMBER" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+    }
+
+    field "TYPE" {
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "DESCRIPTION" false
+    }
+
+    field "ID.02" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ID"
+    }
+
+    field "EXT" {
+        comma-separator: false
+        operation: constant "\"EXTERNAL\""
+    }
+
+    field "BOTH" {
+        comma-separator: false
+        operation: constant "\"BOTH\""
+    }
+
+    field "TEC.EXT" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: getFrom "TEC.ITEMS" "SUBSCRIPTION.LEVEL" false
+    }
+
+    field "TEC.BOTH" {
+        comma-separator: false
+        operation: if "TEC.EXT" Equals "BOTH" process "ID" "NULL"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "EVENTS" {
+        label {
+            en = "Alert when"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "TEC.EXT" Equals "EXT" process "ID" "TEC.BOTH"
+    }
+
+    field "ACCT" {
+        comma-separator: false
+        operation: selection "ACCT.NUMBER"
+    }
+
+    field "ZERORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No events for this Account/Product\""
+    }
+
+    security {
+        application: "TEC.ITEMS"
+        field: "TYPE"
+        abort: true
+    }
+
+    attributes: "UNDERLINE.HEADER.ROW" ; "DISABLE.NO.SORT.OPTIONS"
+}

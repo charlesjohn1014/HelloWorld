@@ -1,0 +1,254 @@
+Enquiry "CHEQUE.ISSUE.UXP" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Cheque Issue"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Account"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ID" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Issue Cheque\""
+    }
+
+    field "SHORT.TITLE" {
+        label {
+            en = "Name"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SHORT.TITLE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "WORKING.BALANCE" {
+        label {
+            en = "Working Balance"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "CHQ.TYPE" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: call
+        jBC: "@ E.MB.CHEQUE.TYPE"
+    }
+
+    field "CONCAT1" {
+        comma-separator: false
+        operation: calc "CHQ.TYPE":"\".\""
+    }
+
+    field "CHQ.ID" {
+        comma-separator: false
+        operation: calc "CONCAT1":"ID"
+    }
+
+    field "ISSUE.CHQ" {
+        label {
+            en = "Issue Cheques?"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "ISSUE.CHEQUES" false
+    }
+
+    field "CUST.POST.REST" {
+        label {
+            en = "Cust Restriction"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "POSTING.RESTRICT" false
+        conversion: getFrom "POSTING.RESTRICT" "DESCRIPTION" false
+    }
+
+    field "POSTING.RESTRICT" {
+        label {
+            en = "Acct Restriction"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "POSTING.RESTRICT"
+        conversion: getFrom "POSTING.RESTRICT" "DESCRIPTION" false
+    }
+
+    field "INACTIV.MARKER" {
+        label {
+            en = "Inactive?"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INACTIV.MARKER"
+    }
+
+    field "ISS.PRD" {
+        label {
+            en = "Issued"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "CHQ.ID"
+        conversion: getFrom "CHEQUE.REGISTER" "ISSUED.THIS.PD" false
+    }
+
+    field "NO.HELD" {
+        label {
+            en = "Used"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "CHQ.ID"
+        conversion: getFrom "CHEQUE.REGISTER" "USED.THIS.PD" false
+    }
+
+    field "NO.HELD.02" {
+        label {
+            en = "No Held"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: field-extract "CHQ.ID"
+        conversion: getFrom "CHEQUE.REGISTER" "NO.HELD" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Issue Cheque"
+        }
+
+        label-field: "ID"
+        image: "records.gif" parameters {
+            function:  Input
+            field: "CHQ.ID"
+        }
+
+        screen: "CHEQUE.ISSUE,INPUT"
+    }
+
+}

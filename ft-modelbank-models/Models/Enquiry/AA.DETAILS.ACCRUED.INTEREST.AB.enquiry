@@ -1,0 +1,142 @@
+Enquiry "AA.DETAILS.ACCRUED.INTEREST.AB" for "name:/AB_ModelBank:NOFILE.AA.DETAILS.BUNDLE.ACCRUE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Financial Summary Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "XID" {
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADING" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate
+        length: 50
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        column-width: 50
+        processing-mode: Single
+        operation: constant "\"Bundle Accrued Interest\""
+    }
+
+    field "ENQ.ARRAY" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "ARRANGEMENT" {
+        comma-separator: false
+        hidden: true
+        operation: field-extract "ENQ.ARRAY"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "RECIPIENT.DONOR" {
+        comma-separator: false
+        operation: field-extract "ENQ.ARRAY"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "L.TYPE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 50
+        operation: field-extract "RECIPIENT.DONOR"
+        conversion: replace {
+            oldData: "RECIPIENT"
+            newData: "Recipient"
+        }
+
+        conversion: replace {
+            oldData: "DONOR"
+            newData: "Donor"
+        }
+
+    }
+
+    field "ARR.ID" {
+        display-type: "CLASS-ENQ.DATA.ID"
+        comma-separator: false
+        hidden: true
+        operation: field-extract "ARRANGEMENT"
+    }
+
+    field "PROPERTY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ENQ.ARRAY"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "L.PROP" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 110
+        operation: field-extract "PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "ACCRUE.DETAILS" {
+        length: 100
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        column-width: 380
+        processing-mode: Single
+        operation: field-extract "ENQ.ARRAY"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "NORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        column-width: 50
+        operation: constant "\"No Interest Accrual Available\""
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

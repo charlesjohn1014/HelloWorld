@@ -1,0 +1,301 @@
+Enquiry "AA.FIND.DRAFT.ARRANGEMENT.AB" for "name:/AA_Framework:AA.ARRANGEMENT.ACTIVITY$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Find Draft Bundles"
+    }
+
+    companies:
+    all: true
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99 fixed-selection "ACTIVITY" {
+        Contains "BUNDLE-DRAFT-ARRANGEMENT"
+    }
+
+    fixed-sort: "ACTIVITY.CLASS" Null
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Primary Owner"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ARRANGEMENT" {
+            label {
+                en = "Arrangement"
+            }
+
+        }
+
+        AND
+
+        field "PRODUCT" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals, NotEquals
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Activity ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT"
+    }
+
+    field "COMP" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CO.CODE"
+        conversion: getFrom "COMPANY" "MNEMONIC" false
+    }
+
+    field "SLASH" {
+        comma-separator: false
+        operation: constant "\"\\\""
+    }
+
+    field "MASTER.AAA" {
+        label {
+            en = "Activity ID"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MASTER.AAA"
+    }
+
+    field "@ID" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DRILL.CHK" {
+        label {
+            en = "Activity ID"
+        }
+
+        length: 55
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: if "MASTER.AAA" NotEquals "NULL" process "MASTER.AAA" "@ID"
+        conversion: extract from 1 to 1 delimited by "\\"
+    }
+
+    field "ACT.ID" {
+        comma-separator: false
+        operation: field-extract "@ID"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        operation: calc "ARRANGEMENT":"SLASH":"COMP"
+    }
+
+    field "PRODUCT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT"
+        conversion: value 1 1
+    }
+
+    field "PRODUCT.DESC" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-extract "PRODUCT"
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "OWNER" {
+        label {
+            en = "Customer #"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "OWNER.NAME" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: field-extract "OWNER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "COMPANY" {
+        label {
+            en = "Company"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CO.CODE"
+    }
+
+    field "REC.STS" {
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "HOLD" {
+        comma-separator: false
+        operation: constant "\"On Hold\""
+    }
+
+    field "DRAFT" {
+        comma-separator: false
+        operation: constant "\"Draft\""
+    }
+
+    field "ARR.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        format: Translate
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: if "REC.STS" Equals "\"IHLD\"" process "HOLD" "DRAFT"
+    }
+
+    field "EDIT.VER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.NEW.NOCCY I \""
+    }
+
+    field "EDIT.IHLD" {
+        comma-separator: false
+        operation: calc "EDIT.VER":"ACT.ID"
+    }
+
+    field "EDIT.COS" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.DRAFT.AB \""
+    }
+
+    field "EDIT.INAU" {
+        comma-separator: false
+        operation: calc "EDIT.COS":"ARR.ID"
+    }
+
+    field "DRILL.EDIT" {
+        comma-separator: false
+        operation: if "REC.STS" Equals "\"IHLD\"" process "EDIT.IHLD" "EDIT.INAU"
+    }
+
+    field "NORECORDS" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No Pending Draft Arrangements\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "edit.gif"
+        from-field: "DRILL.EDIT"
+    }
+
+    attributes: "DISABLE.NO.SORT.OPTIONS"
+}

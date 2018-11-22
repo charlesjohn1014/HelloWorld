@@ -1,0 +1,310 @@
+Enquiry "PP.CLAIM.REQ.LIST" for "name:/PP_InquiryGUI:NOFILE.PP.CLAIM.REQ.LIST#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Incoming Claim Requests"
+        }
+
+        column: 15
+        line: 0
+    }
+
+    full-description {
+        en = "Incoming Claim Requests"
+    }
+
+    description {
+        en = "Incoming Claim Requests"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "OUT.VAL" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "SendersRef" {
+            label {
+                en = "Senders Reference"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "RelatedRef" {
+            label {
+                en = "Related Reference"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "Company" {
+        label {
+            en = "Company ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "SendersReference" {
+        label {
+            en = "Senders Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "OrigTxnNumber" {
+        label {
+            en = "Original Txn Number"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "TXN.CCY" {
+        label {
+            en = "Claim Currency"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "Amount" {
+        label {
+            en = "Claim Amount"
+        }
+
+        format: Currency "TXN.CCY" negative-pattern -#
+        length: 17
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 5
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "AcwinsBIC" {
+        label {
+            en = "Acwins BIC"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "SenderBIC" {
+        label {
+            en = "Sender BIC"
+        }
+
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "Status" {
+        label {
+            en = "Status"
+        }
+
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "IgnoreStatus" {
+        comma-separator: false
+        operation: constant "\"Ignore\""
+    }
+
+    field "AcwinsAdd" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "Id" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "check" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "o.ver" {
+        comma-separator: false
+        operation: constant "\"PP.ORDER.ENTRY,BTR.OUT.CLAIM.CREATE I F3\""
+    }
+
+    field "b.ver" {
+        comma-separator: false
+        operation: constant "\"PP.ORDER.ENTRY,BTR.BOOK.CLAIM.CREATE I F3\""
+    }
+
+    field "fin.ver.o" {
+        comma-separator: false
+        operation: if "check" Equals "PP.COMP.CLAIM" process "check" "o.ver"
+    }
+
+    field "fin.ver.b" {
+        comma-separator: false
+        operation: if "check" Equals "PP.COMP.CLAIM" process "check" "b.ver"
+    }
+
+    field "c.ver.1" {
+        comma-separator: false
+        operation: constant "\"PP.IN.CLAIM.REQ,UPDATE I \""
+    }
+
+    field "c.ver" {
+        comma-separator: false
+        operation: calc "c.ver.1":"Id"
+    }
+
+    field "fin.ver.c" {
+        comma-separator: false
+        operation: if "check" Equals "PP.COMP.CLAIM" process "check" "c.ver"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\" No records found to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Settle with Outgoing BTR"
+        }
+
+        label-field: "Company"
+        image: "edit.gif"
+        criteria: "CURRENT.RelRef" > "OrigTxnNumber"
+        criteria: "CURRENT.Ccy" > "TXN.CCY"
+        criteria: "CURRENT.Amt" > "Amount"
+        criteria: "CURRENT.ACWINS" > "AcwinsBIC"
+        criteria: "CURRENT.SndRef" > "SendersReference"
+        criteria: "CURRENT.AcAdd" > "AcwinsAdd"
+        criteria: "CURRENT.SENDER" > "SenderBIC"
+        from-field: "fin.ver.o"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Settle with Book BTR"
+        }
+
+        label-field: "Company"
+        image: "auth1.gif"
+        criteria: "CURRENT.RelRef" > "OrigTxnNumber"
+        criteria: "CURRENT.Ccy" > "TXN.CCY"
+        criteria: "CURRENT.Amt" > "Amount"
+        criteria: "CURRENT.SndRef" > "SendersReference"
+        from-field: "fin.ver.b"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Ignore Claim"
+        }
+
+        label-field: "Company"
+        image: "txndelete.gif"
+        criteria: "CURRENT.IgnStatus" > "IgnoreStatus"
+        from-field: "fin.ver.c"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Original Payment Details"
+        }
+
+        label-field: "Company"
+        image: "drill.gif"
+        criteria: "FTNumber" Equals "OrigTxnNumber"
+        enquiry: "PAY.PEN.PROCESS"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Claim Payment Details"
+        }
+
+        label-field: "Company"
+        image: "view.gif"
+        criteria: "SendersReferenceIncoming" Equals "SendersReference"
+        enquiry: "PAY.PEN.PROCESS"
+    }
+
+    drilldown "6" {
+        description {
+            en = "View Claim Message"
+        }
+
+        label-field: "Company"
+        criteria: "TRANSACTION.REF" Equals "SendersReference"
+        enquiry: "DE.I.HEADER.PANEL"
+    }
+
+}

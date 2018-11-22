@@ -1,0 +1,664 @@
+Enquiry "LD.RPM.HIST" for "name:/EB_ModelBank:NOFILE.REPAY#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "LD Repayment Details"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 18 fixed-selection "ENQ.DATA" {
+    }
+
+    custom-selection {
+
+        field "CONTRACT.NO" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"LD Repayment \""
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 0
+        }
+
+        operation: constant "\"Details\""
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        length: 8
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Loan No:\""
+    }
+
+    field "LOAN.NO" {
+        label {
+            en = "Loan No:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: constant "\"Customer:\""
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 1
+        }
+
+        operation: field-extract "LOAN.NO"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "CUSTOMER.ID" false
+    }
+
+    field "CUST.NAME" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 31
+            line: 1
+        }
+
+        operation: field-extract "CUST.ID"
+        conversion: getFrom "CUSTOMER" "MNEMONIC" false
+    }
+
+    field "CUSTOMER" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        operation: calc "CUST.ID":"CUST.NAME"
+    }
+
+    field "BREAK.ID" {
+        comma-separator: false
+        operation: field-extract "LOAN.NO"
+    }
+
+    field "B.ID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "BREAK.ID"
+    }
+
+    field "HEADER3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        operation: constant "\"Branch:\""
+    }
+
+    field "BRANCH" {
+        label {
+            en = "Branch:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 1
+        }
+
+        operation: field-extract "LOAN.NO"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "CO.CODE" false
+    }
+
+    field "HEADER5" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Value Date:\""
+    }
+
+    field "VL.DT" {
+        label {
+            en = "Value Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: field-extract "LOAN.NO"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "VALUE.DATE" false
+    }
+
+    field "HEADER6" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 2
+        }
+
+        operation: constant "\"Maturity Date:\""
+    }
+
+    field "MAT.DT" {
+        label {
+            en = "Maturity Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 2
+        }
+
+        operation: field-extract "LOAN.NO"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "FIN.MAT.DATE" false
+    }
+
+    field "HEADER7" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Loan Amt:\""
+    }
+
+    field "LOAN.AMT" {
+        label {
+            en = "Loan Amt:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "HEADER7.02" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 2
+        }
+
+        operation: constant "\"Curr Int Rate:\""
+    }
+
+    field "INT.DISP" {
+        label {
+            en = "Curr Int Rate:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 2
+        }
+
+        operation: field-extract "LOAN.NO"
+        conversion: call
+        jBC: "@ E.MB.LD.BALANCES"
+    }
+
+    field "HEADER8" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 3
+        }
+
+        operation: constant "\"Category:\""
+    }
+
+    field "CAT" {
+        label {
+            en = "Category:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 3
+        }
+
+        operation: field-extract "LOAN.NO"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "CATEGORY" false
+    }
+
+    field "HEADER9" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 50
+            line: 3
+        }
+
+        operation: constant "\"Currency:\""
+    }
+
+    field "CCY" {
+        label {
+            en = "Currency:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 3
+        }
+
+        operation: field-extract "LOAN.NO"
+        conversion: getFrom "LD.LOANS.AND.DEPOSITS" "CURRENCY" false
+    }
+
+    field "HDR.NULL" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "HEADER8.02" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 5
+        }
+
+        operation: constant "\"***LD SECTION***\""
+    }
+
+    field "HDR.NULL1" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 5
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "HEADER9.02" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 5
+        }
+
+        operation: constant "\"***PD SECTION***\""
+    }
+
+    field "ENQ.DATA" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "VALUE.DT" {
+        label {
+            en = "Schedule Date"
+        }
+
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "LD.PR.AMT" {
+        label {
+            en = "Principal"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "LD.INT.AMT" {
+        label {
+            en = "Interest"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "REPAY.DATE" {
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "REPAY.DATE.1" {
+        comma-separator: false
+        operation: field-extract "REPAY.DATE"
+        conversion: extract from 9 to 1
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "RE.DATE" {
+        label {
+            en = "Repay Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "REPAY.DATE.1" Equals "\"$\"" process "NULL" "REPAY.DATE"
+    }
+
+    field "PR.REP.AMT" {
+        label {
+            en = "Principal"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "INT.REP.AMT" {
+        label {
+            en = "Interest"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "PEN.REP.AMT" {
+        label {
+            en = "Penalty"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "SP.REPAY.AMT" {
+        label {
+            en = "Penalty Spread"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "OTHERS" {
+        label {
+            en = "Others(CS,CE,CH,TX)"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "ENQ.DATA"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "BTM.LT.1" {
+        comma-separator: false
+        operation: field-number 18
+    }
+
+    field "W.BTM.L1" {
+        break-condition {
+            field: "B.ID"
+        }
+
+        comma-separator: false
+        operation: field-extract "BTM.LT.1"
+    }
+
+    field "TOT.P" {
+        comma-separator: false
+        operation: field-number 8
+    }
+
+    field "BTM.LT.2" {
+        comma-separator: false
+        operation: field-number 19
+    }
+
+    field "W.BTM.L2" {
+        break-condition {
+            field: "B.ID"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "BTM.LT.2"
+    }
+
+    field "TOT.I" {
+        comma-separator: false
+        operation: field-number 9
+    }
+
+    field "BTM.LT.3" {
+        comma-separator: false
+        operation: field-number 20
+    }
+
+    field "W.BTM.L3" {
+        break-condition {
+            field: "B.ID"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "BTM.LT.3"
+    }
+
+    field "TOT.C" {
+        comma-separator: false
+        operation: field-number 10
+    }
+
+    field "I.TYPE" {
+        comma-separator: false
+        operation: field-number 11
+    }
+
+    field "D.I.TYPE" {
+        break-condition {
+            break: Page
+        }
+
+        length: 21
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "I.TYPE"
+    }
+
+}

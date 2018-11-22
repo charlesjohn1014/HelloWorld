@@ -1,0 +1,319 @@
+Enquiry "VAULT.CONTROL.HIST" for "name:/SC_SctVault:VAULT.EXPECT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of Items Removed"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DIRECTION" {
+        Equals "DELIVERY"
+    }
+
+    fixed-selection "DEPOSITORY" {
+        Equals "999994"
+    }
+
+    fixed-sort: "PORTFOLIO.NO" Null
+    fixed-sort: "SECURITY.NUMBER" Null
+    custom-selection {
+
+        field "PORTFOLIO.NO" {
+            label {
+                en = "Portfoio"
+            }
+
+        }
+
+        AND
+
+        field "SECURITY.NUMBER" {
+            label {
+                en = "Security No"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of Certificates removed from Vault\""
+    }
+
+    field "VCL.REFERENCE" {
+        label {
+            en = "Vault Ref No"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "VCL.REFERENCE"
+    }
+
+    field "COL" {
+        comma-separator: false
+        operation: constant "\";1\""
+    }
+
+    field "VAULT.ID" {
+        label {
+            en = "Vault Id"
+        }
+
+        comma-separator: false
+        operation: calc "VCL.REFERENCE":"COL"
+    }
+
+    field "DEPO" {
+        label {
+            en = "Depot"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "DEPO.NAME" {
+        label {
+            en = "Depository Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-extract "DEPO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "SEC.NO" {
+        label {
+            en = "Sec No"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "SECURITY.NAME" {
+        label {
+            en = "Sec Name"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        hidden: true
+        operation: field-extract "SEC.NO"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "PORT.NO" {
+        label {
+            en = "Port No"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO.NO"
+    }
+
+    field "CUSTOMER" {
+        comma-separator: false
+        operation: field-extract "PORT.NO"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "PF.NAME" {
+        label {
+            en = "Port Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        hidden: true
+        operation: field-extract "PORT.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "CERT.NO" {
+        label {
+            en = "Cert No"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "VCL.REFERENCE"
+    }
+
+    field "CER.DATE" {
+        label {
+            en = "Cert Date"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "NO.NOM.DATE"
+    }
+
+    field "NO.NOM" {
+        label {
+            en = "No of Items"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "NO.NOM.RECD.DEL"
+    }
+
+    field "NOM.USED" {
+        label {
+            en = "Items Removed"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        column-width: 5
+        processing-mode: Multi
+        operation: application-field-name "NO.NOM.RECD.DEL"
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "TRAD" {
+        label {
+            en = "Trade/Trans Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.NO"
+    }
+
+    field "@ID" {
+        label {
+            en = "Vault Id"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        column-width: 10
+        operation: application-field-name "@ID"
+    }
+
+    field "DOT.02" {
+        break-condition {
+            field: "BRK"
+        }
+
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "BRK" {
+        comma-separator: false
+        operation: break-change "PORT.NO"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Vault Expect"
+        }
+
+        label-field: "VCL.REFERENCE"
+        image: "view.gif"
+        criteria: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "VAULT.EXPECT,INP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Security Transfer"
+        }
+
+        label-field: "VCL.REFERENCE"
+        image: "details.gif" parameters {
+            function:  See
+            field: "TRAD"
+        }
+
+        screen: "SECURITY.TRANSFER,VAULT.INP"
+    }
+
+}

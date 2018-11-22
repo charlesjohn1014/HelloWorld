@@ -1,0 +1,350 @@
+Enquiry "SC.FUNDS.FLOW" for "name:/SC_ScvCashAndFundFlow:SC.FUND.FLOW#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Fund Flows"
+    }
+
+    description {
+        en = "Fund Flows"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 18
+    custom-selection {
+
+        field "SECURITY.ACCOUNT" {
+            label {
+                en = "Portfolio ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "PAGE" {
+        comma-separator: false
+        operation: break-line 0
+    }
+
+    field "Z" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"700\""
+    }
+
+    field "N" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Portfolio - Funds Flow Statement\""
+    }
+
+    field "HDR2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Portfolio ID:\""
+    }
+
+    field "SEC.ACC" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+    }
+
+    field "IHDR3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Ref Ccy:\""
+    }
+
+    field "REF.CCY" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        operation: field-extract "SEC.ACC.NO"
+        conversion: extract from 1 to 1 delimited by "."
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "SEC.ACC.DESC" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 2
+        }
+
+        operation: field-extract "SEC.ACC.NO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" true
+    }
+
+    field "SEC.ACC.NO" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SECURITY.ACCOUNT"
+    }
+
+    field "B.SEC.AC" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "SEC.ACC.NO"
+    }
+
+    field "TRANS.DATE" {
+        label {
+            en = "Date"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "DATE"
+        conversion: julian
+        conversion: oconv "D2"
+        conversion: replace {
+            oldData: "--"
+        }
+
+    }
+
+    field "TRANS.REF" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TRANS.REF"
+        conversion: extract from 1 to 23
+    }
+
+    field "SEC.CODE" {
+        label {
+            en = "Stmt No/Sec No"
+        }
+
+        length: 24
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "SEC.CODE"
+    }
+
+    field "TRANS.CODE" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANS.CODE"
+    }
+
+    field "SEC.DESC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANS.CODE"
+        conversion: getFrom "SC.TRANS.NAME" "SHORT.NAME" false
+        conversion: oconv "MCT"
+    }
+
+    field "TRANS.DESC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TRANS.CODE"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "D.TRANS.DESC" {
+        label {
+            en = "Description"
+        }
+
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: if "SEC.DESC" Equals "\"\"" process "TRANS.DESC" "SEC.DESC"
+    }
+
+    field "FIN.ACC.NO" {
+        label {
+            en = "Account No"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "FIN.ACC.NO"
+    }
+
+    field "ACC.CCY" {
+        label {
+            en = "Acct Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 115
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMT.ACC.SCY"
+    }
+
+    field "AMT.ACC.CCY" {
+        label {
+            en = "Amt Acct Ccy"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 118
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMT.ACC.CCY"
+    }
+
+    field "AMT.REF" {
+        label {
+            en = "Amt Ref Ccy"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 138
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMT.REF.CCY"
+    }
+
+    field "TOT.LIT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            field: "B.SEC.AC"
+        }
+
+        comma-separator: false
+        position {
+            column: 95
+            line: + 1
+        }
+
+        operation: constant "\"Total Amount\""
+    }
+
+    field "TOT.REF.AMT" {
+        display-type: "CLASS-TAMNUM"
+        format: Currency "REF.CCY" negative-pattern -# break-condition {
+            field: "B.SEC.AC"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 138
+            line: + 1
+        }
+
+        operation: total "AMT.REF"
+    }
+
+}

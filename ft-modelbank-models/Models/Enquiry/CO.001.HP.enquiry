@@ -1,0 +1,453 @@
+Enquiry "CO.001.HP" for "name:/LI_Config:LIMIT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Summary of collateral vs. limits for a customer"
+    }
+
+    description {
+        en = "Limit/Collateral Summary"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "FX.OR.TIME.BAND" {
+        NotEquals "\'DP\'"
+    }
+
+    fixed-selection "FIXED.VARIABLE" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "LIABILITY.NUMBER" {
+            label {
+                en = "Liability Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "LIMIT.ID" {
+        length: 32
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Limit/Collateral\""
+    }
+
+    field "HEADER1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 18
+            line: 0
+        }
+
+        operation: constant "\"Summary\""
+    }
+
+    field "HEADER2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Liability\""
+    }
+
+    field "LIABILITY.NUMBER" {
+        label {
+            en = "Liability"
+        }
+
+        display-type: "CLASS-ENQ.H.ID"
+        length: 10
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.NUMBER"
+    }
+
+    field "CUSTOMER.ID" {
+        comma-separator: false
+        operation: field-extract "LIMIT.ID"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "BK" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        operation: break-change "CUSTOMER.ID"
+    }
+
+    field "CUSTOMER.NAME" {
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            field: "BK"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 22
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "LIMIT.PRODUCT" {
+        length: 7
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.PRODUCT"
+    }
+
+    field "LIMIT.NAME" {
+        label {
+            en = "Limit Ref / Type"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "LIMIT.PRODUCT"
+        conversion: getFrom "LIMIT.REFERENCE" "SHORT.NAME" false
+    }
+
+    field "LIMIT.NO" {
+        label {
+            en = "No"
+        }
+
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "LIMIT.ID"
+        conversion: extract from 3 to 1 delimited by "."
+    }
+
+    field "LIMIT.CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.CURRENCY"
+    }
+
+    field "ONLINE.LIMIT" {
+        label {
+            en = "O/L Limit"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 26
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ONLINE.LIMIT"
+        conversion: value 1
+    }
+
+    field "P" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "FIXED.VARIABLE"
+    }
+
+    field "FXD.OR.VAR" {
+        label {
+            en = "Fixed or Variable"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 38
+        }
+
+        column-width: 8
+        operation: if "P" Equals "FIXED" process "Fixed" "Variable"
+    }
+
+    field "SECURED.AMT" {
+        label {
+            en = "Secured amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SECURED.AMT"
+        conversion: call
+        jBC: "@ E.SUM"
+        conversion: call
+        jBC: "@ E.SUM"
+    }
+
+    field "ACCOUNT.OS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ E.LIMIT.ACCOUNT.OS"
+    }
+
+    field "TOTAL.OS" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: application-field-name "TOTAL.OS"
+        conversion: value 1
+    }
+
+    field "AVAIL.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: application-field-name "AVAIL.AMT"
+        conversion: value 1
+    }
+
+    field "OS" {
+        label {
+            en = "O/S amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 52
+        }
+
+        processing-mode: Single
+        operation: calc "TOTAL.OS" + "ACCOUNT.OS"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "AVAIL.EXCESS" {
+        label {
+            en = "Available/Excess"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 64
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: calc "AVAIL.AMT" + "ACCOUNT.OS"
+    }
+
+    field "EXPIRY.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "ONLINE.LIMIT.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ONLINE.LIMIT.DATE"
+    }
+
+    field "AVAILABLE.MARKER" {
+        length: 1
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AVAILABLE.MARKER"
+    }
+
+    field "TODAY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: today
+    }
+
+    field "Y" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Y\""
+    }
+
+    field "TEST1" {
+        label {
+            en = "Test1"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        escapeSequence: BL
+        processing-mode: Single
+        operation: if "EXPIRY.DATE" NotEquals "NULL" process "TEST2" "TEST3"
+    }
+
+    field "TEST2" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: if "EXPIRY.DATE" LessOrEquals "TODAY" process "ASTERISK" "TEST3"
+    }
+
+    field "TEST3" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: if "ONLINE.LIMIT.DATE" Greater "TODAY" process "ASTERISK" "TEST4"
+    }
+
+    field "TEST4" {
+        break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: if "AVAILABLE.MARKER" NotEquals "Y" process "ASTERISK" "NULL"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "ASTERISK" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"*\""
+    }
+
+    field "NULL.02" {
+        comma-separator: false
+        operation: constant "\"No records to Display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Collateral Right Detail"
+        }
+
+        label-field: "LIMIT.NAME"
+        image: "view.gif"
+        criteria: "CREDIT.LINE.NO" Equals "LIMIT.ID"
+        enquiry: "CO.010.HP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View Limit"
+        }
+
+        label-field: "LIMIT.ID"
+        image: "drill.gif" parameters {
+            function:  See
+            field: "LIMIT.ID"
+        }
+
+        application: "LIMIT"
+    }
+
+    attributes: "NO.ENQUIRY.FAVOURITES"
+}

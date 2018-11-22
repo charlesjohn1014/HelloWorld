@@ -1,0 +1,314 @@
+Enquiry "TF.INMSG.INCOLL.NAU" for "name:/LC_ModelBank:NOFILE.LIST.INWARD.COLL#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised Inward Collections"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 2
+    end-line: 99 fixed-selection "FINAL.ARRAY" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "IN.MSG.TYPE" {
+            label {
+                en = "Message Type"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Unauthorised Inward CollectionSwift Messages\""
+    }
+
+    field "MSG.REF" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "APPL" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "LC" {
+        comma-separator: false
+        operation: constant "\"LETTER.OF.CREDIT\""
+    }
+
+    field "LC.CUST" {
+        comma-separator: false
+        operation: field-extract "MSG.REF"
+        conversion: getFrom "DE.I.HEADER" "FROM.ADDRESS" false
+        conversion: extract from 1 to 8
+        conversion: getFrom "DE.BIC" "INSTITUTION" false
+    }
+
+    field "DR.CUST" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "RECV.FROM" {
+        label {
+            en = "Received From"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "APPL" Equals "LC" process "LC.CUST" "DR.CUST"
+    }
+
+    field "MSG.TYPE" {
+        label {
+            en = "Message Type"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "DE.MESSAGE" "DESCRIPTION" false
+    }
+
+    field "DATE.TIME" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "RECEIEVED.DATE" {
+        label {
+            en = "Received Date"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DATE.TIME"
+        conversion: extract from 1 to 6
+        conversion: iconv "D"
+        conversion: oconv "D4"
+    }
+
+    field "MINUTES" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DATE.TIME"
+        conversion: extract from 7 to 2
+    }
+
+    field "SECS" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DATE.TIME"
+        conversion: extract from 9 to 2
+    }
+
+    field "CONCAT" {
+        comma-separator: false
+        operation: constant "\":\""
+    }
+
+    field "DISPLAY.DATE.TIME" {
+        label {
+            en = "Received Time"
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Multi
+        operation: calc "MINUTES":"CONCAT":"SECS"
+    }
+
+    field "MESSAGE.REF" {
+        label {
+            en = "Msg Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        hidden: true
+        operation: field-extract "MSG.REF"
+    }
+
+    field "TXN.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        length: 14
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 9
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "VERSION" {
+        comma-separator: false
+        operation: field-extract "MSG.TYPE"
+        conversion: replace {
+            oldData: "420"
+            newData: "INAMD"
+        }
+
+        conversion: replace {
+            oldData: "430"
+            newData: "INAMD"
+        }
+
+    }
+
+    field "COMMA" {
+        comma-separator: false
+        operation: constant "\",\""
+    }
+
+    field "DRILLDOWN" {
+        comma-separator: false
+        operation: calc "APPL":"COMMA":"VERSION"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task is Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "TXN.REF"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "TXN.REF"
+        }
+
+        from-field: "DRILLDOWN"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "TXN.REF"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "TXN.REF"
+        }
+
+        from-field: "DRILLDOWN"
+    }
+
+}

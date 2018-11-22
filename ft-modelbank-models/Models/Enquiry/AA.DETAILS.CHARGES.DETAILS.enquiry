@@ -1,0 +1,721 @@
+Enquiry "AA.DETAILS.CHARGES.DETAILS" for "name:/AA_ModelBank:NOFILE.AA.CHARGE.DETAILS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Charge and Bill Details"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ZERO" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "SP" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "ARR.CHARGE.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ARR.CHARGE.ID"
+        conversion: call
+        jBC: "@ E.AA.FORMAT.ENQUIRY.DATA"
+    }
+
+    field "ARR" {
+        comma-separator: false
+        operation: field-extract "ARR.CHARGE.ID"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "ARR.CCY" {
+        comma-separator: false
+        operation: field-extract "ARR"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "SIM" {
+        comma-separator: false
+        operation: selection "SIM.REF"
+    }
+
+    field "HEADING" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 120
+        no-header: true
+        operation: constant "\"Charge Details\""
+    }
+
+    field "L.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 120
+        operation: constant "\"Bill Date\""
+    }
+
+    field "PAYMENT.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 80
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.DATE"
+    }
+
+    field "L.TYPE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 80
+        operation: constant "\"Type\""
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARR.CHARGE.ID"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "PROPERTY.DESC" {
+        label {
+            en = "Type"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 50
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 180
+        operation: field-extract "PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "C.DEFER.DATE" {
+        format: User
+        comma-separator: false
+        operation: constant "\"Defered Till\""
+    }
+
+    field "DEFER.DATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEFER.DATE"
+    }
+
+    field "L.DEFER.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 120
+        operation: if "DEFER.DATE" NotEquals "NULL" process "C.DEFER.DATE"
+    }
+
+    field "D.DEFER.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 80
+        operation: field-extract "DEFER.DATE"
+    }
+
+    field "L.BILL.ID" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 80
+        operation: constant "\"Bill ID\""
+    }
+
+    field "BILL.ID" {
+        label {
+            en = "Bill Field"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        column-width: 180
+        processing-mode: Multi
+        operation: application-field-name "BILL.ID"
+    }
+
+    field "CHG.CALC.TYPE" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CHG.CALC.TYPE"
+    }
+
+    field "C.SOURCE" {
+        comma-separator: false
+        operation: constant "\"Source\""
+    }
+
+    field "L.SOURCE" {
+        display-type: "CLASS-BOLD"
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 120
+        operation: if "CHG.CALC.TYPE" NotEquals "\"FIXED\"" process "C.SOURCE"
+    }
+
+    field "TIER.BALANCE" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.BALANCE"
+    }
+
+    field "TIER.SOURCE" {
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+            line: + 3
+            multiLine: true
+        }
+
+        column-width: 120
+        processing-mode: Multi
+        operation: if "CHG.CALC.TYPE" NotEquals "\"FIXED\"" process "TIER.BALANCE"
+    }
+
+    field "CALCULATION" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.CALC.VALUE"
+    }
+
+    field "CALC.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALCULATION"
+        conversion: extract from 1 to 1 delimited by "#"
+    }
+
+    field "F.CALC.AMOUNT" {
+        format: Currency "ARR.CCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALCULATION"
+    }
+
+    field "CALC.AMT.DEC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALCULATION"
+        conversion: extract from 2 to 1 delimited by "."
+    }
+
+    field "D.CALC.AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CALC.AMT.DEC" Greater "0" process "CALC.AMOUNT" "F.CALC.AMOUNT"
+    }
+
+    field "CALC.METHOD" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "CALCULATION"
+        conversion: extract from 2 to 1 delimited by "#"
+        conversion: replace {
+            oldData: "%"
+            newData: " %"
+        }
+
+        conversion: replace {
+            oldData: "Units"
+            newData: " each"
+        }
+
+        conversion: replace {
+            newData: " flat"
+        }
+
+    }
+
+    field "C.CALCULATION" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Calculation\""
+    }
+
+    field "L.CALCULATION" {
+        display-type: "CLASS-BOLD"
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 80
+        operation: if "CHG.CALC.TYPE" NotEquals "\"FIXED\"" process "C.CALCULATION"
+    }
+
+    field "D.CALCULATION1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "D.CALC.AMOUNT":"CALC.METHOD"
+    }
+
+    field "D.CALCULATION" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 3
+            multiLine: true
+        }
+
+        column-width: 80
+        processing-mode: Multi
+        operation: if "CHG.CALC.TYPE" NotEquals "\"FIXED\"" process "D.CALCULATION1"
+    }
+
+    field "C.CALC.AMOUNT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Amount\""
+    }
+
+    field "L.CALC.AMOUNT" {
+        display-type: "CLASS-BOLD"
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        column-width: 80
+        operation: if "CHG.CALC.TYPE" NotEquals "\"FIXED\"" process "C.CALC.AMOUNT"
+    }
+
+    field "TIER.CALC.AMT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TIER.CALC.AMT"
+    }
+
+    field "D.TIER.CALC.AMT" {
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 3
+            multiLine: true
+        }
+
+        column-width: 80
+        processing-mode: Multi
+        operation: if "CHG.CALC.TYPE" NotEquals "\"FIXED\"" process "TIER.CALC.AMT"
+    }
+
+    field "CALC.AMT" {
+        format: Currency "ARR.CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CALC.AMT"
+    }
+
+    field "C.TIER.MAX" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Tier Maximum\""
+    }
+
+    field "C.TIER.MIN" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Tier Minimum\""
+    }
+
+    field "TIER.ADJ1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TIER.CALC.AMT" LessThan "CALC.AMT" process "C.TIER.MAX"
+    }
+
+    field "TIER.ADJ" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TIER.CALC.AMT" Greater "CALC.AMT" process "C.TIER.MIN" "TIER.ADJ1"
+    }
+
+    field "D.TIER.ADJ" {
+        display-type: "CLASS-ITALIC"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 3
+            multiLine: true
+        }
+
+        column-width: 180
+        processing-mode: Multi
+        operation: if "CHG.CALC.TYPE" NotEquals "\"FIXED\"" process "TIER.ADJ"
+    }
+
+    field "C.FIXED" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Flat Fee\""
+    }
+
+    field "C.CALCULATED" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Calculated\""
+    }
+
+    field "L.DEFAULT.AMOUNT" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 80
+        operation: if "CHG.CALC.TYPE" Equals "\"FIXED\"" process "C.FIXED" "C.CALCULATED"
+    }
+
+    field "DEFAULT.AMOUNT" {
+        label {
+            en = "Default"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        column-width: 80
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "ADJUSTMENT.AMOUNT" {
+        length: 35
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ADJUSTMENT.AMOUNT"
+    }
+
+    field "C.ADJUSTMENT" {
+        comma-separator: false
+        operation: constant "\"Adjustment\""
+    }
+
+    field "L.ADJUSTMENT" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 80
+        operation: if "ADJUSTMENT.AMOUNT" NotEquals "ZERO" process "C.ADJUSTMENT"
+    }
+
+    field "ADJUSTMENT" {
+        label {
+            en = "Adjustment"
+        }
+
+        format: Currency "ARR.CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        column-width: 80
+        operation: if "ADJUSTMENT.AMOUNT" NotEquals "ZERO" process "ADJUSTMENT.AMOUNT"
+    }
+
+    field "L.FINAL.AMT" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 3
+        }
+
+        column-width: 80
+        operation: constant "\"Final Charge\""
+    }
+
+    field "FINAL.AMOUNT" {
+        label {
+            en = "Final Charge"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "ARR.CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 30
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 3
+        }
+
+        column-width: 80
+        operation: calc "DEFAULT.AMOUNT" + "ADJUSTMENT"
+    }
+
+    field "CHARGE.TYPE" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: End
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 3
+        }
+
+        column-width: 180
+        processing-mode: Multi
+        operation: application-field-name "CHARGE.TYPE"
+        conversion: replace {
+            oldData: "DEBIT"
+        }
+
+        conversion: replace {
+            oldData: "CREDIT"
+            newData: "CR"
+        }
+
+    }
+
+    field "OS.AMOUNT" {
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "OS.AMOUNT"
+    }
+
+    field "C.OUTSTANDING" {
+        comma-separator: false
+        operation: constant "\"Outstanding\""
+    }
+
+    field "L.OUTSTANDING" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: End
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+            line: + 4
+        }
+
+        column-width: 80
+        operation: if "OS.AMOUNT" NotEquals "ZERO" process "C.OUTSTANDING"
+    }
+
+    field "D.OUTSTANDING" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Currency "ARR.CCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+            line: + 4
+        }
+
+        column-width: 80
+        operation: if "OS.AMOUNT" NotEquals "ZERO" process "OS.AMOUNT"
+    }
+
+    field "DRILL" {
+        comma-separator: false
+        position {
+            column: 50
+            line: + 1
+        }
+
+        column-width: 5
+        operation: if "SIM" Equals "NULL" process "SP" "NULL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Bill"
+        }
+
+        label-field: "BILL.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "BILL.ID"
+        }
+
+        screen: "AA.BILL.DETAILS,AA"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

@@ -1,0 +1,113 @@
+Enquiry "AA.PRODUCT.CATALOG-PRODUCT.LINES" for "name:/AA_ProductManagement:AA.PRODUCT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Lines"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ACTIVE.PRODUCTS" {
+        Equals "1"
+    }
+
+    fixed-sort: "PRODUCT.LINE" Null
+
+    field "PROD.LINE" {
+        comma-separator: false
+        operation: i-desc "PRODUCT.LINE"
+    }
+
+    field "B.LINE" {
+        comma-separator: false
+        operation: break-change "PROD.LINE"
+    }
+
+    field "LINE" {
+        label {
+            en = "Line"
+        }
+
+        break-condition {
+            field: "B.LINE"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        hidden: true
+        operation: field-extract "PROD.LINE"
+    }
+
+    field "DESC.LINE" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User break-condition {
+            field: "B.LINE"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "E.AA.GROUP" {
+        break-condition {
+            field: "B.LINE"
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.CATALOG-PRODUCT.GROUPS\""
+    }
+
+    field "E.AA.GROUPED" {
+        break-condition {
+            field: "B.LINE"
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.CATALOG-PRODUCT.GROUPS.GROUPED\""
+    }
+
+    field "E.AA.PRODUCT.GROUP" {
+        break-condition {
+            field: "B.LINE"
+        }
+
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "\"OTHER\"" process "E.AA.GROUPED" "E.AA.GROUP"
+    }
+
+    field "ACT.PROD" {
+        break-condition {
+            field: "B.LINE"
+        }
+
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "\"OTHER\"" process "\"PRODUCT.GROUP\"" "\"1\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Product Groups"
+        }
+
+        label-field: "LINE"
+        image: "right.arrow.gif"
+        criteria: "PRODUCT.LINE" Equals "LINE"
+        criteria: "ACTIVE.PRODUCTS" Equals "ACT.PROD"
+        from-field: "E.AA.PRODUCT.GROUP"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

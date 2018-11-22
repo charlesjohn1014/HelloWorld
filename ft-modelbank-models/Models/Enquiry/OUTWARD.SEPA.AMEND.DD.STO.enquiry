@@ -1,0 +1,260 @@
+Enquiry "OUTWARD.SEPA.AMEND.DD.STO" for "name:/AC_StandingOrders:STANDING.ORDER$NAU#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "SEPA Amend Standing Orders (SEPA DD)"
+        }
+
+        column: 1
+        line: 0
+    }
+
+    description {
+        en = "SEPA Amend Direct Debits"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "PAY.METHOD" {
+        Equals "ACOD"
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "CNAU", "INAU", "CNAO", "INAO", "IHLD", "FHLD"
+    }
+
+    fixed-selection "SEPA.CODE.OPE" {
+        NotEquals "\"\""
+    }
+
+    fixed-sort: "@ID" Null
+
+    field "VIDE" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "@ID" {
+        label {
+            en = "STO Id"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "K.TYPE" {
+        label {
+            en = "STO Type"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: application-field-name "K.TYPE"
+    }
+
+    field "SEPA.PEACH" {
+        label {
+            en = "PE-ACH"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.PEACH"
+    }
+
+    field "SEPA.CODE.OPE" {
+        label {
+            en = "Payment Type"
+        }
+
+        length: 6
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.CODE.OPE"
+    }
+
+    field "ORDERING.CUST" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ SEPA.ORDER.CUST"
+    }
+
+    field "SEPA.SDD.TYPE" {
+        label {
+            en = "DD Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.SDD.TYPE"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "CURRENT.AMOUNT.BAL" {
+        label {
+            en = "Amount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENT.AMOUNT.BAL"
+    }
+
+    field "SEPA.THEIR.BANK" {
+        label {
+            en = "Receiver Bank"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.THEIR.BANK"
+    }
+
+    field "SEPA.THEIR.ACCT" {
+        label {
+            en = "IBAN"
+        }
+
+        length: 34
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Single
+        operation: i-desc "SEPA.THEIR.ACCT"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Record Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif"
+        criteria: "EQ" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "STANDING.ORDER,SEPA.FIXAMT.DD"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif"
+        criteria: "EQ" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "STANDING.ORDER,SEPA.FIXAMT.DD"
+    }
+
+    drilldown "3" {
+        description {
+            en = "View STO"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "EQ" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "STANDING.ORDER,SEPA.FIXAMT.DD"
+    }
+
+    attributes: "PAGE"
+}

@@ -1,0 +1,549 @@
+Enquiry "SC.BULK.TRANSFER.SSI" for "name:/SC_SctOffMarketTrades:SECURITY.TRANSFER$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Security Transfers Free of Payment"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 99 fixed-selection "RECORD.STATUS" {
+        Equals "IHLD"
+    }
+
+    fixed-sort: "DEPOSITORY" Null
+    fixed-sort: "PSET" Null
+    custom-selection {
+
+        field "SC.BULK.TRANS.ID" {
+            label {
+                en = "Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Update SSI For \""
+    }
+
+    field "IHDR1" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 40
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.TYPE"
+        conversion: getFrom "SC.TRANS.NAME" "SHORT.NAME" false
+        conversion: oconv "MCT"
+    }
+
+    field "N.HDR1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Portfolio :\""
+    }
+
+    field "N.HDR2" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACC"
+    }
+
+    field "N.HDR3" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACC"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "B" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\" \""
+    }
+
+    field "NU" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "PORT.DETS" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: calc "N.HDR2":"B":"N.HDR3"
+    }
+
+    field "RCCY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Reference Ccy :\""
+    }
+
+    field "R.CCY" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACC"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "CCY.NAME" {
+        comma-separator: false
+        operation: field-extract "R.CCY"
+        conversion: getFrom "CURRENCY" "CCY.NAME" false
+    }
+
+    field "CCY.DETS" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 3
+        }
+
+        operation: calc "R.CCY":"B":"CCY.NAME"
+    }
+
+    field "BROK1" {
+        label {
+            en = "CLASS-ENQ.H.DATA.LABEL"
+        }
+
+        break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 4
+        }
+
+        processing-mode: Single
+        operation: constant "\"Counterparty(Default SSI) :\""
+    }
+
+    field "BROK" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BROKER.NO"
+    }
+
+    field "BROK.NAME" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BROKER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BRK.DETS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "BROK":"B":"BROK.NAME"
+    }
+
+    field "BIC.CODE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BROKER.ADDR.BIC"
+    }
+
+    field "COUNT" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 4
+        }
+
+        processing-mode: Single
+        operation: if "BIC.CODE" Equals "NU" process "BRK.DETS" "BIC.CODE"
+    }
+
+    field "BULK.TR.ID" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 5
+        }
+
+        operation: constant "\"Bulk Transfer Id :\""
+    }
+
+    field "BULK.ID" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SC.BULK.TRANS.ID"
+    }
+
+    field "DEPO" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "PSET" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PSET"
+    }
+
+    field "BREAK" {
+        comma-separator: false
+        operation: calc "DEPO":"\"*\"":"PSET"
+    }
+
+    field "BREAK1" {
+        comma-separator: false
+        operation: field-extract "BREAK"
+    }
+
+    field "BC" {
+        comma-separator: false
+        operation: break-change "BREAK1"
+    }
+
+    field "START" {
+        label {
+            en = "Depository Psett"
+        }
+
+        display-type: "STARTTREE"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "BREAK"
+    }
+
+    field "END" {
+        display-type: "ENDTREE" break-condition {
+            field: "BC"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "BREAK"
+    }
+
+    field "@ID" {
+        label {
+            en = "Trans Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "@ID"
+    }
+
+    field "SSI.CODE" {
+        label {
+            en = "Specific SSI"
+        }
+
+        display-type: "EDIT"
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SSI.CODE"
+    }
+
+    field "SECURITY.NO" {
+        label {
+            en = "Security No"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "SECURITY.NO"
+    }
+
+    field "ISIN" {
+        label {
+            en = "ISIN"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "SAT" {
+        label {
+            en = "SAT"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NO"
+        conversion: getFrom "SECURITY.MASTER" "SUB.ASSET.TYPE" false
+    }
+
+    field "PSET.02" {
+        label {
+            en = "Psett"
+        }
+
+        display-type: "EDIT"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PSET"
+    }
+
+    field "BROKER.DEPO" {
+        label {
+            en = "Broker Depo"
+        }
+
+        display-type: "EDIT"
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BROKER.DEPO"
+    }
+
+    field "BR.SEC.DEPOT.AC" {
+        label {
+            en = "Br Depository A/c"
+        }
+
+        display-type: "EDIT"
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BR.SEC.DEPOT.AC"
+    }
+
+    field "BR.AGENT" {
+        label {
+            en = "Br Agent"
+        }
+
+        display-type: "EDIT"
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BR.AGENT"
+    }
+
+    field "BR.AGENT.AC" {
+        label {
+            en = "Agent A/c"
+        }
+
+        display-type: "EDIT"
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "BR.AGENT.AC"
+    }
+
+    field "PL.CODE" {
+        label {
+            en = "Place Code"
+        }
+
+        display-type: "EDIT"
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PL.CODE"
+    }
+
+    field "PL.SAFEKEEP" {
+        label {
+            en = "Place Safekeep"
+        }
+
+        display-type: "EDIT"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PL.SAFEKEEP"
+    }
+
+    field "STAMP.INDICATOR" {
+        label {
+            en = "Stamp Indicator"
+        }
+
+        display-type: "EDIT"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STAMP.INDICATOR"
+    }
+
+    tool AM.DETS {
+        label {
+            en = "Broker SSI"
+        }
+
+        command: "docommand(\"SC.SETT.INSTRUCT,INPUT I\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Input"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "SECURITY.TRANSFER,BULK.TRANSFER"
+    }
+
+    attributes: "FASTPATH"
+}

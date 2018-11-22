@@ -1,0 +1,180 @@
+Enquiry "ARC.MO.AC.MAP.LIST" for "name:/MO_Framework:NOFILE.MO.AC.MAP.LIST#" {
+    metamodelVersion: "1.30.6"
+    start-line: 4
+    end-line: 19 fixed-selection "FILL.REC" {
+    }
+
+    custom-selection {
+
+        field "ID.COMP.1" {
+            mandatory: true
+            label {
+                en = "CustomerId"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ACC" {
+        label {
+            en = "Account Number"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ACCOUNT.TITLE" {
+        label {
+            en = "Account Title"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "LOCKED.AMT" {
+        label {
+            en = "Locked Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "ACC"
+        conversion: call
+        jBC: "@ E.TOTAL.LOCK.AMT"
+    }
+
+    field "WORKING.BALANCE" {
+        label {
+            en = "Working Balance"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "ACC"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "REAL.BALANCE" {
+        label {
+            en = "Available Balance"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: calc "WORKING.BALANCE" - "LOCKED.AMT"
+    }
+
+    field "TYPE" {
+        label {
+            en = "Account Type"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "ONLINE.ACTUAL.BAL" {
+        label {
+            en = "Ledger Balance"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: field-extract "ACC"
+        conversion: call
+        jBC: "@ E.GET.AC.ONLINE.ACTUAL.BALANCE"
+        conversion: abs
+    }
+
+    field "CO.CODE" {
+        label {
+            en = "Company Code"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "DR.CR.MARKER" {
+        label {
+            en = "Dr Cr Account"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+}

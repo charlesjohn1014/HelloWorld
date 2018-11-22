@@ -1,0 +1,1305 @@
+Enquiry "WR.SECURITY.TRANSACTION.DETAILS" for "name:/SC_ScoSecurityPositionUpdate:SECURITY.TRANS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "SecurityTransactionDetails"
+    }
+
+    description {
+        en = "SecurityTransactionDetails"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "SECURITY.ACCOUNT" {
+            operands: Equals
+        }
+
+        AND
+
+        field "TRADE.DATE" {
+            mandatory: true
+            operands: Between
+        }
+
+        None
+    }
+
+    field "SECURITY.NUMBER" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "DATE.RANGE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "TRADE.DATE"
+    }
+
+    field "SUB.ASSET.TYPE" {
+        label {
+            en = "AccountId"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "SUB.ASSET.TYPE" false
+    }
+
+    field "SUB.ASSET.NAME" {
+        label {
+            en = "AccountName"
+        }
+
+        format: User
+        length: 15
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "SUB.ASSET.TYPE"
+        conversion: getFrom "SUB.ASSET.TYPE" "SHORT.DESCR" false
+    }
+
+    field "INTEREST" {
+        label {
+            en = "AccruedInterest"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INTEREST.AMT"
+    }
+
+    field "SECURITY.NUMBER.02" {
+        label {
+            en = "AssetId"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+    }
+
+    field "ASSET.NAME" {
+        label {
+            en = "AssetName"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "ASSET.TYPE" false
+        conversion: getFrom "ASSET.TYPE" "ASSET.DESC" false
+    }
+
+    field "BOOK.COST.SEC.CCY" {
+        label {
+            en = "Bookcost"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BOOK.COST.SEC.CCY"
+    }
+
+    field "BROKER.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BROKER"
+        conversion: extract from 1 to 1 delimited by "VM"
+    }
+
+    field "NO.BROKER" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"No Broker Selected\""
+    }
+
+    field "BROKER.NAME" {
+        format: User
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "BROKER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BROKER" {
+        label {
+            en = "BrokerName"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: if "BROKER.ID" NotEquals "\"\"" process "BROKER.NAME" "NO.BROKER"
+    }
+
+    field "TRD.ID" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REF.NO.SEQUENCE"
+    }
+
+    field "SEC.TRD.STMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TRD.ID"
+        conversion: getFrom "SEC.TRADE" "STATEMENT.NOS" false
+    }
+
+    field "SEC.TXF.STMT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "TRD.ID"
+        conversion: getFrom "SECURITY.TRANSFER" "STATEMENT.NOS" false
+    }
+
+    field "STMT.ENT.IDS" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "SEC.TRD.STMT" NotEquals "\'\'" process "SEC.TRD.STMT" "SEC.TXF.STMT"
+    }
+
+    field "STMT.ENT.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "STMT.ENT.IDS"
+        conversion: extract from 1 to 1 delimited by " "
+    }
+
+    field "TRANSACTION.NO" {
+        label {
+            en = "CashTransactionID"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: field-extract "STMT.ENT.ID"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+        conversion: extract from 1 to 1 delimited by "-"
+    }
+
+    field "CLIENT.NAME" {
+        label {
+            en = "ClientName"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "BROKER.COMMS" {
+        label {
+            en = "Commissions"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: application-field-name "BROKER.COMMS"
+    }
+
+    field "CONSIDERATION" {
+        label {
+            en = "Consideration"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GROSS.AMT.TRD.CURR"
+    }
+
+    field "TRADE.CURRENCY" {
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "TRADE.CURRENCY"
+    }
+
+    field "CURRENCY.NAME" {
+        label {
+            en = "CurrencyName"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: field-extract "TRADE.CURRENCY"
+        conversion: getFrom "CURRENCY" "CCY.NAME" false
+    }
+
+    field "DEPOSITORY" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DEPOSITORY"
+    }
+
+    field "CUSTODIAN.NAME" {
+        label {
+            en = "CustodianName"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        operation: field-extract "DEPOSITORY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "EXC.SEC.TO.BASE" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXCH.RATE.SEC.BASE"
+    }
+
+    field "EXC.TRD.TO.BASE" {
+        length: 15
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXCH.RATE.TRD.BASE"
+    }
+
+    field "SECURITY.CURRENCY" {
+        label {
+            en = "DealCurrencyId"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.CURRENCY"
+    }
+
+    field "EXC.RATE" {
+        label {
+            en = "DealToInstExchRate"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        processing-mode: Single
+        operation: calc "EXC.TRD.TO.BASE" / "EXC.TRD.TO.BASE"
+    }
+
+    field "ISIN.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "I.S.I.N." false
+    }
+
+    field "SEDOL.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "PortfolioId"
+        conversion: getFrom "SECURITY.MASTER" "SEDOL.NO" false
+    }
+
+    field "I.OR.S" {
+        comma-separator: false
+        processing-mode: Single
+        operation: if "ISIN.ID" NotEquals "\"\"" process "ISIN.ID" "SEDOL.ID"
+    }
+
+    field "IDENTIFIER" {
+        label {
+            en = "Identifier"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        processing-mode: Single
+        operation: if "I.OR.S" NotEquals "\"\"" process "I.OR.S" "SECURITY.NUMBER"
+    }
+
+    field "SECURITY.CURRENCY.02" {
+        label {
+            en = "InstrumentISO"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.CURRENCY"
+    }
+
+    field "INSTRUMENT.NAME" {
+        label {
+            en = "InstrumentName"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 19
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+    }
+
+    field "DEC.PLACES" {
+        label {
+            en = "InstrumentTypePlaces"
+        }
+
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.CURRENCY"
+        conversion: getFrom "CURRENCY" "NO.OF.DECIMALS" false
+    }
+
+    field "ISSUER.CUST" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "ISSUER" false
+    }
+
+    field "ISSUER.CUST1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ISSUER.CUST1"
+        conversion: extract from 1 to 1 delimited by " "
+    }
+
+    field "ISSUER.NAME" {
+        label {
+            en = "IssuerName"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 21
+        }
+
+        processing-mode: Single
+        operation: field-extract "ISSUER.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ORDER.NUMBER" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REF.NO.SEQUENCE"
+        conversion: getFrom "SEC.TRADE" "CU.ORDER.NOS" false
+    }
+
+    field "ORDER.NUM1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ORDER.NUMBER"
+        conversion: extract from 1 to 1 delimited by " "
+    }
+
+    field "LIMIT.PRICE" {
+        label {
+            en = "LimitPrice"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: field-extract "ORDER.NUM1"
+        conversion: getFrom "SEC.OPEN.ORDER" "LIMIT.PRICE" false
+    }
+
+    field "NARRATIVE" {
+        label {
+            en = "Narrative"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 23
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NARRATIVE"
+        conversion: extract from 1 to 1 delimited by " VM"
+    }
+
+    field "NO.NOMINAL" {
+        label {
+            en = "NominalAmount"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 24
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.NOMINAL"
+    }
+
+    field "CHARGES" {
+        label {
+            en = "OtherCharges"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OTHER.FOREIGN.FEES"
+    }
+
+    field "P.START.DATE" {
+        label {
+            en = "PeriodStartDate"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 26
+        }
+
+        processing-mode: Single
+        operation: field-extract "DATE.RANGE"
+        conversion: extract from 1 to 1 delimited by " "
+    }
+
+    field "P.END.DATE" {
+        label {
+            en = "PeriodEndDate"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 27
+        }
+
+        processing-mode: Single
+        operation: field-extract "DATE.RANGE"
+        conversion: extract from 2 to 1 delimited by " "
+    }
+
+    field "PortfolioId" {
+        label {
+            en = "PortfolioId"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 28
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECURITY.ACCOUNT"
+    }
+
+    field "PortfolioName" {
+        label {
+            en = "PortfolioName"
+        }
+
+        format: User
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 29
+        }
+
+        processing-mode: Single
+        operation: field-extract "PortfolioId"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "PostingDate"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "PRICE" {
+        label {
+            en = "Price"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 31
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRICE"
+    }
+
+    field "CUST.REF" {
+        label {
+            en = "ClientID"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        operation: field-extract "CUSTOMER"
+    }
+
+    field "AMOUNT.DUE" {
+        label {
+            en = "Proceeds"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 33
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.DUE"
+    }
+
+    field "PROF.LOSS.SREF.CCY" {
+        label {
+            en = "ProfitLossRefCcy"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 34
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PROF.LOSS.SREF.CCY"
+    }
+
+    field "PRICE.UPDATE.CODE" {
+        label {
+            en = "PsCode"
+        }
+
+        length: 5
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "PRICE.UPDATE.CODE" false
+    }
+
+    field "BUY.SELL" {
+        label {
+            en = "SalePurchase"
+        }
+
+        length: 2
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 36
+        }
+
+        processing-mode: Single
+        operation: if "BOOK.COST.REF.CCY" Greater "0" process "\"1\"" "\"-1\""
+    }
+
+    field "REF.NO.SEQUENCE" {
+        label {
+            en = "SecurityTrasactionId"
+        }
+
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 37
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REF.NO.SEQUENCE"
+    }
+
+    field "TRADE.DATE.02" {
+        label {
+            en = "TradeDate"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 39
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "TRANSACTION.STATUS" {
+        label {
+            en = "TransactionStatus"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Single
+        operation: field-extract "REF.NO.SEQUENCE"
+        conversion: call
+        jBC: "@ E.SECURITY.TRANS.RECORD.STATUS"
+    }
+
+    field "TRANS.TYPE" {
+        label {
+            en = "TransType"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 41
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRANS.TYPE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "ValueDate"
+        }
+
+        length: 8
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "REVERSAL.DATE" {
+        label {
+            en = "ReversalDate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REVERSAL.DATE"
+    }
+
+    field "STOCK.EXCHNGE.FEES" {
+        label {
+            en = "StockExcFees"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 44
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STOCK.EXCHNGE.FEES"
+    }
+
+    field "OTHER.FOREIGN.FEES" {
+        label {
+            en = "OtherForeignFees"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OTHER.FOREIGN.FEES"
+    }
+
+    field "DIARY.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REF.NO.SEQUENCE"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "INCOME.TYPE" {
+        label {
+            en = "IncomeType"
+        }
+
+        comma-separator: false
+        position {
+            column: 46
+        }
+
+        operation: field-extract "DIARY.ID"
+        conversion: getFrom "DIARY" "EVENT.TYPE" false
+    }
+
+    field "INCOME.NAME" {
+        label {
+            en = "IncomeName"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 47
+        }
+
+        processing-mode: Single
+        operation: field-extract "INCOME.TYPE"
+        conversion: getFrom "DIARY.TYPE" "EVENT.DESC" false
+    }
+
+    field "SECURITY.DOMICILE" {
+        label {
+            en = "SecurityDomicile"
+        }
+
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        processing-mode: Single
+        operation: field-extract "SECURITY.NUMBER"
+        conversion: getFrom "SECURITY.MASTER" "SECURITY.DOMICILE" false
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "MaturityDate"
+        }
+
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 49
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "GROSS.AMT.SEC.CURR" {
+        label {
+            en = "GrossDividend"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GROSS.AMT.SEC.CURR"
+    }
+
+    field "GroupId" {
+        label {
+            en = "GroupId"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 51
+        }
+
+        processing-mode: Single
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ WR.GET.GROUP.ID"
+    }
+
+    field "GroupName" {
+        label {
+            en = "GroupName"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 52
+        }
+
+        processing-mode: Single
+        operation: field-extract "GroupId"
+        conversion: getFrom "AM.GROUP.PORT" "MNEMONIC" false
+    }
+
+    field "GroupCurrency" {
+        label {
+            en = "GroupCurrency"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 53
+        }
+
+        processing-mode: Single
+        operation: field-extract "GroupId"
+        conversion: getFrom "AM.GROUP.PORT" "VAL.CURRENCY" false
+    }
+
+    field "BKDOWN.ID" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+        conversion: call
+        jBC: "@ WR.GET.BKDOWN.VALUE"
+    }
+
+    field "BKDOWN.DES" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "BKDOWN.ID"
+        conversion: call
+        jBC: "@ WR.GET.BKDOWN.VALUE"
+    }
+
+    field "BreakdownId1" {
+        label {
+            en = "BreakdownId1"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 54
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BreakdownDes1" {
+        label {
+            en = "BreakdownDes1"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.DES"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BreakdownValue1" {
+        label {
+            en = "BreakdownValue1"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 56
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownId1"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownValueDes1" {
+        label {
+            en = "BreakdownValueDes1"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 57
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownDes1"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownId2" {
+        label {
+            en = "BreakdownId2"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 58
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BreakdownDes2" {
+        label {
+            en = "BreakdownDes2"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 59
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.DES"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "BreakdownValue2" {
+        label {
+            en = "BreakdownValue2"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownId2"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownValueDes2" {
+        label {
+            en = "BreakdownValueDes2"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 61
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownDes2"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownId3" {
+        label {
+            en = "BreakdownId3"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 62
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "BreakdownDes3" {
+        label {
+            en = "BreakdownDes3"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 63
+        }
+
+        processing-mode: Single
+        operation: field-extract "BKDOWN.DES"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "BreakdownValue3" {
+        label {
+            en = "BreakdownValue3"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 64
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownId3"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "BreakdownValueDes3" {
+        label {
+            en = "BreakdownValueDes3"
+        }
+
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Single
+        operation: field-extract "BreakdownDes3"
+        conversion: call
+        jBC: "@ WR.BREAKDOWN.CONV"
+    }
+
+    field "STAMP.TAX" {
+        label {
+            en = "StampTax"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 66
+        }
+
+        operation: application-field-name "STAMP.TAX"
+    }
+
+    field "EBV.FEES" {
+        label {
+            en = "ClearingFees"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 67
+        }
+
+        operation: application-field-name "EBV.FEES"
+    }
+
+}

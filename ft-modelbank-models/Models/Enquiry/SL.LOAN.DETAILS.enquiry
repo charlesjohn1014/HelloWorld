@@ -1,0 +1,370 @@
+Enquiry "SL.LOAN.DETAILS" for "name:/SL_Reports:NOFILE.DD.LOANS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Loans under the Facility"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 5
+    end-line: 19 fixed-selection "XID" {
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Id"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "TR.CODE" {
+            label {
+                en = "Tranche Code"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CCY" {
+            label {
+                en = "Currency"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "FNO" {
+        comma-separator: false
+        display-section: Header
+        operation: selection "@ID"
+        conversion: call
+        jBC: "@ E.FAC.DETAILS"
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 0
+        }
+
+        operation: constant "\"Loans under the Facility\""
+    }
+
+    field "HFCNO" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Facility ID:\""
+    }
+
+    field "HCS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 26
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Customer:\""
+    }
+
+    field "HDS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: constant "\"DD Start Date:\""
+    }
+
+    field "HDE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: constant "\"DD End Date:\""
+    }
+
+    field "FCNO" {
+        label {
+            en = "Facility ID:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "FNO"
+        conversion: extract from 1 to 1 delimited by "~"
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 37
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: field-extract "FNO"
+        conversion: extract from 2 to 1 delimited by "~"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "DD Start Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "FNO"
+        conversion: extract from 3 to 1 delimited by "~"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "DD End Date:"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 48
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "FNO"
+        conversion: extract from 4 to 1 delimited by "~"
+    }
+
+    field "LID" {
+        label {
+            en = "Loan Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TR.CODE" {
+        label {
+            en = "Tranche Code"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 22
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CCY" {
+        label {
+            en = "Currency"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 27
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "V.DT" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 32
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "M.DT" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "AMT" {
+        label {
+            en = "Loan Amt"
+        }
+
+        format: Currency "CCY" negative-pattern #-
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "SLCCY.EQ" {
+        label {
+            en = "Local Ccy Eqvlnt"
+        }
+
+        format: Currency "CCY" negative-pattern #-
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 71
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "TINT" {
+        label {
+            en = "Total Intt Amt"
+        }
+
+        format: Currency "CCY" negative-pattern #-
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 85
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "PAMT" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"Either incorrect value supplied in the selectionor no drawings under the facility\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Loan Balance Details"
+        }
+
+        label-field: "LID"
+        image: "view.gif"
+        criteria: "@ID" Equals "LID"
+        enquiry: "SL.LOAN.BALANCES"
+    }
+
+}

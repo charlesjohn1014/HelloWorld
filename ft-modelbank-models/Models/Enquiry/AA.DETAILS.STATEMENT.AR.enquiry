@@ -1,0 +1,804 @@
+Enquiry "AA.DETAILS.STATEMENT.AR" for "name:/AC_EntryCreation:STMT.ENTRY#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Account Statement"
+    }
+
+    description {
+        en = "Account Statement"
+    }
+
+    account-field: "ACCOUNT.NUMBER"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 29
+    build-routines {
+        jBC: "E.STMT.ENT.BUILD"
+    }
+
+    fixed-selection "MASK.PRINT" {
+        Equals "\'\'"
+    }
+
+    custom-selection {
+
+        field "STATEMENT.ID" {
+            label {
+                en = "Account Number"
+            }
+
+        }
+
+        None
+    }
+
+    field "INITIAL.DATA" {
+        comments: "Handoff and address record" break-condition {
+            break: Once
+        }
+
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.ACCOUNT.STATEMENT"
+    }
+
+    field "@ID" {
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 70
+        operation: constant "\"Statement\""
+    }
+
+    field "L.STMT.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        column-width: 70
+        operation: constant "\"Date\""
+    }
+
+    field "D.TODAY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        column-width: 90
+        operation: today
+    }
+
+    field "L.PERIOD" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        column-width: 70
+        operation: constant "\"Period\""
+    }
+
+    field "C.DASH" {
+        comma-separator: false
+        display-section: Header
+        hidden: true
+        operation: constant "\" - \""
+    }
+
+    field "L.BROUGHT.FORWARD" {
+        comments: "The DE.ADDRESS record. fields are delimited by \"~\"."
+        display-type: "CLASS-ITALIC" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 30
+            line: + 4
+        }
+
+        column-width: 114
+        operation: constant "\"Brought Forward\""
+    }
+
+    field "ACCOUNT.NUMBER" {
+        comments: "Holds the local currency code fields are delimited by \"~\"."
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "STATEMENT.ID"
+    }
+
+    field "CURRENCY" {
+        comments: "Null - used for comparison fields are delimited by \"~\"."
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ACCOUNT.NUMBER"
+        conversion: getFrom "ACCOUNT" "CURRENCY" false
+    }
+
+    field "HANDOFF.RECORD" {
+        comments: "Used for incrementing the page fields are delimited by \"~\"." break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "INITIAL.DATA"
+        conversion: extract from 2 to 1 delimited by ">"
+    }
+
+    field "OPENING.BALANCE" {
+        comments: "Zero - used for comparison fields are delimited by \"~\"." break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "HANDOFF.RECORD"
+        conversion: extract from 13 to 0 delimited by "~"
+    }
+
+    field "ADDRESS.RECORD" {
+        comments: "Current page number fields are delimited by \"~\"." break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "INITIAL.DATA"
+        conversion: extract from 1 to 1 delimited by ">"
+    }
+
+    field "LOCAL.CCY" {
+        comments: "The account/entry currency." break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: local-currency
+    }
+
+    field "NULL" {
+        comments: "Entry amount in foreign ccy" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ONE" {
+        comments: "Entry amount in local ccy" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"1\""
+    }
+
+    field "ZERO" {
+        comments: "The amount of the entry." break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "PAGE.NUMBER" {
+        comments: "Entry sign based on reversal marker and ACCOUNT.PARAMETER setup" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: calc "PAGE.NUMBER" + "ONE"
+    }
+
+    field "ENTRY.CCY" {
+        comments: "Entry amount if credit or reversal of credit(based on setup)"
+        comma-separator: false
+        operation: field-extract "HANDOFF.RECORD"
+        conversion: extract from 8 to 0 delimited by "~"
+    }
+
+    field "FOREIGN.AMT" {
+        comments: "Entry amount if debit or reversal of debit(based on setup)"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.FCY"
+    }
+
+    field "LOCAL.AMT" {
+        comments: "Total of all entries processed reversal of debit(based on setup)"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "AMOUNT.LCY"
+    }
+
+    field "ENTRY.AMOUNT" {
+        comments: "Balance brought forward. Should be used as the brought forward for each new page."
+        comma-separator: false
+        operation: if "ENTRY.CCY" Equals "LOCAL.CCY" process "LOCAL.AMT" "FOREIGN.AMT"
+    }
+
+    field "ENTRY.AMOUNT1" {
+        comments: "Running total of all entries used as the brought forward for each new page."
+        comma-separator: false
+        operation: if "ENTRY.AMOUNT" Equals "\"" process "\"" "NULL"
+    }
+
+    field "ENTRY.SIGN" {
+        comments: "Running account balance * DO NOT MODIFY THE ABOVE FIELDS * each new page."
+        comma-separator: false
+        operation: field-extract "ENTRY.AMOUNT"
+        conversion: call
+        jBC: "@ E.GET.ENTRY.SIGN"
+    }
+
+    field "CREDIT.AMOUNT" {
+        comments: "Account Opening Date * DO NOT MODIFY THE ABOVE FIELDS * each new page."
+        comma-separator: false
+        operation: if "ENTRY.SIGN" Equals "\"CREDIT\"" process "ENTRY.AMOUNT" "NULL"
+    }
+
+    field "DEBIT.AMOUNT" {
+        comments: "Account Opening Date * DO NOT MODIFY THE ABOVE FIELDS * each new page."
+        comma-separator: false
+        operation: if "ENTRY.SIGN" Equals "\"DEBIT\"" process "ENTRY.AMOUNT" "NULL"
+    }
+
+    field "TOTAL.ENTRY.AMOUNT" {
+        comments: "Page number * DO NOT MODIFY THE ABOVE FIELDS * each new page."
+        comma-separator: false
+        operation: total "ENTRY.AMOUNT"
+    }
+
+    field "PAGE.BROUGHT.FWD" {
+        comments: "Account Title 1 * DO NOT MODIFY THE ABOVE FIELDS * each new page." break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        operation: calc "TOTAL.ENTRY.AMOUNT" + "OPENING.BALANCE"
+    }
+
+    field "ENTRY.ACCUMULATOR" {
+        comments: "Customer name 1 * DO NOT MODIFY THE ABOVE FIELDS *"
+        comma-separator: false
+        operation: calc "ENTRY.ACCUMULATOR" + "ENTRY.AMOUNT"
+    }
+
+    field "RUNNING.BALANCE" {
+        comments: "Customer name 2 * DO NOT MODIFY THE ABOVE FIELDS *"
+        comma-separator: false
+        operation: calc "OPENING.BALANCE" + "ENTRY.ACCUMULATOR"
+    }
+
+    field "STMT.FRM.DAT" {
+        comments: "Page Number"
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "HANDOFF.RECORD"
+        conversion: extract from 12 to 0 delimited by "~"
+    }
+
+    field "H.PAGE.NUMBER" {
+        comments: "Page Number"
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "PAGE.NUMBER"
+    }
+
+    field "H.PAGE.NUMBER.02" {
+        comments: "Page Number"
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "PAGE.NUMBER"
+    }
+
+    field "STMT.FROM.DATE" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        operation: if "STMT.FRM.DAT" Equals "NULL" process "AC.OPEN.DATE" "STMT.FRM.DAT"
+    }
+
+    field "STMT.TO.DATE" {
+        format: Date
+        comma-separator: false
+        display-section: Header
+        operation: field-extract "HANDOFF.RECORD"
+        conversion: extract from 20 to 0 delimited by "~"
+    }
+
+    field "D.PERIOD" {
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 3
+        }
+
+        column-width: 90
+        operation: calc "STMT.FROM.DATE":"C.DASH":"STMT.TO.DATE"
+    }
+
+    field "H.FORWARD" {
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: Page
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 70
+            line: + 4
+        }
+
+        column-width: 80
+        operation: field-extract "PAGE.BROUGHT.FWD"
+    }
+
+    field "L.BOOKING.DATE" {
+        display-type: "CLASS-BOLD" break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 70
+        operation: constant "\"Booking Date\""
+    }
+
+    field "BOOKING.DATE" {
+        label {
+            en = "Booking Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 70
+        processing-mode: Single
+        operation: application-field-name "BOOKING.DATE"
+    }
+
+    field "L.REFERENCE" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 90
+        operation: constant "\"Reference\""
+    }
+
+    field "TRANS.REFERENCE" {
+        label {
+            en = "Reference"
+        }
+
+        comments: "Running balance"
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 90
+        processing-mode: Single
+        operation: application-field-name "TRANS.REFERENCE"
+    }
+
+    field "L.NARRATIVE" {
+        comments: "Running balance"
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 114
+        operation: constant "\"Description\""
+    }
+
+    field "TRANSACTION.CODE" {
+        label {
+            en = "Description"
+        }
+
+        comments: "Running balance"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 2
+        }
+
+        column-width: 114
+        processing-mode: Single
+        operation: application-field-name "TRANSACTION.CODE"
+        conversion: getFrom "TRANSACTION" "NARRATIVE" false
+    }
+
+    field "EXTRA.NARR" {
+        length: 90
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.GET.NARRATIVE"
+    }
+
+    field "VALID.NARR" {
+        comma-separator: false
+        position {
+            column: 30
+            line: + 3
+        }
+
+        column-width: 114
+        operation: if "@ID" Equals "EXTRA.NARR" process "NULL" "EXTRA.NARR"
+    }
+
+    field "NARRATIVE" {
+        comments: "Running balance"
+        length: 34
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NARRATIVE"
+        conversion: value 1
+    }
+
+    field "TRANS.REFERENCE.02" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 4
+        }
+
+        column-width: 114
+        processing-mode: Single
+        operation: application-field-name "TRANS.REFERENCE"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "MASTER.AAA" false
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY" "ARRANGEMENT" false
+    }
+
+    field "THEIR.REF" {
+        comments: "Running balance"
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "THEIR.REFERENCE"
+    }
+
+    field "CHK.VALID.NARR" {
+        comma-separator: false
+        operation: if "NARRATIVE" Equals "THEIR.REF" process "NULL" "NARRATIVE"
+    }
+
+    field "L.VALUE.DATE" {
+        comments: "Running balance"
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        operation: constant "\"Value Date\""
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        comments: "Running balance"
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 45
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "L.DR.AMOUNT" {
+        comments: "Running balance"
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        column-width: 80
+        operation: constant "\"Debit\""
+    }
+
+    field "ABS.DEBIT.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        operation: field-extract "DEBIT.AMOUNT"
+        conversion: abs
+    }
+
+    field "DR.AMOUNT" {
+        label {
+            en = "Debit"
+        }
+
+        comments: "Running balance"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 55
+            line: + 2
+        }
+
+        column-width: 80
+        operation: if "ABS.DEBIT.AMT" Greater "ZERO" process "ABS.DEBIT.AMT" "NULL"
+    }
+
+    field "TOTAL.DR.AMOUNT" {
+        comments: "Running balance"
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        operation: total "DEBIT.AMOUNT"
+    }
+
+    field "L.CR.AMOUNT" {
+        comments: "Running balance"
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        column-width: 80
+        operation: constant "\"Credit\""
+    }
+
+    field "CR.AMOUNT" {
+        label {
+            en = "Credit"
+        }
+
+        comments: "Running balance"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+            line: + 2
+        }
+
+        column-width: 80
+        operation: field-extract "CREDIT.AMOUNT"
+    }
+
+    field "TOTAL.CR.AMOUNT" {
+        comments: "Running balance"
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        operation: total "CR.AMOUNT"
+    }
+
+    field "L.BALANCE" {
+        comments: "Running balance"
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Page
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        column-width: 80
+        operation: constant "\"Balance\""
+    }
+
+    field "R.BALANCE" {
+        comments: "Running balance"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 75
+            line: + 2
+        }
+
+        column-width: 80
+        operation: field-extract "RUNNING.BALANCE"
+    }
+
+    field "L.TOTALS" {
+        display-type: "CLASS-BOLD.ITALIC"
+        format: Translate break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+            line: + 5
+        }
+
+        column-width: 114
+        processing-mode: Single
+        operation: constant "\"Totals\""
+    }
+
+    field "D.TOTAL.DR.AMOUNT" {
+        display-type: "CLASS-BOLD.RED"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 55
+            line: + 5
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: field-extract "TOTAL.DR.AMOUNT"
+    }
+
+    field "D.TOTAL.CR.AMOUNT" {
+        display-type: "CLASS-BOLD"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 65
+            line: + 5
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: field-extract "TOTAL.CR.AMOUNT"
+    }
+
+    field "D.CLOSING.BALANCE" {
+        display-type: "CLASS-BOLD"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            break: End
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 75
+            line: + 5
+        }
+
+        column-width: 80
+        processing-mode: Single
+        operation: field-extract "RUNNING.BALANCE"
+    }
+
+    attributes: "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

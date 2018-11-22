@@ -1,0 +1,205 @@
+Enquiry "EB.QUERIES.ANSWERS.NAU" for "name:/DE_Messaging:EB.QUERIES.ANSWERS$NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Unauthorised Forex Deals"
+    }
+
+    description {
+        en = "Unauthorised Forex Deals"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "ORIGINAL.MSG.TYPE" {
+        Between "200", "699"
+    }
+
+    fixed-selection "ORIGINAL.MSG.TYPE" {
+        NotEquals "\'400", "599\'"
+    }
+
+    fixed-selection "ORIGINAL.MSG.TYPE" {
+        NotEquals "\'700", "999\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "ORG.DE.O.HEADER" {
+            label {
+                en = "Delivery Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.NO" {
+            label {
+                en = "Customer No"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE" break-condition {
+            break: NewPage
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised SWIFT Cancellation Messages\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "ORG.DE.O.HEADER" {
+        label {
+            en = "Delivery Ref"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "ORG.DE.O.HEADER"
+    }
+
+    field "ORIGINAL.MSG.TYPE" {
+        label {
+            en = "Original Msg Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: application-field-name "ORIGINAL.MSG.TYPE"
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        hidden: true
+        operation: application-field-name "CUSTOMER.NO"
+    }
+
+    field "COUNTER PARTY NAME" {
+        label {
+            en = "Counterparty Name"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "EB.ADVICE.NO" {
+        label {
+            en = "Msg Type"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "EB.ADVICE.NO"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task Pending\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        application: "EB.QUERIES.ANSWERS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        application: "EB.QUERIES.ANSWERS"
+    }
+
+}

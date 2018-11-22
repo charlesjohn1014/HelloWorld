@@ -1,0 +1,468 @@
+Enquiry "AA.DETAILS.ACTIVITY.LOG.PENDING.FIN" for "name:/AA_Framework:NOFILE.AA.PENDING.ACTIVITIES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Activity Log (Pending)"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 5
+    custom-selection {
+
+        field "ARR.ID" {
+            mandatory: true
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 80
+        operation: constant "\"Pending Approval\""
+    }
+
+    field "NULL.CHAR" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "ARRANGEMENT.ID" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "ARR.ID"
+    }
+
+    field "CURRENCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "BUILD.ACTIVITY.RECORD" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID"
+        conversion: call
+        jBC: "@ E.AA.PENDING.ACTIVITIES.DETAILS"
+    }
+
+    field "DATE" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "D.DATE" {
+        label {
+            en = "Date"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 80
+        operation: if "DATE" Equals "NO.RECS" process "NULL" "DATE"
+    }
+
+    field "L.ACTIVITY" {
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACTIVITY"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "D.ACTIVITY" {
+        label {
+            en = "Activity"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 200
+        operation: if "L.ACTIVITY" Equals "NULL" process "NO.PENDING" "L.ACTIVITY"
+    }
+
+    field "INITIATION" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "INITIATION"
+    }
+
+    field "D.INITIATION" {
+        label {
+            en = "Type"
+        }
+
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 15
+        operation: field-extract "INITIATION"
+        conversion: replace {
+            oldData: "USER"
+            newData: "User"
+        }
+
+        conversion: replace {
+            oldData: "TRANSACTION"
+            newData: "Txn"
+        }
+
+        conversion: replace {
+            oldData: "SECONDARY"
+            newData: "2nd"
+        }
+
+        conversion: replace {
+            oldData: "SCHEDULED*SOD"
+            newData: "Sys"
+        }
+
+        conversion: replace {
+            oldData: "SCHEDULED*EOD"
+            newData: "Sys"
+        }
+
+    }
+
+    field "PROCESS.ID" {
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACTIVITY"
+        conversion: getFrom "AA.ACTIVITY" "PROCESS.ID" false
+    }
+
+    field "ACTIVITY.REF" {
+        label {
+            en = "Activity Reference"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        hidden: true
+        operation: application-field-name "ACTIVITY.REF"
+    }
+
+    field "ACTIVITY.AMT" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACTIVITY.AMT"
+    }
+
+    field "CHILD.ACT" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "LINKED.ACTIVITY" false
+    }
+
+    field "TXN.AMT.NAU" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "ORIG.TXN.AMT" false
+    }
+
+    field "TXN.AMT" {
+        label {
+            en = "Txn Amt"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 87
+        operation: if "CHILD.ACT" Equals "NULL" process "TXN.AMT.NAU" "NULL"
+    }
+
+    field "TXN.ID.NAU" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "TXN.CONTRACT.ID" false
+    }
+
+    field "TXN.ID" {
+        label {
+            en = "Txn Reference"
+        }
+
+        alignment: Left
+        comma-separator: false
+        hidden: true
+        operation: if "CHILD.ACT" Equals "NULL" process "TXN.ID.NAU" "NULL"
+    }
+
+    field "MASTER.ID" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "MASTER.AAA" false
+    }
+
+    field "ACTIVITY.TYPE" {
+        comma-separator: false
+        operation: if "MASTER.ID" Equals "ACTIVITY.REF" process "\"PRIMARY\"" "\"SECONDARY\""
+    }
+
+    field "ACT.STATUS" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACT.STATUS"
+    }
+
+    field "CHK.STATUS" {
+        comma-separator: false
+        operation: field-extract "ACT.STATUS"
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Input"
+        }
+
+        conversion: replace {
+            oldData: "REVERSE"
+            newData: "Reversal"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH-CHG"
+            newData: "Change"
+        }
+
+        conversion: replace {
+            oldData: "IHLD"
+            newData: "Hold"
+        }
+
+        conversion: replace {
+            oldData: "CHLD"
+            newData: "Hold"
+        }
+
+    }
+
+    field "STATUS" {
+        comma-separator: false
+        operation: if "MASTER.ID" Equals "ACTIVITY.REF" process "CHK.STATUS" "NULL"
+    }
+
+    field "D.STATUS.AMT" {
+        comma-separator: false
+        operation: if "TXN.AMT" NotEquals "NULL" process "STATUS" "NULL"
+    }
+
+    field "D.STATUS" {
+        comma-separator: false
+        operation: if "ACTIVITY.TYPE" Equals "\"PRIMARY\"" process "STATUS" "D.STATUS.AMT"
+    }
+
+    field "D.STATUS.CHK" {
+        label {
+            en = "Pending"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        column-width: 51
+        operation: if "STATUS.CHK" Equals "\"\"" process "CHK.STATUS" "D.STATUS"
+    }
+
+    field "STATUS.CHK" {
+        comma-separator: false
+        operation: field-extract "CHK.STATUS"
+    }
+
+    field "TRANS.REF" {
+        length: 40
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANS.REF"
+    }
+
+    field "TXN.SYS.ID" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY.REF"
+        conversion: getFrom "AA.ARRANGEMENT.ACTIVITY$NAU" "TXN.SYSTEM.ID" false
+    }
+
+    field "EXT.REF1" {
+        comma-separator: false
+        operation: if "TXN.SYS.ID" Equals "NULL" process "ACTIVITY.REF" "TRANS.REF"
+    }
+
+    field "EXT.REF2" {
+        comma-separator: false
+        operation: if "TXN.SYS.ID" Equals "\"AA\"" process "ACTIVITY.REF" "EXT.REF1"
+    }
+
+    field "EXT.REF" {
+        comma-separator: false
+        operation: if "TXN.SYS.ID" Equals "\"AAAA\"" process "ACTIVITY.REF" "EXT.REF2"
+    }
+
+    field "DRILL.ID1" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "EXT.REF"
+        conversion: call
+        jBC: "@ E.AA.FIND.TXN.ID"
+    }
+
+    field "DRILL.ID" {
+        comma-separator: false
+        operation: if "DRILL.ID1" Equals "NULL" process "TRANS.REF" "DRILL.ID1"
+    }
+
+    field "TFS.ID" {
+        comma-separator: false
+        operation: field-extract "DRILL.ID"
+        conversion: extract from 1 to 3
+    }
+
+    field "DEL.FUN" {
+        comma-separator: false
+        operation: if "TFS.ID" Equals "\"TFS\"" process "\"I\"" "\"D\""
+    }
+
+    field "DELIM" {
+        comma-separator: false
+        operation: constant "\":\""
+    }
+
+    field "NEW.SYSTEM.ID" {
+        comma-separator: false
+        operation: calc "TXN.SYS.ID":"DELIM"
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: calc "NEW.SYSTEM.ID":"DRILL.ID"
+        conversion: call
+        jBC: "@ E.CONV.AA.TXN.VER"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Approve"
+        }
+
+        label-field: "D.STATUS.CHK" parameters {
+            function:  Authorise
+            field: "DRILL.ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+    drilldown "2" {
+        description {
+            en = "View"
+        }
+
+        label-field: "D.STATUS.CHK" parameters {
+            function:  See
+            field: "DRILL.ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "D.STATUS.CHK" parameters {
+            function:  Input
+            field: "DRILL.ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "D.STATUS.CHK" parameters {
+            field: "DEL.FUN"
+            field: "DRILL.ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR"
+}

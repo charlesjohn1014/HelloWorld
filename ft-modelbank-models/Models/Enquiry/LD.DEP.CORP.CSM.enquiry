@@ -1,0 +1,388 @@
+Enquiry "LD.DEP.CORP.CSM" for "name:/LD_Contract:LD.LOANS.AND.DEPOSITS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "List of LD Deposits"
+    }
+
+    zero-records-display: true
+    start-line: 4
+    end-line: 99 fixed-selection "CATEGORY" {
+        Between "21003", "21010"
+    }
+
+    fixed-selection "FIN.MAT.DATE" {
+        GreaterOrEquals "!TODAY"
+    }
+
+    fixed-selection "STATUS" {
+        NotEquals "LIQ"
+    }
+
+    fixed-sort: "CATEGORY" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CATEGORY" {
+            label {
+                en = "Product"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER.ID" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        None
+    }
+
+    field "CATEGORY" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: getFrom "CATEGORY" "DESCRIPTION" false
+    }
+
+    field "HDR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"List of LD Deposits by Product\""
+    }
+
+    field "CATEG.BRK" {
+        comma-separator: false
+        operation: break-change "CATEGORY"
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CUSTOMER.NO" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.ID"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Principal"
+        }
+
+        display-type: "CLASS-POSNEG"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "AMOUNT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "INT.RATE" {
+        label {
+            en = "Interest Rate"
+        }
+
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: call
+        jBC: "@ E.MB.LD.BALANCES"
+    }
+
+    field "EXT.RATE" {
+        comma-separator: false
+        operation: field-extract "INT.RATE"
+        conversion: extract from 2 to 1 delimited by "="
+    }
+
+    field "F.INT.RATE" {
+        label {
+            en = "Interest Rate"
+        }
+
+        length: 12
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: if "EXT.RATE" Equals "NULL" process "INT.RATE" "EXT.RATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Start Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "FIN.MAT.DATE"
+    }
+
+    field "CAT" {
+        length: 6
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CATEGORY"
+        conversion: replace {
+            oldData: "21003"
+            newData: "DEP.CSM"
+        }
+
+        conversion: replace {
+            oldData: "21004"
+            newData: "DEP.CSM"
+        }
+
+        conversion: replace {
+            oldData: "21005"
+            newData: "DEP.CSM"
+        }
+
+        conversion: replace {
+            oldData: "21006"
+            newData: "DEP.CSM"
+        }
+
+        conversion: replace {
+            oldData: "21007"
+            newData: "DEP.CSM"
+        }
+
+        conversion: replace {
+            oldData: "21008"
+            newData: "DISCDEP.CSM"
+        }
+
+        conversion: replace {
+            oldData: "21009"
+            newData: "DISCDEP.CSM"
+        }
+
+        conversion: replace {
+            oldData: "21010"
+            newData: "CD"
+        }
+
+    }
+
+    field "LD" {
+        comma-separator: false
+        operation: constant "\"LD.LOANS.AND.DEPOSITS,\""
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: calc "LD":"CAT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Deposits to display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Record"
+        }
+
+        label-field: "@ID" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        from-field: "DRILL.VER"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Amendment"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "LD.LOANS.AND.DEPOSITS,DEP.AMEND.CSM"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Reverse"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Reverse
+            field: "@ID"
+        }
+
+        screen: "LD.LOANS.AND.DEPOSITS,DEP.CANCEL.CSM"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Partial Withdrawal"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "LD.LOANS.AND.DEPOSITS,DEP.AMEND.PW.CSM"
+    }
+
+    drilldown "5" {
+        description {
+            en = "Preclosure"
+        }
+
+        label-field: "@ID" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "LD.LOANS.AND.DEPOSITS,DEP.PRECLOSE.CSM"
+    }
+
+}

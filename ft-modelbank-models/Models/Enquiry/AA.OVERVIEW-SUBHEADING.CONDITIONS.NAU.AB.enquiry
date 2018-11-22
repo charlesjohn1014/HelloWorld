@@ -1,0 +1,104 @@
+Enquiry "AA.OVERVIEW-SUBHEADING.CONDITIONS.NAU.AB" for "name:/AA_ProductBundle:AA.ARR.PRODUCT.BUNDLE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Conditions Subheading"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "ARR.ID" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "FV" {
+        comma-separator: false
+        operation: selection "FILE.VERSION"
+    }
+
+    field "SUBHEADING" {
+        display-type: "CLASS-COS.SUBHEADING"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 566
+        operation: constant "\"Arrangement Conditions\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "P.FV" {
+        comma-separator: false
+        operation: if "FV" NotEquals "\"\"" process "FV" "\"\'\'\""
+    }
+
+    field "P.SIM" {
+        comma-separator: false
+        operation: if "SIM" NotEquals "\"\"" process "SIM" "\"\'\'\""
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "COS.BASIC.TERM" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.CONDITIONS.BASIC.TERM \""
+    }
+
+    field "COS.ACC" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.CONDITIONS.BASIC.AR \""
+    }
+
+    field "COS.BASIC1" {
+        comma-separator: false
+        operation: if "PROD.LINE" Equals "\"ACCOUNTS\"" process "COS.ACC" "COS.BASIC.TERM"
+    }
+
+    field "COS.BASIC" {
+        comma-separator: false
+        operation: calc "COS.BASIC1":"ARR.ID":"SP":"P.FV":"SP":"P.SIM"
+    }
+
+    field "COS.ADD1" {
+        comma-separator: false
+        operation: constant "\"COS AA.DETAILS.CONDITIONS.ADDITIONAL \""
+    }
+
+    field "COS.ADDITIONAL" {
+        comma-separator: false
+        operation: calc "COS.ADD1":"ARR.ID":"SP":"P.FV":"SP":"P.SIM"
+    }
+
+    field "ACT.ID.PART1" {
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+    }
+
+    field "ACT.ID.PART2" {
+        comma-separator: false
+        operation: constant "\"-VIEW-ARRANGEMENT\""
+    }
+
+    field "ACT.ID" {
+        comma-separator: false
+        operation: calc "ACT.ID.PART1":"ACT.ID.PART2"
+    }
+
+    fileVersion: Live, Exception
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

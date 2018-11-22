@@ -1,0 +1,294 @@
+Enquiry "AC.MANAGE.PENDING.ACTIVITY" for "name:/AA_Framework:NOFILE.AA.PENDING.ACTIVITIES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Manage Pending Activities"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    custom-selection {
+
+        field "ARR.ID" {
+            mandatory: true
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Pending Activity\""
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "NONE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"NO.RECORD.SELECTED\""
+    }
+
+    field "NAP" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"No Activities Pending\""
+    }
+
+    field "DETAILS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ID"
+        conversion: call
+        jBC: "@ E.AA.PENDING.ACTIVITIES.DETAILS"
+    }
+
+    field "DATE" {
+        format: Date
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "EFFECTIVE.DATE"
+    }
+
+    field "D.DATE" {
+        label {
+            en = "Date"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "DATE" Equals "NONE" process "NAP" "DATE"
+    }
+
+    field "ACTIVITY.REF" {
+        format: Date
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ACTIVITY.REF"
+    }
+
+    field "ACTIVITY" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ACTIVITY"
+    }
+
+    field "ACTIVITY.DESC" {
+        comma-separator: false
+        operation: field-extract "ACTIVITY"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "ACT.STATUS" {
+        comma-separator: false
+        operation: application-field-name "ACT.STATUS"
+    }
+
+    field "D.PENDING" {
+        label {
+            en = "Activity"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: if "ACTIVITY" NotEquals "NULL" process "ACTIVITY.DESC" "NULL"
+    }
+
+    field "D.PEND.STATUS" {
+        label {
+            en = "Status"
+        }
+
+        format: Translate
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: field-extract "ACT.STATUS"
+        conversion: replace {
+            oldData: "UNAUTH"
+            newData: "Not Authorized"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH-REV"
+            newData: "Reversal Not Authorized"
+        }
+
+        conversion: replace {
+            oldData: "UNAUTH-CHG"
+            newData: "Change Not Authorized"
+        }
+
+        conversion: replace {
+            oldData: "ADJREVERSE-NAU"
+            newData: "Reverse Not AuthoriZed"
+        }
+
+        conversion: replace {
+            oldData: "ADJREPLAY-NAU"
+            newData: "Replay Not Authorized"
+        }
+
+    }
+
+    field "D.PENDING.AAA.ID" {
+        label {
+            en = "Activity ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        hidden: true
+        operation: field-extract "ACTIVITY.REF"
+    }
+
+    field "V.AAA" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA\""
+    }
+
+    field "C.INPUT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" I \""
+    }
+
+    field "C.DELETE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" D \""
+    }
+
+    field "C.AUTHORISE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" A \""
+    }
+
+    field "C.SEE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\" S \""
+    }
+
+    field "V.AAA.EDIT" {
+        comma-separator: false
+        operation: calc "V.AAA":"C.INPUT":"ACTIVITY.REF"
+    }
+
+    field "V.AAA.DELETE" {
+        comma-separator: false
+        operation: calc "V.AAA":"C.DELETE":"ACTIVITY.REF"
+    }
+
+    field "V.AAA.AUTHORISE" {
+        comma-separator: false
+        operation: calc "V.AAA":"C.AUTHORISE":"ACTIVITY.REF"
+    }
+
+    field "V.AAA.VIEW" {
+        comma-separator: false
+        operation: calc "V.AAA":"C.SEE":"ACTIVITY.REF"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "D.PENDING"
+        image: "view.gif"
+        from-field: "V.AAA.VIEW"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Auth"
+        }
+
+        label-field: "D.PENDING"
+        image: "../../tools/txnauthorise.gif"
+        from-field: "V.AAA.AUTHORISE"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Modify"
+        }
+
+        label-field: "D.PENDING"
+        image: "../../tools/txncommit.gif"
+        from-field: "V.AAA.EDIT"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "D.PENDING"
+        image: "../../tools/txndelete.gif"
+        from-field: "V.AAA.DELETE"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

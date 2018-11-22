@@ -1,0 +1,269 @@
+Enquiry "AM.DYN.HIER.UNAUTH" for "name:/AM_ModelBank:NOFILE.BUILD.UNAUTH.HIR#" {
+    metamodelVersion: "1.30.6"
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "DATA.ITEM" {
+    }
+
+    custom-selection {
+
+        field "VALIDITY.DATE" {
+            mandatory: true
+            label {
+                en = "Validity Date"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "NODE.NAME" {
+            mandatory: true
+            label {
+                en = "Node Name"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "LIST.ID" {
+        format: User
+        length: 70
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "~"
+    }
+
+    field "@ID" {
+        format: User
+        length: 70
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"New Model-To Complete\""
+    }
+
+    field "DRILL.ID" {
+        comma-separator: false
+        operation: field-extract "LIST.ID"
+        conversion: extract from 1 to 1 delimited by "#"
+        conversion: extract from 2 to 0 delimited by "%"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DDOWN.ID" {
+        label {
+            en = "Record ID"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        hidden: true
+        operation: if "DRILL.ID" NotEquals "NULL" process "DRILL.ID" "LIST.ID"
+    }
+
+    field "HDR1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Model ID:\""
+    }
+
+    field "PARENT" {
+        label {
+            en = "Model ID"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        operation: if "@ID" NotMatches ">..." process "@ID" "NULL"
+    }
+
+    field "TYPE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Model Type:\""
+    }
+
+    field "MOD.TYPE" {
+        label {
+            en = "Model Type"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: field-extract "DDOWN.ID"
+        conversion: getFrom "AM.DYNAMIC.MODEL" "MODEL.TYPE" false
+    }
+
+    field "LEVEL1" {
+        label {
+            en = "1st Level"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: if "LIST.ID" Matches ">%..." process "LIST.ID" "NULL"
+        conversion: extract from 1 to 1 delimited by "#"
+        conversion: extract from 2 to 0 delimited by "%"
+    }
+
+    field "LEVEL2" {
+        label {
+            en = "2nd Level"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "LIST.ID" Matches ">>%..." process "LIST.ID" "NULL"
+        conversion: extract from 1 to 1 delimited by "#"
+        conversion: extract from 2 to 0 delimited by "%"
+    }
+
+    field "LEVEL3" {
+        label {
+            en = "3rd Level"
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "LIST.ID" Matches ">>>%..." process "LIST.ID" "NULL"
+        conversion: extract from 1 to 1 delimited by "#"
+        conversion: extract from 2 to 0 delimited by "%"
+    }
+
+    field "NOMORPERC" {
+        format: User
+        length: 70
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "#"
+    }
+
+    field "SECURITY" {
+        label {
+            en = "Security"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 3 to 1 delimited by "#"
+    }
+
+    field "NOMINAL" {
+        label {
+            en = "Nominal"
+        }
+
+        format: User
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 4 to 1 delimited by "#"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "PARENT"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "DDOWN.ID"
+        }
+
+        screen: "AM.DYNAMIC.MODEL,BUILD"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "DDOWN.ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "DDOWN.ID"
+        }
+
+        screen: "AM.DYNAMIC.MODEL,INPUT"
+    }
+
+}

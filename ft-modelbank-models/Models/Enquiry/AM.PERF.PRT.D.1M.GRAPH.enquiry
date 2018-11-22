@@ -1,0 +1,663 @@
+Enquiry "AM.PERF.PRT.D.1M.GRAPH" for "name:/AM_ModelBank:NOFILE.PERF.DET.DAY#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Portfolio:"
+        }
+
+        column: 0
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Bank"
+        }
+
+        column: 55
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Ref Ccy:"
+        }
+
+        column: 0
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Benchmark:"
+        }
+
+        column: 0
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Begin Market Value:"
+        }
+
+        column: 0
+        line: 4
+    }
+
+    header {
+        label {
+            en = "End Market Value:"
+        }
+
+        column: 0
+        line: 5
+    }
+
+    header {
+        label {
+            en = "Performance Calculated:"
+        }
+
+        column: 45
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Start Perform:"
+        }
+
+        column: 84
+        line: 4
+    }
+
+    header {
+        label {
+            en = "Portfolio Opened:"
+        }
+
+        column: 84
+        line: 2
+    }
+
+    header {
+        label {
+            en = "Portfolio Closed:"
+        }
+
+        column: 84
+        line: 3
+    }
+
+    header {
+        label {
+            en = "Current Date:"
+        }
+
+        column: 84
+        line: 5
+    }
+
+    header {
+        label {
+            en = "Calculation Method:"
+        }
+
+        column: 48
+        line: 3
+    }
+
+    no-selection: true
+    start-line: 7
+    end-line: 19
+    build-routines {
+        jBC: "E.CTRL.PERF.1D"
+    }
+
+    fixed-selection "E.CALC.PERF.1D" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "SAM.NO" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "START.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "END.DATE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "CALC.METHOD" {
+            operands: Equals
+        }
+
+        AND
+
+        field "DECIMAL.RANGE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "BENCHMARK" {
+            operands: Equals
+        }
+
+        AND
+
+        field "PERF.TYPE" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NUL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.H.TITLE" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 44
+            line: 0
+        }
+
+        operation: constant "\"DAILY PORTFOLIO PERFORMANCE REPORT\""
+    }
+
+    field "END.DEFAULT" {
+        format: Date
+        comma-separator: false
+        operation: today
+    }
+
+    field "GET.DETAIL" {
+        format: User
+        length: 100
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "ID"
+    }
+
+    field "DISP.COMPANY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 1
+        }
+
+        operation: company
+        conversion: getFrom "COMPANY" "COMPANY.NAME" false
+    }
+
+    field "DISP.PORTFOLIO" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 1
+        }
+
+        operation: selection "SAM.NO"
+    }
+
+    field "DISP.PORT.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+    }
+
+    field "DISP.OPEND.DATE" {
+        format: Date
+        length: 18
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 102
+            line: 2
+        }
+
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "START.DATE" false
+    }
+
+    field "DISP.CLOSED.DATE" {
+        format: Date
+        length: 18
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 102
+            line: 3
+        }
+
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "CLOSURE.DATE" false
+    }
+
+    field "DISP.CCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 5
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "REFERENCE.CURRENCY" false
+    }
+
+    field "S.DATE1" {
+        length: 11
+        alignment: Left
+        comma-separator: false
+        operation: selection "START.DATE"
+    }
+
+    field "SDATE1" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "DISP.SDATE" {
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 85
+            line: 1
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 15 to 1 delimited by "*"
+    }
+
+    field "S.DATE2" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "START.DATE" false
+    }
+
+    field "S.DATE3" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        operation: if "S.DATE1" Equals "NUL" process "S.DATE2" "S.DATE1"
+    }
+
+    field "DISP.END.DATE" {
+        comma-separator: false
+        operation: selection "END.DATE"
+    }
+
+    field "DISP.END.DATE1" {
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 1
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 16 to 1 delimited by "*"
+    }
+
+    field "DISP.PERF.DATE" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 100
+            line: 4
+        }
+
+        operation: field-extract "DISP.PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "START.PERFORM" false
+    }
+
+    field "DATE.TODAY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 85
+            line: 5
+        }
+
+        operation: today
+    }
+
+    field "CALC.DATE" {
+        length: 12
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "SDATE1"
+        conversion: extract from 1 to 6
+    }
+
+    field "DOT" {
+        format: User
+        comma-separator: false
+        operation: constant "\".\""
+    }
+
+    field "CALC1.DATE" {
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: calc "DISP.PORTFOLIO":"DOT"
+    }
+
+    field "DISP.BEGIN.VALUE" {
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        operation: calc "CALC1.DATE":"CALC.DATE"
+    }
+
+    field "BEG.VAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 4
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "DISP.END.VAL" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 2
+            line: 5
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 17 to 1 delimited by "*"
+    }
+
+    field "DISP.METHOD" {
+        display-type: "CLASS-ENQ.H.DATA"
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 68
+            line: 3
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "DATE" {
+        label {
+            en = "Internal Date"
+        }
+
+        display-type: "NUMERIC"
+        comma-separator: false
+        display-section: NoDisplay
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: iconv "D"
+    }
+
+    field "SDATE.INT" {
+        label {
+            en = "Internal Start Date"
+        }
+
+        display-type: "NUMERIC"
+        comma-separator: false
+        display-section: NoDisplay
+        operation: selection "START.DATE"
+        conversion: iconv "D"
+    }
+
+    field "DATE.INT" {
+        label {
+            en = "Day Number"
+        }
+
+        display-type: "GRAPHX"
+        comma-separator: false
+        display-section: NoDisplay
+        position {
+            column: 7
+        }
+
+        operation: calc "DATE" - "SDATE.INT"
+    }
+
+    field "MARKET.VALUE" {
+        label {
+            en = "End Market Value"
+        }
+
+        display-type: "GRAPHY"
+        length: 19
+        alignment: Right
+        comma-separator: false
+        decimals: 2
+        display-section: NoDisplay
+        position {
+            column: 8
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "NET.FLOW" {
+        label {
+            en = "Net Flow"
+        }
+
+        comma-separator: false
+        display-section: NoDisplay
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "MTH.RETURN" {
+        label {
+            en = "Daily Return"
+        }
+
+        display-type: "GRAPHY"
+        comma-separator: false
+        display-section: NoDisplay
+        position {
+            column: 9
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "CUM.RETURN" {
+        label {
+            en = "Cum.Return"
+        }
+
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "FEES.FLOW" {
+        label {
+            en = "Fees Flow"
+        }
+
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 10 to 1 delimited by "*"
+    }
+
+    field "DIV.ACCRUAL" {
+        label {
+            en = "Dividend Accrual"
+        }
+
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 21 to 1 delimited by "*"
+    }
+
+    field "REC.TAX" {
+        label {
+            en = "Recoverable Tax"
+        }
+
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 22 to 1 delimited by "*"
+    }
+
+    field "BENCH.RETURN" {
+        label {
+            en = "Bench Return"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "CUM.BENCH.RETURN" {
+        label {
+            en = "Cum.Bench Return"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 11 to 1 delimited by "*"
+    }
+
+    field "BENCH.NAME" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 3
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 12 to 1 delimited by "*"
+    }
+
+    field "GROSS.OR.NET" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 68
+            line: 4
+        }
+
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 13 to 1 delimited by "*"
+    }
+
+    field "LINK.DATE" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "GET.DETAIL"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    attributes: "ALLDATA"
+}

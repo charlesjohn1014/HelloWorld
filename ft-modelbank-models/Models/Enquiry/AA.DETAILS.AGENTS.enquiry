@@ -1,0 +1,262 @@
+Enquiry "AA.DETAILS.AGENTS" for "name:/AA_AgentCommission:AA.ARR.AGENT.COMMISSION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Agent Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    show-all-books: false
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "NULL" {
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "L.LINK.TYPE" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Arrangement\""
+    }
+
+    field "LINK.TYPE" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AGENT.ARR.ID"
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "LINK.TYPE"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+        conversion: replace {
+            oldData: "AGENT"
+            newData: "AG"
+        }
+
+        conversion: replace {
+            oldData: "REWARDS"
+            newData: "RW"
+        }
+
+    }
+
+    field "CUST.ID" {
+        comma-separator: false
+        operation: field-extract "LINK.TYPE"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+    }
+
+    field "L.REWARD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Rewards ID\""
+    }
+
+    field "L.AGENT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Agent ID\""
+    }
+
+    field "L.AGENT.ROLE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"Agent Role\""
+    }
+
+    field "L.PRICING" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "ARR.ID" Equals "\"RW\"" process "L.REWARD" "NULL"
+    }
+
+    field "LINK.ARR" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AGENT.ID"
+    }
+
+    field "LOOKUP" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AA.AGENT.ROLE*\""
+    }
+
+    field "LINK.ROLE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "AGENT.ROLE"
+    }
+
+    field "C.ROLE" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "LOOKUP":"LINK.ROLE"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "L.LINK.ARR" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: if "ARR.ID" Equals "\"AG\"" process "L.AGENT" "L.PRICING"
+    }
+
+    field "D.LINK.ARR" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Multi
+        operation: if "LINK.ARR" NotEquals "NULL" process "LINK.ARR" "CUST.ID"
+    }
+
+    field "L.LINK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: if "LINK.TYPE" NotEquals "NULL" process "L.LINK.TYPE" "NULL"
+    }
+
+    field "D.LINK.TYPE" {
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 95
+        processing-mode: Multi
+        operation: if "LINK.TYPE" NotEquals "NULL" process "LINK.TYPE" "NULL"
+    }
+
+    field "D.AG.ROLE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        operation: if "LINK.ROLE" NotEquals "NULL" process "L.AGENT.ROLE" "NULL"
+    }
+
+    field "D.LINK.ROLE" {
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: if "LINK.ROLE" NotEquals "NULL" process "C.ROLE" "NULL"
+    }
+
+    field "PROD" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "D.LINK.ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+    }
+
+    field "COS.AG" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"COS AA.OVERVIEW.AG \""
+    }
+
+    field "COS.RW" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"COS AA.OVERVIEW.RW \""
+    }
+
+    field "COS.NULL" {
+        comma-separator: false
+        operation: if "ARR.ID" Equals "NULL" process "NULL" "COS.RW"
+    }
+
+    field "COS.DES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "ARR.ID" Equals "AG" process "COS.AG" "COS.NULL"
+    }
+
+    field "DRILL.CHK" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "COS.DES":"LINK.TYPE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Pricing Details"
+        }
+
+        label-field: "D.LINK.TYPE"
+        image: "view.gif"
+        from-field: "DRILL.CHK"
+    }
+
+    fileVersion: Live
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

@@ -1,0 +1,102 @@
+Enquiry "AA.ARRANGEMENTS.MM.TD.AMT.CNT" for "name:/AA_ModelBank:NOFILE.MM.TD.ARR#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangements booked for today/month"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "GET.LIST" {
+        NotEquals "\"\""
+    }
+
+    field "HDR1" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Accounts/Deposit/Loans booked today/Month\""
+    }
+
+    field "ARR.PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "ARR.MM.AMT.DISP" {
+        label {
+            en = "Amount"
+        }
+
+        length: 25
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 60
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "ARR.CNT.MM" {
+        label {
+            en = "Nos."
+        }
+
+        comma-separator: false
+        position {
+            column: 87
+        }
+
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "AA.ARR.IDS" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no AA Arrangement Contracts\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "List of AA Contracts"
+        }
+
+        label-field: "ARR.PRODUCT"
+        image: "action.gif"
+        criteria: "@ID" Equals "AA.ARR.IDS"
+        enquiry: "AA.AA.ARRANGEMENTS.LIST"
+    }
+
+    attributes: "ALLDATA" ; "NO.ENQUIRY.FAVOURITES"
+}

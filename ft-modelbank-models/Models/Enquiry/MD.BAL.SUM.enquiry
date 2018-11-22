@@ -1,0 +1,468 @@
+Enquiry "MD.BAL.SUM" for "name:/MD_Contract:MD.DEAL#" {
+    metamodelVersion: "1.30.6" full-description {
+        en =
+        "This enquiry shows schedule dates, principalmovements and commissions amounts for a MD deal.It will show ALL schedules even when a definedschedule date is not reached.The return record layout:<1,x> Processed Date<2,x> Schedule Date<3,x> Outstanding Balances<4,x> Principal Movement<5,x> Commission Amount"
+    }
+
+    description {
+        en = "MD Balances Detail"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "PRINCIPAL.AMOUNT" {
+            label {
+                en = "Amount"
+            }
+
+        }
+
+        None
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "PERCENT" {
+        comma-separator: false
+        operation: constant "\" %\""
+    }
+
+    field "CUSTOMER" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "ID" {
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "AMOUNT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRINCIPAL.AMOUNT"
+    }
+
+    field "CURRENT.RATE" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CURRENT.RATE"
+    }
+
+    field "CUST.NO" {
+        comma-separator: false
+        operation: calc "CUSTOMER":"SPACE"
+    }
+
+    field "CUST.NAME" {
+        comma-separator: false
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "HDR.0" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"MD Summary\""
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Transaction Ref : \""
+    }
+
+    field "H.CONTRACT.NO" {
+        label {
+            en = "Transaction Ref :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "ID"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        display-section: Header
+        operation: constant "\"\""
+    }
+
+    field "HDR.2" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 1
+        }
+
+        operation: constant "\"Customer : \""
+    }
+
+    field "H.CUST.INFO" {
+        label {
+            en = "Customer :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 43
+            line: 1
+        }
+
+        processing-mode: Single
+        operation: calc "CUST.NO":"CUST.NAME"
+    }
+
+    field "HDR.3" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Value Date :\""
+    }
+
+    field "H.VALUE.DATE" {
+        label {
+            en = "Value Date :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 4
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUE.DATE"
+    }
+
+    field "HDR..4" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 2
+        }
+
+        operation: constant "\"Maturity Date : \""
+    }
+
+    field "H.MATURITY.DATE" {
+        label {
+            en = "Maturity Date :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 43
+            line: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "HDR.5" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 3
+        }
+
+        operation: constant "\"Currency : \""
+    }
+
+    field "H.CURRENCY" {
+        label {
+            en = "Currency :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 16
+            line: 3
+        }
+
+        operation: field-extract "CURRENCY"
+    }
+
+    field "HDR.7" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 35
+            line: 3
+        }
+
+        operation: constant "\"Amount : \""
+    }
+
+    field "H.AMOUNT" {
+        label {
+            en = "Amount :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 19
+        alignment: Left
+        comma-separator: true
+        decimals: 2
+        display-section: Header
+        position {
+            column: 43
+            line: 3
+        }
+
+        operation: field-extract "AMOUNT"
+    }
+
+    field "HDR.8" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 60
+            line: 3
+        }
+
+        operation: constant "\"Comm.Rate : \""
+    }
+
+    field "H.COMM.RATE" {
+        label {
+            en = "Comm.Rate :"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 63
+            line: 3
+        }
+
+        processing-mode: Single
+        operation: calc "CURRENT.RATE":"PERCENT"
+    }
+
+    field "BK.MD.ID" {
+        comma-separator: false
+        position {
+            page-throw: true
+        }
+
+        processing-mode: Single
+        operation: break-change "ID"
+    }
+
+    field "FIELD.LIST" {
+        comments: "Subroutine to build record for display fields"
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.MD.SCHED.LIST"
+    }
+
+    field "PROC.DATE" {
+        label {
+            en = "Proc.Date"
+        }
+
+        comments: "Processed date from return record"
+        format: Date
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: field-number 1
+    }
+
+    field "SCHED.DATE" {
+        label {
+            en = "Sched. Date"
+        }
+
+        comments: "Schedule Date (from return record)"
+        format: Date
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: field-number 2
+    }
+
+    field "OUTST.BAL" {
+        label {
+            en = "Outstanding Balance"
+        }
+
+        comments: "Outstanding Balance (from return record)"
+        format: Currency "CURRENCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 27
+        }
+
+        processing-mode: Multi
+        operation: field-number 3
+    }
+
+    field "PRINC.MV" {
+        label {
+            en = "Principal Movement"
+        }
+
+        comments: "Principal Movement (from return record)"
+        format: Currency "CURRENCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 42
+        }
+
+        processing-mode: Multi
+        operation: field-number 4
+    }
+
+    field "COMM.AMT" {
+        label {
+            en = "Commission Amount"
+        }
+
+        comments: "Commission Amount (from return record)"
+        format: Currency "CURRENCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: field-number 5
+    }
+
+    field "INV.AMT" {
+        label {
+            en = "Invocation Amount"
+        }
+
+        comments: "Invocation Amt (from return record)"
+        format: Currency "CURRENCY" negative-pattern #-
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 68
+        }
+
+        processing-mode: Multi
+        operation: field-number 7
+    }
+
+}

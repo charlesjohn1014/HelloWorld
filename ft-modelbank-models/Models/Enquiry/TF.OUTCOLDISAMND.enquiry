@@ -1,0 +1,240 @@
+Enquiry "TF.OUTCOLDISAMND" for "name:/LC_Contract:DRAWINGS#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Amendment to Discounted Bill (Export)"
+    }
+
+    description {
+        en = "Amendment to Discounted Bill"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.TF.OUTCOLLDR"
+    }
+
+    fixed-selection "DRAWING.TYPE" {
+        Equals "SP", "AC"
+    }
+
+    fixed-selection "DISCOUNT.AMT" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "PRESENTOR.CUST" {
+            label {
+                en = "Presentor Id"
+            }
+
+        }
+
+        AND
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 1
+        }
+
+        operation: constant "\"List of Discounted Coll. Bills under Export LC\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Drawing Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LC.NO" {
+        length: 16
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 12
+    }
+
+    field "LC.OLD.NO" {
+        label {
+            en = "LC Reference"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "LC.NO"
+        conversion: getFrom "LETTER.OF.CREDIT" "ISS.BANK.REF" false
+    }
+
+    field "LC.CREDIT.TYPE" {
+        label {
+            en = "LC Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "LC.CREDIT.TYPE"
+        conversion: getFrom "LC.TYPES" "DESCRIPTION" false
+    }
+
+    field "PRESENTOR" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR"
+    }
+
+    field "PRESENTOR.CUST" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRESENTOR.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"\""
+    }
+
+    field "PRESENTOR.DISP" {
+        label {
+            en = "Presentor"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "PRESENTOR.CUST" NotEquals "NULL" process "PRESENTOR.CUST" "PRESENTOR"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Drawing Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DRAW.CURRENCY"
+    }
+
+    field "DOCUMENT.AMOUNT" {
+        label {
+            en = "Doc Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DOCUMENT.AMOUNT"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Discounted Bill available\""
+    }
+
+    field "VER1" {
+        comma-separator: false
+        operation: constant "\"DR.DISC.AMENDMENTS,SPAMD\""
+    }
+
+    field "VER2" {
+        comma-separator: false
+        operation: constant "\"DR.DISC.AMENDMENTS,ACAMD\""
+    }
+
+    field "DR.TYPE" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DRAWING.TYPE"
+    }
+
+    field "VERFINAL" {
+        comma-separator: false
+        operation: if "DR.TYPE" Equals "AC" process "VER2" "VER1"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Discounting"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        from-field: "VERFINAL"
+    }
+
+}

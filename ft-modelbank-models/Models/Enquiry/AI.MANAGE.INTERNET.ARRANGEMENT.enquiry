@@ -1,0 +1,224 @@
+Enquiry "AI.MANAGE.INTERNET.ARRANGEMENT" for "name:/AI_ModelBank:NOFILE.MANAGE.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Manage Arrangement"
+    }
+
+    description {
+        en = "Manage Arrangement"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "RESULT.SET" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CUS.NO" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.ID" {
+        label {
+            en = "Customer ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: field-extract "CUSTOMER.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "INT.ARR" {
+        label {
+            en = "Arrangement"
+        }
+
+        comma-separator: false
+        operation: field-extract "@ID"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "EXT.ID" {
+        label {
+            en = "External User ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "PRODUCT.ID" {
+        label {
+            en = "Product"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: field-extract "INT.ARR"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "ARR.ID" {
+        label {
+            en = "Arrangement ID"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "INT.ARR"
+    }
+
+    field "ARR.ACTIVITY.ID" {
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ALLOW.CUST" {
+        label {
+            en = "Proxy Customer"
+        }
+
+        format: User
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "CUS.ID" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CUSTOMER.ID"
+    }
+
+    field "AA.ARR.ID" {
+        label {
+            en = "Proxy Arrangement"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Customer Manage"
+        }
+
+        label-field: "CUSTOMER.ID" parameters {
+            function:  Input
+            field: "CUSTOMER.ID"
+        }
+
+        screen: "CUSTOMER,INPUT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "External User Manage"
+        }
+
+        label-field: "EXT.ID" parameters {
+            function:  Input
+            field: "EXT.ID"
+        }
+
+        screen: "EB.EXTERNAL.USER,AMEND"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Manage Arrangement"
+        }
+
+        label-field: "ARR.ID"
+        criteria: "ARRANGEMENT.ID" Equals "INT.ARR"
+        criteria: "CURRENT.CUSTOMER" > "CUS.ID" parameters {
+            field: "INT.ARR"
+        }
+
+        composite-screen: "AA.ARRANGEMENT.OVERVIEW"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Manage Arrangement"
+        }
+
+        label-field: "AA.ARR.ID"
+        criteria: "ARRANGEMENT.ID" Equals "AA.ARR.ID"
+        criteria: "CURRENT.CUSTOMER" > "CUS.ID" parameters {
+            field: "AA.ARR.ID"
+        }
+
+        composite-screen: "AA.ARRANGEMENT.OVERVIEW"
+    }
+
+    attributes: "DRILLDOWNS.AS.HYPERLINKS"
+}

@@ -1,0 +1,519 @@
+Enquiry "DX.STOCK.SUMMARY.US.EXAMPLE" for "name:/DX_Position:DX.REP.POSITION#" {
+    metamodelVersion: "1.30.6" full-description {
+        en =
+        "This report provides and example of the informatiorequired in building a stock summary report forUS clients."
+    }
+
+    description {
+        en = "DX Stock Entry US (Example Only)"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "CALL.PUT" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "NET.LOTS" {
+        NotEquals "0"
+    }
+
+    fixed-selection "PORTFOLIO" {
+        NotEquals "\"\""
+    }
+
+    fixed-sort: "CUSTOMER" Null
+    fixed-sort: "PORTFOLIO" Null
+    fixed-sort: "CONTRACT" Null
+    fixed-sort: "MATURITY.DATE" Null
+    fixed-sort: "CALL.PUT" Null
+
+    field "CUSTOMER" {
+        break-condition {
+            break: Once
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "PORTFOLIO" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO"
+    }
+
+    field "PORT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 18
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PORTFOLIO"
+        conversion: getFrom "SEC.ACC.MASTER" "ACCOUNT.NAME" false
+        conversion: oconv "MCT"
+    }
+
+    field "CONTRACT" {
+        label {
+            en = "Contract"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CONTRACT"
+    }
+
+    field "MATURITY.DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "MATURITY.DATE"
+    }
+
+    field "CALL.PUT" {
+        label {
+            en = "Call Put"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CALL.PUT"
+    }
+
+    field "EXT.STRIKE.PRI" {
+        label {
+            en = "Strike Pri"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXT.STRIKE.PRI"
+    }
+
+    field "NET.LOTS" {
+        label {
+            en = "Net Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "NET.LOTS"
+    }
+
+    field "TRADE.ID" {
+        label {
+            en = "Trade Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TRANSACTION.IDS"
+        conversion: extract from 1 to 1 delimited by "-"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "CUSIP.NO" {
+        label {
+            en = "Cusip No."
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "TRADE.ID"
+        conversion: getFrom "DX.TRADE" "ALT.IND.ID" false
+        conversion: value 1
+    }
+
+    field "ZERO" {
+        label {
+            en = "ZERO"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"0\""
+    }
+
+    field "W.LONG" {
+        label {
+            en = "W LONG"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"L\""
+    }
+
+    field "W.SHORT" {
+        label {
+            en = "W SHORT"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"S\""
+    }
+
+    field "W.FLAT" {
+        label {
+            en = "W FLAT"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"F\""
+    }
+
+    field "NO.VALUE" {
+        label {
+            en = "NO VALUE"
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SPACE" {
+        label {
+            en = "SPACE"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "LONG" {
+        label {
+            en = "Long"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: if "NET.LOTS" Greater "ZERO" process "W.LONG" "NO.VALUE"
+    }
+
+    field "SHORT" {
+        label {
+            en = "Short"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: if "NET.LOTS" LessThan "ZERO" process "W.SHORT" "NO.VALUE"
+    }
+
+    field "FLAT" {
+        label {
+            en = "Flat"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: if "NET.LOTS" Equals "ZERO" process "W.FLAT" "NO.VALUE"
+    }
+
+    field "LONG.OR.SHORT" {
+        label {
+            en = "Long/Short"
+        }
+
+        length: 1
+        alignment: Left
+        comma-separator: false
+        operation: calc "LONG":"SHORT"
+    }
+
+    field "A.LOTS" {
+        label {
+            en = "Lots"
+        }
+
+        comma-separator: false
+        operation: field-extract "NET.LOTS"
+        conversion: abs
+    }
+
+    field "S.LOTS" {
+        label {
+            en = "Lots"
+        }
+
+        comma-separator: false
+        operation: calc "A.LOTS":"SPACE"
+    }
+
+    field "W.LOTS" {
+        label {
+            en = "Lots"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        operation: calc "S.LOTS":"LONG.OR.SHORT"
+    }
+
+    field "SC.CONTRACT" {
+        label {
+            en = "SC Contract"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CONTRACT"
+        conversion: getFrom "DX.CONTRACT.MASTER" "UNDERLYING" false
+    }
+
+    field "CTR.TEXT" {
+        label {
+            en = "Contract"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "CONTRACT"
+        conversion: getFrom "DX.CONTRACT.MASTER" "SHORT.NAME" false
+        conversion: oconv "MCT"
+    }
+
+    field "SC.TEXT" {
+        label {
+            en = "SC Contract"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "SC.CONTRACT"
+        conversion: getFrom "SECURITY.MASTER" "SHORT.NAME" false
+        conversion: oconv "MCT"
+    }
+
+    field "W.CP" {
+        label {
+            en = "W CP"
+        }
+
+        comma-separator: false
+        operation: calc "CALL.PUT":"SPACE"
+        conversion: oconv "MCT"
+    }
+
+    field "OPS.TEXT1" {
+        label {
+            en = "Ops Text 1"
+        }
+
+        comma-separator: false
+        operation: calc "MATURITY.DATE":"SPACE"
+    }
+
+    field "OPS.TEXT1.5" {
+        label {
+            en = "Ops Text 1.5"
+        }
+
+        comma-separator: false
+        operation: calc "OPS.TEXT1":"W.CP"
+    }
+
+    field "OPS.TEXT2" {
+        label {
+            en = "Ops Text 2"
+        }
+
+        comma-separator: false
+        operation: calc "OPS.TEXT1.5":"CTR.TEXT"
+    }
+
+    field "W.AT" {
+        label {
+            en = "W AT"
+        }
+
+        comma-separator: false
+        operation: constant "\" at \""
+    }
+
+    field "OPS.TEXT3" {
+        label {
+            en = "Ops Text 3"
+        }
+
+        comma-separator: false
+        operation: calc "OPS.TEXT2":"W.AT"
+    }
+
+    field "TR.CCY" {
+        label {
+            en = "TR CCY"
+        }
+
+        comma-separator: false
+        operation: field-extract "CONTRACT"
+        conversion: getFrom "DX.CONTRACT.MASTER" "CURRENCY" false
+    }
+
+    field "STR.CCY" {
+        label {
+            en = "STR CCY"
+        }
+
+        format: Currency "TR.CCY" negative-pattern -#
+        comma-separator: false
+        operation: field-extract "EXT.STRIKE.PRI"
+    }
+
+    field "W.STR.CCY" {
+        label {
+            en = "STR CCY"
+        }
+
+        comma-separator: false
+        operation: calc "STR.CCY":"SPACE"
+    }
+
+    field "T.STR.CCY" {
+        label {
+            en = "STR CCY"
+        }
+
+        comma-separator: false
+        operation: calc "W.STR.CCY":"TR.CCY"
+    }
+
+    field "OPTION.SERIES" {
+        label {
+            en = "Option Series"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: calc "OPS.TEXT3":"T.STR.CCY"
+    }
+
+    field "LONG.LOTS" {
+        label {
+            en = "Long Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: if "LONG.OR.SHORT" Equals "W.LONG" process "S.LOTS" "NO.VALUE"
+    }
+
+    field "SHORT.LOTS" {
+        label {
+            en = "Short Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: if "LONG.OR.SHORT" Equals "W.SHORT" process "S.LOTS" "NO.VALUE"
+    }
+
+    field "D.LOTS" {
+        label {
+            en = "Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: field-extract "W.LOTS"
+    }
+
+    field "REP.POSITION.KEY" {
+        length: 68
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REP.POSITION.KEY"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Position Details"
+        }
+
+        label-field: "OPTION.SERIES" parameters {
+            function:  See
+            field: "REP.POSITION.KEY"
+        }
+
+        application: "DX.REP.POSITION"
+    }
+
+    attributes: "ALLDATA"
+}

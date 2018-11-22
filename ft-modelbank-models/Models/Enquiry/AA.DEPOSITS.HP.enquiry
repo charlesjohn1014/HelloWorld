@@ -1,0 +1,361 @@
+Enquiry "AA.DEPOSITS.HP" for "name:/AA_Framework:AA.ARRANGEMENT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Arrangement Search"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "PRODUCT.LINE" {
+        Equals "\"DEPOSITS\"", "\"SAVINGS\""
+    }
+
+    fixed-selection "ARR.STATUS" {
+        NotEquals "UNAUTH"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+        }
+
+        AND
+
+        field "PRODUCT.LINE" {
+            label {
+                en = "Product Line"
+            }
+
+        }
+
+        AND
+
+        field "CURRENCY" {
+            label {
+                en = "Currency"
+            }
+
+        }
+
+        AND
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "Arrangement ID"
+            }
+
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADIDNG" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"List of AA Deposits\""
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "LINKED.APPL" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL"
+        conversion: value 1
+    }
+
+    field "LINKED.APPL.ID" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LINKED.APPL.ID"
+        conversion: value 1
+    }
+
+    field "D.ACCOUNT" {
+        label {
+            en = "Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: if "LINKED.APPL" Equals "\"ACCOUNT\"" process "LINKED.APPL.ID" "\"\""
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer #"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "CUSTOMER.NAME" {
+        label {
+            en = "Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NAME.1" false
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRODUCT"
+        conversion: value 1 1
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "ACCOUNT.DESC" {
+        format: User
+        comma-separator: false
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "DESCRIPTION" {
+        comma-separator: false
+        operation: if "ACCOUNT.DESC" NotEquals "NULL" process "ACCOUNT.DESC" "PRODUCT"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "D.DATE" {
+        length: 8
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PROD.EFF.DATE"
+    }
+
+    field "D.STRING" {
+        comma-separator: false
+        operation: constant "\".1\""
+    }
+
+    field "D.PROP" {
+        comma-separator: false
+        operation: constant "\"-COMMITMENT-\""
+    }
+
+    field "D.CONCATE" {
+        comma-separator: false
+        operation: calc "D.PROP":"D.DATE":"D.STRING"
+    }
+
+    field "D.VALUE" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: calc "ARRANGEMENT":"D.CONCATE"
+        conversion: getFrom "AA.ARR.TERM.AMOUNT" "AMOUNT" false
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "LINKED.APPL.ID"
+        conversion: getFrom "ACCOUNT" "WORKING.BALANCE" false
+    }
+
+    field "SIMULATION.REF" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.SIMULATIONS"
+    }
+
+    field "VALUE DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "VALUE.DATE" false
+    }
+
+    field "MATURITY DATE" {
+        label {
+            en = "Maturity Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 80
+        }
+
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ACCOUNT.DETAILS" "MATURITY.DATE" false
+    }
+
+    field "C.GEN.OVER" {
+        comma-separator: false
+        operation: constant "\"COS AA.ARRANGEMENT.OVERVIEW \""
+    }
+
+    field "PRODUCT.LINE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "PRODUCT.LINE"
+    }
+
+    field "C.SAV" {
+        comma-separator: false
+        operation: constant "\"SAVINGS\""
+    }
+
+    field "C.OVER" {
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "C.SAV" process "C.DEP.OVERVIEW" "C.GEN.OVER"
+    }
+
+    field "C.DEP" {
+        comma-separator: false
+        operation: constant "\"DEPOSITS\""
+    }
+
+    field "C.DEP.OVERVIEW" {
+        comma-separator: false
+        operation: constant "\"COS AA.OVERVIEW.DEPOSITS \""
+    }
+
+    field "C.LOVER" {
+        comma-separator: false
+        operation: if "PRODUCT.LINE" Equals "C.DEP" process "C.DEP.OVERVIEW" "C.OVER"
+    }
+
+    field "C.OVERVIEW" {
+        comma-separator: false
+        operation: calc "C.LOVER":"ARRANGEMENT"
+    }
+
+    field "ZERO.RECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No Deposits for this Customer\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Overview"
+        }
+
+        label-field: "ARRANGEMENT"
+        image: "view.gif"
+        from-field: "C.OVERVIEW"
+    }
+
+    attributes: "ALLDATA"
+}

@@ -1,0 +1,301 @@
+Enquiry "AA.DETAILS.LIMIT.AL" for "name:/AA_Limit:AA.ARR.LIMIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Limit details of Arrangement"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 10
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "LIMIT" {
+        length: 7
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LIMIT.REFERENCE"
+        conversion: call
+        jBC: "@ E.FORM.LIMIT.REF.ID"
+    }
+
+    field "DESCRIPTION" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        operation: constant "\"Limit\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"\""
+    }
+
+    field "DESCRIPTION.CHK" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 125
+        operation: if "LIMIT" Equals "\"0000000\"" process "NULL" "DESCRIPTION"
+    }
+
+    field "ARRANGEMENT" {
+        label {
+            en = "Arrangement"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "CUSTID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+    }
+
+    field "LIAB.ID" {
+        comma-separator: false
+        operation: field-extract "CUSTID"
+        conversion: getFrom "CUSTOMER" "CUSTOMER.LIABILITY" false
+    }
+
+    field "CUST" {
+        comma-separator: false
+        operation: if "CUSTID" Equals "LIAB.ID" process "CUSTID" "LIAB.ID"
+    }
+
+    field "LIMIT.REF" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        operation: constant "\"Limit Reference\""
+    }
+
+    field "LIMIT.REF.CHK" {
+        label {
+            en = "Limit Reference"
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 125
+        operation: if "LIMIT" Equals "\"0000000\"" process "NULL" "LIMIT.REF"
+    }
+
+    field "LIMIT.CHK" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        column-width: 80
+        processing-mode: Multi
+        operation: if "LIMIT" Equals "\"0000000\"" process "NULL" "LIMIT"
+    }
+
+    field "L.SERIAL" {
+        label {
+            en = "Limit Serial"
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        alignment: Left
+        comma-separator: false
+        operation: constant "\"Limit Serial\""
+    }
+
+    field "L.SERIAL.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        operation: if "LIMIT" Equals "\"0000000\"" process "NULL" "L.SERIAL"
+    }
+
+    field "SERIAL" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "LIMIT.SERIAL"
+    }
+
+    field "SERIAL.CHK" {
+        comma-separator: false
+        position {
+            column: 50
+            line: + 1
+        }
+
+        column-width: 80
+        processing-mode: Multi
+        operation: if "LIMIT" Equals "\"0000000\"" process "NULL" "SERIAL"
+    }
+
+    field "SINGLE.LIMIT" {
+        label {
+            en = "Single Limit"
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"Single Limit\""
+    }
+
+    field "SINGLE.LIMIT.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 60
+            line: + 1
+        }
+
+        operation: if "LIMIT" Equals "\"0000000\"" process "NULL" "SINGLE.LIMIT"
+    }
+
+    field "SINGLE" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SINGLE.LIMIT"
+        conversion: replace {
+            oldData: "Y"
+            newData: "Yes"
+        }
+
+        conversion: replace {
+            oldData: "N"
+            newData: "No"
+        }
+
+    }
+
+    field "SINGLE.CHK" {
+        comma-separator: false
+        position {
+            column: 70
+            line: + 1
+        }
+
+        column-width: 70
+        operation: if "LIMIT" Equals "\"0000000\"" process "NULL" "SINGLE"
+    }
+
+    field "LIMIT.NETTING" {
+        comma-separator: false
+        operation: constant "\"Allow Netting\""
+    }
+
+    field "LIMIT.NETTING.CHK" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 2
+        }
+
+        column-width: 125
+        operation: if "LIMIT" Equals "\"0000000\"" process "NULL" "LIMIT.NETTING"
+    }
+
+    field "NETTING" {
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ALLOW.NETTING"
+    }
+
+    field "NETTING.CHK" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        column-width: 80
+        processing-mode: Multi
+        operation: if "LIMIT" Equals "\"0000000\"" process "NULL" "NETTING"
+        conversion: replace {
+            oldData: "NO"
+            newData: "No"
+        }
+
+        conversion: replace {
+            oldData: "YES"
+            newData: "Yes"
+        }
+
+    }
+
+    field "ID1" {
+        comma-separator: false
+        operation: calc "CUST":"\".\"":"LIMIT":"\".\"":"SERIAL":"\".\"":"CUSTID"
+        conversion: call
+        jBC: "@ E.FETCH.LIMIT.ID"
+    }
+
+    field "ID2" {
+        comma-separator: false
+        operation: calc "CUSTID":"\".\"":"LIMIT":"\".\"":"SERIAL"
+        conversion: call
+        jBC: "@ E.FETCH.LIMIT.ID"
+    }
+
+    field "ID3" {
+        comma-separator: false
+        operation: if "LIAB.ID" Equals "CUSTID" process "ID2" "ID1"
+    }
+
+    field "ID" {
+        comma-separator: false
+        operation: if "LIAB.ID" Equals "NULL" process "ID2" "ID3"
+    }
+
+    field "LIMIT.ID" {
+        comma-separator: false
+        operation: field-extract "ID"
+        conversion: call
+        jBC: "@ E.FETCH.COLL.ID"
+    }
+
+    field "COLL.ID" {
+        comma-separator: false
+        operation: calc "\"\'\"":"LIMIT.ID":"\"\'\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Arrangement"
+        }
+
+        label-field: "DESCRIPTION.CHK"
+        image: "view.gif" parameters {
+            field: "ID"
+            field: "COLL.ID"
+        }
+
+        composite-screen: "AA.DETAILS.PLEDGE.COLL.AL"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.HEADER.STYLE" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

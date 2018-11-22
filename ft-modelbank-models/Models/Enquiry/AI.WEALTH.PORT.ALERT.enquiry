@@ -1,0 +1,214 @@
+Enquiry "AI.WEALTH.PORT.ALERT" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Portfolio List"
+    }
+
+    description {
+        en = "Portfolio List"
+    }
+
+    no-selection: true
+    show-all-books: true
+    start-line: 4
+    end-line: 19 fixed-selection "CUSTOMER.NUMBER" {
+        Equals "!EXT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "SECURITIES.ACC.No." {
+            label {
+                en = "Portfolio"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "CUSTOMER.NUMBER" {
+            label {
+                en = "Client "
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "ACCOUNT.NAME" {
+            label {
+                en = "Name"
+            }
+
+            operands: Matches
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Portfolio"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER.NUMBER" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.NUMBER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Name"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "BREAK" {
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "INVESTMENT.PROGRAM" {
+        label {
+            en = "Type"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INVESTMENT.PROGRAM"
+        conversion: getFrom "INVESTMENT.PROGRAM" "DESCRIPTION" false
+    }
+
+    field "BREAK2" {
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "LABEL1" {
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        operation: constant "\"Ref Ccy\""
+    }
+
+    field "REFERENCE.CURRENCY" {
+        label {
+            en = "Ref Ccy"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.CURRENCY"
+    }
+
+    field "LABEL3" {
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: constant "\"Valuation Ccy\""
+    }
+
+    field "VALUATION.CURRENCY" {
+        display-type: "CLASS-ENQ.H.DATA"
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "VALUATION.CURRENCY"
+    }
+
+    field "BLANK3" {
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "PORTFOLIO" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "PWM" {
+        comma-separator: false
+        operation: constant "\"PWM.CLIENT.ALERTS\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Subscribe"
+        }
+
+        label-field: "ACCOUNT.NAME"
+        image: "go.gif"
+        criteria: "ALERT" Equals "PWM"
+        criteria: "PORTFOLIO.NO" Equals "PORTFOLIO"
+        enquiry: "AI.PWM.PORT.ALERTS"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER"
+}

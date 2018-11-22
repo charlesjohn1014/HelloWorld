@@ -1,0 +1,292 @@
+Enquiry "PBO.MARGIN.SELLOUT" for "name:/SC_ScoPortfolioMaintenance:SEC.ACC.MASTER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Sell Out Margin Call"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "SELL.OUT.MGN.DATE" {
+        NotEquals "\"\""
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Portfolio No"
+            }
+
+        }
+
+        AND
+
+        field "REFERENCE.CURRENCY" {
+            label {
+                en = "Reference Ccy"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Portfolio"
+        }
+
+        length: 18
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "CUSTOMER" {
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: i-desc "CUSTOMER"
+    }
+
+    field "IHDR" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Sell Out Margin Call Report\""
+    }
+
+    field "ACCOUNT.NAME" {
+        label {
+            en = "Portfolio Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "ACCOUNT.NAME"
+    }
+
+    field "REFERENCE.CURRENCY" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "REFERENCE.CURRENCY"
+    }
+
+    field "VALAMT" {
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Multi
+        operation: application-field-name "VALUATION.AMT"
+    }
+
+    field "MAR" {
+        label {
+            en = "Margin Value"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MARGIN.VALUE"
+    }
+
+    field "LOA" {
+        label {
+            en = "Loan Mgn Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        processing-mode: Single
+        operation: application-field-name "LOAN.MARGIN.AMT"
+    }
+
+    field "SPM" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SHORT.POS.MGN.AMT"
+    }
+
+    field "LMA" {
+        label {
+            en = "Loan Amount"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 18
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 4
+        }
+
+        operation: calc "LOA" + "SPM"
+    }
+
+    field "SEA" {
+        label {
+            en = "Sell Out Mgn Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SELL.OUT.MARGN.AMT"
+    }
+
+    field "CC" {
+        comma-separator: false
+        operation: company
+    }
+
+    field "BU" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "BUFFER" false
+    }
+
+    field "PE" {
+        comma-separator: false
+        operation: calc "BU" / "100"
+    }
+
+    field "SBU" {
+        comma-separator: false
+        operation: calc "SEA" * "PE"
+    }
+
+    field "SEWB" {
+        comma-separator: false
+        operation: calc "SEA" + "SBU"
+    }
+
+    field "SOC" {
+        label {
+            en = "Sell Out Call Amt"
+        }
+
+        display-type: "CLASS-POSNEG"
+        length: 20
+        alignment: Right
+        comma-separator: true
+        decimals: 2
+        position {
+            column: 6
+        }
+
+        operation: calc "SEWB" + "LOA"
+    }
+
+    field "SELL.DATE" {
+        label {
+            en = "Sell Out Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SELL.OUT.MGN.DATE"
+    }
+
+    field "SD" {
+        comma-separator: false
+        operation: field-extract "CC"
+        conversion: getFrom "OV.PARAMETER" "SELL.OUT.MGN.DAYS" false
+    }
+
+    field "SMD" {
+        comma-separator: false
+        operation: field-extract "SELL.DATE"
+        conversion: julian
+    }
+
+    field "DD" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        operation: calc "SMD" + "SD"
+        conversion: oconv "D"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Portfolio has Sell Out Margin Call Trigger\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Position"
+        }
+
+        label-field: "@ID"
+        image: "view.gif"
+        criteria: "SECURITY.ACCOUNT" Equals "@ID"
+        enquiry: "SC.POSITION.MARGIN"
+    }
+
+}

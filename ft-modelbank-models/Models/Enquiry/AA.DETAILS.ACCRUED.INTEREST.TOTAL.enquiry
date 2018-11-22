@@ -1,0 +1,431 @@
+Enquiry "AA.DETAILS.ACCRUED.INTEREST.TOTAL" for "name:/AA_Interest:AA.ARR.INTEREST#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Interest Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        column-width: 110
+        operation: constant "\"Total Interest to Date\""
+    }
+
+    field "H.ONE" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 110
+        operation: constant "\"Property\""
+    }
+
+    field "H.TWO" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: constant "\"Positive\""
+    }
+
+    field "H.THREE" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: constant "\"Negative\""
+    }
+
+    field "H.FOUR" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: constant "\"Adjusted/Waived\""
+    }
+
+    field "H.FIVE" {
+        display-type: "CLASS-BOLD"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: constant "\"Total\""
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "ARR.DATE" {
+        length: 30
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.3"
+    }
+
+    field "D.PROPERTY" {
+        label {
+            en = "Property"
+        }
+
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        format: User
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+        }
+
+        column-width: 110
+        operation: field-extract "PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "D.HYPEN" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "PERIOD" {
+        comma-separator: false
+        operation: constant "\"TOTAL\""
+    }
+
+    field "DELIM" {
+        comma-separator: false
+        operation: constant "\"~\""
+    }
+
+    field "D.AA.INT.ACC.ID" {
+        comma-separator: false
+        operation: calc "ARRANGEMENT":"D.HYPEN":"PROPERTY"
+    }
+
+    field "C.D.CON.ID" {
+        comma-separator: false
+        operation: calc "D.AA.INT.ACC.ID":"DELIM":"PERIOD"
+    }
+
+    field "T.ACCR.DETS" {
+        comma-separator: false
+        operation: field-extract "C.D.CON.ID"
+        conversion: call
+        jBC: "@ E.AA.ACCRUED.INTEREST"
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "NORECS" {
+        format: Translate break-condition {
+            break: None
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 110
+        operation: constant "\" No Interest Accruals available \""
+    }
+
+    field "D.ACCR.AMT.VAL" {
+        comma-separator: false
+        operation: field-extract "T.ACCR.DETS"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "ACCR.ST.DATE" {
+        format: Date
+        comma-separator: false
+        operation: field-extract "T.ACCR.DETS"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ACCR.TO.DATE" {
+        format: Date
+        comma-separator: false
+        operation: field-extract "T.ACCR.DETS"
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "POS.AMT.VAL" {
+        comma-separator: false
+        operation: field-extract "T.ACCR.DETS"
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "NEG.AMT.VAL" {
+        comma-separator: false
+        operation: field-extract "T.ACCR.DETS"
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "ADJ.AMT.VAL" {
+        comma-separator: false
+        operation: field-extract "T.ACCR.DETS"
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "POS.AMT" {
+        label {
+            en = "Positive"
+        }
+
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        position {
+            column: 15
+            line: + 1
+        }
+
+        operation: if "POS.AMT.VAL" Equals "NULL" process "\"0.00\"" "POS.AMT.VAL"
+    }
+
+    field "NEG.AMT" {
+        label {
+            en = "Negative"
+        }
+
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        operation: if "NEG.AMT.VAL" Equals "NULL" process "\"0.00\"" "NEG.AMT.VAL"
+    }
+
+    field "ADJ.AMT" {
+        label {
+            en = "Adjustment"
+        }
+
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        position {
+            column: 25
+            line: + 1
+        }
+
+        operation: if "ADJ.AMT.VAL" Equals "NULL" process "\"0.00\"" "ADJ.AMT.VAL"
+    }
+
+    field "D.ACCR.AMT" {
+        label {
+            en = "Total"
+        }
+
+        display-type: "CLASS-POSNEG"
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+        }
+
+        operation: if "D.ACCR.AMT.VAL" Equals "NULL" process "\"0.00\"" "D.ACCR.AMT.VAL"
+    }
+
+    field "INFO.INT" {
+        comma-separator: false
+        operation: field-extract "D.AA.INT.ACC.ID"
+        conversion: call
+        jBC: "@ E.AA.INFO.ACCRUED.INTEREST"
+    }
+
+    field "S.ACCRUAL" {
+        display-type: "CLASS-BOLD.ITALIC"
+        format: Translate
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "SUPPRESS.ACCRUAL"
+        conversion: replace {
+            oldData: "YES"
+            newData: "Suppressed"
+        }
+
+        conversion: replace {
+            oldData: "INFO.ONLY"
+            newData: "Info Only"
+        }
+
+        conversion: replace {
+            oldData: "ALTERNATE"
+            newData: "Alternate"
+        }
+
+    }
+
+    field "ALT" {
+        comma-separator: false
+        operation: constant "\"Alternate\""
+    }
+
+    field "INFO.ONLY" {
+        comma-separator: false
+        operation: constant "\"Info Only\""
+    }
+
+    field "D.SUR.ACC.ALT" {
+        comma-separator: false
+        operation: if "S.ACCRUAL" Equals "ALT" process "NULL" "S.ACCRUAL"
+    }
+
+    field "DES.SUR.ACC" {
+        label {
+            en = "Info Accrual"
+        }
+
+        display-type: "CLASS-BOLD.ITALIC"
+        comma-separator: false
+        operation: if "S.ACCRUAL" Equals "NULL" process "NULL" "D.SUR.ACC.ALT"
+    }
+
+    field "WAIVE.RECORD" {
+        comma-separator: false
+        operation: calc "ARRANGEMENT":"DELIM":"PROPERTY"
+    }
+
+    field "WAIVE.OUTPUT" {
+        comma-separator: false
+        operation: calc "WAIVE.RECORD":"DELIM":"PERIOD"
+        conversion: call
+        jBC: "@ E.AA.GET.BILL.TYPE"
+    }
+
+    field "WAIVE.CHK" {
+        comma-separator: false
+        operation: field-extract "WAIVE.OUTPUT"
+    }
+
+    field "AT.WV.CHK" {
+        comma-separator: false
+        operation: field-extract "WAIVE.OUTPUT"
+        conversion: getFrom "AA.BILL.TYPE" "AUTO.WAIVE" false
+    }
+
+    field "YES" {
+        comma-separator: false
+        operation: constant "\"YES\""
+    }
+
+    field "D.AT.WV" {
+        comma-separator: false
+        operation: if "AT.WV.CHK" Equals "YES" process "INFO.ONLY" "DES.SUR.ACC"
+    }
+
+    field "D.WAIVE.CHK" {
+        display-type: "CLASS-BOLD.ITALIC"
+        comma-separator: false
+        position {
+            column: 35
+            line: + 1
+        }
+
+        operation: if "WAIVE.CHK" Equals "NULL" process "DES.SUR.ACC" "D.AT.WV"
+    }
+
+    field "D.ALT.INT" {
+        comma-separator: false
+        operation: if "S.ACCRUAL" Equals "ALT" process "NULL" "INFO.INT"
+    }
+
+    field "DES.INT" {
+        label {
+            en = "Info Amount"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        column-width: 75
+        operation: if "INFO.INT" Equals "NULL" process "NULL" "D.ALT.INT"
+    }
+
+    fileVersion: Live, Simulation
+    attributes: "NO.TOOLBAR" ; "NO.BREADCRUMBS" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.COLUMN.HEADER"
+}

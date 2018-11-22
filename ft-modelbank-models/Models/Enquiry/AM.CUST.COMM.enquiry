@@ -1,0 +1,208 @@
+Enquiry "AM.CUST.COMM" for "name:/AM_ModelBank:NOFILE.CUST.COMMISSIONS#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "Customer Commissions"
+        }
+
+        column: 25
+        line: 0
+    }
+
+    header {
+        label {
+            en = "Customer No:"
+        }
+
+        column: 1
+        line: 1
+    }
+
+    header {
+        label {
+            en = "Name:"
+        }
+
+        column: 26
+        line: 1
+    }
+
+    description {
+        en = "AM.CUST.COMM"
+    }
+
+    start-line: 4
+    end-line: 19
+    custom-selection {
+
+        field "CUSTOMER.NO" {
+            mandatory: true
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "CUSTOMER.NO" {
+        break-condition {
+            break: NewPage
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 14
+            line: 1
+        }
+
+        operation: application-field-name "@ID"
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "CUSTOMER.NAME" {
+        format: User break-condition {
+            break: NewPage
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 32
+            line: 1
+        }
+
+        operation: field-extract "CUSTOMER.NO"
+        conversion: getFrom "CUSTOMER" "2" false
+    }
+
+    field "REC.ID" {
+        length: 10000
+        alignment: Left
+        comma-separator: false
+        operation: application-field-name "@ID"
+    }
+
+    field "APPLN" {
+        label {
+            en = "Application"
+        }
+
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: application-field-name "@ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "F.APPLN" {
+        comma-separator: false
+        operation: field-extract "APPLN"
+    }
+
+    field "CODE" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "REC.ID"
+        conversion: call
+        jBC: "@ E.CUST.COMM.CODE"
+    }
+
+    field "F.CODE" {
+        comma-separator: false
+        operation: field-extract "CODE"
+    }
+
+    field "FD.CODE" {
+        comma-separator: false
+        operation: field-extract "CODE"
+        conversion: extract from 2 to 3
+    }
+
+    field "FID.TEXT" {
+        comma-separator: false
+        operation: constant "\"FIDUCIARY\""
+    }
+
+    field "DISP.CODE" {
+        label {
+            en = "Code"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: if "F.APPLN" Equals "FID.TEXT" process "FD.CODE" "F.CODE"
+    }
+
+    field "ASTR" {
+        comma-separator: false
+        operation: constant "\"*\""
+    }
+
+    field "APPLN.CODE.1" {
+        comma-separator: false
+        operation: calc "APPLN":"ASTR"
+    }
+
+    field "APPLN.CODE.2" {
+        comma-separator: false
+        operation: calc "APPLN.CODE.1":"DISP.CODE"
+    }
+
+    field "APPLN.DESC" {
+        label {
+            en = "Description"
+        }
+
+        length: 100
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "APPLN.CODE.2"
+        conversion: call
+        jBC: "@ E.GET.CODE.DESC"
+    }
+
+    field "NEXT.ENQ" {
+        comma-separator: false
+        operation: field-extract "APPLN"
+        conversion: call
+        jBC: "@ E.CUST.COMM.NEXT.LEVEL"
+    }
+
+    field "CODE.1" {
+        comma-separator: false
+        operation: if "CODE" Equals "NULL" process "CUSTOMER.NO" "CODE"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "APPLN"
+        criteria: "GROUP.NUMBER" Equals "CODE.1"
+        from-field: "NEXT.ENQ"
+    }
+
+}

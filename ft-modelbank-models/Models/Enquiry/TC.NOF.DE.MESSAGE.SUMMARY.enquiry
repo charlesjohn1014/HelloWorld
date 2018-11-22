@@ -1,0 +1,124 @@
+Enquiry "TC.NOF.DE.MESSAGE.SUMMARY" for "name:/DE_Channels:NOFILE.TC.DE.MESSAGE.SUMMARY#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "View Deposit Delivery Messages"
+    }
+
+    description {
+        en = "View Deposit Delivery Messages"
+    }
+
+    start-line: 4
+    end-line: 19 fixed-selection "STMT.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "DELIVERY.REF" {
+            mandatory: true
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "DELIVERY.REFERENCE" {
+        label {
+            en = "Delivery Reference"
+        }
+
+        length: 22
+        alignment: Right
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "BANK.DATE" {
+        label {
+            en = "Bank Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: extract from 1 to 8
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "MESSAGE.TYPE" {
+        label {
+            en = "Message Type"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "MESSAGE.DESCRIPTION" {
+        label {
+            en = "Message Description"
+        }
+
+        format: User
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        operation: field-extract "MESSAGE.TYPE"
+        conversion: getFrom "DE.MESSAGE" "DESCRIPTION" false
+    }
+
+    field "HEADER.CARRIER" {
+        label {
+            en = "Header Carrier"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "DRILL.VALUE" {
+        label {
+            en = "Drill Value"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "DELIVERY.ID" {
+        label {
+            en = "Delivery Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: field-extract "DRILL.VALUE"
+        conversion: extract from 2 to 1 delimited by ">"
+    }
+
+}

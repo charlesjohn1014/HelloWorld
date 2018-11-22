@@ -1,0 +1,173 @@
+Enquiry "CR.OPPORTUNITY-PRODUCT.GROUPS" for "name:/AA_ProductFramework:AA.PRODUCT.GROUP#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Product Groups"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "@ID" {
+        NotMatches "AZ...", "LD..."
+    }
+
+    custom-selection {
+
+        field "PRODUCT.LINE" {
+            operands: Equals
+        }
+
+        AND
+
+        field "PRODUCT.GROUP" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "LINE" {
+        display-type: "CLASS-ENQ.H.ID"
+        format: User break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "PRODUCT.LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "N.LINE" {
+        display-type: "CLASS-ENQ.H.ID"
+        format: User break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: selection "PRODUCT.LINE"
+        conversion: getFrom "AA.PRODUCT.LINE" "DESCRIPTION" false
+    }
+
+    field "GROUP" {
+        label {
+            en = "Group"
+        }
+
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PRODUCT.GROUP"
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "V.CR.OPPORTUNITY" {
+        comma-separator: false
+        operation: constant "\"CR.OPPORTUNITY.DEFINITION,CR.PROD.GRP\""
+    }
+
+    field "E.CR.OPPOR.DEFS" {
+        comma-separator: false
+        operation: constant "\"CR.OPPORTUNITY-DEFINITIONS\""
+    }
+
+    field "NO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: constant "\"No Product Groups defined.\""
+    }
+
+    field "E.AA.PRODUCTS" {
+        comma-separator: false
+        operation: constant "\"CR.OPPORTUNITY-PRODUCTS\""
+    }
+
+    field "V.GROUPVAL" {
+        comma-separator: false
+        operation: constant "\"-GROUP\""
+    }
+
+    field "V.GROUP" {
+        comma-separator: false
+        operation: calc "GROUP":"V.GROUPVAL"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Products"
+        }
+
+        label-field: "DESCRIPTION"
+        image: "right.arrow.gif"
+        criteria: "PRODUCT.GROUP" Equals "GROUP"
+        from-field: "E.AA.PRODUCTS"
+    }
+
+    drilldown "2" {
+        description {
+            en = "New Opportunity"
+        }
+
+        label-field: "DESCRIPTION"
+        image: "new.gif"
+        criteria: "AA.PRODUCT.GROUP" > "GROUP" parameters {
+            function:  Input
+            field: "V.GROUP"
+        }
+
+        from-field: "V.CR.OPPORTUNITY"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Opportunities"
+        }
+
+        label-field: "DESCRIPTION"
+        image: "records.gif"
+        criteria: "PRODUCT.GRP" Equals "GROUP"
+        from-field: "E.CR.OPPOR.DEFS"
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR"
+}

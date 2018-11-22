@@ -1,0 +1,369 @@
+Enquiry "TF.INCOLLMARGIN" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Avalised Collection for margin"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 6
+    build-routines {
+        jBC: "E.MB.BUILD.TF.INCOLLOS"
+    }
+
+    fixed-selection "LIABILITY.AMT" {
+        Greater "0"
+    }
+
+    fixed-selection "AVAL.REQ" {
+        Equals "YES"
+    }
+
+    fixed-sort: "EXPIRY.DATE" Null
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals, Matches
+        }
+
+        AND
+
+        field "APPLICANT.CUSTNO" {
+            label {
+                en = "Drawee Customer"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "LC.CURRENCY" {
+            label {
+                en = "Doc Currency"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "PRO.OUT.AMOUNT" {
+            label {
+                en = "Margin Outstanding"
+            }
+
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 25
+            line: 0
+        }
+
+        operation: constant "\"List Of Inward Collection\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "LC.TYPE1" {
+        label {
+            en = "Type"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LC.TYPE"
+    }
+
+    field "LC.TYPE" {
+        label {
+            en = "Collection Type"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.TYPE"
+        conversion: getFrom "LC.TYPES" "DESCRIPTION" false
+    }
+
+    field "APPLICANT.CUSTNO" {
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "APPLICANT.CUSTNO"
+    }
+
+    field "APPLICANT" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "APPLICANT"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.DRAWEE" {
+        label {
+            en = "Drawee"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: if "APPLICANT.CUSTNO" Equals "NULL" process "APPLICANT" "APPLICANT"
+    }
+
+    field "ADVISING.BK.CUSTNO" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ADVISING.BK.CUSTNO"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "ADVISING.BK" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ADVISING.BK"
+    }
+
+    field "NULL.02" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISP.REMBK" {
+        label {
+            en = "Remitting Bank"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: if "ADVISING.BK.CUSTNO" Equals "NULL" process "ADVISING.BK" "ADVISING.BK.CUSTNO"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "LC.AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "DATE.ACCEPTED" {
+        label {
+            en = "Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.ACCEPTED"
+    }
+
+    field "AVAL.DATE" {
+        label {
+            en = "Avalisation Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "AVAL.DATE"
+    }
+
+    field "PRO.OUT.AMOUNT" {
+        label {
+            en = "Margin Outstanding"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRO.OUT.AMOUNT"
+    }
+
+    field "LIABILITY.AMT" {
+        label {
+            en = "Outstg.Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Single
+        operation: application-field-name "LIABILITY.AMT"
+    }
+
+    field "EXPIRY.DATE" {
+        label {
+            en = "Due Date"
+        }
+
+        display-type: "DATE"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "EXPIRY.DATE"
+    }
+
+    field "ADVICE.EXPIRY.DATE" {
+        label {
+            en = "Original Due Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ADVICE.EXPIRY.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Inward Collection to take/release margin\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        application: "LETTER.OF.CREDIT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Take/Release Margin"
+        }
+
+        label-field: "@ID"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "@ID"
+        }
+
+        screen: "LETTER.OF.CREDIT,IMPMGN"
+    }
+
+    fileVersion: Live
+}

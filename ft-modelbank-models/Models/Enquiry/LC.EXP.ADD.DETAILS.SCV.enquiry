@@ -1,0 +1,91 @@
+Enquiry "LC.EXP.ADD.DETAILS.SCV" for "name:/LC_Contract:LETTER.OF.CREDIT#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "LC Additional Detials"
+    }
+
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "CUST.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "@ID"
+        conversion: getFrom "LETTER.OF.CREDIT" "BENEFICIARY.CUSTNO" false
+    }
+
+    field "ADD.DETAILS" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        column-width: 325
+        operation: constant "\"Export LC Enquiries\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "LCs Expired but Outstanding"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "BENEFICIARY.CUSTNO" Equals "CUST.ID"
+        enquiry: "TF.EXPLCEXPD"
+    }
+
+    drilldown "2" {
+        description {
+            en = "LCs Covered through FX Contract"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "BENEFICIARY.CUSTNO" Equals "CUST.ID"
+        enquiry: "EXPLC.FORWARD.COVER"
+    }
+
+    drilldown "3" {
+        description {
+            en = "LCs Bill Sent for Collection"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "PRESENTOR.CUST" Equals "CUST.ID"
+        enquiry: "TF.EXBILLCOLL"
+    }
+
+    drilldown "4" {
+        description {
+            en = "Usance Bills Due for Settlement"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "PRESENTOR.CUST" Equals "CUST.ID"
+        enquiry: "TF.EXPACDUE"
+    }
+
+    drilldown "5" {
+        description {
+            en = "O/S Bills Negotiated/Discounted"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "PRESENTOR.CUST" Equals "CUST.ID"
+        enquiry: "TF.EXPACDUEDISC"
+    }
+
+    drilldown "6" {
+        description {
+            en = "Export Bills Paid Under Reserve"
+        }
+
+        label-field: "ADD.DETAILS"
+        criteria: "PRESENTOR.CUST" Equals "CUST.ID"
+        enquiry: "TF.EXPRESERVE"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR"
+}

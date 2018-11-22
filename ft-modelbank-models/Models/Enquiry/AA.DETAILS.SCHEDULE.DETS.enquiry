@@ -1,0 +1,242 @@
+Enquiry "AA.DETAILS.SCHEDULE.DETS" for "name:/AA_PaymentSchedule:NOFILE.AA.SCHED.DETS#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Payment Details"
+    }
+
+    no-selection: true
+    start-line: 7
+    end-line: 19 fixed-selection "XID" {
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            mandatory: true
+            operands: Equals
+        }
+
+        AND
+
+        field "SIM.REF" {
+            operands: Equals
+        }
+
+        AND
+
+        field "DATE.DUE" {
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "TITLE" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        column-width: 135
+        operation: constant "\"Payment Detail\""
+    }
+
+    field "L.DUE.DATE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Translate break-condition {
+            break: Once
+        }
+
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        column-width: 135
+        operation: constant "\"Date \""
+    }
+
+    field "DUE.DT" {
+        label {
+            en = "Date"
+        }
+
+        display-type: "CLASS-ENQ.H.DATA" break-condition {
+            break: Once
+        }
+
+        length: 15
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 20
+            line: 2
+        }
+
+        column-width: 80
+        operation: selection "DATE.DUE"
+        conversion: julian
+        conversion: oconv "D"
+    }
+
+    field "ARR.ID" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "CURRENCY" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: call
+        jBC: "@ E.AA.GET.ARR.CURRENCY"
+    }
+
+    field "DUE.TYPE" {
+        label {
+            en = "Payment Type"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 135
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: getFrom "AA.PAYMENT.TYPE" "DESCRIPTION" false
+    }
+
+    field "DUE.TYPE.AMT" {
+        label {
+            en = "Total Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 80
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "DUE.METHOD" {
+        label {
+            en = "Method"
+        }
+
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 50
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+        conversion: oconv "MCT"
+    }
+
+    field "PROPERTIES" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "PROPERTIES1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PROPERTIES"
+        conversion: extract from 2 to 1 delimited by "-"
+    }
+
+    field "NULL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "CONDITION" {
+        label {
+            en = "Property"
+        }
+
+        format: User
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 120
+        processing-mode: Multi
+        operation: if "PROPERTIES1" Equals "NULL" process "PROPERTIES" "PROPERTIES1"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "PROP.AMT" {
+        label {
+            en = "Prop Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        column-width: 80
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "PAD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        column-width: 50
+        operation: constant "\" \""
+    }
+
+    attributes: "ALLDATA" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

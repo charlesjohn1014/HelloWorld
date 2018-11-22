@@ -1,0 +1,106 @@
+Enquiry "AA.DETAILS.SIMULATION.ACTIVITIES" for "name:/AA_Framework:AA.SIMULATION.RUNNER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Simulation User Activities"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+
+    field "SIM.CAPTURE.REF" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "SIM.CAPTURE.REF"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "USER.ACT" {
+        format: Translate
+        comma-separator: false
+        processing-mode: Single
+        operation: constant "\"User Activity\""
+    }
+
+    field "L.USER.ACT" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        column-width: 150
+        operation: if "SIM.CAPTURE.REF" NotEquals "NULL" process "USER.ACT" "NULL"
+    }
+
+    field "ACTIVITY.ID" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SIM.CAPTURE.REF"
+        conversion: getFrom "AA.SIMULATION.CAPTURE" "ACTIVITY" false
+    }
+
+    field "ACTIVITY" {
+        format: User
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        column-width: 211
+        processing-mode: Multi
+        operation: field-extract "ACTIVITY.ID"
+        conversion: getFrom "AA.ACTIVITY" "DESCRIPTION" false
+    }
+
+    field "EFF.DATE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        operation: constant "\"Effective\""
+    }
+
+    field "L.EFFECTIVE.DATE" {
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        column-width: 65
+        operation: if "SIM.CAPTURE.REF" NotEquals "NULL" process "EFF.DATE" "NULL"
+    }
+
+    field "D.EFFECTIVE.DATE" {
+        format: Date
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        column-width: 80
+        operation: field-extract "SIM.CAPTURE.REF"
+        conversion: getFrom "AA.SIMULATION.CAPTURE" "EFFECTIVE.DATE" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Edit"
+        }
+
+        label-field: "ACTIVITY"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "SIM.CAPTURE.REF"
+        }
+
+        screen: "AA.SIMULATION.CAPTURE,AA"
+    }
+
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

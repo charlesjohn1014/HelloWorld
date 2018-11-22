@@ -1,0 +1,236 @@
+Enquiry "AA.PREF.PRICES" for "name:/PR_ModelBank:NOFILE.AA.PREF.PRICES#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "AA Relationship Pricing Table"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 17 fixed-selection "CUSTOMER" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    fixed-selection "SEL" {
+        NotEquals "\""
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT" {
+            label {
+                en = "Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        AND
+
+        field "CUSTOMER" {
+            label {
+                en = "Customer"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "SP" {
+        label {
+            en = "Customer"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "PRICE.PROD" {
+        label {
+            en = "Price Product"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "ARRANGEMENTS" {
+        label {
+            en = "Arrangement"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "ARR.CHK" {
+        label {
+            en = "Arrangement"
+        }
+
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        operation: if "ARRANGEMENTS" Equals "\"\"" process "\"\"" "ARRANGEMENTS"
+    }
+
+    field "VARIATION" {
+        label {
+            en = "Variation"
+        }
+
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 58
+        }
+
+        operation: field-number 0
+        conversion: extract from 9 to 1 delimited by "*"
+    }
+
+    field "PRODUCT" {
+        label {
+            en = "Product"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "CCY" {
+        label {
+            en = "CCY"
+        }
+
+        format: User
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 95
+        }
+
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "INTEREST" {
+        label {
+            en = "Interest"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+    }
+
+    field "BONUS" {
+        label {
+            en = "Bonus"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 125
+        }
+
+        operation: field-number 0
+        conversion: extract from 7 to 1 delimited by "*"
+    }
+
+    field "CHARGE" {
+        label {
+            en = "Charge"
+        }
+
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 150
+        }
+
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 8 to 1 delimited by "*"
+    }
+
+    field "COS" {
+        comma-separator: false
+        operation: constant "\"COS\""
+    }
+
+    field "COS.NAME" {
+        comma-separator: false
+        operation: constant "\"AA.OVERVIEW.PR\""
+    }
+
+    field "DRILL.DOWN" {
+        comma-separator: false
+        operation: calc "COS":"SP":"COS.NAME":"SP":"ARRANGEMENTS"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 18
+        }
+
+        operation: constant "\"No Pricing Arrangements for this Customer\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Overview"
+        }
+
+        label-field: "ARR.CHK"
+        image: "view.gif"
+        from-field: "DRILL.DOWN"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

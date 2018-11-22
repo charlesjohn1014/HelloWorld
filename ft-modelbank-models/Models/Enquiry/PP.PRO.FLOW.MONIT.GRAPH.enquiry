@@ -1,0 +1,148 @@
+Enquiry "PP.PRO.FLOW.MONIT.GRAPH" for "name:/PP_PaymentFlowMonitorGUI:NOFILE.PP.PRO.FLOW.MONIT.GRAPH#" {
+    metamodelVersion: "1.30.6"
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "OUT.REC" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "CompanyID" {
+            label {
+                en = "CompanyID"
+            }
+
+        }
+
+        None
+    }
+
+    field "No.of.Payments" {
+        label {
+            en = "No.of.Payments"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "No.of.Payments.1" {
+        label {
+            en = "No.of.Payments"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "No.of.Payments"
+    }
+
+    field "StatusCodeValue" {
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "StatusDesc" {
+        label {
+            en = "StatusDesc"
+        }
+
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "NL" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "HP" {
+        comma-separator: false
+        operation: constant "\"-\""
+    }
+
+    field "StatusDesc.1" {
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: calc "StatusCodeValue":"NL":"HP":"NL":"StatusDesc"
+    }
+
+    field "CompanyCode" {
+        length: 3
+        alignment: Left
+        comma-separator: false
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "NORECTODISPLAY" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Payments to Monitor\""
+    }
+
+    security {
+        application: "PP.COMPANY"
+        field: "CompanyCode"
+    }
+
+    graph {
+        type: "BAR.ORDINAL"
+        label {
+            en = "Process Flow Monitor" x: 120 y: 30
+        }
+
+        dimension {
+            width: 470 height: 650
+        }
+
+        margins {
+            top: 50 bottom: 450 left: 30 right: 100
+        }
+
+        scale {
+            x: 100 y: 100
+        }
+
+        legend {
+            x: 400 y: 30
+        }
+
+        x-axis {
+            field: "StatusDesc.1"
+            display-legend: true
+            show-grid: true
+        }
+
+        y-axis {
+            field: "No.of.Payments.1"
+            display-legend: true
+            show-grid: true
+        }
+
+    }
+
+    enquiry-graph-id {
+        "PP.PRO.FLOW.MONIT.GRAPH"
+    }
+
+    attributes: "ALLDATA" ; "NO.ENQUIRY.FAVOURITES"
+}

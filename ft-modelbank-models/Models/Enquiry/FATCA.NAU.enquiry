@@ -1,0 +1,434 @@
+Enquiry "FATCA.NAU" for "name:/FA_ModelBank:NOFILE.FATCA.NAU#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "FATCA-Unauthorised Records"
+    }
+
+    description {
+        en = "FATCA-Unauthorised Records"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "FATCA.INFO" {
+        NotEquals "\"\""
+    }
+
+    fixed-selection "FILE.SUFFIX" {
+        Equals "\"$NAU\""
+    }
+
+    fixed-sort: "@ID" Null
+    custom-selection {
+
+        field "FATCA.CUSTOMER" {
+            label {
+                en = "Customer Id"
+            }
+
+        }
+
+        AND
+
+        field "CLIENT.TYPE" {
+            label {
+                en = "Customer Type"
+            }
+
+        }
+
+        AND
+
+        field "FATCA.STATUS" {
+            label {
+                en = "Classification"
+            }
+
+        }
+
+        AND
+
+        field "INDICIA.STRENGTH" {
+            label {
+                en = "Indicia Strength"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        length: 100
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "FATCA.CUSTOMER" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 0 delimited by "*"
+    }
+
+    field "DAO" {
+        label {
+            en = "RM Id"
+        }
+
+        length: 7
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "FATCA.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "ACCOUNT.OFFICER" false
+    }
+
+    field "DAO.NAME" {
+        label {
+            en = "RM Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: field-extract "DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    field "DAO.NAME.02" {
+        label {
+            en = "RM Market"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        operation: field-extract "DAO"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "AREA" false
+    }
+
+    field "CUST.ID" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 87
+        }
+
+        operation: field-extract "FATCA.CUSTOMER"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"FATCA-Unauthorised Records\""
+    }
+
+    field "CUS.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 100
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "FATCA.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NATIONALITY" {
+        label {
+            en = "Nationality"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 139
+        }
+
+        processing-mode: Multi
+        operation: field-extract "FATCA.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "NATIONALITY" false
+    }
+
+    field "RESIDENCE" {
+        label {
+            en = "Residence"
+        }
+
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 151
+        }
+
+        processing-mode: Multi
+        hidden: true
+        operation: field-extract "FATCA.CUSTOMER"
+        conversion: getFrom "CUSTOMER" "RESIDENCE" false
+    }
+
+    field "TAX.RESIDENCE" {
+        label {
+            en = "Tax Residence"
+        }
+
+        format: User
+        length: 9
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 164
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: extract from 3 to 0 delimited by "*"
+    }
+
+    field "CLIENT.TYPE" {
+        label {
+            en = "Client Type"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 177
+        }
+
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 2 to 0 delimited by "*"
+        conversion: getFrom "FATCA.CUSTOMER.TYPE" "DESCRIPTION" false
+    }
+
+    field "FATCA.STATUS" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 8 to 0 delimited by "*"
+    }
+
+    field "T1" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 5 to 0 delimited by "*"
+    }
+
+    field "T2" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 6 to 0 delimited by "*"
+    }
+
+    field "T3" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "@ID"
+        conversion: extract from 7 to 0 delimited by "*"
+    }
+
+    field "R1" {
+        comma-separator: false
+        operation: constant "\"Potential US\""
+    }
+
+    field "R2" {
+        comma-separator: false
+        operation: constant "\"Proven US\""
+    }
+
+    field "R3" {
+        comma-separator: false
+        operation: constant "\"Proven Non US\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "P1" {
+        comma-separator: false
+        operation: if "T1" Equals "\"YES\"" process "R1" "NULL"
+    }
+
+    field "P2" {
+        comma-separator: false
+        operation: if "T2" Equals "\"YES\"" process "R2" "NULL"
+    }
+
+    field "P3" {
+        comma-separator: false
+        operation: if "T3" Equals "\"YES\"" process "R3" "NULL"
+    }
+
+    field "KYC" {
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: calc "P1":"P2":"P3"
+    }
+
+    field "FINAL.KYC" {
+        label {
+            en = "KYC Status"
+        }
+
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 216
+        }
+
+        operation: if "FATCA.STATUS" Equals "\"\"" process "KYC" "\"\""
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "STATUS" {
+        label {
+            en = "Classification"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 236
+        }
+
+        processing-mode: Single
+        operation: field-extract "FATCA.STATUS"
+        conversion: getFrom "FATCA.TAX.STATUS" "DESCRIPTION" false
+    }
+
+    field "INDICIA.STRENGTH" {
+        label {
+            en = "Indicia Strength"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 275
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: field-extract "@ID"
+        conversion: extract from 4 to 0 delimited by "*"
+        conversion: oconv "MCT"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Unauthorised Records found \""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "CUST.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "CUST.ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "CUST.ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "CUST.ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+    drilldown "3" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "CUST.ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "CUST.ID"
+        }
+
+        screen: "FATCA.CUSTOMER.SUPPLEMENTARY.INFO,FULL"
+    }
+
+}

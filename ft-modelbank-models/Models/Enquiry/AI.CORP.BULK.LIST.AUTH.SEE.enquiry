@@ -1,0 +1,232 @@
+Enquiry "AI.CORP.BULK.LIST.AUTH.SEE" for "name:/FT_BulkProcessing:FT.BULK.MASTER#" {
+    metamodelVersion: "1.30.6"
+    header {
+        label {
+            en = "View Processed Bulk Records"
+        }
+
+        column: 1
+        line: 0
+    }
+
+    full-description {
+        en = "Bulk Payments List"
+    }
+
+    description {
+        en = "Bulk Payments List"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "ACTIVE.ACCOUNT" {
+        Equals "!EXT.SMS.ACCOUNTS"
+    }
+
+    fixed-selection "STATUS" {
+        Equals "\'PROCESSED\'", "\'PROCESSING\'"
+    }
+
+    custom-selection {
+
+        field "ACTIVE.ACCOUNT" {
+        }
+
+        None
+    }
+
+    field "HDR.1" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"View Processed Bulk Records\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Bulk Payment Id"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "DOT" {
+        comma-separator: false
+        operation: constant "\"...\""
+    }
+
+    field "@ID.LIKE" {
+        comma-separator: false
+        operation: calc "@ID":"DOT"
+    }
+
+    field "FILE.NAME" {
+        label {
+            en = "File name"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "UPLOAD.REFERENCE"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "DESCRIPTION" {
+        label {
+            en = "Description"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        operation: application-field-name "DESCRIPTION"
+    }
+
+    field "ACTIVE.ACCOUNT" {
+        label {
+            en = "Account"
+        }
+
+        length: 19
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACTIVE.ACCOUNT"
+    }
+
+    field "CCY" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "TOT.VALUE.UPLOADED" {
+        label {
+            en = "Value Uploaded"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOT.VALUE.UPLOADED"
+    }
+
+    field "PAYMENT.VALUE.DATE" {
+        label {
+            en = "Value Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PAYMENT.VALUE.DATE"
+    }
+
+    field "TOTAL.AMOUNT" {
+        label {
+            en = "Total Amt"
+        }
+
+        format: Currency "CCY" negative-pattern -#
+        length: 35
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TOTAL.AMOUNT"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "STATUS"
+    }
+
+    field "ZERO.RECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no records for display\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "View"
+        }
+
+        label-field: "@ID"
+        image: "launch.gif"
+        criteria: "CURRENT.BULK.ITEM" > "@ID.LIKE"
+        criteria: "CURRENT.BULK.MASTER" > "@ID"
+        composite-screen: "AI.CORP.BULK.ITEMS.AUTH.SEE"
+    }
+
+    attributes: "UNDERLINE.HEADER.ROW"
+}

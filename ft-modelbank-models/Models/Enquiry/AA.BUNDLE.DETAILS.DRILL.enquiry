@@ -1,0 +1,487 @@
+Enquiry "AA.BUNDLE.DETAILS.DRILL" for "name:/AC_AccountOpening:ACCOUNT#" {
+    metamodelVersion: "1.30.6"
+    companies:
+    all: true
+    show-all-books: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.AA.BUILD.BUNDLE.ACCOUNT.LIST"
+    }
+
+    fixed-sort: "CATEGORY" Null
+    custom-selection {
+
+        field "BUNDLE.ARRANGEMENT" {
+            label {
+                en = "Bundle Arrangement"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Account Number"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "HEADER" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Master Arrangement - \""
+    }
+
+    field "BN.ID" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 1
+        }
+
+        operation: selection "BUNDLE.ARRANGEMENT"
+    }
+
+    field "HEADER.MS.PRD" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: constant "\"Product - \""
+    }
+
+    field "MS.PRODUCT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: field-extract "BN.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADER.CUS" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 2
+        }
+
+        operation: constant "\"Master Customer - \""
+    }
+
+    field "MS.CUS.ID" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 5
+            line: 2
+        }
+
+        operation: field-extract "BN.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "CUSTOMER" false
+    }
+
+    field "HEADER.CUS.NAME" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 2
+        }
+
+        operation: constant "\"Master Customer Name - \""
+    }
+
+    field "MS.CUS.NAME" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 2
+        }
+
+        operation: field-extract "MS.CUS.ID"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CUSTOMER" {
+        label {
+            en = "Customer Id"
+        }
+
+        length: 10
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER"
+    }
+
+    field "ARR.ID" {
+        label {
+            en = "Arrangement Id"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ARRANGEMENT.ID"
+    }
+
+    field "PRD" {
+        label {
+            en = "Product"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT" false
+        conversion: getFrom "AA.PRODUCT" "DESCRIPTION" false
+    }
+
+    field "EFF.DATE" {
+        label {
+            en = "Effective Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "OPENING.DATE"
+    }
+
+    field "ACCOUNT" {
+        label {
+            en = "Account Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "@ID"
+        conversion: extract from 1 to 1 delimited by "\\"
+    }
+
+    field "ACC.TITLE" {
+        label {
+            en = "Account Title"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: application-field-name "ACCOUNT.TITLE.1"
+    }
+
+    field "CUST NAME" {
+        label {
+            en = "Customer"
+        }
+
+        comma-separator: false
+        position {
+            column: 20
+        }
+
+        operation: field-extract "CUSTOMER"
+    }
+
+    field "CUS.SHT.NAME" {
+        label {
+            en = "Customer Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        operation: field-extract "CUSTOMER"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Currency"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CURRENCY"
+    }
+
+    field "PARENT.ACCOUNT" {
+        label {
+            en = "Parent Account"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 33
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PARENT.ACCOUNT"
+    }
+
+    field "WORK.BALANCE" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT"
+        conversion: call
+        jBC: "@ E.GET.AC.WORKING.BALANCE"
+    }
+
+    field "ZERO" {
+        comma-separator: false
+        operation: constant "\"0.00\""
+    }
+
+    field "BALANCE" {
+        label {
+            en = "Working Balance"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 35
+        }
+
+        processing-mode: Single
+        operation: if "WORK.BALANCE" Equals "NULL" process "ZERO" "WORK.BALANCE"
+    }
+
+    field "DISP.ARR.ID" {
+        label {
+            en = "Arrangement Id"
+        }
+
+        comma-separator: false
+        position {
+            column: 40
+        }
+
+        operation: field-extract "ARR.ID"
+    }
+
+    field "CO.CODE" {
+        label {
+            en = "Country"
+        }
+
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 45
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CO.CODE"
+        conversion: getFrom "COMPANY" "LOCAL.COUNTRY" false
+    }
+
+    field "DELIM" {
+        comma-separator: false
+        operation: constant "\"~\""
+    }
+
+    field "BNK.ACC" {
+        comma-separator: false
+        operation: field-extract "ACCOUNT"
+    }
+
+    field "LEVEL.INPUT" {
+        comma-separator: false
+        operation: calc "BN.ID":"DELIM":"BNK.ACC"
+    }
+
+    field "LEVEL" {
+        label {
+            en = "Level"
+        }
+
+        comma-separator: false
+        position {
+            column: 50
+        }
+
+        processing-mode: Single
+        operation: field-extract "LEVEL.INPUT"
+        conversion: call
+        jBC: "@ E.AA.CONV.GET.BUNDLE.HIERARCHY.LEVEL"
+    }
+
+    field "LIMIT.REF" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "LIMIT.REF"
+    }
+
+    field "DIP.LIMIT" {
+        label {
+            en = "Limit Reference"
+        }
+
+        comma-separator: false
+        position {
+            column: 55
+        }
+
+        operation: field-extract "LIMIT.REF"
+        conversion: extract from 1 to 1 delimited by "."
+    }
+
+    field "LIMIT.SERIAL" {
+        label {
+            en = "Limit Serial"
+        }
+
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        operation: field-extract "LIMIT.REF"
+        conversion: extract from 2 to 2 delimited by "."
+    }
+
+    field "SEC.LIMIT" {
+        label {
+            en = "Internal Credit Facility"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 65
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECONDARY.LIMIT.AMT"
+    }
+
+    field "CR.CHK.TXN.TYPE" {
+        label {
+            en = "Credit Chk Txn Type"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.CHK.TXN.TYPE"
+    }
+
+    field "CR.CHK.TXN.COND" {
+        label {
+            en = "Credit Chk Txn Condition"
+        }
+
+        length: 3
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 75
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CREDIT.CHK.CONDITION"
+    }
+
+    attributes: "ALLDATA"
+}

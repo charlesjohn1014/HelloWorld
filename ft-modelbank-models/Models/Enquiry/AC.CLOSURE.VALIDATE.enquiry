@@ -1,0 +1,117 @@
+Enquiry "AC.CLOSURE.VALIDATE" for "name:/AA_ModelBank:NOFILE.AC.CLOSURE.VALIDATE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Account Closure Validation"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "XID" {
+    }
+
+    custom-selection {
+
+        field "ARRANGEMENT.ID" {
+            label {
+                en = "ARR.ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ARR.ID" {
+        comma-separator: false
+        processing-mode: Single
+        operation: selection "ARRANGEMENT.ID"
+    }
+
+    field "AC.NO" {
+        comma-separator: false
+        operation: field-extract "ARR.ID"
+        conversion: getFrom "AA.ARRANGEMENT" "LINKED.APPL.ID" false
+        conversion: value 1
+    }
+
+    field "ERRORS" {
+        length: 50
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+    }
+
+    field "BC.MSG" {
+        comma-separator: false
+        operation: constant "\"E: CANNOT CLOSE - ENTRY IN AC.BLOCK.CLOSURE\""
+    }
+
+    field "BC.REP.MSG" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"One or More Entries in AC.BLOCK.CLOSURE\""
+    }
+
+    field "DISP.ERRORS" {
+        label {
+            en = "Validation Errors"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "ERRORS" Equals "BC.MSG" process "BC.REP.MSG" "ERRORS"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "E.NO" {
+        comma-separator: false
+        operation: constant "\"ENQ AA.NO.VALIDATIONS\""
+    }
+
+    field "IMP.IMG" {
+        comma-separator: false
+        operation: constant "\"ENQ AC.BLOCK.CLOSURE\""
+    }
+
+    field "DISP.IMP.IMG" {
+        comma-separator: false
+        operation: if "ERRORS" Equals "BC.MSG" process "IMP.IMG" "E.NO"
+    }
+
+    field "ZEROREC" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        no-header: true
+        operation: constant "\"No Errors Encountered\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Details"
+        }
+
+        label-field: "DISP.ERRORS"
+        image: "notify.gif"
+        criteria: "CURRENT.AC.CLOSURE" > "AC.NO"
+        from-field: "DISP.IMP.IMG"
+    }
+
+    attributes: "NO.BREADCRUMBS" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR"
+}

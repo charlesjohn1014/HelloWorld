@@ -1,0 +1,742 @@
+Enquiry "DPC.TXNS" for "name:/PM_Reports:NOFILE.PM.DPC#" {
+    metamodelVersion: "1.30.6" full-description {
+        en = "Transaction Details"
+    }
+
+    description {
+        en = "Transaction Details"
+    }
+
+    no-selection: true
+    start-line: 5
+    end-line: 98
+    fixed-sort: "DATE" Null
+    fixed-sort: "POSN.CLASS" Null
+    custom-selection {
+
+        field "ID2" {
+        }
+
+        None
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "HEADER" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 0
+        }
+
+        operation: constant "\"Transaction Details\""
+    }
+
+    field "HEADER.1" {
+        display-type: "CLASS-ENQ.ID.LABEL"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Currency\""
+    }
+
+    field "AC" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"AC\""
+    }
+
+    field "TXN.INIT" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"SETUP\""
+        conversion: call
+        jBC: "@ E.PM.GET.TXN.DTLS"
+    }
+
+    field "CONV.CCY" {
+        label {
+            en = "CCY"
+        }
+
+        comments: "Currency of top level enq" break-condition {
+            break: Once
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        display-section: Header
+        processing-mode: Multi
+        operation: application-field-name "TXN.TOT"
+    }
+
+    field "FIRST.CCY" {
+        label {
+            en = "Currency"
+        }
+
+        display-type: "CLASS-ENQ.H.ID" break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: field-extract "CONV.CCY"
+    }
+
+    field "DISP.CCY" {
+        label {
+            en = "Disp CCY"
+        }
+
+        comma-separator: false
+        operation: field-extract "CONV.CCY"
+    }
+
+    field "TXN.DTLS" {
+        comments:
+        "Call this routine to consolidate al l DPC records withthe same date. T x n details will be added in fields 1 0 to 12 (txn id, class and amoun t)"
+        format: User
+        length: 34
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: call
+        jBC: "@ E.PM.GET.TXN.DTLS"
+    }
+
+    field "PREVIOUS.DATE" {
+        label {
+            en = "Previous Date"
+        }
+
+        comma-separator: false
+        operation: field-extract "VALUE.DATE"
+    }
+
+    field "VALUE.DATE" {
+        label {
+            en = "Value"
+        }
+
+        format: User
+        length: 34
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+        conversion: extract from 6 to 1 delimited by "."
+    }
+
+    field "VALDTE" {
+        label {
+            en = "F Value Date"
+        }
+
+        comma-separator: false
+        operation: field-extract "VALUE.DATE"
+    }
+
+    field "ONE" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"1\""
+    }
+
+    field "OPEN" {
+        label {
+            en = "Open"
+        }
+
+        format: Translate
+        comma-separator: false
+        operation: constant "\"OPENING\""
+    }
+
+    field "FMT.DATE" {
+        label {
+            en = "Fmt Date"
+        }
+
+        comma-separator: false
+        operation: if "VALUE.DATE" Equals "ONE" process "OPEN" "VALDTE"
+    }
+
+    field "DATE.DECIS" {
+        label {
+            en = "Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: if "PREVIOUS.DATE" Equals "VALUE.DATE" process "NULL" "FMT.DATE"
+        conversion: julian
+        conversion: oconv "D2E/"
+    }
+
+    field "B.DATE" {
+        label {
+            en = "B Date"
+        }
+
+        comma-separator: false
+        operation: break-change "VALUE.DATE"
+    }
+
+    field "TXN.CLASS" {
+        label {
+            en = "Txn Class"
+        }
+
+        length: 3
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "POS.CLASS"
+    }
+
+    field "TXN.CLASS.DESC" {
+        label {
+            en = "Txn Class"
+        }
+
+        comments: "Position class desc to be used for Ac type transaction instead of the txn ref."
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TXN.CLASS"
+        conversion: extract from 1 to 1 delimited by "-"
+        conversion: getFrom "PM.POSN.CLASS" "SHORT.NAME" false
+    }
+
+    field "TXN.REF" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TXN.ID"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "CHK.TXN.REF" {
+        label {
+            en = "Check Txn Ref"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "TXN.REF":"CURRENCY"
+    }
+
+    field "B.TXN.REF" {
+        label {
+            en = "B Txn Ref"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: break-change "CHK.TXN.REF"
+    }
+
+    field "SYSTEM" {
+        label {
+            en = "System"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TXN.REF"
+        conversion: extract from 1 to 2
+    }
+
+    field "DISP.TXN.REF" {
+        label {
+            en = "Disp Txn Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 25
+        }
+
+        processing-mode: Multi
+        operation: if "SYSTEM" Equals "AC" process "TXN.CLASS.DESC" "TXN.REF"
+    }
+
+    field "CURRENCY" {
+        label {
+            en = "Ccy"
+        }
+
+        format: User
+        length: 3
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 43
+        }
+
+        processing-mode: Multi
+        operation: i-desc "CCY"
+    }
+
+    field "TRAN.AMT" {
+        label {
+            en = "Tran Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.AMT"
+    }
+
+    field "DISP.TRAN.AMT" {
+        label {
+            en = "Txn Amount"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Multi
+        operation: field-extract "TRAN.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "DISP.TRAN.AMT1" {
+        label {
+            en = "Txn Amount"
+        }
+
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 48
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DISP.TRAN.AMT"
+    }
+
+    field "CONV.TRAN.AMT" {
+        label {
+            en = "Conv Tran Amount"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.FAMT"
+    }
+
+    field "TXN.TOTAL.DISP" {
+        label {
+            en = "Txn Total"
+        }
+
+        comments: "UXP_BROWSER.IGNORE"
+        format: Currency "CURRENCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "TOT.TRAN.AMT" {
+        label {
+            en = "Txn Total"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.TXN.REF"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        processing-mode: Multi
+        operation: total "TRAN.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "DISP.TOT.TRAN.AMT1" {
+        label {
+            en = "Txn Total"
+        }
+
+        comments: "UXP_BROWSER.MOVE_FIRST_MV_TO_END"
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.TXN.REF"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: field-extract "TOT.TRAN.AMT"
+    }
+
+    field "TOT.CONV.AMT" {
+        break-condition {
+            field: "B.TXN.REF"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: total "CONV.TRAN.AMT"
+    }
+
+    field "DAILY.TOTAL" {
+        break-condition {
+            field: "B.DATE"
+        }
+
+        comma-separator: false
+        processing-mode: Multi
+        operation: total "CONV.TRAN.AMT"
+    }
+
+    field "TOT.DLY.AMT" {
+        break-condition {
+            break: End
+        }
+
+        comma-separator: false
+        operation: total "CONV.TRAN.AMT"
+    }
+
+    field "TOT.TXN.AMT" {
+        label {
+            en = "Total Txn Amt"
+        }
+
+        comments: "UXP_BROWSER.IGNORE"
+        display-type: "CLASS-ENQ.COLUMN.LABEL"
+        comma-separator: false
+        position {
+            column: 92
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "DISP.TOT.TRAN.AMT" {
+        label {
+            en = "Total Txn Amt"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.TXN.REF"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: true
+        operation: field-extract "TOT.TRAN.AMT"
+    }
+
+    field "DISP.TOT.TRAN.AMT2" {
+        label {
+            en = "Total Txn Amt"
+        }
+
+        comments: "UXP_BROWSER.MOVE_FIRST_MV_TO_END"
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.TXN.REF"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 92
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DISP.TOT.TRAN.AMT"
+    }
+
+    field "TOTAL.CONV.AMT" {
+        label {
+            en = "Total Conv Amt"
+        }
+
+        comments: "UXP_BROWSER.IGNORE"
+        display-type: "CLASS-ENQ.COLUMN.LABEL"
+        comma-separator: false
+        position {
+            column: 125
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "DISP.TOT.CONV.AMT" {
+        label {
+            en = "Total Conv Amt"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.TXN.REF"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        operation: field-extract "TOT.CONV.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "DISP.TOT.CONV.AMT1" {
+        label {
+            en = "Total Conv Amt"
+        }
+
+        comments: "UXP_BROWSER.MOVE_FIRST_MV_TO_END"
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.TXN.REF"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 125
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DISP.TOT.CONV.AMT"
+    }
+
+    field "DAILY.TOT" {
+        label {
+            en = "Daily Total"
+        }
+
+        comments: "UXP_BROWSER.IGNORE"
+        comma-separator: false
+        position {
+            column: 147
+        }
+
+        operation: constant "\" \""
+    }
+
+    field "DISP.DAILY.TOTAL" {
+        label {
+            en = "Daily Total"
+        }
+
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.DATE"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "DAILY.TOTAL"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "DISP.DAILY.TOTAL1" {
+        label {
+            en = "Daily Total"
+        }
+
+        comments: "UXP_BROWSER.MOVE_FIRST_MV_TO_END"
+        display-type: "CLASS-AMNUM"
+        format: Currency "CURRENCY" negative-pattern -# break-condition {
+            field: "B.DATE"
+        }
+
+        length: 20
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 147
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DISP.DAILY.TOTAL"
+    }
+
+    field "DISP.TOT.DLY.AMT" {
+        label {
+            en = "Total Daily Amt"
+        }
+
+        break-condition {
+            break: End
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        operation: field-extract "TOT.DLY.AMT"
+        conversion: call
+        jBC: "@ E.PM.FMT.UNIT"
+    }
+
+    field "TNRDC" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TXN.REF"
+        conversion: extract from 1 to 17
+    }
+
+    field "DC" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"DC\""
+    }
+
+    field "NEXT.ENQ2" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "TXN.ID"
+        conversion: extract from 1 to 1 delimited by "*"
+        conversion: call
+        jBC: "@ E.PM.GET.APPL"
+    }
+
+    field "TNR" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SYSTEM" Equals "DC" process "TNRDC" "TXN.REF"
+        conversion: convert {
+        }
+
+    }
+
+    field "ENQ1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"DPC.DRILL\""
+    }
+
+    field "SPACE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\" \""
+    }
+
+    field "ENQ2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "NEXT.ENQ2":"SPACE":"S":"SPACE":"TNR"
+    }
+
+    field "ENQ3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "TXN.REF"
+        conversion: call
+        jBC: "@ E.PM.CONV.DRILL.DOWN"
+    }
+
+    field "AA.VER" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"AAA,AA S \""
+    }
+
+    field "ACTIVITY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: constant "\"-VIEW-ARRANGEMENT\""
+    }
+
+    field "CON.DRILL" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "AA.VER":"TXN.REF":"ACTIVITY"
+    }
+
+    field "NEXT.ENQ3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TXN.REF" Matches "A..." process "ENQ1" "ENQ2"
+    }
+
+    field "NEXT.ENQ4" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "TXN.REF" Matches "AA..." process "CON.DRILL" "NEXT.ENQ3"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Transaction Details"
+        }
+
+        label-field: "TXN.REF"
+        image: "view.gif"
+        from-field: "NEXT.ENQ4"
+    }
+
+}

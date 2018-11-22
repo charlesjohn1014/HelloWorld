@@ -1,0 +1,510 @@
+Enquiry "CUST.BASIC.SCV.PVT" for "name:/ST_Customer:CUSTOMER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Client Basic Details"
+    }
+
+    no-selection: true
+    start-line: 6
+    end-line: 99 fixed-selection "CUSTOMER.CODE" {
+        Equals "!CURRENT.CUSTOMER"
+    }
+
+    custom-selection {
+
+        field "CUSTOMER.CODE" {
+            label {
+                en = "Client"
+            }
+
+        }
+
+        None
+    }
+
+    field "LAB.CUSTOMER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: constant "\"Client\""
+    }
+
+    field "CUSTOMER.NUM" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.CODE"
+    }
+
+    field "L.FULL.NAME" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+        }
+
+        operation: constant "\"Full Name\""
+    }
+
+    field "FULL.NAME" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 1
+        }
+
+        operation: application-field-name "NAME.1"
+    }
+
+    field "IMAGE" {
+        display-type: "IMAGE"
+        comma-separator: false
+        operation: constant "\"../plaf/images/default/restriction.gif\""
+    }
+
+    field "POST" {
+        length: 2
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "POSTING.RESTRICT"
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DISPLAY" {
+        display-type: "IMAGE"
+        comma-separator: false
+        position {
+            column: 100
+            line: + 1
+        }
+
+        operation: if "POST" Equals "NULL" process "NULL" "IMAGE"
+    }
+
+    field "L.GENDER" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: constant "\"Gender\""
+    }
+
+    field "GENDER" {
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "GENDER"
+    }
+
+    field "LAB.DEPENDENTS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 2
+        }
+
+        operation: constant "\"No of Dependents\""
+    }
+
+    field "DEPENDENTS" {
+        length: 2
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 2
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NO.OF.DEPENDENTS"
+    }
+
+    field "L.DOB" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 3
+        }
+
+        operation: constant "\"Date of Birth\""
+    }
+
+    field "DOB" {
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "DATE.OF.BIRTH"
+    }
+
+    field "L.AGE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 4
+        }
+
+        operation: constant "\"Age\""
+    }
+
+    field "TOD" {
+        comma-separator: false
+        operation: today
+        conversion: extract from 1 to 4
+    }
+
+    field "TMTH" {
+        comma-separator: false
+        operation: today
+        conversion: extract from 5 to 2
+    }
+
+    field "DTOB" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.OF.BIRTH"
+        conversion: extract from 1 to 4
+    }
+
+    field "DMTH" {
+        length: 11
+        alignment: Right
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "DATE.OF.BIRTH"
+        conversion: extract from 5 to 2
+    }
+
+    field "CAGE1" {
+        comma-separator: false
+        operation: calc "TOD" - "DTOB"
+    }
+
+    field "CAGE2" {
+        comma-separator: false
+        operation: calc "CAGE1" - "1"
+    }
+
+    field "CAGE" {
+        comma-separator: false
+        operation: if "TMTH" GreaterOrEquals "DMTH" process "CAGE1" "CAGE2"
+    }
+
+    field "YR" {
+        comma-separator: false
+        operation: constant "\" Years\""
+    }
+
+    field "AAGE" {
+        comma-separator: false
+        operation: calc "CAGE":"YR"
+    }
+
+    field "AAGE.1" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 4
+        }
+
+        operation: if "DTOB" Equals "NULL" process "\"\"" "AAGE"
+    }
+
+    field "TARGET" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 40
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: constant "\"Target\""
+    }
+
+    field "L.MAR.STATUS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: constant "\"Maritial Status\""
+    }
+
+    field "STATUS" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 3
+        }
+
+        processing-mode: Single
+        operation: application-field-name "MARITAL.STATUS"
+    }
+
+    field "TARGET.02" {
+        label {
+            en = "Target"
+        }
+
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TARGET"
+        conversion: getFrom "TARGET" "DESCRIPTION" false
+    }
+
+    field "RESIDENCE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: constant "\"Residence\""
+    }
+
+    field "RESIDENCE.02" {
+        label {
+            en = "Residence"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RESIDENCE"
+    }
+
+    field "NATIONALITY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: constant "\"Nationality\""
+    }
+
+    field "NATIONALITY.02" {
+        label {
+            en = "Nationality"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 5
+        }
+
+        processing-mode: Single
+        operation: application-field-name "NATIONALITY"
+    }
+
+    field "L.SECTOR" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 6
+        }
+
+        processing-mode: Single
+        operation: constant "\"Sector\""
+    }
+
+    field "SECTOR" {
+        format: User
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SECTOR"
+        conversion: getFrom "SECTOR" "SHORT.NAME" false
+    }
+
+    field "L.CUST.STATUS" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 6
+        }
+
+        processing-mode: Single
+        operation: constant "\"Client Status\""
+    }
+
+    field "CUS.STATUS" {
+        format: User
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.STATUS"
+        conversion: getFrom "CUSTOMER.STATUS" "DESCRIPTION" false
+    }
+
+    field "L.CUSTOMER.SINCE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 1
+            line: + 7
+        }
+
+        processing-mode: Single
+        operation: constant "\"Client Since\""
+    }
+
+    field "CUST.SINCE" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: Date
+        length: 11
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 20
+            line: + 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CUSTOMER.SINCE"
+    }
+
+    field "L.ACCT.OFF" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 40
+            line: + 7
+        }
+
+        processing-mode: Single
+        operation: constant "\"Account Officer\""
+    }
+
+    field "ACCOUNT.OFFICER" {
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+            line: + 7
+        }
+
+        processing-mode: Single
+        operation: application-field-name "ACCOUNT.OFFICER"
+        conversion: getFrom "DEPT.ACCT.OFFICER" "NAME" false
+    }
+
+    drilldown "1" {
+        description {
+            en = "Amend Basic Details"
+        }
+
+        label-field: "FULL.NAME"
+        image: "edit.gif" parameters {
+            function:  Input
+            field: "CUSTOMER.NUM"
+        }
+
+        screen: "CUSTOMER,BASIC.PVT.SCV"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Posting Restriction"
+        }
+
+        label-field: "FULL.NAME"
+        image: "action.gif" parameters {
+            function:  Input
+            field: "CUSTOMER.NUM"
+        }
+
+        screen: "CUSTOMER,POST.SCV"
+    }
+
+    attributes: "NO.COLUMN.HEADER" ; "NO.BREADCRUMBS" ; "NO.TOOLBAR"
+}

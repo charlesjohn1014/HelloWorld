@@ -1,0 +1,166 @@
+Enquiry "MESSAGE.SENT.PVT" for "name:/DE_Ticklers:EB.TICKLER#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Internal Message Sent"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 1
+    end-line: 2 fixed-selection "SENDER.ID" {
+        Equals "!USER"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "APPLICATION" {
+            label {
+                en = "Application"
+            }
+
+        }
+
+        AND
+
+        field "TICKLER.DATE" {
+            label {
+                en = "Tickler Date"
+            }
+
+        }
+
+        AND
+
+        field "TO.USER.ID" {
+            label {
+                en = "To User Id"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "TO.USER.ID" {
+        label {
+            en = "To"
+        }
+
+        length: 40
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TO.USER.ID"
+        conversion: getFrom "USER" "USER.NAME" false
+    }
+
+    field "TICKLER.TXT" {
+        label {
+            en = "Message"
+        }
+
+        length: 75
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TICKLER.TXT"
+    }
+
+    field "TICKLER.DATE" {
+        label {
+            en = "Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "TICKLER.DATE"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Internal Messages sent\""
+    }
+
+    tool AM.ENQ.DETAIL {
+        label {
+            en = "New Task"
+        }
+
+        command: "docommand(\"EB.TICKLER,VIEW I F3\")"
+    }
+
+    drilldown "1" {
+        description {
+            en = "View Message"
+        }
+
+        label-field: "TO.USER.ID"
+        image: "view.gif" parameters {
+            function:  See
+            field: "@ID"
+        }
+
+        screen: "EB.TICKLER,VIEW.PVT"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "TO.USER.ID"
+        image: "trashcan.gif" parameters {
+            function:  Reverse
+            field: "@ID"
+        }
+
+        screen: "EB.TICKLER,VIEW.PVT"
+    }
+
+    attributes: "NO.TOOLBAR"
+}

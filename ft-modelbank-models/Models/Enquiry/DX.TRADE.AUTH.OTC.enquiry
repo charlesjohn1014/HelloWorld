@@ -1,0 +1,321 @@
+Enquiry "DX.TRADE.AUTH.OTC" for "name:/DX_Trade:DX.TRADE$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised FO Trades"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99 fixed-selection "RECORD.STATUS" {
+        Matches "...NAU..."
+    }
+
+    fixed-selection "AS.PRINCIPAL" {
+        Equals "\"\""
+    }
+
+    fixed-selection "EXCHANGE.CODE" {
+        Equals "\'600\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+        }
+
+        AND
+
+        field "CONTRACT.CODE" {
+            label {
+                en = "Contract Code"
+            }
+
+        }
+
+        AND
+
+        field "TRADE.TYPE" {
+            label {
+                en = "Trade Type"
+            }
+
+        }
+
+        None
+    }
+
+    field "@ID" {
+        label {
+            en = "Txn Ref"
+        }
+
+        length: 17
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: application-field-name "@ID"
+    }
+
+    field "IHDR" {
+        display-type: "CLASS-ENQ.H.TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"OTC Trades awaiting authorisation\""
+    }
+
+    field "PRI.CUST" {
+        label {
+            en = "Pri Customer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 2
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.CUST.NO"
+    }
+
+    field "PRI.NAME" {
+        label {
+            en = "Pri Customer Name"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        hidden: true
+        operation: field-extract "PRI.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "SEC.CUST" {
+        label {
+            en = "Sec Customer"
+        }
+
+        length: 10
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: application-field-name "SEC.CUST.NO"
+    }
+
+    field "SEC.NAME" {
+        label {
+            en = "Sec Customer Name"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        hidden: true
+        operation: field-extract "SEC.CUST"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "CONTRACT" {
+        label {
+            en = "Contract Code"
+        }
+
+        format: Date
+        length: 12
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        processing-mode: Single
+        operation: application-field-name "CONTRACT.CODE"
+    }
+
+    field "CONT.NAME" {
+        label {
+            en = "Contract Name"
+        }
+
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 7
+        }
+
+        hidden: true
+        operation: field-extract "CONTRACT"
+        conversion: getFrom "DX.CONTRACT.MASTER" "SHORT.NAME" false
+    }
+
+    field "TRADE.TYPE" {
+        label {
+            en = "Type"
+        }
+
+        length: 8
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.TYPE"
+    }
+
+    field "PRI.LOTS" {
+        label {
+            en = "Pri Lots"
+        }
+
+        length: 19
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Multi
+        operation: application-field-name "PRI.LOTS"
+    }
+
+    field "PRI.BUY.SELL" {
+        label {
+            en = "Buy/Sell"
+        }
+
+        length: 4
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        processing-mode: Single
+        operation: application-field-name "PRI.BUY.SELL"
+    }
+
+    field "TRADE.DATE" {
+        label {
+            en = "Trade Date"
+        }
+
+        format: Date
+        length: 11
+        alignment: Right
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        processing-mode: Single
+        operation: application-field-name "TRADE.DATE"
+    }
+
+    field "PARENT" {
+        label {
+            en = "Parent Ref"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 14
+        }
+
+        processing-mode: Single
+        hidden: true
+        operation: application-field-name "PARENT.REF"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        hidden: true
+        operation: application-field-name "INPUTTER"
+        conversion: extract from 2 to 0 delimited by "_"
+    }
+
+    field "RECORD.STATUS" {
+        label {
+            en = "Record Status"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        hidden: true
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"There are no unauthorised trades\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        screen: "DX.TRADE,AUTH"
+    }
+
+}

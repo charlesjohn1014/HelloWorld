@@ -1,0 +1,226 @@
+Enquiry "TF.LCAMD.REIMNAU" for "name:/LC_Contract:LC.AMENDMENTS$NAU#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Unauthorised LC Amendments"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 99
+    build-routines {
+        jBC: "E.MB.BUILD.LC.AMD.REIM"
+    }
+
+    fixed-selection "RECORD.STATUS" {
+        Equals "\'INAU\'"
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            label {
+                en = "Transaction Ref"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "HDR" {
+        display-type: "CLASS-TITLE"
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+            line: 1
+        }
+
+        operation: constant "\"Unauthorised LC Amendments\""
+    }
+
+    field "@ID" {
+        label {
+            en = "Transaction Ref"
+        }
+
+        length: 16
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        operation: application-field-name "@ID"
+    }
+
+    field "B.NAME1" {
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "BENEFICIARY"
+        conversion: value 1 1
+    }
+
+    field "B.NAME2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "BENEFICIARY"
+        conversion: getFrom "CUSTOMER" "SHORT.NAME" false
+    }
+
+    field "NULL.1" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "BENEF.NAME" {
+        label {
+            en = "Beneficiary"
+        }
+
+        length: 25
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: if "B.NAME2" Equals "NULL.1" process "B.NAME1" "B.NAME2"
+    }
+
+    field "CCY1" {
+        label {
+            en = "Ccy"
+        }
+
+        length: 4
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: application-field-name "LC.CURRENCY"
+    }
+
+    field "AMOUNT" {
+        label {
+            en = "Amount"
+        }
+
+        format: Currency "CCY1" negative-pattern -#
+        length: 19
+        alignment: Right
+        comma-separator: true
+        position {
+            column: 7
+        }
+
+        operation: application-field-name "LC.AMOUNT"
+    }
+
+    field "STATUS" {
+        label {
+            en = "Status"
+        }
+
+        length: 5
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 8
+        }
+
+        processing-mode: Single
+        operation: application-field-name "RECORD.STATUS"
+    }
+
+    field "INPUTTER" {
+        label {
+            en = "Inputter"
+        }
+
+        length: 35
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        processing-mode: Single
+        operation: application-field-name "INPUTTER"
+    }
+
+    field "ZERONORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Task Pending\""
+    }
+
+    field "MSG.TYPE" {
+        length: 15
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "INWARD.MSG.TYPE"
+    }
+
+    field "747" {
+        comma-separator: false
+        operation: constant "\"MT747\""
+    }
+
+    field "747.VERSION" {
+        comma-separator: false
+        operation: constant "\"LC.AMENDMENTS,IN.LC.REIM\""
+    }
+
+    field "VERSION" {
+        comma-separator: false
+        operation: constant "\"LC.AMENDMENTS,AUTH\""
+    }
+
+    field "VERSION.DRILL" {
+        comma-separator: false
+        operation: if "MSG.TYPE" Equals "747" process "747.VERSION" "VERSION"
+    }
+
+    drilldown "1" {
+        description {
+            en = "Authorise"
+        }
+
+        label-field: "@ID"
+        image: "txnauthorise.gif" parameters {
+            function:  Authorise
+            field: "@ID"
+        }
+
+        from-field: "VERSION.DRILL"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Delete"
+        }
+
+        label-field: "@ID"
+        image: "txndelete.gif" parameters {
+            function:  Delete
+            field: "@ID"
+        }
+
+        from-field: "VERSION.DRILL"
+    }
+
+}

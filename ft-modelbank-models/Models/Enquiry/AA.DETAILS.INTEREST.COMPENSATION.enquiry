@@ -1,0 +1,343 @@
+Enquiry "AA.DETAILS.INTEREST.COMPENSATION" for "name:/AB_ModelBank:NOFILE.AA.INTEREST.COMPENSATION#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Interest Compensation Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19 fixed-selection "RETURN.ARRAY" {
+    }
+
+    custom-selection {
+
+        field "@ID" {
+            mandatory: true
+            label {
+                en = "Arrangement ID"
+            }
+
+            operands: Equals
+        }
+
+        None
+    }
+
+    field "ARRANGEMENT" {
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        operation: selection "@ID"
+    }
+
+    field "ARR.PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "FILE.VERSION" {
+        comma-separator: false
+        operation: application-field-name "!FILE.VERSION"
+    }
+
+    field "VARIATION" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "VARIATION" false
+    }
+
+    field "EB.LOOKUP" {
+        comma-separator: false
+        operation: constant "\"AA.PRODUCT.VARIATION*\""
+    }
+
+    field "C.LOOKUP.DES" {
+        display-type: "CLASS-BOLD.ITALIC"
+        comma-separator: false
+        operation: calc "EB.LOOKUP":"VARIATION"
+        conversion: getFrom "EB.LOOKUP" "DESCRIPTION" false
+    }
+
+    field "PROP.DES" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+            line: 1
+        }
+
+        operation: field-extract "ARR.PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "DASH" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        operation: constant "\" - \""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "DASH.DES" {
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 12
+            line: 1
+        }
+
+        operation: if "VARIATION" Equals "NULL" process "NULL" "DASH"
+    }
+
+    field "VAR.DESC" {
+        display-type: "CLASS-BOLD.ITALIC"
+        length: 100
+        alignment: Left
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 15
+            line: 1
+        }
+
+        operation: if "VARIATION" Equals "NULL" process "NULL" "C.LOOKUP.DES"
+    }
+
+    field "CH.PRODUCT" {
+        display-type: "CLASS-BOLD"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Product Group\""
+    }
+
+    field "CH.PROPERTY" {
+        display-type: "CLASS-BOLD"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Property\""
+    }
+
+    field "CH.ACCRUAL" {
+        display-type: "CLASS-BOLD"
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Accruals\""
+    }
+
+    field "L.RECIPIENT" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Recipient\""
+    }
+
+    field "RECIPIENT.PRODUCT" {
+        comma-separator: false
+        processing-mode: Single
+        operation: field-number 0
+        conversion: extract from 2 to 1 delimited by "*"
+    }
+
+    field "L.RECIPIENT.PRODUCT" {
+        label {
+            en = "Recipient"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: field-extract "RECIPIENT.PRODUCT"
+        conversion: getFrom "AA.PRODUCT.GROUP" "DESCRIPTION" false
+    }
+
+    field "RECIPIENT.PROPERTY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 3 to 1 delimited by "*"
+    }
+
+    field "L.RECIPIENT.PROPERTY" {
+        label {
+            en = "Recipient Property"
+        }
+
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+        }
+
+        processing-mode: Multi
+        operation: field-extract "RECIPIENT.PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "L.DONOR" {
+        format: Translate
+        comma-separator: false
+        operation: constant "\"Donor\""
+    }
+
+    field "DONOR.PRODUCT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 4 to 1 delimited by "*"
+    }
+
+    field "L.DONOR.PRODUCT" {
+        label {
+            en = "Donor(s)"
+        }
+
+        display-type: "CLASS-ENQ.DATA.ID"
+        format: User
+        length: 30
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 60
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DONOR.PRODUCT"
+        conversion: getFrom "AA.PRODUCT.GROUP" "DESCRIPTION" false
+    }
+
+    field "DONOR.PROPERTY" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 5 to 1 delimited by "*"
+    }
+
+    field "L.DONOR.PROPERTY" {
+        label {
+            en = "Donor Property"
+        }
+
+        format: User
+        length: 15
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 70
+        }
+
+        processing-mode: Multi
+        operation: field-extract "DONOR.PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "DONOR.ACCRUAL" {
+        label {
+            en = "Donor Accrual"
+        }
+
+        display-type: "CLASS-ITALIC"
+        length: 20
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 90
+        }
+
+        processing-mode: Multi
+        operation: field-number 0
+        conversion: extract from 6 to 1 delimited by "*"
+        conversion: oconv "MCT"
+    }
+
+    field "NORECS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        operation: constant "\"No Interest Compensation to display\""
+    }
+
+    field "VERSION" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ACT.VALUE" {
+        comma-separator: false
+        operation: constant "\"-UPDATE-\""
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"ACT.VALUE":"ARR.PROPERTY"
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: field-extract "VERSION"
+    }
+
+    field "ARRANGEMENT.ID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+    }
+
+    field "REFRESH.INT.COMP" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.INTEREST.COMPENSATION\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refresh"
+        }
+
+        label-field: "L.RECIPIENT.PRODUCT"
+        image: "refresh.gif"
+        criteria: "@ID" Equals "ARRANGEMENT.ID"
+        from-field: "REFRESH.INT.COMP"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "L.RECIPIENT.PRODUCT"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "DRILL.VER"
+    }
+
+    attributes: "SINGLE.BACKGROUND.COLOUR" ; "NO.BREADCRUMBS" ; "NO.TOOLBAR"
+}

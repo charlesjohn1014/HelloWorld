@@ -1,0 +1,485 @@
+Enquiry "AA.DETAILS.PAYMENT.SCHEDULE" for "name:/AA_PaymentSchedule:AA.ARR.PAYMENT.SCHEDULE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Payment Schedule Details"
+    }
+
+    zero-records-display: true
+    no-selection: true
+    start-line: 4
+    end-line: 19
+    build-routines {
+        jBC: "E.AA.BUILD.ARR.COND"
+    }
+
+    field "ARRANGEMENT" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.1"
+    }
+
+    field "ARR.PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Single
+        operation: application-field-name "ID.COMP.2"
+    }
+
+    field "D.ARR.PROPERTY" {
+        display-type: "CLASS-ENQ.H.DATA.LABEL"
+        format: User
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 130
+        operation: field-extract "ARR.PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "CURRENCY" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "CURRENCY" false
+    }
+
+    field "PAYMENT.TYPE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.TYPE"
+    }
+
+    field "CALC.TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PAYMENT.TYPE"
+        conversion: getFrom "AA.PAYMENT.TYPE" "CALC.TYPE" false
+    }
+
+    field "C.ACTUAL" {
+        break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"ACTUAL\""
+    }
+
+    field "D.PAYMENT.TYPE1" {
+        format: User
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "PAYMENT.TYPE"
+        conversion: getFrom "AA.PAYMENT.TYPE" "DESCRIPTION" false
+    }
+
+    field "D.PAYMENT.TYPE" {
+        display-type: "CLASS-ENQ.DATA.LABEL"
+        comma-separator: false
+        position {
+            column: 10
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 130
+        processing-mode: Multi
+        operation: if "PAYMENT.TYPE" NotEquals "\"\"" process "D.PAYMENT.TYPE1" "\"\""
+    }
+
+    field "PROPERTY" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PROPERTY"
+    }
+
+    field "ACTUAL.AMT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACTUAL.AMT"
+    }
+
+    field "CALC.AMOUNT" {
+        format: Currency "CURRENCY" negative-pattern -#
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "CALC.AMOUNT"
+    }
+
+    field "AMOUNT" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "ACTUAL.AMT" NotEquals "\"\"" process "ACTUAL.AMT" "CALC.AMOUNT"
+    }
+
+    field "PERCENTAGE" {
+        length: 12
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PERCENTAGE"
+    }
+
+    field "C.PERC" {
+        format: Translate break-condition {
+            break: Once
+        }
+
+        comma-separator: false
+        operation: constant "\"% \""
+    }
+
+    field "D.PERCENTAGE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "PERCENTAGE":"C.PERC"
+    }
+
+    field "D.PAYMENT1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "CALC.TYPE" Equals "C.ACTUAL" process "ACTUAL.AMT" "AMOUNT"
+    }
+
+    field "D.PAYMENT" {
+        comma-separator: false
+        position {
+            column: 20
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 70
+        processing-mode: Multi
+        operation: if "PERCENTAGE" NotEquals "\"\"" process "D.PERCENTAGE" "D.PAYMENT1"
+    }
+
+    field "PAYMENT.METHOD" {
+        format: Translate
+        alignment: Left
+        comma-separator: false
+        position {
+            column: 30
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 65
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.METHOD"
+        conversion: replace {
+            oldData: "DUE"
+            newData: "Due"
+        }
+
+        conversion: replace {
+            oldData: "CAPITALISE"
+            newData: "Capitalise"
+        }
+
+        conversion: replace {
+            oldData: "PAY"
+            newData: "Payment"
+        }
+
+    }
+
+    field "PAYMENT.FREQ" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "PAYMENT.FREQ"
+        conversion: call
+        jBC: "@ E.AA.GET.RECURRENCE.MASK"
+        conversion: replace {
+            oldData: "Monthly on the last day of the month"
+            newData: "Monthly on the last day"
+        }
+
+    }
+
+    field "C.DATE" {
+        comma-separator: false
+        operation: constant "\"DATE\""
+    }
+
+    field "C.CDATE" {
+        comma-separator: false
+        operation: constant "\"CONTROL.DATE\""
+    }
+
+    field "C.RELATIVE" {
+        comma-separator: false
+        operation: constant "\"RELATIVE\""
+    }
+
+    field "C.D" {
+        comma-separator: false
+        operation: constant "\"D\""
+    }
+
+    field "C.R" {
+        comma-separator: false
+        operation: constant "\"R\""
+    }
+
+    field "NULL" {
+        comma-separator: false
+        operation: constant "\"\""
+    }
+
+    field "SP" {
+        comma-separator: false
+        operation: constant "\" \""
+    }
+
+    field "ON" {
+        comma-separator: false
+        operation: constant "\"on \""
+    }
+
+    field "START.DATE" {
+        length: 30
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "START.DATE"
+    }
+
+    field "SD" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "START.DATE"
+        conversion: convert {
+            oldData: "\' \'"
+            newData: "\'_\'"
+        }
+
+    }
+
+    field "SD.1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SD"
+        conversion: extract from 1 to 1 delimited by "_"
+    }
+
+    field "SD.2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SD"
+        conversion: extract from 2 to 1 delimited by "_"
+    }
+
+    field "SD.3" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SD"
+        conversion: extract from 3 to 2 delimited by "_"
+        conversion: convert {
+            oldData: "\'_\'"
+            newData: "\' \'"
+        }
+
+    }
+
+    field "SD.TYPE1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SD.1" Equals "C.D" process "C.CDATE" "C.DATE"
+    }
+
+    field "SD.TYPE2" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SD.1" Equals "C.R" process "C.RELATIVE" "SD.TYPE1"
+    }
+
+    field "SD.TYPE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SD.1" Equals "NULL" process "NULL" "SD.TYPE2"
+    }
+
+    field "SD.DATE1" {
+        format: Date
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SD.TYPE" Equals "C.CDATE" process "SD.2" "SD.1"
+    }
+
+    field "SD.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "ON":"SD.DATE1"
+    }
+
+    field "SD.RELATIVE1" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: field-extract "SD.2"
+        conversion: replace {
+            oldData: "START"
+            newData: "On the Start Date"
+        }
+
+        conversion: replace {
+            oldData: "MATURITY"
+            newData: " At Maturity"
+        }
+
+        conversion: replace {
+            oldData: "RENEWAL"
+            newData: "On the Renewal Date"
+        }
+
+        conversion: replace {
+            oldData: "ARRANGEMENT"
+            newData: "At Arrangement Creation"
+        }
+
+    }
+
+    field "SD.RELATIVE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: calc "SD.RELATIVE1":"SP":"SD.3"
+    }
+
+    field "D.START.DATE1" {
+        length: 60
+        alignment: Left
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SD.TYPE" Equals "C.RELATIVE" process "SD.RELATIVE" "SD.DATE"
+    }
+
+    field "D.START.DATE" {
+        comma-separator: false
+        processing-mode: Multi
+        operation: if "SD.TYPE" Equals "NULL" process "NULL" "D.START.DATE1"
+    }
+
+    field "D.WHEN" {
+        comma-separator: false
+        position {
+            column: 40
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 165
+        processing-mode: Multi
+        operation: if "PAYMENT.FREQ" Equals "NULL" process "D.START.DATE" "PAYMENT.FREQ"
+    }
+
+    field "ACTUAL.AMOUNT" {
+        length: 18
+        alignment: Right
+        comma-separator: false
+        processing-mode: Multi
+        operation: application-field-name "ACTUAL.AMT"
+    }
+
+    field "PROPERTY.DESC" {
+        format: User
+        comma-separator: false
+        position {
+            column: 15
+            line: + 1
+            multiLine: true
+        }
+
+        column-width: 105
+        processing-mode: Multi
+        operation: field-extract "PROPERTY"
+        conversion: getFrom "AA.PROPERTY" "DESCRIPTION" false
+    }
+
+    field "ZERORECORDS" {
+        display-type: "CLASS-ENQ.NORECS" break-condition {
+            break: None
+        }
+
+        comma-separator: false
+        display-section: Header
+        position {
+            column: 10
+        }
+
+        column-width: 130
+        operation: constant "\"No Schedule to display\""
+    }
+
+    field "DRILL.VER" {
+        comma-separator: false
+        operation: constant "\"AA.ARRANGEMENT.ACTIVITY,AA.DRILL I F3\""
+    }
+
+    field "PROD.LINE" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+        conversion: getFrom "AA.ARRANGEMENT" "PRODUCT.LINE" false
+    }
+
+    field "ACT.VALUE" {
+        comma-separator: false
+        operation: constant "\"-CHANGE-\""
+    }
+
+    field "FIN.ACTIVITY" {
+        comma-separator: false
+        operation: calc "PROD.LINE":"ACT.VALUE":"ARR.PROPERTY"
+    }
+
+    field "ARRANGEMENT.ID" {
+        comma-separator: false
+        operation: field-extract "ARRANGEMENT"
+    }
+
+    field "REFRESH.SCHEDULE" {
+        comma-separator: false
+        operation: constant "\"AA.DETAILS.PAYMENT.SCHEDULE\""
+    }
+
+    drilldown "1" {
+        description {
+            en = "Refresh"
+        }
+
+        label-field: "D.ARR.PROPERTY"
+        image: "refresh.gif"
+        criteria: "ID.COMP.1" Equals "ARRANGEMENT.ID"
+        from-field: "REFRESH.SCHEDULE"
+    }
+
+    drilldown "2" {
+        description {
+            en = "Update"
+        }
+
+        label-field: "D.ARR.PROPERTY"
+        image: "edit.gif"
+        criteria: "AA.ARRANGEMENT" > "ARRANGEMENT.ID"
+        criteria: "AA.ACTIVITY" > "FIN.ACTIVITY"
+        from-field: "DRILL.VER"
+    }
+
+    fileVersion: Live, Exception, Simulation
+    attributes: "ALLDATA" ; "NO.COLUMN.HEADER" ; "NO.TOOLBAR" ; "SINGLE.BACKGROUND.COLOUR" ; "NO.BREADCRUMBS"
+}

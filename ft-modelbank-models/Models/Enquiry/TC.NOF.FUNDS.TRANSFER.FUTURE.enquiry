@@ -1,0 +1,348 @@
+Enquiry "TC.NOF.FUNDS.TRANSFER.FUTURE" for "name:/FT_Channels:NOFILE.TC.FUNDS.TRANSFER.FUTURE#" {
+    metamodelVersion: "1.30.6"
+    description {
+        en = "Your Upcoming Payments"
+    }
+
+    start-line: 4
+    end-line: 10 fixed-selection "RET.DATA" {
+        NotEquals "\'\'"
+    }
+
+    custom-selection {
+
+        field "ACCOUNT.NO" {
+            label {
+                en = "Account No"
+            }
+
+        }
+
+        AND
+
+        field "START.DATE" {
+            label {
+                en = "Start Date"
+            }
+
+        }
+
+        AND
+
+        field "END.DATE" {
+            label {
+                en = "End Date"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT.MIN.LCY" {
+            label {
+                en = "Amount Min Lcy"
+            }
+
+        }
+
+        AND
+
+        field "AMOUNT.MAX.LCY" {
+            label {
+                en = "Amount Max Lcy"
+            }
+
+        }
+
+        AND
+
+        field "DEBIT.ACCT.FLAG" {
+            label {
+                en = "Debit Acct Flag"
+            }
+
+        }
+
+        None
+    }
+
+    field "RET.DATA" {
+        comma-separator: false
+        operation: field-number 0
+    }
+
+    field "REF.NO" {
+        label {
+            en = "Ref No"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "RET.DATA"
+        conversion: extract from 1 to 1 delimited by "*"
+    }
+
+    field "TT" {
+        label {
+            en = "Tt"
+        }
+
+        comma-separator: false
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "TRANSACTION.TYPE" false
+    }
+
+    field "TRANSACTION.TYPE" {
+        label {
+            en = "Transaction Type"
+        }
+
+        comments: "5"
+        format: User
+        comma-separator: false
+        position {
+            column: 1
+        }
+
+        processing-mode: Single
+        operation: field-extract "TT"
+        conversion: getFrom "FT.TXN.TYPE.CONDITION" "DESCRIPTION" false
+    }
+
+    field "DEBIT.VALUE.DATE" {
+        label {
+            en = "Debit Value Date"
+        }
+
+        comma-separator: false
+        position {
+            column: 3
+        }
+
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "DEBIT.VALUE.DATE" false
+    }
+
+    field "DEBIT.ACCOUNT.NO" {
+        label {
+            en = "Debit Account No"
+        }
+
+        comma-separator: false
+        position {
+            column: 4
+        }
+
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "DEBIT.ACCT.NO" false
+    }
+
+    field "DEBIT.CCY" {
+        label {
+            en = "Debit Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 5
+        }
+
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "DEBIT.CURRENCY" false
+    }
+
+    field "DEBIT.AMOUNT" {
+        label {
+            en = "Debit Amount"
+        }
+
+        format: Currency "DEBIT.CCY" negative-pattern -#
+        comma-separator: false
+        position {
+            column: 6
+        }
+
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "AMOUNT.DEBITED" false
+        conversion: extract from 4 to 20
+    }
+
+    field "CREDIT.ACCT.NO" {
+        label {
+            en = "Credit Acct No"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "CREDIT.ACCT.NO" false
+    }
+
+    field "BEN.ACCT.NO" {
+        label {
+            en = "Ben Account No"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "BEN.ACCT.NO" false
+    }
+
+    field "CREDIT.ACCOUNT" {
+        label {
+            en = "Credit Account"
+        }
+
+        comma-separator: false
+        position {
+            column: 9
+        }
+
+        operation: if "BEN.ACCT.NO" NotEquals "\"\"" process "BEN.ACCT.NO" "CREDIT.ACCT.NO"
+    }
+
+    field "CREDIT.CCY" {
+        label {
+            en = "Credit Ccy"
+        }
+
+        comma-separator: false
+        position {
+            column: 10
+        }
+
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "CREDIT.CURRENCY" false
+    }
+
+    field "CREDIT.AMOUNT" {
+        label {
+            en = "Credit Amount"
+        }
+
+        comma-separator: false
+        position {
+            column: 11
+        }
+
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "AMOUNT.CREDITED" false
+        conversion: extract from 4 to 20
+    }
+
+    field "BEN.CUSTOMER" {
+        label {
+            en = "Ben Customer"
+        }
+
+        comma-separator: false
+        processing-mode: Single
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "BENEFICIARY.ID" false
+        conversion: getFrom "BENEFICIARY" "NICKNAME" false
+    }
+
+    field "CR.ACCT.NAME" {
+        comma-separator: false
+        operation: field-extract "CREDIT.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "TO.ACCT.NAME" {
+        label {
+            en = "To Acct Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 12
+        }
+
+        operation: if "BEN.CUSTOMER" NotEquals "\"\"" process "BEN.CUSTOMER" "CR.ACCT.NAME"
+    }
+
+    field "REFERENCE.NO" {
+        label {
+            en = "Reference No"
+        }
+
+        comma-separator: false
+        position {
+            column: 13
+        }
+
+        operation: field-extract "REF.NO"
+    }
+
+    field "TRANS.TYPE" {
+        comma-separator: false
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "TRANSACTION.TYPE" false
+    }
+
+    field "BEN.SORTCODE" {
+        comma-separator: false
+        operation: field-extract "REF.NO"
+        conversion: getFrom "FUNDS.TRANSFER" "BENEFICIARY.ID" false
+        conversion: getFrom "BENEFICIARY" "BANK.SORT.CODE" false
+    }
+
+    field "AC.SORTCODE" {
+        comma-separator: false
+        operation: field-extract "CREDIT.ACCT.NO"
+        conversion: getFrom "ACCOUNT" "CO.CODE" false
+        conversion: getFrom "COMPANY" "IBAN.BRANCH.ID" false
+    }
+
+    field "TO.AC.SORT.CODE" {
+        label {
+            en = "To Ac Sort Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 15
+        }
+
+        operation: if "BEN.SORTCODE" NotEquals "\"\"" process "BEN.SORTCODE" "AC.SORTCODE"
+    }
+
+    field "FROM.ACCT.NAME" {
+        label {
+            en = "From Acct Name"
+        }
+
+        comma-separator: false
+        position {
+            column: 16
+        }
+
+        operation: field-extract "DEBIT.ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "SHORT.TITLE" false
+    }
+
+    field "FROM.AC.SORT.CODE" {
+        label {
+            en = "From Ac Sort Code"
+        }
+
+        comma-separator: false
+        position {
+            column: 17
+        }
+
+        operation: field-extract "DEBIT.ACCOUNT.NO"
+        conversion: getFrom "ACCOUNT" "CO.CODE" false
+        conversion: getFrom "COMPANY" "IBAN.BRANCH.ID" false
+    }
+
+    security {
+        application: "FUNDS.TRANSFER"
+        field: "DEBIT.ACCOUNT.NO"
+        abort: true
+    }
+
+}
