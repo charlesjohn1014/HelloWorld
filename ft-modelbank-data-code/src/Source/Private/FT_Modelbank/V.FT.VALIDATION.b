@@ -14,11 +14,11 @@ $PACKAGE FT.Validation
 * <Rating>0</Rating>
 *-----------------------------------------------------------------------------
 SUBROUTINE V.FT.VALIDATION(P1)
-
+ 
     $INSERT I_COMMON
     $INSERT I_EQUATE
 
     IF R.NEW(FT.CREDIT.AMOUNT) GT 500 THEN
-        E = "Amount greater than 500 (DS packager demo) changed online...cd"
+        E = "Amount greater than 500 (DS packager demo) changed online"
     END
 END
