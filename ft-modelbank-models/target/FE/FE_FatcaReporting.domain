@@ -59,6 +59,11 @@ Classes {
         TRANS_COUNTRY : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=2, sysNumber=5.0, core=true, t24Name=TRANS.COUNTRY, mandatory=false)
     }
+    
+    
+    
+    
+    
     FATCA_AGGR_TAX_BASE__ACCOUNT
     {
         ACCOUNT : T24BusinessTypes:A
@@ -139,10 +144,10 @@ Classes {
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=63.0, core=true, t24Name=GREENCARD, mandatory=false)
         INDICIA : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=5, sysNumber=72.0, core=true, t24Name=INDICIA, mandatory=false)
-        INDUSTRY : T24BusinessTypes:N
+        INDUSTRY -> ST_Config:INDUSTRY
             @i18n:Label (en=Industry)
             @i18n:Tooltip (en="Indicates the Industry")
-            @t24:i (align=R, inputBehaviour=I, maxLength=4, sysNumber=53.0, core=true, t24Name=INDUSTRY, mandatory=false)
+            @t24:i (align=R, inputBehaviour=I, maxLength=10, sysNumber=53.0, core=true, t24Name=INDUSTRY, mandatory=false)
         NAME_1 : T24BusinessTypes:A
             @i18n:Label (en=Name)
             @i18n:Tooltip (en="Indicates the first line of a customer\'s or company\'s full name")
@@ -307,7 +312,7 @@ Classes {
         COM_ADDRESS : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=9.0, core=true, t24Name=COM.ADDRESS, mandatory=false)
     }
-/* FATCA TAX BASE is updated automatically at year end with the details of name, address, TIN, Account balances and owner details,
+    /* FATCA TAX BASE is updated automatically at year end with the details of name, address, TIN, Account balances and owner details,
 Since it is a live file, a provision is required to add records to the base, modify existing records in the base and delete records from the base.
 The ID of FATCA BASE MANUAL UPDATE will be the same as the ID of the FATCA TAX BASE record that needs to be amended . */
     FATCA_BASE_MANUAL_UPDATE
@@ -360,6 +365,11 @@ NEW, AMEND or DELETE. */
             @i18n:Label (en="Record Status")
             @t24:i (align=L, inputBehaviour=N, maxLength=4, sysNumber=10.0, core=true, t24Name=RECORD.STATUS, mandatory=false)
     }
+    
+    
+    
+    
+    
     FATCA_BASE_MANUAL_UPDATE__DATE_TIME
     {
         DATE_TIME : T24BusinessTypes:RELTIME
@@ -369,14 +379,14 @@ NEW, AMEND or DELETE. */
     }
     FATCA_BASE_MANUAL_UPDATE__FIELD_NAME
     {
-/* The name of the field, in FATCA TAX BASE, for which the value needs to be added (New/Amend function) or Changed (Amend).
+    /* The name of the field, in FATCA TAX BASE, for which the value needs to be added (New/Amend function) or Changed (Amend).
 Validation Rules:
 A field in FATCA TAX BASE */
         FIELD_NAME : T24BusinessTypes:A
             @i18n:Label (en="Field Name")
             @i18n:Tooltip (en="Name of the field(used mostly for SWIFT)")
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=2.0, core=true, t24Name=FIELD.NAME, mandatory=false)
-/* The field is used to specify the new value for the field in FIELD.NAME.
+            /* The field is used to specify the new value for the field in FIELD.NAME.
 If the field value is blank or Null, then while amending, the existing field values will be cleared.
 Validation Rules:
 A valid value for the field */
@@ -392,7 +402,7 @@ A valid value for the field */
             @i18n:Label (en="Field Action")
             @i18n:Tooltip (en="Field to identify whether multi-value field need to be amended,added or deleted")
             @t24:i (align=L, inputBehaviour=I, maxLength=6, sysNumber=8.0, core=true, t24Name=FIELD.ACTION, mandatory=false)
-/* The field will be used to change the values of associated multi-value fields. Only the first field in an associated multi-value set from the base 
+            /* The field will be used to change the values of associated multi-value fields. Only the first field in an associated multi-value set from the base 
             (e.g. Relation Cust for changing the ownership details, Account for the Account balance details) can be specified here
 Validation Rules:
 A field, in FATCA TAX BASE, that is the first field of an associated multi-value set. */
@@ -400,7 +410,7 @@ A field, in FATCA TAX BASE, that is the first field of an associated multi-value
             @i18n:Label (en="Field Name Multi-value")
             @i18n:Tooltip (en="Field used to change the values of associated multi-value fields")
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=4.0, core=true, t24Name=FIELD.NAME.MV, mandatory=false)
-/* The value of the field, given in Field Name MV, to identify the corresponding multi-value set that needs to be modified.
+            /* The value of the field, given in Field Name MV, to identify the corresponding multi-value set that needs to be modified.
 For e.g. if three accounts are updated in the base and the balance in the second account needs to be changed,
 Field Name MV will be ‘ACCOUNT’ and Field Value MV will be the Account number in the second multi-value (e.g.109298654.
 Validation Rules:
@@ -412,14 +422,14 @@ A valid value for the field from base. */
     }
     FATCA_BASE_MANUAL_UPDATE__FIELD_NAME_MV__ASSOC_FIELD_NAME
     {
-/* The field associated with the field in FIELD NAME MV above for which the value needs to be changed (e.g. ACC BALANCE) .
+    /* The field associated with the field in FIELD NAME MV above for which the value needs to be changed (e.g. ACC BALANCE) .
 Validation Rules:
 A field, in FATCA TAX BASE, that is part of the associated multi-value set with the field in FIELD NAME MV. */
         ASSOC_FIELD_NAME : T24BusinessTypes:A
             @i18n:Label (en="Associate Field Name")
             @i18n:Tooltip (en="Field associated with field in Field Name MV")
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=6.0, core=true, t24Name=ASSOC.FIELD.NAME, mandatory=false)
-/* The new value for the field in ASSOC FIELD NAME above.
+            /* The new value for the field in ASSOC FIELD NAME above.
 Validation Rules:
 A valid value for the field being amended */
         ASSOC_FIELD_VAL : T24BusinessTypes:ANY
@@ -483,18 +493,18 @@ A valid value for the field being amended */
         /* This field denotes the number of accounts under the above status type. The Count will be by number of clients. */
         NO_COUNT : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=I, maxLength=5, sysNumber=3.0, core=true, t24Name=NO.COUNT, mandatory=false)
-/* Based on the  FATCA.TAX.BASE STATUS.TYPE AND INDICAT STATUS FIELD Below will be updated .
+            /* Based on the  FATCA.TAX.BASE STATUS.TYPE AND INDICAT STATUS FIELD Below will be updated .
 FATCA201 = Recalcitrant account holders with US Indicia
 FATCA202 = Recalcitrant account holders without US Indicia
 FATCA203 = Dormant Accounts
 FATCA204 = Non-participating foreign financial institutions */
         POOL_REPORT_TYPE : T24BusinessTypes:ANY
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=16.0, core=true, t24Name=POOL.REPORT.TYPE, mandatory=false)
-/* This fields will be Update from FATCA.TAX.BASE record.
+            /* This fields will be Update from FATCA.TAX.BASE record.
 If the STATUS in FATCA PARAMETER is IGA1, then the receiving country will be the same as the TransmittingCountry else it will be ‘US’. */
         REC_COUNTRY : T24BusinessTypes:SSS
             @t24:i (align=L, inputBehaviour=I, maxLength=2, sysNumber=7.0, core=true, t24Name=REC.COUNTRY, mandatory=false)
-/* On Authorising the FATCA.XML.REQUEST the field will be updated as
+            /* On Authorising the FATCA.XML.REQUEST the field will be updated as
 FATCA1 = New
 FATCA2 = Corrected
 FATCA3 = Void
@@ -502,7 +512,7 @@ FATCA4 = Amended */
         REPORT_TYPE : T24BusinessTypes:ANY
             @i18n:Label (en="Report Type")
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=15.0, core=true, t24Name=REPORT.TYPE, mandatory=false)
-/* This fields will be Update from FATCA.TAX.BASE record.
+            /* This fields will be Update from FATCA.TAX.BASE record.
 Date on which the base file is updated */
         STATUS_DATE : T24BusinessTypes:N
             @i18n:Label (en="Status Date")
@@ -519,7 +529,7 @@ Date on which the base file is updated */
         /* Time of the request for generating xml will be updated. */
         TIMESTAMP : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=11.0, core=true, t24Name=TIMESTAMP, mandatory=false)
-/* The field will be Update from FATCA.TAX.BASE record.
+            /* The field will be Update from FATCA.TAX.BASE record.
 This will be mapped from the LOCAL COUNTRY field of the COMPANY to which the ACCOUNT belongs to. */
         TRANS_COUNTRY : T24BusinessTypes:SSS
             @t24:i (align=L, inputBehaviour=I, maxLength=2, sysNumber=6.0, core=true, t24Name=TRANS.COUNTRY, mandatory=false)
@@ -548,7 +558,7 @@ A valid carrier with the suffix (e.g. PRINT.1). */
             @i18n:Label (en="Address Record")
             @i18n:Tooltip (en="Address Record")
             @t24:i (align=L, inputBehaviour=I, maxLength=14, sysNumber=7.0, core=true, t24Name=ADDRESS.RECORD, mandatory=false)
-/* If this field is set to YES, the minimum balance check (based on MIN BAL CHECK field) will be based on aggregate balances
+            /* If this field is set to YES, the minimum balance check (based on MIN BAL CHECK field) will be based on aggregate balances
 (total of custody and depository accounts). The depository accounts will be reported only if the aggregate balance is above $50000.
 If this field is left blank, then the minimum balance check will be based on individual account balances.
 Validation Rules:
@@ -569,7 +579,7 @@ Allowed values are YES or blank with blank being treated as NO. */
             @i18n:Label (en=Authoriser)
             @i18n:Tooltip (en="Indicates the User who Authorises the record")
             @t24:i (align=L, inputBehaviour=N, maxLength=40, sysNumber=53.0, core=true, t24Name=AUTHORISER, mandatory=false)
-/* The number of years for which the data on base file needs to be retained. If set to 6, the 2014 base data will be retained till the end of 2020.
+            /* The number of years for which the data on base file needs to be retained. If set to 6, the 2014 base data will be retained till the end of 2020.
 Validation Rules:
 A number denoting the number of years. */
         BASE_RETENTION : T24BusinessTypes:N
@@ -582,7 +592,7 @@ A number denoting the number of years. */
             @i18n:Label (en="Consol Max")
             @i18n:Tooltip (en="Maximum no of accounts to be consolidated")
             @t24:i (align=R, inputBehaviour=I, maxLength=5, sysNumber=31.0, core=true, t24Name=CONSOL.MAX, mandatory=false)
-/* Country Sub entity is one of the elements that needs to be part (e.g. a state or a province) of FATCA reporting (XML schema).
+            /* Country Sub entity is one of the elements that needs to be part (e.g. a state or a province) of FATCA reporting (XML schema).
 The field from where this data is obtained (could be a field in Customer or DE ADDRESS – core or local) is defined here.
 Validation Rules:
 A valid field from CUSTOMER or DE.ADDRESS. */
@@ -598,7 +608,7 @@ A valid field from CUSTOMER or DE.ADDRESS. */
             @t24:i (align=R, inputBehaviour=N, maxLength=4, sysNumber=50.0, core=true, t24Name=CURR.NO, mandatory=false)
         DATE_TIME -> byValue FE_FatcaReporting:FATCA_REPORTING_PARAMETER__DATE_TIME *
             @t24:i (t24Name=DATE.TIME)
-/* The field is used to specify the application from which the client’s address needs to be picked up for updating the FATCA TAX BASE.
+            /* The field is used to specify the application from which the client’s address needs to be picked up for updating the FATCA TAX BASE.
 Validation Rules:
 The field accepts only ‘CUSTOMER’ or ‘DE ADDRESS’. */
         DEFAULT_ADDRESS : FE_FatcaReporting:FATCA_REPORTING_PARAMETER__DEFAULT_ADDRESS
@@ -618,7 +628,7 @@ The field accepts only ‘CUSTOMER’ or ‘DE ADDRESS’. */
             @t24:i (align=R, inputBehaviour=I, maxLength=10, sysNumber=28.0, core=true, t24Name=FATCA.ID, mandatory=false)
         FATCA_REP_PARAM_ID -> FE_FatcaReporting:FATCA_REPORTING_PARAMETER PK required
             @t24:i (align=L, inputBehaviour=I, maxLength=11, sysNumber=0.0, core=true, businessType=COM, t24Name=FATCA.REP.PARAM.ID, mask="R##-###-####", mandatory=true)
-/* If the non-US currency accounts have to be reported in the currency in which they are denominated,
+            /* If the non-US currency accounts have to be reported in the currency in which they are denominated,
 this field has to be set as ACCOUNT. Alternatively, if they are to be reported in USD,
 this field has to be set as USD. By default, all accounts will be reported in USD.
 For portfolios, if the accounts are to be reported in the currency in which they are denominated, the system will report in Reference currency
@@ -638,28 +648,28 @@ Either ‘ACCOUNT’ or ‘USD’. */
             @t24:i (align=L, inputBehaviour=I, maxLength=3, sysNumber=27.0, core=true, t24Name=HMRC.SCHEMA, mandatory=false)
         INPUTTER -> byValue FE_FatcaReporting:FATCA_REPORTING_PARAMETER__INPUTTER *
             @t24:i (t24Name=INPUTTER)
-/* If this field is set to YES, the minimum balance checks will be performed. The depository accounts will be reported only if the balance is above $50000. Please refer to AGG BAL CHECK for aggregation rules.
+            /* If this field is set to YES, the minimum balance checks will be performed. The depository accounts will be reported only if the balance is above $50000. Please refer to AGG BAL CHECK for aggregation rules.
 Validation Rules:
 ‘YES’ is the only allowed value. */
         MIN_BAL_CHECK : FE_FatcaReporting:FATCA_REPORTING_PARAMETER__MIN_BAL_CHECK
             @i18n:Label (en="Minimum Bal Check for reporting purpose")
             @i18n:Tooltip (en="Minimum Bal Check for reporting purpose")
             @t24:i (align=L, inputBehaviour=I, maxLength=5, sysNumber=17.0, core=true, t24Name=MIN.BAL.CHECK, mandatory=false)
-/* If this field is set to YES, the accounts for entities opened till 1st Jan 2015 will be considered pre-existing and will not be included in the base (FATCA TAX BASE) for reporting.
+            /* If this field is set to YES, the accounts for entities opened till 1st Jan 2015 will be considered pre-existing and will not be included in the base (FATCA TAX BASE) for reporting.
 Validation Rules:
 ‘YES’ or Blank. */
         NEW_ACCOUNT_ENT : FE_FatcaReporting:FATCA_REPORTING_PARAMETER__NEW_ACCOUNT_ENT
             @i18n:Label (en="Pre-existing Accounts")
             @i18n:Tooltip (en="Pre-existing Accounts")
             @t24:i (align=L, inputBehaviour=I, maxLength=5, sysNumber=22.0, core=true, t24Name=NEW.ACCOUNT.ENT, mandatory=false)
-/* If this is set to YES, for 2014, only the accounts opened after 1st July 2014 will be included in the base file (FATCA TAX BASE) for reporting.
+            /* If this is set to YES, for 2014, only the accounts opened after 1st July 2014 will be included in the base file (FATCA TAX BASE) for reporting.
 Validation Rules:
 ‘YES’ or Blank. */
         NEW_ACCOUNT_ONLY : FE_FatcaReporting:FATCA_REPORTING_PARAMETER__NEW_ACCOUNT_ONLY
             @i18n:Label (en="New Accounts")
             @i18n:Tooltip (en="New Accounts")
             @t24:i (align=L, inputBehaviour=I, maxLength=5, sysNumber=21.0, core=true, t24Name=NEW.ACCOUNT.ONLY, mandatory=false)
-/* If a new account is opened for an existing client (who already has existing accounts),
+            /* If a new account is opened for an existing client (who already has existing accounts),
 this will control whether these accounts are to be treated as new or pre-existing.  If set to YES, the accounts will be considered pre-existing.
 Validation Rules:
 ‘YES’ or Blank. */
@@ -667,7 +677,7 @@ Validation Rules:
             @i18n:Label (en="New Account Exist")
             @i18n:Tooltip (en="New Account Exist")
             @t24:i (align=L, inputBehaviour=I, maxLength=5, sysNumber=23.0, core=true, t24Name=NEW.ACC.EXIST, mandatory=false)
-/* Aggregate reporting on non-participating (NPFFI) payments is not required in 2014. So, the field has to be set to YES only from 2015.
+            /* Aggregate reporting on non-participating (NPFFI) payments is not required in 2014. So, the field has to be set to YES only from 2015.
 Validation Rules:
 Allowed values are YES or blank with blank being treated as NO. */
         NPFFI_REPORT : FE_FatcaReporting:FATCA_REPORTING_PARAMETER__NPFFI_REPORT
@@ -684,7 +694,7 @@ Allowed values are YES or blank with blank being treated as NO. */
             @t24:i (t24Name=OWN.REP.STATUS)
         PAYMENT_TYPE -> byValue FE_FatcaReporting:FATCA_REPORTING_PARAMETER__PAYMENT_TYPE *
             @t24:i (t24Name=PAYMENT.TYPE)
-/* If a pool report has to be prepared for the aggregated balances of recalcitrant accounts (recalcitrant, recalcitrant with indicia,
+            /* If a pool report has to be prepared for the aggregated balances of recalcitrant accounts (recalcitrant, recalcitrant with indicia,
 dormant, dormant with indicia), the field has to be set to YES. The system will update FATCA.RECAL.POOL.BALANCE with the aggregated balance of such accounts.
 Validation Rules:
 ‘YES’ or Blank. */
@@ -697,7 +707,7 @@ Validation Rules:
             @t24:i (align=L, inputBehaviour=N, maxLength=4, sysNumber=49.0, core=true, t24Name=RECORD.STATUS, mandatory=false)
         REPORTABLE_STATUS -> byValue FE_FatcaReporting:FATCA_REPORTING_PARAMETER__REPORTABLE_STATUS *
             @t24:i (t24Name=REPORTABLE.STATUS)
-/* It is a standard date/frequency field to denote the date on which the base data for reporting will be extracted and consolidated in the FATCA TAX BASE file.
+            /* It is a standard date/frequency field to denote the date on which the base data for reporting will be extracted and consolidated in the FATCA TAX BASE file.
 The COB will run on this date to update the base file with the ‘base’ data for all clients.
 It is recommended that this date is always set to 31st December of the year. If the date happens to be a holiday,
 the extraction will be on the previous working day. The account balances will always be updated on the last working day of the calendar year.
@@ -743,7 +753,7 @@ Standard Date (frequency) field. */
             @i18n:Label (en="Threshold Ind")
             @i18n:Tooltip (en="Threshold Ind")
             @t24:i (align=R, inputBehaviour=I, maxLength=1, sysNumber=30.0, core=true, t24Name=THRESHOLD.IND, mandatory=false)
-/* The field is used to control the update of income details into FATCA TAX BASE. Since the income details are not required for 2014, the field has to be left blank for now
+            /* The field is used to control the update of income details into FATCA TAX BASE. Since the income details are not required for 2014, the field has to be left blank for now
 Validation Rules:
 ‘YES’ or Blank. */
         UPDATE_INC_BASE : FE_FatcaReporting:FATCA_REPORTING_PARAMETER__UPDATE_INC_BASE
@@ -752,7 +762,7 @@ Validation Rules:
             @t24:i (align=L, inputBehaviour=I, maxLength=15, sysNumber=20.0, core=true, t24Name=UPDATE.INC.BASE, mandatory=false)
         W9_EXEMPT_CODE -> byValue FE_FatcaReporting:FATCA_REPORTING_PARAMETER__W9_EXEMPT_CODE *
             @t24:i (t24Name=W9.EXEMPT.CODE)
-/* The directory into which the generated XML will be updated is specified here.
+            /* The directory into which the generated XML will be updated is specified here.
 Validation Rules:
 A valid Directory reference. */
         XML_DIR : T24BusinessTypes:ANY
@@ -760,6 +770,19 @@ A valid Directory reference. */
             @i18n:Tooltip (en="Dirctory to hold xml messages")
             @t24:i (align=L, inputBehaviour=I, maxLength=100, sysNumber=24.0, core=true, t24Name=XML.DIR, mandatory=false)
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     FATCA_REPORTING_PARAMETER__DATE_TIME
     {
         DATE_TIME : T24BusinessTypes:RELTIME
@@ -783,7 +806,7 @@ A valid Directory reference. */
     }
     FATCA_REPORTING_PARAMETER__OWNER_TYPE
     {
-/* The application from where the owner’s address is updated in the base.
+    /* The application from where the owner’s address is updated in the base.
 For the beneficial and substantial owners, this will be only from FATCA CUSTOMER SUPPLEMENTARY INFO for now.
 Validation Rules:
 FATCA CUSTOMER SUPPLEMENTARY INFO is the only allowed value for beneficial/substantial owners. */
@@ -791,7 +814,7 @@ FATCA CUSTOMER SUPPLEMENTARY INFO is the only allowed value for beneficial/subst
             @i18n:Label (en="Owner Address")
             @i18n:Tooltip (en="Owner Address")
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=11.0, core=true, t24Name=OWNER.ADDRESS, mandatory=false)
-/* If the OWNER ADDRESS is set to DE.ADDRESS (for joint owners), the field is used to identify the record from where the address of the customer will be picked up and updated in FATCA TAX BASE.
+            /* If the OWNER ADDRESS is set to DE.ADDRESS (for joint owners), the field is used to identify the record from where the address of the customer will be picked up and updated in FATCA TAX BASE.
 For example, if the   ADDRESS.RECORD is set as PRINT.1, for customer ID (100252) in Company 1 (GB0010001), the system will read the DE ADDRESS record GB0010001.C-100252.PRINT.1 and get the address.
 If there is no matching DE ADDRESS record, then there will be no default.
 Validation Rules:
@@ -800,7 +823,7 @@ A valid carrier with the suffix (e.g. PRINT.1). */
             @i18n:Label (en="Owner Address Record")
             @i18n:Tooltip (en="Owner Address Record")
             @t24:i (align=L, inputBehaviour=I, maxLength=14, sysNumber=12.0, core=true, t24Name=OWNER.ADD.RECORD, mandatory=false)
-/* The owner type can be either Joint or Beneficial or Substantial. The field is associated with the relationship identifier and address identifier fields in FATCA REPORTING PARAMETER.
+            /* The owner type can be either Joint or Beneficial or Substantial. The field is associated with the relationship identifier and address identifier fields in FATCA REPORTING PARAMETER.
 Validation Rules:
 JOINT, BENEFICIAL or SUBSTANTIAL. */
         OWNER_TYPE : FE_FatcaReporting:FATCA_REPORTING_PARAMETER__OWNER_TYPE__OWNER_TYPE
@@ -809,7 +832,7 @@ JOINT, BENEFICIAL or SUBSTANTIAL. */
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=8.0, core=true, t24Name=OWNER.TYPE, mandatory=false)
         REL_CODE -> byValue FE_FatcaReporting:FATCA_REPORTING_PARAMETER__OWNER_TYPE__REL_CODE *
             @t24:i (t24Name=REL.CODE)
-/* If set to FCSI, the related customers will be identified from FATCA CUSTOMER SUPPLEMENTARY INFO (FCSI) record.
+            /* If set to FCSI, the related customers will be identified from FATCA CUSTOMER SUPPLEMENTARY INFO (FCSI) record.
 If left blank, the related customers will be from Customer or Account (based on Relation level defined in FATCA AGGREGATION PARAMETER).
 For beneficial and substantial ownership, the relationships will be only from FCSI whereas for joint owners,
 the relationships can be at FCSI level or customer or account level. So, if the OWNER TYPE is Beneficial or substantial, only FCSI is allowed.
@@ -822,7 +845,7 @@ FCSI or Blank. */
     }
     FATCA_REPORTING_PARAMETER__OWNER_TYPE__REL_CODE
     {
-/* If the REL.IDENTIFIER is left blank, the field is used to specify the relation codes for identifying the joint owners.
+    /* If the REL.IDENTIFIER is left blank, the field is used to specify the relation codes for identifying the joint owners.
 This will only be used for defining relation codes for joint owners if the relationships are not defined in FATCA CUSTOMER SUPPLEMENTARY INFO or in FATCA AGGREGATION PARAMETER.
 Validation Rules:
 Valid RELATION codes. */
@@ -840,7 +863,7 @@ Valid RELATION codes. */
     }
     FATCA_REPORTING_PARAMETER__OWN_REP_STATUS
     {
-/* The statuses (multi-value) for which the owner details – beneficial and substantial - need to be reported.
+    /* The statuses (multi-value) for which the owner details – beneficial and substantial - need to be reported.
 For the accounts where the owner details are to be reported based on the status (classifications) defined here,
 the system will extract the details of beneficial and substantial owners (as applicable) and update the base file.
 The beneficial and substantial owner roles will be identified based on roles defined in FATCA ROLE TYPE.
@@ -854,14 +877,14 @@ A valid FATCA TAX STATUS that has been defined as a REPORTABLE STATUS. */
     }
     FATCA_REPORTING_PARAMETER__PAYMENT_TYPE
     {
-/* The associated multi-value field with PAYMENT.TYPE and TXN.CODE defines the payment code to be reported in the XML.
+    /* The associated multi-value field with PAYMENT.TYPE and TXN.CODE defines the payment code to be reported in the XML.
 The Code includes FATCA501 for DIVIDEND, FATCA502 for INTEREST, FATCA503 for GROSSPROCEEDS/REDEMPTION, FATCA504 for OTHER.INCOME.This is for normal schema
 For HMRC schema the codes are different.
 Validation Rules:
 Take values FATCA501 or FATCA502 or FATCA503 or FATCA504 or 00 or 01 0r 02 0r 03 0r 10 */
         PAYMENT_CODE : FE_FatcaReporting:FATCA_REPORTING_PARAMETER__PAYMENT_TYPE__PAYMENT_CODE
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=33.0, core=true, t24Name=PAYMENT.CODE, mandatory=false)
-/* The field (multi-value), in conjunction with PAYMENT.CODE and TXN.CODE defines the type of Account to be reported.
+            /* The field (multi-value), in conjunction with PAYMENT.CODE and TXN.CODE defines the type of Account to be reported.
 The Account type may be custody or depository with interest or dividend or grossproceeds/redemption or oher incomes.
 Validation Rules:
 Take values DEP.INTEREST or CUS.DIVIDEND or CUS.INTEREST or CUS.GROSSPROCEEDS/REDEMPTION or CUS.OTHER.INCOME. */
@@ -874,7 +897,7 @@ Take values DEP.INTEREST or CUS.DIVIDEND or CUS.INTEREST or CUS.GROSSPROCEEDS/RE
     }
     FATCA_REPORTING_PARAMETER__PAYMENT_TYPE__TXN_CODE
     {
-/* The associated multi-value field with PAYMENT.TYPE and PAYMENT.CODE defines the transaction code of the income to be reported.
+    /* The associated multi-value field with PAYMENT.TYPE and PAYMENT.CODE defines the transaction code of the income to be reported.
 Validation Rules:
 Must be a value from TRANSACTION. */
         TXN_CODE -> ST_Config:TRANSACTION
@@ -883,7 +906,7 @@ Must be a value from TRANSACTION. */
     }
     FATCA_REPORTING_PARAMETER__REPORTABLE_STATUS
     {
-/* Multi-value fields to identify the statuses (account classifications) to be reported to the regulator.
+    /* Multi-value fields to identify the statuses (account classifications) to be reported to the regulator.
 The base file records will be built only for these statuses. The statuses to be reported are the specified US person,
 Passive NFFEs with US substantial owners, Owner documented FFIs, etc.
 Validation Rules:
@@ -895,7 +918,7 @@ A valid FATCA TAX STATUS. */
     }
     FATCA_REPORTING_PARAMETER__REP_PMT_INCOME_ONLY
     {
-/* Defines the FATCA.STATUS for which only Payment related information has to be displayed in Report and Account Balance will be reported as 0.
+    /* Defines the FATCA.STATUS for which only Payment related information has to be displayed in Report and Account Balance will be reported as 0.
 Validation Rules:
 Must be a value from FATCA.TAX.STATUS. */
         REP_PMT_INCOME_ONLY -> FA_Config:FATCA_TAX_STATUS
@@ -905,7 +928,7 @@ Must be a value from FATCA.TAX.STATUS. */
     {
         FATCA_STATUS -> byValue FE_FatcaReporting:FATCA_REPORTING_PARAMETER__STATUS_TYPE__FATCA_STATUS *
             @t24:i (t24Name=FATCA.STATUS)
-/* The field (multi-value), in conjunction with FATCA STATUS, will be used to identify the various classifications that fall under
+            /* The field (multi-value), in conjunction with FATCA STATUS, will be used to identify the various classifications that fall under
 RECALCITRANT/NONPARTICIPATING/ DORMANT /INACTIVE/PASSIVE_NFFE/OD_FFI/SPEC_US_PERSON category (only  values allowed).
 Since the FATCA TAX STATUS definition is flexible, this field, in conjunction with FATCA STATUS, will be used to identify the relevant classifications.
 Validation Rules:
@@ -917,7 +940,7 @@ As per the values specified above. */
     }
     FATCA_REPORTING_PARAMETER__STATUS_TYPE__FATCA_STATUS
     {
-/* Field associated with STATUS TYPE to identify the FATCA statuses associated with the type (e.g. Recalcitrant, Non-Participating, Passive NFFE, etc.).
+    /* Field associated with STATUS TYPE to identify the FATCA statuses associated with the type (e.g. Recalcitrant, Non-Participating, Passive NFFE, etc.).
 The field is multi-valued to associate multiple statuses with each type.
 Validation Rules:
 Must be a value from the FATCA.TAX.STATUS. */
@@ -947,7 +970,7 @@ Must be a value from the FATCA.TAX.STATUS. */
             @i18n:Label (en="Account Officer")
             @i18n:Tooltip (en="Indicates Account Officer responsible")
             @t24:i (align=R, inputBehaviour=I, maxLength=4, sysNumber=15.0, core=true, t24Name=ACCOUNT.OFFICER, mandatory=false)
-/* This data element identifies an entity account holder or payee that is: (1) an owner documented FI with specified US owner(s);
+            /* This data element identifies an entity account holder or payee that is: (1) an owner documented FI with specified US owner(s);
 (2) a passive NFFE with substantial or controlling US owner(s); (3) a nonparticipating FFI; or (4) a Specified US person.
 FATCA101 – If the FATCA STATUS of the entity is Owner Documented FI (identified based on Status Type and FATCA STATUS in FATCA Reporting Parameter)
 FATCA102 – If the FATCA STATUS of the entity is Passive NFFE (identified based on Status Type and FATCA STATUS in FATCA Reporting Parameter)
@@ -1015,7 +1038,7 @@ FATCA104 – If the FATCA STATUS in the base record is same as SPEC_US_Person st
         /* The field will be updated from FATCA CUSTOMER SUPPLEMENTARY INFO (FCSI) record. */
         EIN : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=30.0, core=true, t24Name=EIN, mandatory=false)
-/* Based on the list of client types allowed in FCSI,for the client types  Individual, Small Account and High Value account, will be updated as 'EXISTING'
+            /* Based on the list of client types allowed in FCSI,for the client types  Individual, Small Account and High Value account, will be updated as 'EXISTING'
 if Customer Since (field in Customer) field is blank or less than 1st July 2014 and for rest, if less than 1st Jan 2015.
 If condtion not satisfied, update as 'NEW'. */
         EXISTING_NEW : FE_FatcaReporting:FATCA_TAX_BASE__EXISTING_NEW
@@ -1051,7 +1074,7 @@ If condtion not satisfied, update as 'NEW'. */
         INDUSTRY -> ST_Config:INDUSTRY
             @i18n:Label (en=Industry)
             @i18n:Tooltip (en="Indicates the Industry")
-            @t24:i (align=R, inputBehaviour=I, maxLength=4, sysNumber=16.0, core=true, t24Name=INDUSTRY, mandatory=false)
+            @t24:i (align=R, inputBehaviour=I, maxLength=10, sysNumber=16.0, core=true, t24Name=INDUSTRY, mandatory=false)
         /* The field will be updated as  FATCA.TAX.BASE.ID.SEQ.NO (seq.no will be 1 for the new record). */
         MSG_REF_ID : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=98.0, core=true, t24Name=MSG.REF.ID, mandatory=false)
@@ -1161,6 +1184,13 @@ If condtion not satisfied, update as 'NEW'. */
         US_PLACE_OF_BIRTH : FE_FatcaReporting:FATCA_TAX_BASE__US_PLACE_OF_BIRTH
             @t24:i (align=L, inputBehaviour=I, maxLength=5, sysNumber=23.0, core=true, t24Name=US.PLACE.OF.BIRTH, mandatory=false)
     }
+    
+    
+    
+    
+    
+    
+    
     FATCA_TAX_BASE__ACCOUNT
     {
         /* The field will be updated from FATCA.AGGREGATE.BALANCE ACCOUNT fields. */
@@ -1210,37 +1240,37 @@ If condtion not satisfied, update as 'NEW'. */
     }
     FATCA_TAX_BASE__ACCOUNT__PAYMENT_TYPE
     {
-/* This is part of the multivalue set which start from the field "Account".
+    /* This is part of the multivalue set which start from the field "Account".
 The field contains the amount of payment.It is updated from the INT.MOVEMENT record based on the transaction code defined in REPORTING.PARAMETER */
         PAYMENT_AMT : T24BusinessTypes:AMT
             @i18n:Label (en="Payment Amount")
             @t24:i (align=R, inputBehaviour=I, maxLength=18, sysNumber=79.0, core=true, t24Name=PAYMENT.AMT, mandatory=false)
-/* This is part of the multivalue set which start from the field "Account".
+            /* This is part of the multivalue set which start from the field "Account".
 The value in this field will be in the format (Payment.Type in FATCA.REPORTING.PARAMETER- Txn.Date) Eg: DEP.INTEREST-20091223. */
         PAYMENT_TYPE : T24BusinessTypes:A
             @i18n:Label (en="Payment Type")
             @i18n:Tooltip (en="Type of Payment (Annuity or Linear)")
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=78.0, core=true, t24Name=PAYMENT.TYPE, mandatory=false)
-/* This is part of the multivalue set which start from the field "Account".
+            /* This is part of the multivalue set which start from the field "Account".
 The field contains the amount of payment in US dollars */
         USD_PAYMENT_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=I, maxLength=18, sysNumber=80.0, core=true, t24Name=USD.PAYMENT.AMT, mandatory=false)
     }
     FATCA_TAX_BASE__ACCOUNT__REP_PYMT_TYPE
     {
-/* This is part of the multivalue set which start from the field "Account".
+    /* This is part of the multivalue set which start from the field "Account".
 The field contains the amount to be reported in FATCA XML report. */
         CON_PYMT_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=I, maxLength=18, sysNumber=83.0, core=true, t24Name=CON.PYMT.AMT, mandatory=false)
-/* This is part of the multivalue set which start from the field "Account".
+            /* This is part of the multivalue set which start from the field "Account".
 The field contains the amount in US dollars to be reported in FATCA XML report. */
         CON_USD_PYMT_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=I, maxLength=18, sysNumber=84.0, core=true, t24Name=CON.USD.PYMT.AMT, mandatory=false)
-/* This is part of the multivalue set which start from the field "Account".
+            /* This is part of the multivalue set which start from the field "Account".
 The field contains the currency to be reported in FATCA XML report. */
         REP_PYMT_CCY : T24BusinessTypes:CCY
             @t24:i (align=L, inputBehaviour=I, maxLength=3, sysNumber=82.0, core=true, t24Name=REP.PYMT.CCY, mandatory=false)
-/* This is part of the multivalue set which start from the field "Account".
+            /* This is part of the multivalue set which start from the field "Account".
 The field contains the payment type to be reported in FATCA XML report. */
         REP_PYMT_TYPE : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=81.0, core=true, t24Name=REP.PYMT.TYPE, mandatory=false)
@@ -1271,11 +1301,11 @@ The field contains the payment type to be reported in FATCA XML report. */
         RELATION_CODE : T24BusinessTypes:ANY
             @i18n:Label (en="Relation code")
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=36.0, core=true, t24Name=RELATION.CODE, mandatory=false)
-/* The field will be updated for clients with FATCA STATUS equal to the Owner Report Status in FATCA reporting parameter.
+            /* The field will be updated for clients with FATCA STATUS equal to the Owner Report Status in FATCA reporting parameter.
 Customer ID or Unique ID from FCSI will be updated. Fields from Relation Customer to Rel FATCA STATUS will be associated multi-value fields */
         RELATION_CUST : T24BusinessTypes:ANY
             @t24:i (align=L, inputBehaviour=I, maxLength=15, sysNumber=35.0, core=true, t24Name=RELATION.CUST, mandatory=false)
-/* The field will be updated from FCSI/CUSTOMER record based on the reporting parameter setting.
+            /* The field will be updated from FCSI/CUSTOMER record based on the reporting parameter setting.
 Second line of address if updated from FCSI record
 ADDRESS field if updated from CUSTOMER record. */
         REL_ADDRESS : T24BusinessTypes:SWI
@@ -1289,12 +1319,12 @@ ADDRESS field if updated from CUSTOMER record. */
         /* The field will be updated from FATCA CUSTOMER SUPPLEMENTARY INFO (FCSI) record. */
         REL_BIRTH_DATE : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=I, maxLength=11, sysNumber=50.0, core=true, t24Name=REL.BIRTH.DATE, mandatory=false)
-/* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
+            /* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
 Fifth line of address if updated from FCSI record
 Country sub entity if updated from  CUSTOMER/DE.ADDRESS record. */
         REL_CNTY_SUB_ENT : T24BusinessTypes:S
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=49.0, core=true, t24Name=REL.CNTY.SUB.ENT, mandatory=false)
-/* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
+            /* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
 HOLD.ADDR.COUNTRY if updated from FCSI record
 COUNTRY  field if updated from CUSTOMER record
 COUNTRY field if updated from DE.ADDRESS record. */
@@ -1326,7 +1356,7 @@ COUNTRY field if updated from DE.ADDRESS record. */
         /* The field will be updated from FATCA CUSTOMER SUPPLEMENTARY INFO (FCSI) record. */
         REL_OWN_PERC : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=I, maxLength=3, sysNumber=51.0, core=true, t24Name=REL.OWN.PERC, mandatory=false)
-/* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
+            /* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
 Fourth line of address if updated from FCSI record
 POST.CODE  field if updated from CUSTOMER record
 POST.CODE field if updated from DE.ADDRESS record. */
@@ -1343,7 +1373,7 @@ POST.CODE field if updated from DE.ADDRESS record. */
         /* The field will be updated from FATCA CUSTOMER SUPPLEMENTARY INFO (FCSI) record. */
         REL_RESIDENCE : T24BusinessTypes:SSS
             @t24:i (align=L, inputBehaviour=I, maxLength=2, sysNumber=42.0, core=true, t24Name=REL.RESIDENCE, mandatory=false)
-/* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
+            /* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
 First line of address if updated from FCSI record
 STREET field if from CUSTOMER record,STREET.ADDRESS field if from DE.ADDRESS record. */
         REL_STREET : T24BusinessTypes:SWI
@@ -1351,7 +1381,7 @@ STREET field if from CUSTOMER record,STREET.ADDRESS field if from DE.ADDRESS rec
         /* The field will be updated from FATCA CUSTOMER SUPPLEMENTARY INFO (FCSI) record. */
         REL_TIN_COUNTRY -> ST_Config:COUNTRY
             @t24:i (align=L, inputBehaviour=I, maxLength=9, sysNumber=54.0, core=true, businessType=SSS, t24Name=REL.TIN.COUNTRY, mandatory=false)
-/* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
+            /* The field will be updated from FCSI/CUSTOMER/DE.ADDRESS record based on the reporting parameter setting.
 Third line of address if updated from FCSI record
 TOWN.COUNTRY  field if updated from CUSTOMER record
 TOWN.COUNTY field if updated from DE.ADDRESS record. */
@@ -1370,7 +1400,7 @@ TOWN.COUNTY field if updated from DE.ADDRESS record. */
         TIN_COUNTRY -> ST_Config:COUNTRY
             @t24:i (align=L, inputBehaviour=I, maxLength=9, sysNumber=28.0, core=true, businessType=SSS, t24Name=TIN.COUNTRY, mandatory=false)
     }
-/* The FATCA.XML.REQUEST is used to generate the XML message, as per the FORM 8966,
+    /* The FATCA.XML.REQUEST is used to generate the XML message, as per the FORM 8966,
 for all the reportable clients. The report can be generated for either a single CUSTOMER,
 ACCOUNT.OFFICER or ALL customers. If a Pool report has to be generated, the ID will be POOL . */
     FATCA_XML_REQUEST
@@ -1422,7 +1452,7 @@ by the IRS, but is later found to contain erroneous information. */
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=4.0, core=true, t24Name=NARRATIVE, mandatory=false)
         OVERRIDE -> byValue FE_FatcaReporting:FATCA_XML_REQUEST__OVERRIDE *
             @t24:i (t24Name=OVERRIDE)
-/* Pool reports are generated for certain classifications in certain jurisdictions.
+            /* Pool reports are generated for certain classifications in certain jurisdictions.
 The field is associated with POOL.STATUS.TYPE and is used to specify whether the report has to be generated for clients with indicia or without indicia.
 If the field is left blank, the report will be generated for all the clients with FATCA STATUS equal to the status in POOL.STATUS.TYPE..
 Validation Rules:
@@ -1431,7 +1461,7 @@ This field will be open editable only when the @ID is pool.‘YES’ if ‘with 
             @i18n:Label (en="Pool Indicia")
             @i18n:Tooltip (en="To generate pool report with or without Indicia")
             @t24:i (align=L, inputBehaviour=I, maxLength=5, sysNumber=6.0, core=true, t24Name=POOL.INDICIA, mandatory=false)
-/* The field identifies the date on which the pool report is extracted.
+            /* The field identifies the date on which the pool report is extracted.
 This field will be defaulted from fatca reporting parameter extract date if @id is pool.
 Validation Rules:
 This field will be open editable only when the @ID is pool. */
@@ -1439,7 +1469,7 @@ This field will be open editable only when the @ID is pool. */
             @i18n:Label (en="Pool Report Date")
             @i18n:Tooltip (en="Date on which the pool report extracted")
             @t24:i (align=R, inputBehaviour=I, maxLength=11, sysNumber=7.0, core=true, t24Name=POOL.REPORT.DATE, mandatory=false)
-/* Pool reports are generated for certain classifications in certain jurisdictions.
+            /* Pool reports are generated for certain classifications in certain jurisdictions.
 The field is used to identify the statuses (RECALCITRANT, DORMANT, NON-PARTICIPATING) for which the pool reports need to be generated.
 Validation Rules:
 This field will be open editable only when the @ID is pool. */
@@ -1450,7 +1480,7 @@ This field will be open editable only when the @ID is pool. */
         RECORD_STATUS : T24BusinessTypes:STAT
             @i18n:Label (en="Record Status")
             @t24:i (align=L, inputBehaviour=N, maxLength=4, sysNumber=16.0, core=true, t24Name=RECORD.STATUS, mandatory=false)
-/* Based on ACTION selection following  need to updated in REPORT.TYPE.
+            /* Based on ACTION selection following  need to updated in REPORT.TYPE.
 FATCA1 = New Data
 FATCA2 = Corrected Data
 FATCA3 = Void Data
@@ -1475,14 +1505,17 @@ FATCA4 = Amended Data */
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=9.0, core=true, t24Name=RESERVED.5, mandatory=false)
         RESERVED_6 : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=8.0, core=true, t24Name=RESERVED.6, mandatory=false)
-/* The field identifies the year to which the generated XML pertains to.
+            /* The field identifies the year to which the generated XML pertains to.
 Validation Rules:
 A valid year. */
         YEAR : T24BusinessTypes:N required
             @i18n:Label (en=Year)
             @t24:i (align=R, inputBehaviour=I, maxLength=4, sysNumber=1.0, core=true, t24Name=YEAR, mandatory=true)
     }
-    FATCA_XML_REQUEST__DATE_TIME
+    
+    
+    
+FATCA_XML_REQUEST__DATE_TIME
     {
         DATE_TIME : T24BusinessTypes:RELTIME
             @i18n:Label (en="Date time")
@@ -1506,42 +1539,63 @@ A valid year. */
 }
 Enumerations {
     FATCA_AGGR_TAX_BASE__DUE_DILIGENCE_IND : mml:string
+        
         0=0
         1=1
     FATCA_AGGR_TAX_BASE__THRESHOLD_IND : mml:string
+        
         0=0
         1=1
     FATCA_BASE_MANUAL_UPDATE__ACTION : mml:string
+        
+        
         AMEND=AMEND
         DELETE=DELETE
         NEW=NEW
     FATCA_BASE_MANUAL_UPDATE__FIELD_NAME_MV__FIELD_ACTION : mml:string
+        
+        
         AMEND=AMEND
         DELETE=DELETE
         NEW=NEW
     FATCA_POOL_BALANCE__DUE_DILIGENCE_IND : mml:string
+        
         0=0
         1=1
     FATCA_POOL_BALANCE__THRESHOLD_IND : mml:string
+        
         0=0
         1=1
     FATCA_REPORTING_PARAMETER__AGG_BAL_CHECK : mml:string
+        
         NULL=NULL
         YES=YES
     FATCA_REPORTING_PARAMETER__CLOSED_ACCT_BAL : mml:string
+        
         CLOSE_DAY=CLOSE.DAY
         MONTH_END=MONTH.END
     FATCA_REPORTING_PARAMETER__DEFAULT_ADDRESS : mml:string
+        
         CUSTOMER=CUSTOMER
         DE_ADDRESS=DE.ADDRESS
     FATCA_REPORTING_PARAMETER__DUE_DILIGENCE_IND : mml:string
+        
         0=0
         1=1
     FATCA_REPORTING_PARAMETER__FCY_ACC_REPORT : mml:string
+        
+        
         ACCOUNT=ACCOUNT
         NULL=NULL
         USD=USD
     FATCA_REPORTING_PARAMETER__FILER_CATEGORY : mml:string
+        
+        
+        
+        
+        
+        
+        
         FATCA601=FATCA601
         FATCA602=FATCA602
         FATCA603=FATCA603
@@ -1551,35 +1605,55 @@ Enumerations {
         FATCA610=FATCA610
         FATCA611=FATCA611
     FATCA_REPORTING_PARAMETER__HMRC_SCHEMA : mml:string
+        
         NULL=NULL
         YES=YES
     FATCA_REPORTING_PARAMETER__MIN_BAL_CHECK : mml:string
+        
         NULL=NULL
         YES=YES
     FATCA_REPORTING_PARAMETER__NEW_ACCOUNT_ENT : mml:string
+        
         NULL=NULL
         YES=YES
     FATCA_REPORTING_PARAMETER__NEW_ACCOUNT_ONLY : mml:string
+        
         NULL=NULL
         YES=YES
     FATCA_REPORTING_PARAMETER__NEW_ACC_EXIST : mml:string
+        
         NULL=NULL
         YES=YES
     FATCA_REPORTING_PARAMETER__NPFFI_REPORT : mml:string
+        
         NULL=NULL
         YES=YES
     FATCA_REPORTING_PARAMETER__OWNER_TYPE__OWNER_ADDRESS : mml:string
+        
+        
         CUSTOMER=CUSTOMER
         DE_ADDRESS=DE.ADDRESS
         FCSI=FCSI
     FATCA_REPORTING_PARAMETER__OWNER_TYPE__OWNER_TYPE : mml:string
+        
+        
         BENEFICIAL=BENEFICIAL
         JOINT=JOINT
         SUBSTANTIAL=SUBSTANTIAL
     FATCA_REPORTING_PARAMETER__OWNER_TYPE__REL_IDENTIFIER : mml:string
+        
         FCSI=FCSI
         NULL=NULL
     FATCA_REPORTING_PARAMETER__PAYMENT_TYPE__PAYMENT_CODE : mml:string
+        
+        
+        
+        
+        
+        
+        
+        
+        
         00=00
         01=01
         02=02
@@ -1591,6 +1665,12 @@ Enumerations {
         FATCA503=FATCA503
         FATCA504=FATCA504
     FATCA_REPORTING_PARAMETER__PAYMENT_TYPE__PAYMENT_TYPE : mml:string
+        
+        
+        
+        
+        
+        
         CUS_DIVIDEND=CUS.DIVIDEND
         CUS_GROSSPROCEEDS_OR_REDEMPTION=CUS.GROSSPROCEEDS.OR.REDEMPTION
         CUS_GROSSPROCEEDS_REDEMPTION=CUS.GROSSPROCEEDS/REDEMPTION
@@ -1599,9 +1679,16 @@ Enumerations {
         DEP_INTEREST=DEP.INTEREST
         NPFFI_AGGREGATION=NPFFI.AGGREGATION
     FATCA_REPORTING_PARAMETER__RECAL_REPORT : mml:string
+        
         NULL=NULL
         YES=YES
     FATCA_REPORTING_PARAMETER__STATUS_TYPE__STATUS_TYPE : mml:string
+        
+        
+        
+        
+        
+        
         DORMANT=DORMANT
         INACTIVE=INACTIVE
         NON__PARTICIPATING=NON-PARTICIPATING
@@ -1610,49 +1697,70 @@ Enumerations {
         RECALCITRANT=RECALCITRANT
         SPEC_US_PERSON=SPEC.US.PERSON
     FATCA_REPORTING_PARAMETER__THRESHOLD_IND : mml:string
+        
         0=0
         1=1
     FATCA_REPORTING_PARAMETER__UPDATE_INC_BASE : mml:string
+        
+        
+        
         AGGRALL=AGGRALL
         AGGRCUST=AGGRCUST
         AGGRCUSTDEP=AGGRCUSTDEP
         NULL=NULL
     FATCA_TAX_BASE__ACCOUNT__ACCOUNT_TYPE : mml:string
+        
         CUSTODY=CUSTODY
         DEPOSITORY=DEPOSITORY
     FATCA_TAX_BASE__DUE_DILIGENCE_IND : mml:string
+        
         0=0
         1=1
     FATCA_TAX_BASE__EXISTING_NEW : mml:string
+        
         EXISTING=EXISTING
         NEW=NEW
     FATCA_TAX_BASE__INDICIA : mml:string
+        
         NULL=NULL
         YES=YES
     FATCA_TAX_BASE__RELATION_CUST__REL_ENTITY_TYPE : mml:string
+        
         CONT=CONT
         ORGA=ORGA
     FATCA_TAX_BASE__RELATION_CUST__ROLE_TYPE : mml:string
+        
+        
         BENEFECIAL=BENEFECIAL
         JOINT=JOINT
         SUBSTANTIAL=SUBSTANTIAL
     FATCA_TAX_BASE__THRESHOLD_IND : mml:string
+        
         0=0
         1=1
     FATCA_TAX_BASE__US_PLACE_OF_BIRTH : mml:string
+        
         NO=NO
         YES=YES
     FATCA_XML_REQUEST__ACTION : mml:string
+        
+        
+        
+        
         AMEND=AMEND
         CORRECTION=CORRECTION
         NEW=NEW
         NIL=NIL
         VOID=VOID
     FATCA_XML_REQUEST__POOL_INDICIA : mml:string
+        
         US=US
         YES=YES
     FATCA_XML_REQUEST__POOL_STATUS_TYPE : mml:string
-        DORMANT=DORMANT
+        
+        
+        
+DORMANT=DORMANT
         NON__PARTICIPATING=NON-PARTICIPATING
         RECALCITRANT=RECALCITRANT
 }

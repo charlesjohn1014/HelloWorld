@@ -1,0 +1,228 @@
+Screen STANDING_ORDER, AI_AMEND
+    t24Name: "STANDING.ORDER,AI.AMEND"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Standing Order : Fixed Amount Within Bank"
+reportLocks: Yes
+refNoInFirstLine: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+}
+
+API {
+    includeVersionControl: No
+    inputRoutines:
+        jBC: "V.MB.STO.CHK.DATE"
+}
+
+IB {
+    confirmVersion: STANDING_ORDER,AI_AMEND_CONFIRM
+    previewVersion: STANDING_ORDER,AI_AMEND_COMPLETE
+}
+
+attributes: "NO.HEADER.TAB" ; "NO.COMBO.BOX"
+
+Fields {
+    "BEN_REFERENCE" {
+
+        Presentation {
+            displayType: NoDisplay
+            inputBehaviour: NoInput
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 0
+        }
+
+        Translations:
+            label: en = "Account to make payment(s) from : "
+    }
+
+    "BENEFICIARY_ID" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            inputBehaviour: NoInput
+            maxLength: 34
+            column: 1
+            row: 1
+            mandatory: Yes
+            selectionEnquiry: "AI.BENEFICIARY.PAY.LIST.LOCAL"
+        }
+
+        Translations:
+            label: en = "Beneficiary"
+    }
+
+    "CPTY_ACCT_NO" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 2
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Payee Account Number"
+            toolTip: en = "Beneficiary account number"
+    }
+
+    "CURRENCY" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 3
+            mandatory: Yes
+            selectionEnquiry: "AI.CURRENCY.LIST"
+        }
+
+        Translations:
+            label: en = "Currency"
+            toolTip: en = "Specifies the ccy of the Standing Order payment"
+    }
+
+    "CURRENT_AMOUNT_BAL" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 4
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Amount to pay"
+            toolTip: en = "Specifies the amount of the Standing Order"
+    }
+
+    "FREQUENCY" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 5
+            mandatory: Yes
+            selectionEnquiry: "AI.FREQUENCY.LIST"
+        }
+
+        Translations:
+            label: en = "Payment Frequency"
+            toolTip: en = "Identifies the Current Frequency of the STO"
+    }
+
+    "START_DATE" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 6
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "First payment date"
+
+        API {
+            validation-routines:
+                jBC: "@AI.FREQUENCY"
+        }
+
+    }
+
+    "CURRENT_END_DATE" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 36
+            column: 1
+            row: 7
+        }
+
+        Translations:
+            label: en = "Final payment date"
+            toolTip: en = "Identifies the Current End Date of the STO"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 34
+            column: 1
+            row: 8
+        }
+
+        Translations:
+            label: en = "or"
+    }
+
+    "FUTURE_NOTICE" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 9
+        }
+
+        Translations:
+            label: en = "Until Further Notice"
+    }
+
+    "PAYMENT_DETAILS" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 36
+            expansion: No
+            column: 1
+            row: 10
+        }
+
+        default: IF ( 1 ) "NULL" THEN "STANDING.ORDER>PAYMENT.DETAILS"
+        Translations:
+            label: en = "Payment Details"
+        MV: 1
+    }
+
+    "CURRENT_FREQUENCY" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 11
+        }
+
+    }
+
+    "K_TYPE" {
+        default: IF ( ) "NULL" THEN "FI"
+    }
+
+    "PAY_METHOD" {
+        default: IF ( ) "NULL" THEN "AC"
+    }
+
+    "PRINT_ADVICE" {
+        default: IF ( ) "NULL" THEN "Y"
+    }
+
+}

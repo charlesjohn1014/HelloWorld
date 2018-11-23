@@ -1,0 +1,264 @@
+Screen TELLER, IS_COST_PAY_LCY
+    t24Name: "TELLER,IS.COST.PAY.LCY"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 1
+    description: en = "Cost Payment by Cash"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header2: en = "Cost Payment by Cash"
+}
+
+Relationship {
+    associatedVersions: TELLER,LCY_CASHCHQ_DENOM ; TELLER,SIGNATORY ; TELLER,AUDIT
+}
+
+API {
+    includeVersionControl: No
+    authorizationRoutines:
+        jBC: "IS.AUT.TT.PAYMENT"
+    inputRoutines:
+        jBC: "IS.INP.TT.COST"
+}
+
+Fields {
+    "IS_CUSTOMER" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 0
+        }
+
+        Translations:
+            label: en = "Customer"
+            toolTip: en = "Customer"
+    }
+
+    "IS_CONTRACT_REF" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 1
+            hotField: Yes
+            selectionEnquiry: "IS.CONTRACT.CUST.LIST"
+            enquiryParameter: "CUSTOMER EQ IS.CUSTOMER"
+        }
+
+        Translations:
+            label: en = "Contract Reference"
+            toolTip: en = "Contract Reference"
+
+        API {
+            validation-routines:
+                jBC: "IS.VAL.TT.COST.CONTRACT"
+        }
+
+    }
+
+    "IS_COST_REF" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 2
+            hotField: Yes
+            selectionEnquiry: "IS.CONTRACT.COST.LIST"
+            enquiryParameter: "IS.CONTRACT.ID EQ IS.CONTRACT.REF"
+        }
+
+        Translations:
+            label: en = "Cost Reference"
+            toolTip: en = "Cost Reference"
+
+        API {
+            validation-routines:
+                jBC: "IS.VAL.TT.COST"
+        }
+
+    }
+
+    "CURRENCY_1" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 3
+        }
+
+        Translations:
+            label: en = "Currency"
+            toolTip: en = "Currency"
+    }
+
+    "CHRG_AMT_LOCAL" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 12
+            column: 0
+            row: 4
+        }
+
+        Translations:
+            label: en = "Amount Local"
+        MV: 1
+    }
+
+    "CHRG_AMT_FCCY" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 14
+            column: 0
+            row: 5
+        }
+
+        Translations:
+            label: en = "Amount Foreign"
+        MV: 1
+    }
+
+    "AMOUNT_LOCAL_1" {
+
+        Presentation {
+            maxLength: 25
+            expansion: No
+            column: 1
+            row: 6
+            hotField: Yes
+            enriCol: 35
+        }
+
+        Translations:
+            label: en = "Vendor Pay Amount"
+            toolTip: en = "Vendor Pay Amount"
+        MV: 1
+    }
+
+    "ACCOUNT_1" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            enrichmentLength: 25
+            expansion: No
+            column: 0
+            row: 7
+        }
+
+        Translations:
+            label: en = "Internal Account"
+            toolTip: en = "Internal Account Number"
+        MV: 1
+    }
+
+    "ACCOUNT_2" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 8
+        }
+
+        Translations:
+            label: en = "Debit Account"
+            toolTip: en = "Debit Account"
+    }
+
+    "VALUE_DATE_2" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 9
+        }
+
+        default: IF ( ) "0X" THEN "!TODAY"
+        Translations:
+            label: en = "Value Date"
+    }
+
+    "NARRATIVE_2" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 10
+        }
+
+        Translations:
+            label: en = "Narrative"
+            toolTip: en = "Narrative"
+        MV: 1
+    }
+
+    "NET_AMOUNT" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 11
+        }
+
+        Translations:
+            label: en = "Cash Paid to Vendor"
+            toolTip: en = "Cash Paid to Vendor"
+    }
+
+    "DR_CR_MARKER" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            column: 0
+            row: 12
+        }
+
+        Translations:
+            label: en = "Dr / Cr Marker"
+            toolTip: en = "Debit Credit indicator"
+    }
+
+    "NEW_CUST_BAL" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 13
+        }
+
+        Translations:
+            label: en = "New Balance"
+            toolTip: en = "New Balance"
+        MV: 1
+    }
+
+    "WAIVE_CHARGES" {
+        default: IF ( ) "0X" THEN "YES"
+    }
+
+    "TRANSACTION_CODE" {
+        default: IF ( ) "0X" THEN "122"
+    }
+
+}

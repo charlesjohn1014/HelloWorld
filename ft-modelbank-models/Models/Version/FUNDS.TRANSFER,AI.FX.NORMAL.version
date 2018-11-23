@@ -1,0 +1,199 @@
+Screen FUNDS_TRANSFER, AI_FX_NORMAL
+    t24Name: "FUNDS.TRANSFER,AI.FX.NORMAL"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Transfer to own bank another currency"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    browserToolbar: "ARC.BACK.FT"
+    language: en
+}
+
+IB {
+    confirmVersion: FUNDS_TRANSFER,AI_AC_FX_CONFIRM
+    previewVersion: FUNDS_TRANSFER,AI_AC_FX_COMPLETE
+}
+
+attributes: "NO.HEADER.TAB" ; "NO.COMBO.BOX"
+
+Fields {
+    "DEBIT_ACCT_NO" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 29
+            enrichmentLength: 30
+            column: 1
+            row: 0
+            mandatory: Yes
+            hotField: Yes
+            selectionEnquiry: "AI.EXT.PERS.ACCTS"
+        }
+
+        Translations:
+            label: en = "Transfer From"
+            toolTip: en = "Account from which Amount has to be transferred"
+
+        API {
+            validation-routines:
+                jBC: "@E.AI.GET.FT.DEBIT.CCY"
+        }
+
+    }
+
+    "DEBIT_CURRENCY" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 35
+            enrichmentLength: 30
+            column: 0
+            row: 1
+        }
+
+    }
+
+    "CREDIT_ACCT_NO" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 29
+            enrichmentLength: 30
+            column: 1
+            row: 2
+            mandatory: Yes
+            hotField: Yes
+            selectionEnquiry: "AI.EXT.PERS.ACCTS"
+        }
+
+        Translations:
+            label: en = "Transfer To"
+            toolTip: en = "Account to which amount has to be transferred"
+
+        API {
+            validation-routines:
+                jBC: "@E.AI.GET.FT.CREDIT.CCY"
+        }
+
+    }
+
+    "CREDIT_CURRENCY" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 29
+            enrichmentLength: 30
+            column: 1
+            row: 3
+        }
+
+    }
+
+    "CREDIT_AMOUNT" {
+
+        Presentation {
+            maxLength: 29
+            enrichmentLength: 30
+            column: 1
+            row: 4
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Transaction Amount"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 5
+        }
+
+        Translations:
+            label: en = "When do you want to make your transfer?"
+    }
+
+    "IMMEDIATELY" {
+
+        Presentation {
+            maxLength: 29
+            enrichmentLength: 30
+            column: 1
+            row: 6
+            hotField: Yes
+        }
+
+        Translations:
+            label: en = "Immediately"
+
+        API {
+            validation-routines:
+                jBC: "@AI.PROCESSING.DATE"
+        }
+
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 2
+            column: 1
+            row: 7
+        }
+
+        Translations:
+            label: en = "or"
+    }
+
+    "FUTURE_DATE" {
+
+        Presentation {
+            maxLength: 29
+            enrichmentLength: 30
+            column: 1
+            row: 8
+        }
+
+        Translations:
+            label: en = "Future Date"
+    }
+
+    "PROCESSING_DATE" {
+
+        Presentation {
+            displayType: NoDisplay
+            column: 1
+            row: 9
+        }
+
+    }
+
+    "PAYMENT_DETAILS" {
+
+        Presentation {
+            maxLength: 29
+            enrichmentLength: 30
+            expansion: No
+            column: 1
+            row: 10
+        }
+
+        Translations:
+            label: en = "Your Reference "
+        MV: 1
+    }
+
+    "TRANSACTION_TYPE" {
+        default: IF ( ) "NULL" THEN "ACIB"
+    }
+
+}

@@ -1,0 +1,237 @@
+Screen SA_SCORE_TXN, MIFID_RISK_PROFILING
+    t24Name: "SA.SCORE.TXN,MIFID.RISK.PROFILING"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Calculate Risk Profile"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "                                       Calculate Risk Profile"
+}
+
+Relationship {
+    associatedVersions: SA_SCORE_TXN,AUDIT
+}
+
+API {
+    includeVersionControl: Yes
+}
+
+attributes: "NO.HEADER.TAB"
+
+Fields {
+    "CUSTOMER_ID" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 0
+            selectionEnquiry: "CURRENT.CUST"
+        }
+
+        Translations:
+            label: en = "Customer No."
+            toolTip: en = "Customer for whom credit scoring is done"
+    }
+
+    "APP_FORM_ID" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 1
+            mandatory: Yes
+            selectionEnquiry: "SA.SCORE.DATA"
+        }
+
+        Translations:
+            label: en = "Investment Profile"
+    }
+
+    "SCORE_DATA" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 25
+            column: 1
+            row: 2
+            hotField: Yes
+            selectionEnquiry: "CURRENT.SCORE.DATA"
+            enquiryParameter: "@ID EQ APP.FORM.ID"
+        }
+
+        Translations:
+            label: en = "Product Name"
+        promptText: en = "Specifies Product Name"
+    }
+
+    "CURRENCY" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 3
+        }
+
+        Translations:
+            label: en = "Investment Ccy."
+            toolTip: en = "Currency in which data is gathered"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 61
+            column: 1
+            row: 4
+        }
+
+        Translations:
+            label: en = "                                       Data"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 68
+            column: 1
+            row: 5
+        }
+
+        Translations:
+            label: en = "Data Type                              Data Value"
+    }
+
+    "DATA_TYPES" {
+
+        Presentation {
+            enrichmentLength: 15
+            column: 1
+            row: 6
+        }
+
+        Translations:
+            toolTip: en = "Specifies data types"
+        MV: 1
+    }
+
+    "DATA_VAL" {
+
+        Presentation {
+            column: 59
+            row: 6
+            hotField: Yes
+            selectionEnquiry: "GET.SCORE.CARD.DETS"
+            enquiryParameter: "DATA.TYPE EQ DATA.TYPES"
+        }
+
+        Translations:
+            toolTip: en = "Specifies date value"
+        MV: 1
+    }
+
+    "*" {
+
+        Presentation {
+            column: 1
+            row: 7
+        }
+
+    }
+
+    "PERFORM_CALC" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 8
+            hotValidate: Yes
+            hotField: Yes
+        }
+
+        Translations:
+            label: en = "Calc. Score"
+            toolTip: en = "Allowed values are YES and NO"
+
+        API {
+            validation-routines:
+                jBC: "@V.MB.UPD.MIFID.CLASS"
+        }
+
+    }
+
+    "AGG_SCORE" {
+
+        Presentation {
+            maxLength: 17
+            column: 41
+            row: 8
+        }
+
+        Translations:
+            label: en = "Agg Score"
+    }
+
+    "*" {
+
+        Presentation {
+            column: 1
+            row: 9
+        }
+
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 60
+            column: 1
+            row: 10
+        }
+
+        Translations:
+            label: en = "Result"
+    }
+
+    "SCORE_STATUS" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 14
+            column: 1
+            row: 11
+            enriCol: 56
+        }
+
+        default: IF ( ) "0X" THEN "NULL"
+        Translations:
+            label: en = "Risk class"
+    }
+
+    "DESCRIPTION" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 25
+            column: 1
+            row: 12
+            mandatory: Yes
+            selectionEnquiry: "CURRENT.RISK"
+            enquiryParameter: "@ID EQ SCORE.STATUS"
+        }
+
+        default: IF ( 1 ) "0X" THEN "NULL"
+        Translations:
+            label: en = "Risk Class(Calculated)"
+        MV: 1
+    }
+
+}

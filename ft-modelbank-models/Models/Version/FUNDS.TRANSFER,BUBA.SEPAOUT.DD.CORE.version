@@ -1,0 +1,642 @@
+Screen FUNDS_TRANSFER, BUBA_SEPAOUT_DD_CORE
+    t24Name: "FUNDS.TRANSFER,BUBA.SEPAOUT.DD.CORE"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 1
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "SEPA Outward Direct Debit"
+}
+
+Relationship {
+    nextVersion: SEPA_PAYM_PARTICIPANTS,SEPA
+    nextVersionFunction: See
+    nextVersionTransactionReference: "SEPA.OUT.CLEAR"
+    associatedVersions: FUNDS_TRANSFER,SEPA_CHARGES ; FUNDS_TRANSFER,SEPA_AUDIT
+}
+
+API {
+    authorizationRoutines:
+        jBC: "SEPA.COPY.CUST.DETAILS"
+    inputRoutinesAfterCommit:
+        jBC: "SEPA.SET.CUST.DETAILS"
+}
+
+Fields {
+    "SEPA_CODE_OPE" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 0
+        }
+
+        default: IF ( ) "NULL" THEN "400"
+        Translations:
+            label: en = "NN XX SEPA Transcode"
+    }
+
+    "PROCESSING_DATE" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 50
+            row: 0
+        }
+
+        Translations:
+            label: en = "NN Presentation SEPA"
+    }
+
+    "TRANSACTION_TYPE" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            enrichmentLength: 15
+            column: 1
+            row: 1
+        }
+
+        default: IF ( ) "NULL" THEN "ACOD"
+        Translations:
+            label: en = "NN Transaction type"
+    }
+
+    "SEPA_PEACH" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 50
+            row: 1
+        }
+
+        default: IF ( ) "NULL" THEN @
+            jBC: "@SEPA.FT.VAL.PEACH.ID.BUBA"
+        Translations:
+            label: en = "PE-ACH"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 2
+        }
+
+        Translations:
+            label: en =
+        "------------------- Credit Information -----------------------------------------------------------"
+    }
+
+    "CREDIT_ACCT_NO" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 3
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "NN Credit Account "
+
+        API {
+            validation-routines:
+                jBC: "@SEPA.FT.CHECK.FIELDS"
+        }
+
+    }
+
+    "CREDIT_AMOUNT" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 4
+        }
+
+        Translations:
+            label: en = "NN Credit Amount"
+    }
+
+    "CREDIT_CURRENCY" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 5
+        }
+
+        Translations:
+            label: en = "NN Credit Currency"
+    }
+
+    "CREDIT_VALUE_DATE" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 6
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "NN Credit Val Date"
+    }
+
+    "AMOUNT_CREDITED" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 7
+        }
+
+        Translations:
+            label: en = "NN Net Credit Amt "
+    }
+
+    "PAYMENT_DETAILS" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 8
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "NN XX Payment Msg"
+
+        API {
+            validation-routines:
+                jBC: "@SEPA.FT.CHECK.FIELDS"
+        }
+
+        MV: 1
+    }
+
+    "SEPA_PURPOSE" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 9
+            selectionEnquiry: "%SEPA.PURPOSE.CODE"
+        }
+
+        Translations:
+            label: en = "NN XX Purpose"
+    }
+
+    "SEPA_CATEG" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 10
+            selectionEnquiry: "%SEPA.CATEG.PURPOSE"
+        }
+
+        Translations:
+            label: en = "NN XX Category Purpose"
+    }
+
+    "END_TO_END_ID" {
+
+        Presentation {
+            maxLength: 35
+            column: 1
+            row: 11
+        }
+
+        Translations:
+            label: en = "NN XX End to End Id"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 12
+        }
+
+        Translations:
+            label: en =
+        "------------------- Debit Information ------------------------------------------------------------"
+    }
+
+    "DEBIT_ACCT_NO" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 13
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "NN Debit Account "
+    }
+
+    "DEBIT_CURRENCY" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 14
+        }
+
+        Translations:
+            label: en = "NN Debit currency"
+    }
+
+    "DEBIT_CUSTOMER" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 15
+        }
+
+        Translations:
+            label: en = "NN Customer"
+    }
+
+    "DEBIT_AMOUNT" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 16
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "NN Debit Amount"
+    }
+
+    "DEBIT_VALUE_DATE" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 17
+        }
+
+        Translations:
+            label: en = "NN Debit Val Date"
+    }
+
+    "AMOUNT_DEBITED" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 18
+        }
+
+        Translations:
+            label: en = "NN Net Debit Amt "
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 19
+        }
+
+        Translations:
+            label: en =
+        "------------------- Receiver Information ---------------------------------------------------------"
+    }
+
+    "SEPA_CUST_DTLS" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 20
+        }
+
+        Translations:
+            label: en = "NN XX Set Customer Detail"
+    }
+
+    "SEPA_THEIR_NAME" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 21
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "NN XX Receiver Name"
+
+        API {
+            validation-routines:
+                jBC: "@SEPA.FT.CHECK.FIELDS"
+        }
+
+        MV: 1
+    }
+
+    "SEPA_THEIR_BANK" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 22
+            selectionEnquiry: "SEPA.BANK.LIST"
+        }
+
+        Translations:
+            label: en = "NN XX Recv. BIC"
+    }
+
+    "SEPA_THEIR_ACCT" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 23
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "NN XX Recv. IBAN "
+    }
+
+    "SEPA_ADDRESS" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 24
+        }
+
+        Translations:
+            label: en = "XX NN NN Address "
+
+        API {
+            validation-routines:
+                jBC: "@SEPA.FT.CHECK.FIELDS"
+        }
+
+        MV: 1
+    }
+
+    "SEPA_THEIR_CTRY" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 25
+            selectionEnquiry: "%COUNTRY"
+        }
+
+        Translations:
+            label: en = "XX NN Rec. Country"
+    }
+
+    "SEPA_SDD_TYPE" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 26
+        }
+
+        default: IF ( ) "NULL" THEN "CORE"
+        Translations:
+            label: en = "SDD Type"
+    }
+
+    "SDD_SEQUENCE" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 27
+        }
+
+        default: IF ( ) "NULL" THEN "OOFF"
+        Translations:
+            label: en = "SDD Sequence"
+    }
+
+    "SEPA_MANDATE_ID" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 28
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Mandate Id"
+    }
+
+    "SEPA_CREDITOR" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 29
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Creditor Id"
+    }
+
+    "SDD_DATE_SIGN" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 30
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "SDD Date Sign"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 31
+        }
+
+    }
+
+    "TREASURY_RATE" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 32
+        }
+
+        Translations:
+            label: en = "NN Exchange Rate  "
+    }
+
+    "PROFIT_CENTRE_DEPT" {
+
+        Presentation {
+            maxLength: 25
+            column: 50
+            row: 32
+        }
+
+        Translations:
+            label: en = "NN Service Unit   "
+    }
+
+    "PROFIT_CENTRE_CUST" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 33
+        }
+
+        Translations:
+            label: en = "NN Profit Center Cust :"
+    }
+
+    "DEBIT_THEIR_REF" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 34
+        }
+
+        Translations:
+            label: en = "NN Reference DB "
+    }
+
+    "CREDIT_THEIR_REF" {
+
+        Presentation {
+            maxLength: 25
+            column: 50
+            row: 34
+        }
+
+        Translations:
+            label: en = "NN Reference CR "
+    }
+
+    "SEPA_OUT_CLEAR" {
+
+        Presentation {
+            maxLength: 26
+            column: 1
+            row: 35
+        }
+
+        Translations:
+            label: en = "XX NN SEPA.OUTWARD"
+    }
+
+    "DR_ADVICE_REQD_Y_N" {
+
+        Presentation {
+            displayType: Combobox
+            maxLength: 25
+            column: 50
+            row: 35
+        }
+
+        Translations:
+            label: en = "NN Prn Debit Adv "
+    }
+
+    "DELIVERY_OUTREF" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 36
+        }
+
+        Translations:
+            label: en = "NN XX Delivery Ref"
+        MV: 1
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 37
+        }
+
+    }
+
+    "OVERRIDE" {
+
+        Presentation {
+            maxLength: 8
+            column: 1
+            row: 38
+        }
+
+        Translations:
+            label: en = "override"
+        MV: 1
+    }
+
+    "PAYMENT_REF" {
+
+        API {
+            validation-routines:
+                jBC: "@SEPA.FT.CHECK.FIELDS"
+        }
+
+    }
+
+    "BASE_CURRENCY" {
+        default: IF ( ) "NULL" THEN @
+            jBC: "@SEPA.FT.VAL.BASE.CCY"
+    }
+
+}

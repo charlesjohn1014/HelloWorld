@@ -14,7 +14,7 @@ Classes {
             @t24:i (align=L, inputBehaviour=I, maxLength=9, sysNumber=4.0, core=true, t24Name=ACCOUNT.BRANCH, mandatory=false)
         ACCOUNT_NO -> AC_AccountClosure:ACCOUNT_CLOSED PK required
             @i18n:Label (en=Account)
-            @t24:i (align=R, inputBehaviour=I, maxLength=19, sysNumber=0.0, core=true, businessType=ACC, t24Name=ACCOUNT.NO, mandatory=true)
+            @t24:i (align=L, inputBehaviour=I, maxLength=19, sysNumber=0.0, core=true, businessType=POSANT, t24Name=ACCOUNT.NO, mandatory=true)
         ACCOUNT_OFFICER : T24BusinessTypes:A
             @i18n:Label (en="Account Officer")
             @i18n:Tooltip (en="Indicates Account Officer responsible")
@@ -37,6 +37,7 @@ Classes {
             @i18n:Tooltip (en="Identifies the Customer for the transaction.")
             @t24:i (align=R, inputBehaviour=I, maxLength=10, sysNumber=2.0, core=true, t24Name=CUSTOMER.ID, mandatory=false)
     }
+    
     ACCOUNT_CLOSED__CLOSURE_NOTES
     {
         CLOSURE_NOTES -> byValue AC_AccountClosure:ACCOUNT_CLOSED__CLOSURE_NOTES__CLOSURE_NOTES *
@@ -49,7 +50,7 @@ Classes {
             @i18n:Tooltip (en=Notes)
             @t24:i (align=L, inputBehaviour=I, maxLength=35, multiLanguage=true, sysNumber=9.0, core=true, t24Name=CLOSURE.NOTES, mandatory=false)
     }
-/* This file contains details such as outstanding interest and charges, and is used to indicate that an account is flagged for closure.
+    /* This file contains details such as outstanding interest and charges, and is used to indicate that an account is flagged for closure.
 The information is provided to help the user determine the entries which must be booked to bring the Balance to zero and allow automatic closing to proceed.
 The procedure for closing an Account is as follows:
 (1)        Select this application, and using the input function, set the            POSTING.RESTRICT field to a value in the range 90 - 99.
@@ -93,13 +94,13 @@ Validation Rules:
             @t24:i (align=L, inputBehaviour=N, maxLength=5, core=false, t24Name=ACCT.GRP.COND, genOperation="ACCT.GRP:ACCT.GRP.CUR", mandatory=false)
         ACCT_GRP_CUR : T24BusinessTypes:N
             @t24:i (align=L, inputBehaviour=N, maxLength=5, core=false, t24Name=ACCT.GRP.CUR, genOperation="@ID>ACCOUNT>CURRENCY", mandatory=false)
-/* If interest and charges are to be booked to another ACCOUNT, this field contains the number of the ACCOUNT to which they will be booked.
+            /* If interest and charges are to be booked to another ACCOUNT, this field contains the number of the ACCOUNT to which they will be booked.
 This is the Liquidity Account specified in the INTEREST LIQU ACCT field of the originating ACCOUNT record.
 Validation Rules:
 2-16 numeric characters Account Number. Internal field. This is a NOINPUT field. */
         ACCT_LIQUIDATED_TO : T24BusinessTypes:ANT
             @t24:i (align=L, inputBehaviour=N, maxLength=16, sysNumber=15.0, core=true, t24Name=ACCT.LIQUIDATED.TO, mandatory=false)
-/* Identifies the currency of the account liquidated to in field 15.
+            /* Identifies the currency of the account liquidated to in field 15.
 This is the Interest currency, if any, specified in the originating ACCOUNT record.
 Validation Rules:
 3 type SSS (uppercase alpha) character or 1-3 numeric character currency code. */
@@ -119,14 +120,14 @@ Validation Rules:
             @t24:i (align=L, inputBehaviour=N, maxLength=40, sysNumber=48.0, core=true, t24Name=AUTHORISER, mandatory=false)
         BANK_CARDS -> byValue AC_AccountClosure:ACCOUNT_CLOSURE__BANK_CARDS *
             @t24:i (t24Name=BANK.CARDS)
-/* 1_G6.1.03m
+            /* 1_G6.1.03m
 Validation Rules:
 9601111715 */
         BC_BANK_SORT_CODE -> FT_LocalClearing:BC_SORT_CODE
             @i18n:Label (en="Sort Code")
             @i18n:Tooltip (en="Local Bank Sort Code for local clearing systems")
             @t24:i (align=L, inputBehaviour=I, maxLength=20, sysNumber=21.0, core=true, businessType=SORT.CODE, t24Name=BC.BANK.SORT.CODE, mandatory=false)
-/* This is the date which has been specified for the interest and charges capitalisation which is the start of the automatic closure process.
+            /* This is the date which has been specified for the interest and charges capitalisation which is the start of the automatic closure process.
 During the end of day processing on the Closure Capitalisation date specified, or, if this is a non-working day, on the previous working day, the outstanding interest and charges are recalculated and capitalised.
 During end of day processing the following working day, if the ACTUAL and CLEARED BALANCE are both zero, the ACCOUNT is closed.
 If either BALANCE is not zero, the ACCOUNT remains open and interest capitalisations are processed during every end of day run until it can be closed.
@@ -137,7 +138,7 @@ Standard date format. */
             @i18n:Label (en="Closure Date")
             @i18n:Tooltip (en="Closure Date")
             @t24:i (align=R, inputBehaviour=I, maxLength=11, sysNumber=1.0, core=true, t24Name=CAPITAL.DATE, mandatory=false)
-/* This field will indicate how a closed account must capitialise interest.
+            /* This field will indicate how a closed account must capitialise interest.
 Validation Rules:
 Input is mandatory.
 Valid input must 'YES', 'WAIVE' or 'ONCE' only. */
@@ -145,7 +146,7 @@ Valid input must 'YES', 'WAIVE' or 'ONCE' only. */
             @i18n:Label (en="Capitalise Interest")
             @i18n:Tooltip (en="Capitalise Interest")
             @t24:i (align=L, inputBehaviour=I, maxLength=5, sysNumber=32.0, core=true, t24Name=CAP.INTEREST, mandatory=true)
-/* The total of any uncollected cheque and/or card changes.
+            /* The total of any uncollected cheque and/or card changes.
 Validation Rules:
 1-19 standard amount format. */
         CC_CHGS_OS : T24BusinessTypes:AMT
@@ -153,19 +154,19 @@ Validation Rules:
         /* Defines the balance on the account on which closing penalty needs to be applied. */
         CHARGEABLE_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=26.0, core=true, t24Name=CHARGEABLE.AMT, typeModifiers="-16", mandatory=false)
-/* Indicates whether there are any outstanding cheques for this account.
+            /* Indicates whether there are any outstanding cheques for this account.
 Validation Rules:
 Y or NO. */
         CHEQUES_OS : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=N, maxLength=2, sysNumber=18.0, core=true, t24Name=CHEQUES.OS, mandatory=false)
-/* Mode of the account closure needs to be specifed. The balance in the account being closed needs to be liquidated to the beneficiary/account holder.
+            /* Mode of the account closure needs to be specifed. The balance in the account being closed needs to be liquidated to the beneficiary/account holder.
 The various modes allowed are FT, Teller, PO (Payment Order) or Auto
 Refer the Close Online field for the details */
         CLOSE_MODE : AC_AccountClosure:ACCOUNT_CLOSURE__CLOSE_MODE
             @i18n:Label (en="Close Mode")
             @i18n:Tooltip (en="Close Mode")
             @t24:i (align=L, inputBehaviour=N, maxLength=7, sysNumber=36.0, core=true, t24Name=CLOSE.MODE, mandatory=false)
-/* Field introduced in G13.2
+            /* Field introduced in G13.2
 When Online Closure of Account is required,  then this field is to be set to Y.  If this field is set to Y then the following actions will take place at the time of committing the record:
 1. If CLOSE.MODE is FT, the system creates the FT in HOLD and the user has to autorise the FT and made the account balance as zero and then move the account to history by authorising ACCOUNT CLOSURE manually.
 2. If CLOSED.MODE is TELLER the system creates the TELLER.DEFAULT and the user has to make the a/c bal zero through TELLER and then move the account to history by autorising the ACCOUNT CLOSURE manually.
@@ -185,11 +186,11 @@ Default is NULL */
             @t24:i (align=L, inputBehaviour=I, maxLength=1, sysNumber=34.0, core=true, t24Name=CLOSE.ONLINE, onchangeBehaviour=HOT.FIELD, mandatory=false)
         CLOSURE_NOTES -> byValue AC_AccountClosure:ACCOUNT_CLOSURE__CLOSURE_NOTES *
             @t24:i (t24Name=CLOSURE.NOTES)
-/* This field contains the reason for closing the account. It holds the value from EB.LOOKUP table to provide a general description for closure. User can create his own records for reason in EB.LOOKUP table.
+            /* This field contains the reason for closing the account. It holds the value from EB.LOOKUP table to provide a general description for closure. User can create his own records for reason in EB.LOOKUP table.
 Validation Rules: */
         CLOSURE_REASON : AC_AccountClosure:ACCOUNT_CLOSURE__CLOSURE_REASON
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=38.0, core=true, t24Name=CLOSURE.REASON, mandatory=false)
-/* This field is the total closing charge, calculated from using the entered charge code & chargeable amount above.  This can be manually overriden.
+            /* This field is the total closing charge, calculated from using the entered charge code & chargeable amount above.  This can be manually overriden.
 Validation Rules:
 19 numerical characters.
 If modified or an overide has been inserted then the charge type, tax type & tax amount will be blanked. */
@@ -199,13 +200,13 @@ If modified or an overide has been inserted then the charge type, tax type & tax
         /* This field will indicate whether the closing charges have already been applied to the account or not. */
         CLO_CHARGE_POSTED : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=N, maxLength=3, sysNumber=31.0, core=true, t24Name=CLO.CHARGE.POSTED, mandatory=false)
-/* This field defines the charge code to be used in calculating the closing charge on the chargeable amount.
+            /* This field defines the charge code to be used in calculating the closing charge on the chargeable amount.
 Validation Rules:
 Input is optional, but if entered then must be a valid charge code. i.e. Charge code of type 'CHG' or 'COM' or 'TAX'......
 10 alphanumeric characters. */
         CLO_CHARGE_TYPE : T24BusinessTypes:CHG
             @i18n:Label (en="Charge Type")
-            @t24:i (align=R, inputBehaviour=I, maxLength=20, sysNumber=27.0, core=true, t24Name=CLO.CHARGE.TYPE, typeModifiers="CHGCOM", mandatory=false)
+            @t24:i (align=L, inputBehaviour=I, maxLength=20, sysNumber=27.0, core=true, t24Name=CLO.CHARGE.TYPE, typeModifiers="CHGCOM", mandatory=false)
         /* This field will be calculated as the tax amount due on the account due to the closing charge being applied. */
         CLO_CH_TAX_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=30.0, core=true, t24Name=CLO.CH.TAX.AMT, typeModifiers="-16", mandatory=false)
@@ -215,7 +216,7 @@ Input is optional, but if entered then must be a valid charge code. i.e. Charge 
         CO_CODE -> ST_CompanyCreation:COMPANY
             @i18n:Label (en=Company)
             @t24:i (align=L, inputBehaviour=N, maxLength=11, sysNumber=49.0, core=true, businessType=A, t24Name=CO.CODE, mask="R##-###-####", mandatory=false)
-/* This is the Currency of the Account specified in field 0 (Account Number). It is the Currency of all the Balances and Amounts contained in this record.
+            /* This is the Currency of the Account specified in field 0 (Account Number). It is the Currency of all the Balances and Amounts contained in this record.
 Validation Rules:
 3 uppercase alpha characters Currency Code. Internal field. This is a NOINPUT field. */
         CURRENCY -> ST_CurrencyConfig:CURRENCY
@@ -229,7 +230,7 @@ Validation Rules:
         DEPT_CODE -> ST_Config:DEPT_ACCT_OFFICER
             @i18n:Label (en="Dept Code")
             @t24:i (align=R, inputBehaviour=N, maxLength=4, sysNumber=50.0, core=true, t24Name=DEPT.CODE, mandatory=false)
-/* This holds the Transaction reference number of the FT, though which the account balance was settled.
+            /* This holds the Transaction reference number of the FT, though which the account balance was settled.
 In case the close mode selected is PO, this field holds the Payment Order Transaction reference number. */
         FT_ID : T24BusinessTypes:A
             @i18n:Label (en="Transaction Ref")
@@ -238,26 +239,26 @@ In case the close mode selected is PO, this field holds the Payment Order Transa
             @t24:i (t24Name=INPUTTER)
         LCCY_CHARGE_AMT : AC_AccountClosure:ACCOUNT_CLOSURE__LCCY_CHARGE_AMT
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=37.0, core=true, t24Name=LCCY.CHARGE.AMT, mandatory=false)
-/* Contains the current Online Actual Balance on the ACCOUNT at the time the Posting Restriction to flag it for closure was entered. This is the same as the actual balance at the start of day (Open Actual Balance) plus the value of all fully Authorised entries since the start of day.
+            /* Contains the current Online Actual Balance on the ACCOUNT at the time the Posting Restriction to flag it for closure was entered. This is the same as the actual balance at the start of day (Open Actual Balance) plus the value of all fully Authorised entries since the start of day.
 The ACCOUNT cannot be closed automatically until all the balances in fields 23-27 of the ACCOUNT record are zero.
 Validation Rules:
 Standard amount format. */
         ONLINE_ACTUAL_BAL : T24BusinessTypes:AMT
             @i18n:Label (en="Online Actual Bal")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=4.0, core=true, t24Name=ONLINE.ACTUAL.BAL, typeModifiers="-16", mandatory=false)
-/* Contains the current Online Cleared Balance on the ACCOUNT at the time the Posting Restriction to flag it for closure was entered. This is the same as the cleared balance at the start of day (Open Cleared Balance) plus the value of all fully Authorised entries since the start of day, except any credit or reversal debit entries with future Exposure Dates.
+            /* Contains the current Online Cleared Balance on the ACCOUNT at the time the Posting Restriction to flag it for closure was entered. This is the same as the cleared balance at the start of day (Open Cleared Balance) plus the value of all fully Authorised entries since the start of day, except any credit or reversal debit entries with future Exposure Dates.
 The ACCOUNT cannot be closed automatically until all the balances in fields 23-27 of the ACCOUNT record are zero.
 Validation Rules:
 Standard amount format. */
         ONLINE_CLEARED_BAL : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=5.0, core=true, t24Name=ONLINE.CLEARED.BAL, typeModifiers="-16", mandatory=false)
-/* Contains the Open Actual Balance on the ACCOUNT at the time the Posting Restriction to flag it for closure was entered. This is the Actual or 'Ledger Balance', of the ACCOUNT as it was at the start of the day (including uncleared entries).
+            /* Contains the Open Actual Balance on the ACCOUNT at the time the Posting Restriction to flag it for closure was entered. This is the Actual or 'Ledger Balance', of the ACCOUNT as it was at the start of the day (including uncleared entries).
 The ACCOUNT cannot be closed automatically until all the balances in fields 23-27 of the ACCOUNT record are zero.
 Validation Rules:
 Standard amount format. */
         OPEN_ACTUAL_BAL : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=2.0, core=true, t24Name=OPEN.ACTUAL.BAL, typeModifiers="-16", mandatory=false)
-/* Contains the Open Cleared Balance on the ACCOUNT at the time the Posting Restriction to flag it for closure was entered. This is the Cleared Balance of the ACCOUNT as it was at the start of the day. It includes the value of all entries over the Account except any credit or reversal debit entries with future exposure dates.
+            /* Contains the Open Cleared Balance on the ACCOUNT at the time the Posting Restriction to flag it for closure was entered. This is the Cleared Balance of the ACCOUNT as it was at the start of the day. It includes the value of all entries over the Account except any credit or reversal debit entries with future exposure dates.
 The ACCOUNT cannot be closed automatically until all the balances in fields 23-27 of the ACCOUNT record are zero.
 Validation Rules:
 Standard amount format. */
@@ -265,7 +266,7 @@ Standard amount format. */
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=3.0, core=true, t24Name=OPEN.CLEARED.BAL, typeModifiers="-16", mandatory=false)
         OVERRIDE -> byValue AC_AccountClosure:ACCOUNT_CLOSURE__OVERRIDE *
             @t24:i (t24Name=OVERRIDE)
-/* Identifies any restrictions for posting entries that are to be imposed on the Account.  Once authorised, the value in this field will be used to update the ACCOUNT record.
+            /* Identifies any restrictions for posting entries that are to be imposed on the Account.  Once authorised, the value in this field will be used to update the ACCOUNT record.
 Restrictions in the range 90-99 indicate Accounts which will be closed automatically as soon as all Balances are zero.  See further details in overview of this file.
 Validation Rules:
 Posting restriction code upto 4 characters. Posting Restriction code in the range 90 to 99. Mandatory input. No default value.
@@ -277,22 +278,22 @@ For Account Closure (restriction in the range 90-99) the following rules apply: 
         RECORD_STATUS : T24BusinessTypes:STAT
             @i18n:Label (en="Record Status")
             @t24:i (align=L, inputBehaviour=N, maxLength=4, sysNumber=44.0, core=true, t24Name=RECORD.STATUS, mandatory=false)
-/* This field is reserved for future expansion.
+            /* This field is reserved for future expansion.
 Validation Rules:
 This is a NOINPUT field. */
         RESERVED_1 : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=42.0, core=true, t24Name=RESERVED.1, mandatory=false)
-/* This field is reserved for future expansion.
+            /* This field is reserved for future expansion.
 Validation Rules:
 This is a NOINPUT field. */
         RESERVED_2 : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=41.0, core=true, t24Name=RESERVED.2, mandatory=false)
-/* This field is reserved for future expansion.
+            /* This field is reserved for future expansion.
 Validation Rules:
 This is a NOINPUT field. */
         RESERVED_3 : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=40.0, core=true, t24Name=RESERVED.3, mandatory=false)
-/* This is the number of the account to which the outstanding balance is to be transferred.
+            /* This is the number of the account to which the outstanding balance is to be transferred.
 The SETTLEMENT ACCT allows the outstanding account balance to be transferred to another account whether within the bank or via the local clearing system to another bank.
 Input in this field will automatically reduce the account balance to zero by generating a funds transfer during the start of day processing.
 If the SETTLEMENT ACCT exists in T24, an 'AC' type Funds Transfer will be generated. The account balance will be transferred to the SETTLEMENT ACCT, which need not have the same currency as the account being closed. The SETTLE.MENT.ACCOUNT of different currency is accepted only if the field CLOSE.MODE is specified. Any charges will be deducted from the final amount credited to the SETTLEMENT ACCT if there is a credit balance, or added to the amount debited from the SETTLEMENT ACCT if there is a debit balance.
@@ -304,7 +305,7 @@ Must either:-  Be an existing account on the system (may be an internal account)
         SETTLEMENT_ACCT -> AC_AccountOpening:ACCOUNT
             @i18n:Label (en="Settlement Account")
             @t24:i (align=L, inputBehaviour=I, maxLength=36, sysNumber=17.0, core=true, businessType=A, t24Name=SETTLEMENT.ACCT, mandatory=false)
-/* Indicates whether or not there are any existing STANDING ORDERS for this ACCOUNT.
+            /* Indicates whether or not there are any existing STANDING ORDERS for this ACCOUNT.
 Standing Orders will continue to be processed on their due dates until the Capitalisation Date in field 1 has been passed, all ACCOUNT balances are zero and the ACCOUNT is closed. When the ACCOUNT is closed, any remaining Standing Orders will be cancelled.
 Validation Rules:
 'YES' or 'NO'. */
@@ -315,7 +316,7 @@ Validation Rules:
             @i18n:Label (en="Balance Payable")
             @i18n:Tooltip (en="Balance Payable")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=25.0, core=true, t24Name=TOTAL.ACC.AMT, typeModifiers="-22", mandatory=false)
-/* The total amount of outstanding account 'ledger' charges and interest related charges calculated up to the specified Capitalisation Date.
+            /* The total amount of outstanding account 'ledger' charges and interest related charges calculated up to the specified Capitalisation Date.
 Interest and Charges are calculated on the value dated balances and account activity statistics stored in the ACCT.ACTIVITY file, taking into account all entries over the Account up to and including the last end of day processing.
 Notes:(1)  For new Accounts no 'ledger' charges are calculated for            the month in which the Account is loaded.
 (2)  No account 'ledger' charges are calculated for the month            in which the Account is closed, unless the Closure            Capitalisation date is the last day of the month.
@@ -326,7 +327,7 @@ Standard amount format. */
         TOTAL_CHARGES : T24BusinessTypes:AMT
             @i18n:Label (en="Total Charges")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=11.0, core=true, t24Name=TOTAL.CHARGES, typeModifiers="-22", mandatory=false)
-/* The total amount of outstanding credit and credit 2 interest calculated up to the specified Capitalisation Date.
+            /* The total amount of outstanding credit and credit 2 interest calculated up to the specified Capitalisation Date.
 Interest and Charges are calculated on the value dated balances and account activity statistics stored in the ACCT.ACTIVITY file, taking into account all entries over the Account up to and including the last end of day processing.
 Notes:(1)  No bookkeeping entries are generated by this application.            All details contained in this file are for information            only.
 (2)  The calculations do not take into account the effect of            any transactions which have not yet taken place but            which are expected to happen before the capitalisation            date specified, (e.g. Standing Orders or regular            interest capitalisation), or any transactions which have            been processed since the last 'end of day processing'.
@@ -336,7 +337,7 @@ Standard amount format. */
             @i18n:Label (en="Total Cr Interest")
             @i18n:Tooltip (en="Total Credit Interest")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=8.0, core=true, t24Name=TOTAL.CR.INTEREST, typeModifiers="-22", mandatory=false)
-/* The total amount of outstanding debit and debit 2 interest calculated up to the specified Capitalisation Date.
+            /* The total amount of outstanding debit and debit 2 interest calculated up to the specified Capitalisation Date.
 Interest and Charges are calculated on the value dated balances and account activity statistics stored in the ACCT.ACTIVITY file, taking into account all entries over the Account up to and including the last end of day processing.
 Notes:(1)  No bookkeeping entries are generated by this application.            All details contained in this file are for information            only.
 (2)  The calculations do not take into account the effect of            any transactions which have not yet taken place but            which are expected to happen before the capitalisation            date specified, (e.g. Standing Orders or regular            interest capitalisation), or any transactions which have            been processed since the last 'end of day processing'.
@@ -346,7 +347,7 @@ Standard amount format. */
             @i18n:Label (en="Total Dr Interest")
             @i18n:Tooltip (en="Total Debit Interest")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=9.0, core=true, t24Name=TOTAL.DR.INTEREST, typeModifiers="-22", mandatory=false)
-/* This field reflects the total charges pending on the account.
+            /* This field reflects the total charges pending on the account.
 Validation Rules:
 This is a NOINPUT field.
 Calculated from the AC.PENDING record CHG. */
@@ -354,7 +355,7 @@ Calculated from the AC.PENDING record CHG. */
             @i18n:Label (en="Total Pending Chg")
             @i18n:Tooltip (en="Total Pending Charges")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=12.0, core=true, t24Name=TOTAL.PENDING.CHG, typeModifiers="-22", mandatory=false)
-/* This figure reflects the total debit interest that is pending on the account.
+            /* This figure reflects the total debit interest that is pending on the account.
 Validation Rules:
 This is a NOINPUT field.
 Calculated from the AC.PENDING file DR1 & DR2 type record. */
@@ -362,7 +363,7 @@ Calculated from the AC.PENDING file DR1 & DR2 type record. */
             @i18n:Label (en="Total Dr Int Pending")
             @i18n:Tooltip (en="Total Dr Int Pending")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=10.0, core=true, t24Name=TOTAL.PENDING.DR, typeModifiers="-22", mandatory=false)
-/* This field reflects the total tax pending on the account.
+            /* This field reflects the total tax pending on the account.
 Validation Rules:
 This is a NOINPUT field.
 Calculated from the AC.PENDING record TAX. */
@@ -373,7 +374,7 @@ Calculated from the AC.PENDING record TAX. */
         /* Contains the total amount of outstanding premium interest calculated up to the capitalisation date. */
         TOTAL_PREMIUM_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=24.0, core=true, t24Name=TOTAL.PREMIUM.AMT, typeModifiers="-22", mandatory=false)
-/* The total amount of Tax on outstanding interest and charges calculated up to the specified Capitalisation Date.
+            /* The total amount of Tax on outstanding interest and charges calculated up to the specified Capitalisation Date.
 Interest and Charges are calculated on the value dated balances and account activity statistics stored in the ACCT.ACTIVITY file, taking into account all entries over the Account up to and including the last end of day processing.
 Notes:(1)  No bookkeeping entries are generated by this application.            All details contained in this file are for information            only.
 (2)  The calculations do not take into account the effect of            any transactions which have not yet taken place but            which are expected to happen before the capitalisation            date specified, (e.g. Standing Orders or regular            interest capitalisation), or any transactions which have            been processed since the last 'end of day processing'.
@@ -383,7 +384,7 @@ Standard amount format. */
             @i18n:Label (en="Total Tax")
             @i18n:Tooltip (en="Total Tax")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=13.0, core=true, t24Name=TOTAL.TAX, typeModifiers="-22", mandatory=false)
-/* Indicates whether or not there were any existing uncleared entries for this ACCOUNT ie. entries with an Exposure Date in the future, at the time the Posting Restriction flagging the Account for closure was entered.
+            /* Indicates whether or not there were any existing uncleared entries for this ACCOUNT ie. entries with an Exposure Date in the future, at the time the Posting Restriction flagging the Account for closure was entered.
 As long as there are any outstanding entries with forward exposure, the Actual and Cleared Balances cannot be equal and so cannot both be zero. The Account will not be closed until all balances are zero.
 A list of outstanding entries with forward exposure can be found in the DATE.EXPOSURE file.
 Validation Rules:
@@ -434,12 +435,12 @@ The parameter can be set at various levels like SYSTEM, Lead Company ID or Compa
             @t24:i (t24Name=LOCAL.APPLICATION)
         OVERRIDE -> byValue AC_AccountClosure:ACCOUNT_CLOSURE_PARAM__OVERRIDE *
             @t24:i (t24Name=OVERRIDE)
-/* Payment Order Product which needs to be specified for Account closures using PAYMENT as the close mode, for account transfers.Should be a valid record in payment order product
+            /* Payment Order Product which needs to be specified for Account closures using PAYMENT as the close mode, for account transfers.Should be a valid record in payment order product
 System will pick the parameters maintained in this PO product while raising the PO transaction.
 Validation Rules: Should be allowed for input only if PI module is installed PO product specifed here needs to be Account Transfer type - The field "Pay through Beneficiary" in the Payment Order Product application should be set to NO */
         PO_PRODUCT_TYPE_AC -> PI_Config:PAYMENT_ORDER_PRODUCT
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=26.0, core=true, businessType=A, t24Name=PO.PRODUCT.TYPE.AC, mandatory=false)
-/* Payment Order Product which needs to be specified for Account closures using PAYMENT as the close mode, for beneficiary transfers.Should be a valid record in payment order product
+            /* Payment Order Product which needs to be specified for Account closures using PAYMENT as the close mode, for beneficiary transfers.Should be a valid record in payment order product
 System will pick the paramters maintained in this PO product while raising the PO transaction.
 Validation Rules: Should be allowed for input only if PI module is installed PO product specifed here needs to be Account Transfer type - The field "Pay through Beneficiary" in the Payment Order Product application should be set to YES */
         PO_PRODUCT_TYPE_BC -> PI_Config:PAYMENT_ORDER_PRODUCT
@@ -484,9 +485,20 @@ Validation Rules: Should be allowed for input only if PI module is installed PO 
         RESERVED_9 : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=N, maxLength=35, sysNumber=37.0, core=true, t24Name=RESERVED.9, mandatory=false)
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     ACCOUNT_CLOSURE_PARAM__APPLICATION
     {
-/* This is a multi-value field to hold the Application Name.
+    /* This is a multi-value field to hold the Application Name.
 Validation Rules:
 
 Valid Record in PGM.FILE.
@@ -504,7 +516,7 @@ Currently only the value 'LIMIT' is allowed. */
     }
     ACCOUNT_CLOSURE_PARAM__DESCRIPTION
     {
-/* This field will hold the description of the Account Closure Parameter.
+    /* This field will hold the description of the Account Closure Parameter.
 Validation Rules:
 
 Mandatory Field. */
@@ -522,13 +534,13 @@ Mandatory Field. */
     }
     ACCOUNT_CLOSURE_PARAM__LOCAL_APPLICATION
     {
-/* This is a multi-value field to hold the Local Application Name that needs to be checked during account closure.
+    /* This is a multi-value field to hold the Local Application Name that needs to be checked during account closure.
 
 Validation Rules:
 Valid Record in PGM.FILE. */
         LOCAL_APPLICATION -> EB_SystemTables:PGM_FILE
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=3.0, core=true, businessType=A, t24Name=LOCAL.APPLICATION, mandatory=false)
-/* This is a multi-value field to hold the Local Application API Name that needs to be checked during account closure.
+            /* This is a multi-value field to hold the Local Application API Name that needs to be checked during account closure.
 Validation Rules:
 Valid Record in EB.API */
         LOCAL_APPLICATION_API -> EB_SystemTables:EB_API
@@ -583,7 +595,7 @@ Valid Record in EB.API */
     }
     ACCOUNT_CLOSURE__BANK_CARDS
     {
-/* Indicates whether there are any outstanding bank cards held by the customer for this account.
+    /* Indicates whether there are any outstanding bank cards held by the customer for this account.
 Validation Rules:
 Y or NO. */
         BANK_CARDS : T24BusinessTypes:N
@@ -596,7 +608,7 @@ Y or NO. */
     }
     ACCOUNT_CLOSURE__CLOSURE_NOTES__CLOSURE_NOTES
     {
-/* This field is used to hold the notes for the reason of account closure. This is a multi-lingual field.
+    /* This field is used to hold the notes for the reason of account closure. This is a multi-lingual field.
 Validation Rules:
 A maximum of 35 characters may be entered. */
         CLOSURE_NOTES : T24BusinessTypes:A
@@ -620,7 +632,7 @@ A maximum of 35 characters may be entered. */
     }
     ACCOUNT_CLOSURE__OVERRIDE
     {
-/* This is a multi valued field.
+    /* This is a multi valued field.
 Standard T24 alphanumeric field.
 Validation Rules:
 A maximum of 35 characters may be entered.
@@ -684,6 +696,9 @@ This is a NOINPUT field. */
         SYSTEM_CODE : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=N, maxLength=25, sysNumber=2.0, core=true, t24Name=SYSTEM.CODE, mandatory=false)
     }
+    
+    
+    
     AC_BLOCK_CLOSURE__DATE_TIME
     {
         DATE_TIME : T24BusinessTypes:RELTIME
@@ -720,12 +735,12 @@ This is a NOINPUT field. */
         ACCOUNT_NUMBER -> AC_AccountClosure:AC_PRE_CLOSURE_DETAILS PK required
             @i18n:Label (en="Account Number")
             @t24:i (align=L, inputBehaviour=I, maxLength=19, sysNumber=0.0, core=true, businessType=ANT, t24Name=ACCOUNT.NUMBER, mandatory=true)
-/* If interest and charges are to be booked to another ACCOUNT, this field contains the number of the ACCOUNT to which they will be booked. This is the Liquidity Account specified in the INTEREST LIQU ACCT field of the originating ACCOUNT record.
+            /* If interest and charges are to be booked to another ACCOUNT, this field contains the number of the ACCOUNT to which they will be booked. This is the Liquidity Account specified in the INTEREST LIQU ACCT field of the originating ACCOUNT record.
 Validation rules
 No input field */
         ACCT_LIQUIDATED_TO : T24BusinessTypes:ANT
             @t24:i (align=L, inputBehaviour=N, maxLength=16, sysNumber=15.0, core=true, t24Name=ACCT.LIQUIDATED.TO, mandatory=false)
-/* Identifies the currency of the account liquidated to in field ACCT.LIQUIDATED.TO. This is the Interest currency, if any, specified in the originating ACCOUNT record.
+            /* Identifies the currency of the account liquidated to in field ACCT.LIQUIDATED.TO. This is the Interest currency, if any, specified in the originating ACCOUNT record.
 Validation rules
 No input field */
         ACCT_LIQU_CURRENCY : T24BusinessTypes:CCY
@@ -744,45 +759,45 @@ No input field */
             @t24:i (align=L, inputBehaviour=N, maxLength=40, sysNumber=48.0, core=true, t24Name=AUTHORISER, mandatory=false)
         BANK_CARDS -> byValue AC_AccountClosure:AC_PRE_CLOSURE_DETAILS__BANK_CARDS *
             @t24:i (t24Name=BANK.CARDS)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         BC_BANK_SORT_CODE : T24BusinessTypes:SORT_CODE
             @i18n:Label (en="Sort Code")
             @i18n:Tooltip (en="Local Bank Sort Code for local clearing systems")
             @t24:i (align=L, inputBehaviour=N, maxLength=20, sysNumber=21.0, core=true, t24Name=BC.BANK.SORT.CODE, mandatory=false)
-/* The date specified for the interest and charges capitalisation during the closure process
+            /* The date specified for the interest and charges capitalisation during the closure process
 Validation rules
 No input - this will default to the current system date. */
         CAPITAL_DATE : T24BusinessTypes:D
             @i18n:Label (en="Capital Date")
             @t24:i (align=R, inputBehaviour=N, maxLength=11, sysNumber=1.0, core=true, t24Name=CAPITAL.DATE, mandatory=false)
-/* This field defines whether the account will capitalise interest
+            /* This field defines whether the account will capitalise interest
 Validation rules
 Yes */
         CAP_INTEREST : AC_AccountClosure:AC_PRE_CLOSURE_DETAILS__CAP_INTEREST
             @t24:i (align=L, inputBehaviour=N, maxLength=5, sysNumber=32.0, core=true, t24Name=CAP.INTEREST, mandatory=false)
-/* The total of any uncollected cheque and/or card changes.
+            /* The total of any uncollected cheque and/or card changes.
 Validation rules
 1-19 standard amount format */
         CC_CHGS_OS : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=20.0, core=true, t24Name=CC.CHGS.OS, typeModifiers="-16", mandatory=false)
-/* Defines the balance on the account on which closing penalty needs to be applied.
+            /* Defines the balance on the account on which closing penalty needs to be applied.
 Validation rules
 No input field */
         CHARGEABLE_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=26.0, core=true, t24Name=CHARGEABLE.AMT, typeModifiers="-16", mandatory=false)
-/* This field indicates whether there are any outstanding cheques for this account or not.
+            /* This field indicates whether there are any outstanding cheques for this account or not.
 Validation rules
 No input field */
         CHEQUES_OS : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=N, maxLength=2, sysNumber=18.0, core=true, t24Name=CHEQUES.OS, mandatory=false)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         CLOSE_MODE : AC_AccountClosure:AC_PRE_CLOSURE_DETAILS__CLOSE_MODE
             @t24:i (align=L, inputBehaviour=N, maxLength=7, sysNumber=36.0, core=true, t24Name=CLOSE.MODE, mandatory=false)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         CLOSE_ONLINE : AC_AccountClosure:AC_PRE_CLOSURE_DETAILS__CLOSE_ONLINE
@@ -791,27 +806,27 @@ No input field */
             @t24:i (t24Name=CLOSURE.NOTES)
         CLOSURE_REASON : AC_AccountClosure:AC_PRE_CLOSURE_DETAILS__CLOSURE_REASON
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=38.0, core=true, t24Name=CLOSURE.REASON, mandatory=false)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         CLO_CHARGE_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=28.0, core=true, t24Name=CLO.CHARGE.AMT, typeModifiers="+16", mandatory=false)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         CLO_CHARGE_POSTED : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=N, maxLength=3, sysNumber=31.0, core=true, t24Name=CLO.CHARGE.POSTED, mandatory=false)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         CLO_CHARGE_TYPE : T24BusinessTypes:CHG
-            @t24:i (align=R, inputBehaviour=N, maxLength=20, sysNumber=27.0, core=true, t24Name=CLO.CHARGE.TYPE, typeModifiers="CHGCOM", mandatory=false)
-/* This field is current not used for the simulation
+            @t24:i (align=L, inputBehaviour=N, maxLength=20, sysNumber=27.0, core=true, t24Name=CLO.CHARGE.TYPE, typeModifiers="CHGCOM", mandatory=false)
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         CLO_CH_TAX_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=30.0, core=true, t24Name=CLO.CH.TAX.AMT, typeModifiers="-16", mandatory=false)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         CLO_CH_TAX_TYPE : T24BusinessTypes:TAX
@@ -819,7 +834,7 @@ No input field */
         CO_CODE -> ST_CompanyCreation:COMPANY
             @i18n:Label (en=Company)
             @t24:i (align=L, inputBehaviour=N, maxLength=11, sysNumber=49.0, core=true, businessType=A, t24Name=CO.CODE, mask="R##-###-####", mandatory=false)
-/* This field holds the currency of the account.
+            /* This field holds the currency of the account.
 Validation rules
 No input field
   */
@@ -834,7 +849,7 @@ No input field
         DEPT_CODE -> ST_Config:DEPT_ACCT_OFFICER
             @i18n:Label (en="Dept Code")
             @t24:i (align=R, inputBehaviour=N, maxLength=4, sysNumber=50.0, core=true, t24Name=DEPT.CODE, mandatory=false)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         FT_ID : T24BusinessTypes:A
@@ -842,28 +857,28 @@ No input field */
             @t24:i (align=L, inputBehaviour=N, maxLength=20, sysNumber=35.0, core=true, t24Name=FT.ID, mandatory=false)
         INPUTTER -> byValue AC_AccountClosure:AC_PRE_CLOSURE_DETAILS__INPUTTER *
             @t24:i (t24Name=INPUTTER)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         LCCY_CHARGE_AMT : AC_AccountClosure:AC_PRE_CLOSURE_DETAILS__LCCY_CHARGE_AMT
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=37.0, core=true, t24Name=LCCY.CHARGE.AMT, mandatory=false)
-/* Contains the current Online Actual Balance on the Account at the time the simulation is run.
+            /* Contains the current Online Actual Balance on the Account at the time the simulation is run.
 Validation rules
 No Input field */
         ONLINE_ACTUAL_BAL : T24BusinessTypes:AMT
             @i18n:Label (en="Online Actual Bal")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=4.0, core=true, t24Name=ONLINE.ACTUAL.BAL, typeModifiers="-16", mandatory=false)
-/* Contains the current Online Cleared Balance on the account at the time the simulation is run.
+            /* Contains the current Online Cleared Balance on the account at the time the simulation is run.
 Validation rules
 No input field */
         ONLINE_CLEARED_BAL : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=5.0, core=true, t24Name=ONLINE.CLEARED.BAL, typeModifiers="-16", mandatory=false)
-/* Contains the Open Actual Balance on the account at the time the simulation is run.
+            /* Contains the Open Actual Balance on the account at the time the simulation is run.
 Validation rules
 No input */
         OPEN_ACTUAL_BAL : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=2.0, core=true, t24Name=OPEN.ACTUAL.BAL, typeModifiers="-16", mandatory=false)
-/* Contains the Open Cleared Balance on the account at the time the simulation is run.
+            /* Contains the Open Cleared Balance on the account at the time the simulation is run.
 Validation rules
 No input field */
         OPEN_CLEARED_BAL : T24BusinessTypes:AMT
@@ -882,72 +897,77 @@ No input field */
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=41.0, core=true, t24Name=RESERVED.2, mandatory=false)
         RESERVED_3 : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=N, maxLength=35, sysNumber=40.0, core=true, t24Name=RESERVED.3, mandatory=false)
-/* This field is current not used for the simulation
+            /* This field is current not used for the simulation
 Validation rules
 No input field */
         SETTLEMENT_ACCT : T24BusinessTypes:A
             @i18n:Label (en="Settlement Account")
             @t24:i (align=L, inputBehaviour=N, maxLength=16, sysNumber=17.0, core=true, t24Name=SETTLEMENT.ACCT, mandatory=false)
-/* Indicates whether or not there are any existing standing orders for this account. It will hold a value of either Yes or No.
+            /* Indicates whether or not there are any existing standing orders for this account. It will hold a value of either Yes or No.
 Validation rules
 No Input field */
         STANDING_ORDERS : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=N, maxLength=3, sysNumber=6.0, core=true, t24Name=STANDING.ORDERS, mandatory=false)
-/* This field defines the total balance amount to the account inclusive of all charges and interest applicable at present.
+            /* This field defines the total balance amount to the account inclusive of all charges and interest applicable at present.
 Validation rules
 No input field */
         TOTAL_ACC_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=25.0, core=true, t24Name=TOTAL.ACC.AMT, typeModifiers="-22", mandatory=false)
-/* The total amount of outstanding account ledger charges and interest related charges calculates up to the specified capitalisation date.
+            /* The total amount of outstanding account ledger charges and interest related charges calculates up to the specified capitalisation date.
 Validation rules
 No input field */
         TOTAL_CHARGES : T24BusinessTypes:AMT
             @i18n:Label (en="Total Charges")
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=11.0, core=true, t24Name=TOTAL.CHARGES, typeModifiers="-22", mandatory=false)
-/* The total amount of outstanding credit and credit interest 2 calculated up to the specified capitalisation date
+            /* The total amount of outstanding credit and credit interest 2 calculated up to the specified capitalisation date
 Validation rules
 No input field */
         TOTAL_CR_INTEREST : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=8.0, core=true, t24Name=TOTAL.CR.INTEREST, typeModifiers="-22", mandatory=false)
-/* The total amount of debit and debit interest 2 calculated up to the specified capitalisation date.
+            /* The total amount of debit and debit interest 2 calculated up to the specified capitalisation date.
 Validation rules
 No input field */
         TOTAL_DR_INTEREST : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=9.0, core=true, t24Name=TOTAL.DR.INTEREST, typeModifiers="-22", mandatory=false)
-/* This field reflects the total charges pending on the account at the time the simulation is run.
+            /* This field reflects the total charges pending on the account at the time the simulation is run.
 Validation rules
 No input field */
         TOTAL_PENDING_CHG : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=12.0, core=true, t24Name=TOTAL.PENDING.CHG, typeModifiers="-22", mandatory=false)
-/* This reflects the total DR interest that is pending or this account
+            /* This reflects the total DR interest that is pending or this account
 Validation rules
 No input field */
         TOTAL_PENDING_DR : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=10.0, core=true, t24Name=TOTAL.PENDING.DR, typeModifiers="-22", mandatory=false)
-/* This field reflects the total tax pending on the account.
+            /* This field reflects the total tax pending on the account.
 Validation rules
 No input field */
         TOTAL_PENDING_TAX : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=14.0, core=true, t24Name=TOTAL.PENDING.TAX, typeModifiers="-22", mandatory=false)
-/* This field contains the total amount of premium interest calculated up to the capitalisation date.
+            /* This field contains the total amount of premium interest calculated up to the capitalisation date.
 Validation rules
 No input field */
         TOTAL_PREMIUM_AMT : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=24.0, core=true, t24Name=TOTAL.PREMIUM.AMT, typeModifiers="-22", mandatory=false)
-/* This field contains the total amount of Tax outstanding on interest and charges calculated up to the specified capitalisation date.
+            /* This field contains the total amount of Tax outstanding on interest and charges calculated up to the specified capitalisation date.
 Validation rules
 No input field */
         TOTAL_TAX : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=N, maxLength=19, sysNumber=13.0, core=true, t24Name=TOTAL.TAX, typeModifiers="-22", mandatory=false)
-/* Indicates whether or not there were any existing un-cleared entries for the account. It will hold the value Yes or No
+            /* Indicates whether or not there were any existing un-cleared entries for the account. It will hold the value Yes or No
 Validation rules
 No input field */
         UNCLEARED_ENTRIES : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=N, maxLength=3, sysNumber=7.0, core=true, t24Name=UNCLEARED.ENTRIES, mandatory=false)
     }
+    
+    
+    
+    
+    
     AC_PRE_CLOSURE_DETAILS__BANK_CARDS
     {
-/* Indicates whether there are any outstanding bank cards held by the customer for this account.
+    /* Indicates whether there are any outstanding bank cards held by the customer for this account.
 Validation rules
 Yes or No */
         BANK_CARDS : T24BusinessTypes:N
@@ -981,7 +1001,7 @@ Yes or No */
     }
     AC_PRE_CLOSURE_DETAILS__OVERRIDE
     {
-/* This field will hold the list of errors and overrides that would be generated if closure is attempted.
+    /* This field will hold the list of errors and overrides that would be generated if closure is attempted.
 Validation rules
 No input field */
         OVERRIDE : T24BusinessTypes:A
@@ -1022,7 +1042,13 @@ No input field */
         CONSOL_KEY_TYPE : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=N, maxLength=65, sysNumber=1.0, core=true, t24Name=CONSOL.KEY.TYPE, mandatory=false)
     }
-    RE_CLOSED_ACCT__ACCOUNT_NO
+    
+    
+    
+    
+    
+    
+RE_CLOSED_ACCT__ACCOUNT_NO
     {
         ACCOUNT_NO : T24BusinessTypes:ANT
             @i18n:Label (en=Account)
@@ -1059,41 +1085,60 @@ No input field */
 }
 Enumerations {
     ACCOUNT_CLOSURE__CAP_INTEREST : mml:string
+        
+        
         ONCE=ONCE
         WAIVE=WAIVE
         YES=YES
     ACCOUNT_CLOSURE__CLOSE_MODE : mml:string
+        
+        
+        
+        
         AUTO=AUTO
         FT=FT
         NULL=NULL
         PAYMENT=PAYMENT
         TELLER=TELLER
     ACCOUNT_CLOSURE__CLOSE_ONLINE : mml:string
+        
         N=N
         Y=Y
     ACCOUNT_CLOSURE__CLOSURE_REASON : mml:string
+        
+        
         DECEASED_CUSTOMER=DECEASED.CUSTOMER
         DISSATISFIED_CUSTOMER=DISSATISFIED.CUSTOMER
         UNDESIRABLE_CLIENT=UNDESIRABLE.CLIENT
     ACCOUNT_CLOSURE__LCCY_CHARGE_AMT : mml:string
         A=A
     AC_PRE_CLOSURE_DETAILS__CAP_INTEREST : mml:string
+        
+        
         ONCE=ONCE
         WAIVE=WAIVE
         YES=YES
     AC_PRE_CLOSURE_DETAILS__CLOSE_MODE : mml:string
+        
+        
+        
+        
         AUTO=AUTO
         FT=FT
         NULL=NULL
         PAYMENT=PAYMENT
         TELLER=TELLER
     AC_PRE_CLOSURE_DETAILS__CLOSE_ONLINE : mml:string
+        
         N=N
         Y=Y
     AC_PRE_CLOSURE_DETAILS__CLOSURE_REASON : mml:string
+        
+        
         DECEASED_CUSTOMER=DECEASED.CUSTOMER
         DISSATISFIED_CUSTOMER=DISSATISFIED.CUSTOMER
         UNDESIRABLE_CLIENT=UNDESIRABLE.CLIENT
     AC_PRE_CLOSURE_DETAILS__LCCY_CHARGE_AMT : mml:string
-        A=A
+        
+A=A
 }

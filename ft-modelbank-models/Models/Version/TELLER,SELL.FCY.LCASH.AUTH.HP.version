@@ -1,0 +1,225 @@
+Screen TELLER, SELL_FCY_LCASH_AUTH_HP
+    t24Name: "TELLER,SELL.FCY.LCASH.AUTH.HP"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 1
+    description: en = "Sell Foreign Currency"
+reportLocks: Yes
+refNoInFirstLine: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+    dealSlips:
+    format: "TT.SELLFC" dealSlipFunction:  I
+    dealSlipsTrigger: OL
+    dealSlipStyleSheet: "/transforms/custom/clientEnquiry.xsl"
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "Sell Foreign Currency against Local Ccy"
+}
+
+Relationship {
+    associatedVersions: TELLER,SELL_FCY_LCASH_DENOM_DEBIT_HP ; TELLER,SELL_FCY_LCASH_DENOM_HP ; TELLER,AUDIT_HP
+}
+
+API {
+    includeVersionControl: No
+}
+
+attributes: "NO.HEADER.TAB"
+
+Fields {
+    "CURRENCY_1" {
+
+        Presentation {
+            maxLength: 31
+            enrichmentLength: 15
+            column: 1
+            row: 0
+        }
+
+        Translations:
+            label: en = "Currency"
+            toolTip: en = "Currency Sold"
+    }
+
+    "AMOUNT_FCY_1" {
+
+        Presentation {
+            maxLength: 8
+            expansion: No
+            column: 65
+            row: 0
+            hotField: Yes
+        }
+
+        Translations:
+            label: en = "Amount"
+            toolTip: en = "Amount of Foreign Currency Sold"
+        MV: 1
+    }
+
+    "ACCOUNT_1" {
+
+        Presentation {
+            displayType: NoDisplay
+            expansion: No
+            column: 1
+            row: 1
+        }
+
+        Translations:
+            toolTip: en = "Internal Acct for FCY Cash"
+        MV: 1
+    }
+
+    "DEAL_RATE" {
+
+        Presentation {
+            maxLength: 31
+            column: 1
+            row: 2
+        }
+
+        Translations:
+            label: en = "Exchange Rate"
+            toolTip: en = "Exchange Rate for the transaction"
+    }
+
+    "NARRATIVE_1" {
+
+        Presentation {
+            maxLength: 31
+            enrichmentLength: 35
+            expansion: No
+            column: 1
+            row: 3
+        }
+
+        Translations:
+            label: en = "Narrative"
+            toolTip: en = "Narrative text to be passed to the statement entry"
+        MV: 1
+        SV: 1
+    }
+
+    "ACCOUNT_2" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 31
+            enrichmentLength: 25
+            column: 1
+            row: 4
+        }
+
+        Translations:
+            label: en = "LCY Cash Account"
+            toolTip: en = "Internal Acct for LCY Cash"
+    }
+
+    "WAIVE_CHARGES" {
+
+        Presentation {
+            maxLength: 31
+            enrichmentLength: 35
+            column: 1
+            row: 5
+        }
+
+        default: IF ( ) "NULL" THEN "NO"
+        Translations:
+            label: en = "Waive Charges"
+        promptText: en = "# Waive Charges"
+            toolTip: en = "Waive any transaction charges - Y/N?"
+    }
+
+    "CHRG_AMT_LOCAL" {
+
+        Presentation {
+            maxLength: 31
+            column: 1
+            row: 6
+        }
+
+        Translations:
+            label: en = "Charge Amount Local"
+            toolTip: en = "Charge amount in local currency"
+        MV: 1
+    }
+
+    "CHRG_AMT_FCCY" {
+
+        Presentation {
+            maxLength: 22
+            column: 54
+            row: 6
+        }
+
+        Translations:
+            label: en = "Charge Amount Foreign"
+            toolTip: en = "Charge amount in foreign currency"
+        MV: 1
+    }
+
+    "CHARGE_CODE" {
+
+        Presentation {
+            maxLength: 13
+            column: 100
+            row: 6
+        }
+
+        Translations:
+            label: en = "Charge Code"
+            toolTip: en = "Charge code to be applied to this transaction"
+        MV: 1
+    }
+
+    "NET_AMOUNT" {
+
+        Presentation {
+            maxLength: 31
+            enrichmentLength: 35
+            column: 1
+            row: 7
+        }
+
+        Translations:
+            label: en = "Amount to receive"
+        promptText: en = "# Amount to Receive"
+            toolTip: en = "Net amount (+/- any charges and rounding amt)"
+    }
+
+    "DR_CR_MARKER" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 31
+            enrichmentLength: 25
+            column: 1
+            row: 8
+        }
+
+        Translations:
+            label: en = "Dr / Cr Marker"
+            toolTip: en = "Debit / Credit Marker"
+    }
+
+    "CURRENCY_2" {
+
+        Presentation {
+            inputBehaviour: NoChange
+        }
+
+        default: IF ( ) "NULL" THEN "!LOCAL.CCY"
+    }
+
+    "TRANSACTION_CODE" {
+        default: IF ( ) "NULL" THEN "24"
+    }
+
+}

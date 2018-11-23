@@ -1,0 +1,262 @@
+Screen FUNDS_TRANSFER, OCDS_LCY
+    t24Name: "FUNDS.TRANSFER,OCDS.LCY"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Account Closure - By Local Draft"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+    dealSlips:
+    format: "DD.DRAFTS" dealSlipFunction:  I
+    dealSlipsTrigger: OL
+    dealSlipStyleSheet: "/transforms/custom/modelEnquiry.xsl"
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "Account Closure - By Official Chq"
+}
+
+Relationship {
+    associatedVersions: FUNDS_TRANSFER,AUDIT
+}
+
+API {
+    preProcessValidationRoutines:
+        jBC: "V.MB.INT.ACCT.CONVERSION"
+}
+
+Fields {
+    "BEN_CUSTOMER" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            enrichmentLength: 31
+            column: 1
+            row: 1
+            mandatory: Yes
+        }
+
+        default: IF ( 1 ) "NULL" THEN "NA"
+        Translations:
+            label: en = "Beneficiary"
+            toolTip: en = "The ultimate receiver of the funds."
+        MV: 1
+    }
+
+    "DEBIT_ACCT_NO" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            enrichmentLength: 23
+            column: 1
+            row: 2
+            mandatory: Yes
+        }
+
+        default: IF ( ) "0X" THEN "!CURRENT.DEBIT.ACCT"
+        Translations:
+            label: en = "Debit Account"
+            toolTip: en = "Ac being debited in respect of the transfer"
+    }
+
+    "CREDIT_CURRENCY" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 3
+        }
+
+        default: IF ( ) "0X" THEN "!LOCAL.CCY"
+        Translations:
+            label: en = "Draft Currency"
+            toolTip: en = "Currency of the Account being credited"
+    }
+
+    "PAYMENT_DETAILS" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 4
+        }
+
+        Translations:
+            label: en = "Payment Details"
+            toolTip: en = "Reference information for the Beneficiary"
+        MV: 1
+    }
+
+    "STOCK_NUMBER" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 5
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Draft Number"
+            toolTip: en = "Specifies draft number"
+    }
+
+    "CREDIT_ACCT_NO" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 6
+        }
+
+        default: IF ( ) "0X" THEN "USD140460001"
+        Translations:
+            label: en = "Drawn on Account"
+            toolTip: en = "Ac being credited in respect of the transfer"
+    }
+
+    "ISSUE_CHEQUE_TYPE" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 7
+        }
+
+        Translations:
+            label: en = "Issue Cheque Type"
+    }
+
+    "PAYEE_NAME" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 8
+        }
+
+        Translations:
+            label: en = "Payee Name"
+    }
+
+    "STOCK_REGISTER" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 9
+        }
+
+        Translations:
+            label: en = "Stock Register"
+    }
+
+    "SERIES_ID" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 1
+            column: 1
+            row: 10
+        }
+
+        Translations:
+            label: en = "Series id"
+    }
+
+    "CHEQUE_NUMBER" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 11
+        }
+
+        Translations:
+            label: en = "Cheque Number"
+    }
+
+    "AMOUNT_DEBITED" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            enrichmentLength: 12
+            column: 1
+            row: 12
+        }
+
+        Translations:
+            label: en = "Total Amount Debited"
+    }
+
+    "AMOUNT_CREDITED" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 16
+            enrichmentLength: 19
+            column: 65
+            row: 12
+        }
+
+        Translations:
+            label: en = "Draft Issued for"
+    }
+
+    "DEBIT_AMOUNT" {
+
+        Presentation {
+            inputBehaviour: NoInput
+        }
+
+        default: IF ( ) "0X" THEN "!CURRENT.DEBIT.AMOUNT"
+    }
+
+    "CREDIT_AMOUNT" {
+
+        Presentation {
+            inputBehaviour: NoInput
+        }
+
+    }
+
+    "TRANSACTION_TYPE" {
+
+        Presentation {
+            inputBehaviour: NoInput
+        }
+
+        default: IF ( ) "NULL" THEN "OCDS"
+    }
+
+    "TREASURY_RATE" {
+
+        Presentation {
+            inputBehaviour: NoInput
+        }
+
+    }
+
+    "DEBIT_CURRENCY" {
+        default: IF ( ) "0X" THEN "!CURRENT.DR.CCY"
+    }
+
+    "COMMISSION_CODE" {
+        default: IF ( ) "NULL" THEN "DEBIT PLUS CHARGES"
+    }
+
+    "CHARGE_CODE" {
+        default: IF ( ) "NULL" THEN "WAIVE"
+    }
+
+}

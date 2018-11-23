@@ -1,0 +1,269 @@
+Screen SL_TRADING_SL, NONCONT
+    t24Name: "SL.TRADING.SL,NONCONT"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "SL Non-Contingent Trade Details"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "Trading of Non-Contingent Portion"
+}
+
+Relationship {
+    associatedVersions: SL_TRADING_SL,AUDIT
+}
+
+API {
+    inputRoutines:
+        jBC: "SL.TRADE.SL.CROSSVAL"
+    keyValidationRoutines:
+        jBC: "E.CHECK.SL.TRADE.ID"
+}
+
+attributes: "NO.HEADER.TAB"
+
+Fields {
+    "CUSTOMER" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 0
+            selectionEnquiry: "SL.CUSTOMER"
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.CUST"
+        Translations:
+            label: en = "Facility Customer"
+            toolTip: en = "Facility Customer"
+    }
+
+    "FACILITY_REF" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 1
+            selectionEnquiry: "SL.FACILITY"
+            enquiryParameter: "CUSTOMER EQ CUSTOMER"
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.REF"
+        Translations:
+            label: en = "SL Facility Ref No."
+            toolTip: en = "SL Facility Reference"
+    }
+
+    "VALUE_DATE" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 2
+        }
+
+        default: IF ( ) "NULL" THEN "!TODAY"
+        Translations:
+            label: en = "Value Date"
+            toolTip: en = "Value date of the buy/sell transaction"
+    }
+
+    "SELL_PARTICIPANT" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 3
+            selectionEnquiry: "SL.PARTICIPATORS"
+            enquiryParameter: "@ID EQ FACILITY.REF"
+        }
+
+        Translations:
+            label: en = "Sell Participant"
+            toolTip: en = "Cust. ID of the participant selling his portion"
+    }
+
+    "BUY_PARTICIPANT" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 4
+            selectionEnquiry: "SL.PARTICIPANTS"
+        }
+
+        Translations:
+            label: en = "Buy Participant"
+            toolTip: en = "Cust. ID of the participant buying a portion"
+    }
+
+    "SL_LOAN_REF" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 5
+            selectionEnquiry: "SL.LOANS.OUT"
+            enquiryParameter: "@ID CT FACILITY.REF"
+        }
+
+        Translations:
+            label: en = "SL Loan Ref"
+            toolTip: en = "Ref. No. of the loan for BUY/SELL txn."
+        MV: 1
+    }
+
+    "SL_LOAN_AMOUNT" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 6
+        }
+
+        Translations:
+            label: en = "Loan Trading Amount"
+            toolTip: en = "Amount of loan being bought or sold."
+        MV: 1
+    }
+
+    "LOAN_CONSDN" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 7
+        }
+
+        Translations:
+            label: en = "Loan Consideration Amount"
+            toolTip: en = "Amt. of consideration for BUY/SELL of the loan"
+        MV: 1
+    }
+
+    "LC_REF" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 8
+            selectionEnquiry: "SL.LC.ENQUIRY"
+            enquiryParameter: "SL.REF.TRANCHE CT FACILITY.REF"
+        }
+
+        Translations:
+            label: en = "LC Ref No"
+            toolTip: en = "Ref. No. of the LC for BUY/SELL txn."
+        MV: 1
+    }
+
+    "LC_AMOUNT" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 9
+        }
+
+        Translations:
+            label: en = "LC Trading Amount"
+            toolTip: en = "Amount of LC being bought or sold.."
+        MV: 1
+    }
+
+    "LC_CONSDN" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 10
+        }
+
+        Translations:
+            label: en = "LC Consideration Amount"
+            toolTip: en = "Amt. of consideration for BUY/SELL of the LC"
+        MV: 1
+    }
+
+    "MD_REF" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 11
+            selectionEnquiry: "SL.MD.ENQUIRY"
+            enquiryParameter: "SL.REF.TRANCHE CT FACILITY.REF"
+        }
+
+        Translations:
+            label: en = "MD Ref.No."
+            toolTip: en = "Ref. No. of the MD for BUY/SELL txn."
+        MV: 1
+    }
+
+    "MD_AMOUNT" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 12
+        }
+
+        Translations:
+            label: en = "MD Trading Amount"
+            toolTip: en = "Amount of MD being bought or sold."
+        MV: 1
+    }
+
+    "MD_CONSDN" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 13
+        }
+
+        Translations:
+            label: en = "MD Consideration Amount"
+            toolTip: en = "Amt. of consideration for BUY/SELL of the MD"
+        MV: 1
+    }
+
+    "NEW_PART_ACCOUNT" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 14
+        }
+
+        Translations:
+            label: en = "New Participant Account"
+            toolTip: en = "Participant Account"
+    }
+
+}

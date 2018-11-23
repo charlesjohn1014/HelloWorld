@@ -1,0 +1,115 @@
+Screen FUNDS_TRANSFER, MO_AC
+    t24Name: "FUNDS.TRANSFER,MO.AC"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Transfer between your own accounts"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+}
+
+IB {
+    confirmVersion: FUNDS_TRANSFER,MO_AC_CONFIRM
+    previewVersion: FUNDS_TRANSFER,MO_AC_COMPLETE
+}
+
+attributes: "NO.COMBO.BOX"
+
+Fields {
+    "DEBIT_ACCT_NO" {
+
+        Presentation {
+            maxLength: 35
+            enrichmentLength: 16
+            column: 1
+            row: 0
+            selectionEnquiry: "MO.EXT.PERS.ACCTS.LCY"
+        }
+
+        Translations:
+            label: en = "Transfer from"
+            toolTip: en = "Account from which amount has to be transferred"
+    }
+
+    "CREDIT_ACCT_NO" {
+
+        Presentation {
+            maxLength: 35
+            enrichmentLength: 18
+            column: 1
+            row: 1
+            selectionEnquiry: "MO.EXT.PERS.ACCTS.LCY"
+        }
+
+        Translations:
+            label: en = "Transfer to"
+            toolTip: en = "Account to which amount has to be transferred"
+
+        API {
+            validation-routines:
+                jBC: "@CHECK.ACCOUNT.OWNER.1"
+        }
+
+    }
+
+    "CREDIT_AMOUNT" {
+
+        Presentation {
+            maxLength: 35
+            enrichmentLength: 17
+            column: 1
+            row: 2
+        }
+
+        Translations:
+            label: en = "Transfer amount"
+            toolTip: en = "Amount to be transfered"
+    }
+
+    "CREDIT_VALUE_DATE" {
+
+        Presentation {
+            maxLength: 35
+            column: 1
+            row: 3
+        }
+
+        Translations:
+            label: en = "Transfer date"
+    }
+
+    "PAYMENT_DETAILS" {
+
+        Presentation {
+            maxLength: 35
+            enrichmentLength: 29
+            expansion: No
+            column: 1
+            row: 4
+        }
+
+        Translations:
+            label: en = "Your Reference "
+        MV: 1
+    }
+
+    "TRANSACTION_TYPE" {
+        default: IF ( ) "NULL" THEN "ACIB"
+    }
+
+    "CREDIT_CURRENCY" {
+        default: IF ( ) "NULL" THEN "!LOCAL.CURRENCY"
+    }
+
+    "DEBIT_CURRENCY" {
+        default: IF ( ) "NULL" THEN "!LOCAL.CURRENCY"
+    }
+
+}

@@ -1,0 +1,91 @@
+Screen EB_SECURE_MESSAGE, AI_REPLY
+    t24Name: "EB.SECURE.MESSAGE,AI.REPLY"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "Reply to the bank"
+}
+
+API {
+    preProcessValidationRoutines:
+        jBC: "V.MB.AI.MSG.SUB"
+}
+
+IB {
+    previewVersion: EB_SECURE_MESSAGE,AI_REPLY_PREV
+}
+
+Fields {
+    "SUBJECT" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 0
+        }
+
+        default: IF ( ) "NULL" THEN "EB.SECURE.MESSAGE>SUBJECT"
+        Translations:
+            label: en = "Subject"
+    }
+
+    "MESSAGE" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 1
+        }
+
+        Translations:
+            label: en = "Message"
+        MV: 1
+    }
+
+    "PARENT_MESSAGE_ID" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            column: 1
+            row: 2
+        }
+
+        default: IF ( ) "NULL" THEN "EB.SECURE.MESSAGE>@ID"
+    }
+
+    "FROM_DAO" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            column: 1
+            row: 3
+        }
+
+    }
+
+    "TO_DAO" {
+
+        Presentation {
+            inputBehaviour: NoInput
+        }
+
+        default: IF ( ) "NULL" THEN "EB.SECURE.MESSAGE>FROM.DAO"
+    }
+
+    "TO_STATUS" {
+        default: IF ( ) "UNREAD" THEN "READ"
+    }
+
+}

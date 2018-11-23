@@ -1,0 +1,82 @@
+Screen ENQUIRY_REPORT, PRIVATE
+    t24Name: "ENQUIRY.REPORT,PRIVATE"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Statement Request"
+caption: "Statement Request"
+reportLocks: Yes
+refNoInFirstLine: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header2: en = "Account Statement"
+}
+
+Relationship {
+    nextVersion: ENQUIRY_REPORT,PRIVATE
+    nextVersionFunction: Verify
+    nextVersionTransactionReference: "ENQUIRY"
+    associatedVersions: ENQUIRY_REPORT,AUDIT
+}
+
+API {
+    includeVersionControl: No
+}
+
+attributes: "NO.HEADER.TAB"
+
+Fields {
+    "ENQUIRY" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 0
+        }
+
+        default: IF ( 1 ) "NULL" THEN "ACCOUNT.STATEMENT"
+        Translations:
+            label: en = "Enquiry Name"
+        MV: 1
+    }
+
+    "LIST" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 1
+            row: 1
+        }
+
+        default: IF ( 1 - 1 ) "0X" THEN "!CURRENT.ACC"
+        Translations:
+            label: en = "Account No"
+        MV: 1
+        SV: 1
+    }
+
+    "DESCRIPTION" {
+        default: IF ( 1 ) "NULL" THEN "Account Statement"
+    }
+
+    "SELECTION" {
+        default: IF ( 1 - 1 ) "NULL" THEN "STATEMENT.ID"
+    }
+
+    "OPERAND" {
+        default: IF ( 1 - 1 ) "NULL" THEN "EQ"
+    }
+
+    "REPORT_CONTROL" {
+        default: IF ( ) "NULL" THEN "ACCOUNT.STATEMENT"
+    }
+
+}

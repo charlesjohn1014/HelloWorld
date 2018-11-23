@@ -1,0 +1,209 @@
+Screen FUNDS_TRANSFER, AI_UTILITYPAYEE
+    t24Name: "FUNDS.TRANSFER,AI.UTILITYPAYEE"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Pay Utility Payee"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    browserToolbar: "AI.BACK.UTILITY"
+    language: en
+}
+
+API {
+    includeVersionControl: No
+    inputRoutines:
+        jBC: "AI.PROCESSING.DATE"
+}
+
+IB {
+    confirmVersion: FUNDS_TRANSFER,AI_UTILITYPAYEE_CONFIRM
+    previewVersion: FUNDS_TRANSFER,AI_UTILITYPAYEE_PREVIEW
+}
+
+attributes: "NO.COMBO.BOX"
+
+Fields {
+    "DEBIT_ACCT_NO" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 25
+            enrichmentLength: 30
+            column: 1
+            row: 0
+            mandatory: Yes
+            hotField: Yes
+            selectionEnquiry: "AI.EXT.USR.ACCTS.ARR"
+        }
+
+        Translations:
+            label: en = "Transfer from"
+            toolTip: en = "A/c being debited in respect of the transfer"
+
+        API {
+            validation-routines:
+                jBC: "@GET.BENEFICIARY.ACCT.CCY"
+        }
+
+    }
+
+    "DEBIT_CURRENCY" {
+
+        Presentation {
+            displayType: NoDisplay
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 1
+        }
+
+        Translations:
+            label: en = "Currency"
+    }
+
+    "BENEFICIARY_ID" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 25
+            enrichmentLength: 30
+            column: 1
+            row: 2
+            mandatory: Yes
+            hotField: Yes
+            selectionEnquiry: "AI.UTILITYPAYEE.LIST"
+        }
+
+        Translations:
+            label: en = "Utility Payee"
+            toolTip: en = "Ultimate receiver of the funds transfer"
+    }
+
+    "DEBIT_AMOUNT" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 30
+            column: 1
+            row: 3
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Transaction Amount"
+            toolTip: en = "Defines the Transfer amount"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 4
+        }
+
+        Translations:
+            label: en = "When do you want to make your transfer?"
+    }
+
+    "IMMEDIATELY" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 5
+        }
+
+        Translations:
+            label: en = "Immediately"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 2
+            column: 1
+            row: 6
+        }
+
+        Translations:
+            label: en = "or"
+    }
+
+    "FUTURE_DATE" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 7
+        }
+
+        Translations:
+            label: en = "Future Date"
+            toolTip: en = "Date when Dr entry is to be given value for int"
+    }
+
+    "PROCESSING_DATE" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            column: 1
+            row: 8
+        }
+
+        Translations:
+            label: en = "Immediately & Future Date"
+    }
+
+    "PAYMENT_DETAILS" {
+
+        Presentation {
+            maxLength: 25
+            expansion: No
+            column: 1
+            row: 9
+        }
+
+        Translations:
+            label: en = "Your Reference"
+            toolTip: en = "Specifies Debit Narrative"
+        MV: 1
+    }
+
+    "CREDIT_ACCT_NO" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            column: 1
+            row: 10
+        }
+
+        Translations:
+            label: en = "Credit Account"
+    }
+
+    "TRANSACTION_TYPE" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            column: 0
+            row: 10
+            mandatory: Yes
+        }
+
+        default: IF ( ) "NULL" THEN "AC"
+        Translations:
+            label: en = "Transaction Type"
+    }
+
+}

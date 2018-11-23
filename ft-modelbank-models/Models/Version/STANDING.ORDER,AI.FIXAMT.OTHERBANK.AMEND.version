@@ -1,0 +1,276 @@
+Screen STANDING_ORDER, AI_FIXAMT_OTHERBANK_AMEND
+    t24Name: "STANDING.ORDER,AI.FIXAMT.OTHERBANK.AMEND"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Standing Order : Fixed Amount Other Bank"
+reportLocks: Yes
+refNoInFirstLine: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+}
+
+API {
+    includeVersionControl: No
+    inputRoutines:
+        jBC: "V.MB.STO.CHK.DATE"
+    keyValidationRoutines:
+        jBC: "V.MB.STO.CREATE.FIX"
+}
+
+IB {
+    confirmVersion: STANDING_ORDER,AI_FIXAMT_OTHERBANK_AMEND_CONF
+    previewVersion: STANDING_ORDER,AI_FIXAMT_OTHERBANK_AMEND_PREV
+}
+
+attributes: "NO.HEADER.TAB"
+
+Fields {
+    "BEN_REFERENCE" {
+
+        Presentation {
+            displayType: NoDisplay
+            inputBehaviour: NoInput
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 0
+        }
+
+        Translations:
+            label: en = "Account to make payment(s) from : "
+    }
+
+    "BEN_ACCT_NO" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 1
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Payee Account Number"
+            toolTip: en = "Beneficiary account number"
+    }
+
+    "BENEFICIARY" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 34
+            enrichmentLength: 35
+            expansion: No
+            column: 1
+            row: 2
+        }
+
+        Translations:
+            label: en = "Payee Account Name"
+        MV: 1
+    }
+
+    "BANK_SORT_CODE" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 34
+            column: 1
+            row: 3
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Payee Sort Code"
+            toolTip: en = "Bank Sort code"
+    }
+
+    "BENEFICIARY_ID" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 4
+            mandatory: Yes
+            selectionEnquiry: "AI.BENEFICIARY.PAY.LIST.OB"
+        }
+
+        Translations:
+            label: en = "Beneficiary"
+            toolTip: en = "Details to enable Beneficiary to apply the payment"
+    }
+
+    "CURRENCY" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 5
+            mandatory: Yes
+            selectionEnquiry: "AI.CURRENCY.LIST"
+        }
+
+        Translations:
+            label: en = "Currency"
+            toolTip: en = "Specifies the ccy of the Standing Order payment"
+    }
+
+    "CURRENT_AMOUNT_BAL" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 6
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Amount to pay"
+            toolTip: en = "Specifies the amount of the Standing Order"
+    }
+
+    "FREQUENCY" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 7
+            mandatory: Yes
+            selectionEnquiry: "AI.FREQUENCY.LIST"
+        }
+
+        Translations:
+            label: en = "Payment Frequency"
+            toolTip: en = "Identifies the Current Frequency of the STO"
+    }
+
+    "START_DATE" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 8
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Payment Start Date"
+
+        API {
+            validation-routines:
+                jBC: "@AI.FREQUENCY"
+        }
+
+    }
+
+    "CURRENT_END_DATE" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 36
+            column: 1
+            row: 9
+        }
+
+        Translations:
+            label: en = "Date of final Payment"
+            toolTip: en = "Identifies the Current End Date of the STO"
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 34
+            column: 1
+            row: 10
+        }
+
+        Translations:
+            label: en = "or"
+    }
+
+    "FUTURE_NOTICE" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 35
+            column: 1
+            row: 11
+        }
+
+        Translations:
+            label: en = "Until Further Notice"
+    }
+
+    "PAYMENT_DETAILS" {
+
+        Presentation {
+            maxLength: 34
+            enrichmentLength: 35
+            expansion: No
+            column: 1
+            row: 12
+        }
+
+        Translations:
+            label: en = "Payment Details"
+        MV: 1
+    }
+
+    "ACCT_WITH_BANK" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            enrichmentLength: 35
+            expansion: No
+            column: 1
+            row: 13
+        }
+
+        Translations:
+            label: en = "Acct With Bank"
+        MV: 1
+    }
+
+    "CURRENT_FREQUENCY" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 14
+        }
+
+    }
+
+    "K_TYPE" {
+        default: IF ( ) "NULL" THEN "FI"
+    }
+
+    "PAY_METHOD" {
+        default: IF ( ) "NULL" THEN "BC"
+    }
+
+    "PRINT_ADVICE" {
+        default: IF ( ) "NULL" THEN "Y"
+    }
+
+}

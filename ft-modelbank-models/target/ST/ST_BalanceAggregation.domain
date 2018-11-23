@@ -30,10 +30,10 @@ Aggregated balance will be created for each regulaion and customer. */
         INDIVIDUAL_ENTITY : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=10, sysNumber=20.0, core=true, t24Name=INDIVIDUAL.ENTITY, mandatory=false)
         /* This field stores the INDUSTRY of the customer. This field is defaulted from CUSTOMER application. */
-        INDUSTRY : T24BusinessTypes:N
+        INDUSTRY -> ST_Config:INDUSTRY
             @i18n:Label (en=Industry)
             @i18n:Tooltip (en="Indicates the Industry")
-            @t24:i (align=R, inputBehaviour=I, maxLength=4, sysNumber=3.0, core=true, t24Name=INDUSTRY, mandatory=false)
+            @t24:i (align=R, inputBehaviour=I, maxLength=10, sysNumber=3.0, core=true, t24Name=INDUSTRY, mandatory=false)
         RELATED_CUSTOMER -> byValue ST_BalanceAggregation:ST_AGGREGATE_BALANCES__RELATED_CUSTOMER *
             @t24:i (t24Name=RELATED.CUSTOMER)
         /* This field stores the SECTOR of the customer. This field is defaulted from CUSTOMER application. */
@@ -57,14 +57,15 @@ Aggregated balance will be created for each regulaion and customer. */
         TOT_AC_BAL_DEP_RCY : T24BusinessTypes:AMT
             @t24:i (align=R, inputBehaviour=I, maxLength=19, sysNumber=16.0, core=true, t24Name=TOT.AC.BAL.DEP.RCY, mandatory=false)
     }
+    
     ST_AGGREGATE_BALANCES__ACCT_PORTFOLIO_NO
     {
-/* The field will be updated as Depository or Custody. It will be Custody if portfolio balance (including account linked to a portfolio) is reported else the field will be updated as Depository.
+    /* The field will be updated as Depository or Custody. It will be Custody if portfolio balance (including account linked to a portfolio) is reported else the field will be updated as Depository.
 This is based on the account or portfolio in ACCT PORTFOLIO NO field above. */
         ACCOUNT_TYPE : T24BusinessTypes:A
             @i18n:Label (en="Account Type")
             @t24:i (align=L, inputBehaviour=I, maxLength=10, sysNumber=8.0, core=true, t24Name=ACCOUNT.TYPE, mandatory=false)
-/* This field will have any one of the below values
+            /* This field will have any one of the below values
 I.   Account number
 II.  Portfolio number
 III. MM contract ID
@@ -86,16 +87,16 @@ When this field holds a portfolio number, all the security position of the portf
         /* Currency in which the account or the contract has position. This field will not have a value, if ACCT.PORTFOLIO.NO holds a portfolio. */
         ACC_PORTFOLIO_CCY : T24BusinessTypes:CCY
             @t24:i (align=L, inputBehaviour=I, maxLength=3, sysNumber=11.0, core=true, t24Name=ACC.PORTFOLIO.CCY, mandatory=false)
-/* Currency in which the account or the contract has to be reported.
+            /* Currency in which the account or the contract has to be reported.
 This field value will be taken from REPORTING.CCY field of CRS.PARAMETER table for CRS regulation. */
         ACC_REPORTING_CCY : T24BusinessTypes:CCY
             @t24:i (align=L, inputBehaviour=I, maxLength=3, sysNumber=14.0, core=true, t24Name=ACC.REPORTING.CCY, mandatory=false)
-/* This field will store related customers, provided the relationship with the parent customer is defined in ST.AGGREGATION.PARAM.
+            /* This field will store related customers, provided the relationship with the parent customer is defined in ST.AGGREGATION.PARAM.
 This field will have value only when aggregation is done at ACCOUNT level. i.e. based on the value in CUSTOMER.TYPE
 This field is associated with JNT.OWNER.REL.CODE. */
         JOINT_OWNER : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=9.0, core=true, t24Name=JOINT.OWNER, mandatory=false)
-/* Relationship maintained by the RELATED.CUSTOMER with the parent customer.
+            /* Relationship maintained by the RELATED.CUSTOMER with the parent customer.
 This field will have value only when aggregation is done at ACCOUNT level. i.e. based on the value in CUSTOMER.TYPE
 This field is associated with JOINT.OWNER. */
         JOINT_OWN_REL_CODE : T24BusinessTypes:N
@@ -103,19 +104,19 @@ This field is associated with JOINT.OWNER. */
     }
     ST_AGGREGATE_BALANCES__RELATED_CUSTOMER
     {
-/* This field will store related customers, provided the relationship with the parent customer is defined in ST.AGGREGATION.PARAM.
+    /* This field will store related customers, provided the relationship with the parent customer is defined in ST.AGGREGATION.PARAM.
 This field will have value only when aggregation is done at CUSTOMER level. i.e. based on the value in CUSTOMER.TYPE
 This field is associated with RELATION.CODE. */
         RELATED_CUSTOMER : T24BusinessTypes:CUS
             @t24:i (align=R, inputBehaviour=I, maxLength=10, sysNumber=5.0, core=true, t24Name=RELATED.CUSTOMER, mandatory=false)
-/* Relationship maintained by the RELATED.CUSTOMER with the parent customer.
+            /* Relationship maintained by the RELATED.CUSTOMER with the parent customer.
 This field will have value only when aggregation is done at CUSTOMER level. i.e. based on the value in CUSTOMER.TYPE
 This field is associated with RELATED.CUSTOMER. */
         RELATION_CODE : T24BusinessTypes:N
             @i18n:Label (en="Relation code")
             @t24:i (align=R, inputBehaviour=I, maxLength=3, sysNumber=6.0, core=true, t24Name=RELATION.CODE, mandatory=false)
     }
-/* Parameter to defines the balance aggregation rules for the regulation and the company to which the parameter record applies.
+    /* Parameter to defines the balance aggregation rules for the regulation and the company to which the parameter record applies.
 ST.AGGREGATION.PARAM is a company level parameter table. */
     ST_AGGREGATION_PARAM
         @i18n:Description (en="")
@@ -141,7 +142,7 @@ Should have a valid EB.API record. */
             @i18n:Label (en=Authoriser)
             @i18n:Tooltip (en="Indicates the User who Authorises the record")
             @t24:i (align=L, inputBehaviour=N, maxLength=40, sysNumber=27.0, core=true, t24Name=AUTHORISER, mandatory=false)
-/* A local routine can be attached here which will be called during balance aggregation batch jobs.
+            /* A local routine can be attached here which will be called during balance aggregation batch jobs.
 This routine provides the flexibility to build the customer balances record which is the input for the balance aggregation process.
 Contains three arguments, first argument is the customer number, second argument is the id's separated by field marker and the third argument is the array containing the respective customer information separated by field marker. It can be the customer position record.
 Validation rules
@@ -176,7 +177,7 @@ Should have a valid EB.API record. */
             @t24:i (align=L, inputBehaviour=N, maxLength=4, sysNumber=23.0, core=true, t24Name=RECORD.STATUS, mandatory=false)
         RELATION_CODE -> byValue ST_BalanceAggregation:ST_AGGREGATION_PARAM__RELATION_CODE *
             @t24:i (t24Name=RELATION.CODE)
-/* Field to define the relation for balance aggregation process.
+            /* Field to define the relation for balance aggregation process.
 The relationship can be defined at Customer Level (CUSTOMER) or account level (ACCOUNT).
 If the relationships are defined at customer level in T24 CUSTOMER, the field has to be set as CUSTOMER. It will be assumed that all the accounts are jointly held and the balance of all the accounts will be attributed to all the joint holders.
 If the field is set to ACCOUNT, the relationships will be checked at individual account level and only the balances of accounts that are held jointly will be attributed to all the joint holders.
@@ -199,7 +200,7 @@ Allowed values are 'CUSTOMER' or 'ACCOUNT' */
             @t24:i (align=R, inputBehaviour=N, maxLength=35, sysNumber=15.0, core=true, t24Name=RESERVED.08, mandatory=false)
         RESERVED_09 : T24BusinessTypes:N
             @t24:i (align=R, inputBehaviour=N, maxLength=35, sysNumber=14.0, core=true, t24Name=RESERVED.09, mandatory=false)
-/* ID is the name of the regulation and company to which the record belongs.
+            /* ID is the name of the regulation and company to which the record belongs.
 ID consists of two parts and separated by hyphen. Regulation name should exist in ST.REGULATORY.PARAMETER.
 If company code is blank, system defaults with the current logged customer company.
 Validation rules
@@ -207,7 +208,16 @@ Allowed to create only for customer level companies. */
         ST_AGGR_PARAM_ID -> ST_BalanceAggregation:ST_AGGREGATION_PARAM PK required
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=0.0, core=true, businessType=A, t24Name=ST.AGGR.PARAM.ID, mandatory=true)
     }
-    ST_AGGREGATION_PARAM__DATE_TIME
+    
+    
+    
+    
+    
+    
+    
+    
+    
+ST_AGGREGATION_PARAM__DATE_TIME
     {
         DATE_TIME : T24BusinessTypes:RELTIME
             @i18n:Label (en="Date time")
@@ -216,7 +226,7 @@ Allowed to create only for customer level companies. */
     }
     ST_AGGREGATION_PARAM__ENT_CUST_FIELD
     {
-/* Fields ENT.CUST.FIELD, ENT.CUST.OPERAND and ENT.CUST.VALUE are associative multi value fields. Each multi value set of the selection criteria will be considered with 'OR' condition.
+    /* Fields ENT.CUST.FIELD, ENT.CUST.OPERAND and ENT.CUST.VALUE are associative multi value fields. Each multi value set of the selection criteria will be considered with 'OR' condition.
 This multi-value set fields are used to identify customers who are to be classified as INDIVIDUAL or ENTITY.
 If the ENT.CUST.FIELD is set to 'INDUSTRY', the operand as 'EQ' and the ENT.CUST.VAL is '3200', any customer with the industry code set as '3200' will be considered as ENTITY. All other customers will be considered 'Individuals'.
 Validation rules
@@ -225,7 +235,7 @@ I-Descriptors and J-Descriptors are not allowed.
 ENT.CUST.FIELD, ENT.CUST.OPERAND and ENT.CUST.VALUE fields are interdependent, all must be populated or blank. */
         ENT_CUST_FIELD : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=8.0, core=true, t24Name=ENT.CUST.FIELD, mandatory=false)
-/* This field accepts the operands 'EQ' 'NE'.
+            /* This field accepts the operands 'EQ' 'NE'.
 Validation rules
 ENT.CUST.FIELD, ENT.CUST.OPERAND and ENT.CUST.VALUE fields are interdependent, all must be populated or blank. */
         ENT_CUST_OPERAND : ST_BalanceAggregation:ST_AGGREGATION_PARAM__ENT_CUST_FIELD__ENT_CUST_OPERAND
@@ -235,7 +245,7 @@ ENT.CUST.FIELD, ENT.CUST.OPERAND and ENT.CUST.VALUE fields are interdependent, a
     }
     ST_AGGREGATION_PARAM__ENT_CUST_FIELD__ENT_CUST_VALUE
     {
-/* Field to hold the values, that are to be compared with the specified CUSTOMER field.
+    /* Field to hold the values, that are to be compared with the specified CUSTOMER field.
 Each sub value of this field will be considered with 'AND' condition.
 Validation rules
 ENT.CUST.FIELD, ENT.CUST.OPERAND and ENT.CUST.VALUE fields are interdependent, all must be populated or blank. */
@@ -244,7 +254,7 @@ ENT.CUST.FIELD, ENT.CUST.OPERAND and ENT.CUST.VALUE fields are interdependent, a
     }
     ST_AGGREGATION_PARAM__EXCLD_FOR_ACCT_AGG
     {
-/* Field used to specify the categories of accounts/deposits that need to be excluded from the aggregation process.
+    /* Field used to specify the categories of accounts/deposits that need to be excluded from the aggregation process.
 Any account of this category (not linked to a portfolio) will be excluded while determining the aggregate balance.
 Validation rules
 Should be a valid ID from CATEGORY table. */
@@ -253,21 +263,21 @@ Should be a valid ID from CATEGORY table. */
     }
     ST_AGGREGATION_PARAM__EXC_RULE_APPL
     {
-/* Field to specify the name of the application, which are required to be excluded from the balance aggregation process.
+    /* Field to specify the name of the application, which are required to be excluded from the balance aggregation process.
 Fields from EXC.RULE.APPL to EXC.RULE.VALUE are associated multi-value set. Each multi-value set of the selection criteria will be considered with 'OR' condition.
 Validation rules
 Currently SEC.ACC.MASTER alone is allowed to define in this field and the portfolios selected from this selection criteria are exempted from balance aggregation.
 EXC.RULE.APPL, EXC.RULE.FIELD, EXC.RULE.OPERAND, EXC.RULE.VALUE are interdependent, all must be populated or blank. */
         EXC_RULE_APPL : ST_BalanceAggregation:ST_AGGREGATION_PARAM__EXC_RULE_APPL__EXC_RULE_APPL
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=4.0, core=true, t24Name=EXC.RULE.APPL, mandatory=false)
-/* Valid fields from the application mentioned in EXC.RULE.APPL will be accepted.
+            /* Valid fields from the application mentioned in EXC.RULE.APPL will be accepted.
 System fields and local reference fields from the application mentioned in EXC.RULE.APPL field are allowed to define.
 Validation rules
 I-Descriptors and J-Descriptors fields are not allowed.
 EXC.RULE.APPL, EXC.RULE.FIELD, EXC.RULE.OPERAND, EXC.RULE.VALUE are interdependent, all must be populated or blank. */
         EXC_RULE_FIELD : T24BusinessTypes:A
             @t24:i (align=L, inputBehaviour=I, maxLength=35, sysNumber=5.0, core=true, t24Name=EXC.RULE.FIELD, mandatory=false)
-/* This field accepts the operands 'EQ' 'NE'.
+            /* This field accepts the operands 'EQ' 'NE'.
 Based on the operand, the records from the specified application will be excluded or included from balance aggregation.
 Validation rules
 EXC.RULE.APPL, EXC.RULE.FIELD, EXC.RULE.OPERAND, EXC.RULE.VALUE are interdependent, all must be populated or blank. */
@@ -278,7 +288,7 @@ EXC.RULE.APPL, EXC.RULE.FIELD, EXC.RULE.OPERAND, EXC.RULE.VALUE are interdepende
     }
     ST_AGGREGATION_PARAM__EXC_RULE_APPL__EXC_RULE_VALUE
     {
-/* Contains the value to be compared to the application defined in EXC.RULE.APPL field.
+    /* Contains the value to be compared to the application defined in EXC.RULE.APPL field.
 Each sub value of this field will be considered with 'AND' condition.
 Validation rules
 EXC.RULE.APPL, EXC.RULE.FIELD, EXC.RULE.OPERAND, EXC.RULE.VALUE are interdependent, all must be populated or blank. */
@@ -294,7 +304,7 @@ EXC.RULE.APPL, EXC.RULE.FIELD, EXC.RULE.OPERAND, EXC.RULE.VALUE are interdepende
     }
     ST_AGGREGATION_PARAM__OVERRIDE
     {
-/* This is a multi valued field.
+    /* This is a multi valued field.
 Contains details of any override applicable to this record.
 Validation Rules:
 A maximum of 35 characters may be entered. This is a NOINPUT field. */
@@ -305,7 +315,7 @@ A maximum of 35 characters may be entered. This is a NOINPUT field. */
     }
     ST_AGGREGATION_PARAM__RELATION_CODE
     {
-/* Field to hold the relationship for a customer or an account.
+    /* Field to hold the relationship for a customer or an account.
 The relation codes, that need to be considered for aggregating the balances, need to be specified in this field.
 Validation rules
 Multi-value field to accept more than one relation for the regulation.
@@ -317,18 +327,24 @@ Allows to define the valid relation from the 'RELATION' table. */
 }
 Enumerations {
     ST_AGGREGATION_PARAM__ENT_CUST_FIELD__ENT_CUST_OPERAND : mml:string
+        
         EQ=EQ
         NE=NE
     ST_AGGREGATION_PARAM__EXC_RULE_APPL__EXC_RULE_APPL : mml:string
+        
         NULL=NULL
         SEC_ACC_MASTER=SEC.ACC.MASTER
     ST_AGGREGATION_PARAM__EXC_RULE_APPL__EXC_RULE_OPERAND : mml:string
+        
         EQ=EQ
         NE=NE
     ST_AGGREGATION_PARAM__INIT_AGGR_LOGIC : mml:string
+        
         EFFECTIVE=EFFECTIVE
         IMPLEMENTATION=IMPLEMENTATION
     ST_AGGREGATION_PARAM__RELATION_LEVEL : mml:string
-        ACCOUNT=ACCOUNT
+        
+        
+ACCOUNT=ACCOUNT
         CUSTOMER=CUSTOMER
 }

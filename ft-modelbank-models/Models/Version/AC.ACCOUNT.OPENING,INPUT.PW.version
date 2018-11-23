@@ -1,0 +1,120 @@
+Screen AC_ACCOUNT_OPENING, INPUT_PW
+    t24Name: "AC.ACCOUNT.OPENING,INPUT.PW"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Account Opening"
+reportLocks: Yes
+
+TransactionFlow {
+    interfaceException: 1
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "Account Options"
+}
+
+Relationship {
+    associatedVersions: AC_ACCOUNT_OPENING,AUDIT
+}
+
+API {
+    includeVersionControl: Yes
+    authorizationRoutines:
+        jBC: "V.MB.COMI.PROCESS"
+}
+
+attributes: "NO.HEADER.TAB"
+
+Fields {
+    "*" {
+
+        Presentation {
+            maxLength: 69
+            column: 1
+            row: 1
+        }
+
+        Translations:
+            label: en = "Please choose the account type and available options for the account:"
+    }
+
+    "CATEGORY" {
+
+        Presentation {
+            maxLength: 22
+            enrichmentLength: 35
+            column: 1
+            row: 2
+            selectionEnquiry: "ELIGIBLE.PRODUCTS"
+            enquiryParameter: "CUSTOMER.NO EQ CUSTOMER"
+            labelColumn: 14
+        }
+
+        Translations:
+            label: en = "Account Product:"
+    }
+
+    "CHEQUEBOOK" {
+
+        Presentation {
+            displayType: Combobox
+            maxLength: 22
+            enrichmentLength: 29
+            column: 1
+            row: 3
+            mandatory: Yes
+            labelColumn: 14
+        }
+
+        default: IF ( ) "NULL" THEN "No"
+        Translations:
+            label: en = "Chequebook required?"
+    }
+
+    "CARD" {
+
+        Presentation {
+            displayType: Combobox
+            maxLength: 22
+            enrichmentLength: 29
+            column: 1
+            row: 4
+            mandatory: Yes
+            labelColumn: 14
+        }
+
+        default: IF ( ) "NULL" THEN "No"
+        Translations:
+            label: en = "Debit Card required?"
+    }
+
+    "*" {
+
+        Presentation {
+            column: 1
+            row: 5
+        }
+
+    }
+
+    "CUSTOMER" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 22
+            enrichmentLength: 35
+            column: 1
+            row: 6
+            labelColumn: 14
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.CUSTOMER"
+        Translations:
+            label: en = "Customer No:"
+    }
+
+}

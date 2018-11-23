@@ -1,0 +1,177 @@
+Screen PW_AF_DEPOSIT, INPUT_TD
+    t24Name: "PW.AF.DEPOSIT,INPUT.TD"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Term Deposit"
+reportLocks: Yes
+
+TransactionFlow {
+    interfaceException: 1
+    otherCompanyAccess: Yes
+    overrideApproval: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    browserToolbar: "ARC.DEPOSIT.BACK"
+    language: en
+}
+
+API {
+    inputRoutines:
+        jBC: "E.MB.DATE.CHECK"
+    preProcessValidationRoutines:
+        jBC: "@E.MB.PRD.TERM"
+}
+
+IB {
+    confirmVersion: PW_AF_DEPOSIT,CONFIRM_TD
+    previewVersion: PW_AF_DEPOSIT,PREVIEW_TD
+}
+
+attributes: "NO.COMBO.BOX"
+
+Fields {
+    "CUSTOMER" {
+
+        Presentation {
+            displayType: NoDisplay
+            inputBehaviour: NoInput
+            maxLength: 45
+            column: 1
+            row: 0
+        }
+
+        default: IF ( ) "NULL" THEN "!EXT.CUSTOMER"
+        Translations:
+            label: en = "Customer"
+    }
+
+    "AA_PRODUCT" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 45
+            enrichmentLength: 45
+            enrichment: Yes
+            column: 1
+            row: 1
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.PRODUCT"
+        Translations:
+            label: en = "Product"
+    }
+
+    "TERM" {
+
+        Presentation {
+            maxLength: 45
+            column: 1
+            row: 2
+            mandatory: Yes
+        }
+
+        Translations:
+            label: en = "Term"
+    }
+
+    "CURRENCY" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 45
+            column: 1
+            row: 3
+            mandatory: Yes
+            selectionEnquiry: "AI.AA.PRD.CURRENCY"
+            enquiryParameter: "PRODUCT EQ AA.PRODUCT"
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.CURRENCY"
+        Translations:
+            label: en = "Currency"
+    }
+
+    "AMOUNT" {
+
+        Presentation {
+            maxLength: 45
+            enrichmentLength: 65
+            column: 1
+            row: 4
+            mandatory: Yes
+            hotField: Yes
+        }
+
+        Translations:
+            label: en = "Amount"
+    }
+
+    "INTEREST_RATE" {
+
+        Presentation {
+            displayType: NoDisplay
+            inputBehaviour: NoInput
+            maxLength: 45
+            column: 1
+            row: 5
+        }
+
+        Translations:
+            label: en = "Interest Rate"
+    }
+
+    "START_DATE" {
+
+        Presentation {
+            maxLength: 45
+            column: 1
+            row: 6
+        }
+
+        default: IF ( ) "NULL" THEN "!TODAY"
+        Translations:
+            label: en = "Start Date"
+    }
+
+    "DEBIT_ACCOUNT" {
+
+        Presentation {
+            displayType: DropDown.NoInput
+            maxLength: 45
+            column: 1
+            row: 7
+            mandatory: Yes
+            selectionEnquiry: "AI.EXT.USR.ACCTS.ARR"
+        }
+
+        Translations:
+            label: en = "Servicing Account No"
+    }
+
+    "AA_DEPOSIT" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 15
+            enrichmentLength: 15
+            column: 1
+            row: 8
+        }
+
+        default: IF ( ) "NULL" THEN "Y"
+        Translations:
+            label: en = "AA Deposit"
+    }
+
+    "AA_ARRANGEMENT" {
+        default: IF ( ) "NULL" THEN "NEW"
+    }
+
+    "AA_ACTIVITY" {
+        default: IF ( ) "NULL" THEN "DEPOSITS-NEW-ARRANGEMENT"
+    }
+
+}

@@ -1,0 +1,208 @@
+Screen FUNDS_TRANSFER, DD_PAYMENT
+    t24Name: "FUNDS.TRANSFER,DD.PAYMENT"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 1
+    description: en = "Payment of Drafts"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+    dealSlips:
+    format: "DD.DRAFTS" dealSlipFunction:  I
+    dealSlipsTrigger: OL
+    dealSlipStyleSheet: "/transforms/custom/modelEnquiry.xsl"
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "Payment of Drafts"
+}
+
+Relationship {
+    associatedVersions: FUNDS_TRANSFER,DRAFT_LCY_CHARGE ; FUNDS_TRANSFER,AUDIT
+}
+
+API {
+    includeVersionControl: No
+}
+
+Fields {
+    "DEBIT_ACCT_NO" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 0
+            mandatory: Yes
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.ACCT.NO"
+        Translations:
+            label: en = "Debit Account"
+            toolTip: en = "Ac being debited in respect of the transfer"
+    }
+
+    "CREDIT_CURRENCY" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 1
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.DRAFT.CCY"
+        Translations:
+            label: en = "Draft Currency"
+            toolTip: en = "Currency of the Account being credited"
+    }
+
+    "CREDIT_AMOUNT" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 17
+            column: 52
+            row: 1
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.DRAFT.AMT"
+        Translations:
+            label: en = "Draft Amount"
+            toolTip: en = "Defines the Transfer amount"
+    }
+
+    "STOCK_NUMBER" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 2
+            mandatory: Yes
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.DRAFT.NO"
+        Translations:
+            label: en = "Draft Number"
+            toolTip: en = "Specifies draft number"
+    }
+
+    "PAYEE_NAME" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 25
+            column: 1
+            row: 3
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.PAYEE.NAME"
+        Translations:
+            label: en = "Payee Name"
+    }
+
+    "CREDIT_ACCT_NO" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 4
+        }
+
+        Translations:
+            label: en = "Credit Account"
+            toolTip: en = "Ac being credited in respect of the transfer"
+    }
+
+    "ORDERING_BANK" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            column: 1
+            row: 5
+        }
+
+        default: IF ( 1 ) "NULL" THEN "NA"
+        Translations:
+            label: en = "Ordering Bank"
+        MV: 1
+    }
+
+    "PAYMENT_DETAILS" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 6
+        }
+
+        Translations:
+            label: en = "Payment Details"
+            toolTip: en = "Reference information for the Beneficiary"
+        MV: 1
+    }
+
+    "ISSUE_CHEQUE_TYPE" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 25
+            column: 1
+            row: 7
+        }
+
+        default: IF ( ) "NULL" THEN "!CURRENT.DRAFT.TYPE"
+        Translations:
+            label: en = "Issue Cheque Type"
+    }
+
+    "PROFIT_CENTRE_CUST" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 8
+        }
+
+        Translations:
+            label: en = "Profit Centre Customer"
+            toolTip: en = "Customer to whom the PL entries relate"
+    }
+
+    "PROFIT_CENTRE_DEPT" {
+
+        Presentation {
+            maxLength: 25
+            column: 1
+            row: 9
+        }
+
+        Translations:
+            label: en = "Profit Centre Dept"
+            toolTip: en = "Acct officer or dept code for all P&L entries"
+    }
+
+    "TRANSACTION_TYPE" {
+
+        Presentation {
+            inputBehaviour: NoInput
+        }
+
+        default: IF ( ) "NULL" THEN "AC"
+    }
+
+    "COMMISSION_CODE" {
+        default: IF ( ) "NULL" THEN "WAIVE"
+    }
+
+    "CHARGE_CODE" {
+        default: IF ( ) "NULL" THEN "WAIVE"
+    }
+
+}

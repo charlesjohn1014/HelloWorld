@@ -1,0 +1,115 @@
+Screen PRINT_STATEMENT, PRIVATE
+    t24Name: "PRINT.STATEMENT,PRIVATE"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 1
+    description: en = "Account Statement Online"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "Print Statement"
+}
+
+Relationship {
+    nextVersion: PRINT_STATEMENT,PRIVATE
+    nextVersionFunction: Verify
+    nextVersionTransactionReference: "@ID"
+    associatedVersions: PRINT_STATEMENT,AUDIT
+}
+
+API {
+    keyValidationRoutines:
+        jBC: "V.MB.OL.ACCT.STMT"
+}
+
+attributes: "NO.HEADER.TAB"
+
+Fields {
+    "SELECTION_FIELD" {
+
+        Presentation {
+            maxLength: 16
+            enrichmentLength: 15
+            column: 1
+            row: 0
+        }
+
+        default: IF ( 1 ) "0X" THEN "ACCOUNT"
+        MV: 1
+    }
+
+    "OPERAND" {
+
+        Presentation {
+            maxLength: 8
+            enrichmentLength: 2
+            column: 54
+            row: 0
+        }
+
+        default: IF ( 1 ) "NULL" THEN "EQ"
+        Translations:
+            label: en = "Operand"
+        MV: 1
+    }
+
+    "SELECTION" {
+
+        Presentation {
+            maxLength: 10
+            enrichmentLength: 20
+            column: 74
+            row: 0
+        }
+
+        default: IF ( 1 - 1 ) "0X" THEN "!CURRENT.ACC"
+        Translations:
+            label: en = "Account No"
+        MV: 1
+        SV: 1
+    }
+
+    "NEXT_FORMAT_ENQ" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 0
+            row: 1
+        }
+
+        Translations:
+            label: en = "Next Enquiry"
+            toolTip: en = "Next Enquiry to Print"
+        MV: 1
+    }
+
+    "NEW_PAGE" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 25
+            column: 0
+            row: 2
+        }
+
+        Translations:
+            label: en = "New Page"
+        MV: 1
+    }
+
+    "REPORT_CONTROL_ID" {
+        default: IF ( ) "NULL" THEN "ACCOUNT.STATEMENT"
+    }
+
+    "REPRINT" {
+        default: IF ( ) "NULL" THEN "Y"
+    }
+
+}

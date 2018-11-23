@@ -1,0 +1,154 @@
+Screen FUNDS_TRANSFER, BENEFICIARY
+    t24Name: "FUNDS.TRANSFER,BENEFICIARY"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Make a single payment"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+}
+
+IB {
+    confirmVersion: FUNDS_TRANSFER,BENEFICIARY_CONFIRM
+    previewVersion: FUNDS_TRANSFER,BENEFICIARY_COMPLETE
+}
+
+attributes: "NO.HEADER.TAB"
+
+Fields {
+    "DEBIT_ACCT_NO" {
+
+        Presentation {
+            maxLength: 35
+            enrichmentLength: 16
+            column: 1
+            row: 0
+            hotField: Yes
+            selectionEnquiry: "AI.EXT.USR.ACCTS"
+        }
+
+        Translations:
+            label: en = "Transfer from"
+            toolTip: en = "Account from which amount has to be transferred"
+
+        API {
+            validation-routines:
+                jBC: "@V.MB.AI.DEF.DT.CCY"
+        }
+
+    }
+
+    "BENEFICIARY_ID" {
+
+        Presentation {
+            inputBehaviour: NoInput
+            maxLength: 35
+            enrichmentLength: 18
+            column: 1
+            row: 1
+        }
+
+        default: IF ( ) "NULL" THEN "BENEFICIARY>@ID"
+        Translations:
+            label: en = "Transfer to"
+    }
+
+    "CREDIT_ACCT_NO" {
+
+        Presentation {
+            displayType: NoDisplay
+            maxLength: 35
+            column: 1
+            row: 2
+        }
+
+        default: IF ( ) "NULL" THEN "BENEFICIARY>BEN.ACCT.NO"
+        Translations:
+            toolTip: en = "Account to which amount has to be transffered"
+    }
+
+    "CREDIT_CURRENCY" {
+
+        Presentation {
+            maxLength: 35
+            column: 1
+            row: 3
+            selectionEnquiry: "AI.CURRENCY.LIST"
+        }
+
+        Translations:
+            label: en = "Credit currency"
+            toolTip: en = "Credit currency"
+    }
+
+    "CREDIT_AMOUNT" {
+
+        Presentation {
+            maxLength: 35
+            enrichmentLength: 17
+            column: 1
+            row: 4
+        }
+
+        Translations:
+            label: en = "Transfer amount"
+            toolTip: en = "Amount to be transffered"
+    }
+
+    "CREDIT_VALUE_DATE" {
+
+        Presentation {
+            maxLength: 35
+            enrichmentLength: 20
+            column: 1
+            row: 5
+        }
+
+        Translations:
+            label: en = "Transfer date"
+            toolTip: en = "Transfer date"
+    }
+
+    "PAYMENT_DETAILS" {
+
+        Presentation {
+            maxLength: 35
+            enrichmentLength: 29
+            expansion: No
+            column: 1
+            row: 6
+        }
+
+        default: IF ( 1 ) "NULL" THEN "BENEFICIARY>NICKNAME"
+        Translations:
+            label: en = "Your Reference "
+            toolTip: en = "Your Reference"
+        MV: 1
+    }
+
+    "CREDIT_THEIR_REF" {
+
+        Presentation {
+            maxLength: 35
+            column: 1
+            row: 7
+        }
+
+        default: IF ( ) "NULL" THEN "BENEFICIARY>DEFAULT.NARRATIVE"
+        Translations:
+            label: en = "Their Reference"
+            toolTip: en = "Their Reference"
+    }
+
+    "TRANSACTION_TYPE" {
+        default: IF ( ) "NULL" THEN "ACIB"
+    }
+
+}

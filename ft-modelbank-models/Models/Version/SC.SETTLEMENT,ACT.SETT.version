@@ -1,0 +1,779 @@
+Screen SC_SETTLEMENT, ACT_SETT
+    t24Name: "SC.SETTLEMENT,ACT.SETT"
+    metamodelVersion: "1.30.6"
+    numberOfAuthorisers: 0
+    description: en = "Record actual settlement"
+reportLocks: Yes
+
+TransactionFlow {
+    otherCompanyAccess: Yes
+}
+
+Presentation {
+    recordsPerPage: "1"
+    fieldsPerLine: "MULTI"
+    language: en
+    header1: en = "Record actual settlement"
+}
+
+Relationship {
+    associatedVersions: SC_SETTLEMENT,PARENT_REF ; SC_SETTLEMENT,AUDIT
+}
+
+API {
+    includeVersionControl: Yes
+}
+
+attributes: "NO.HEADER.TAB"
+
+Fields {
+    "*" {
+
+        Presentation {
+            column: 1
+            row: 0
+        }
+
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 1
+        }
+
+        Translations:
+            label: en = "Order details"
+    }
+
+    "SECURITY_NUMBER" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 2
+        }
+
+        Translations:
+            label: en = "Security"
+            toolTip: en = "The Security to be settled"
+    }
+
+    "TRANS_CODE" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 3
+        }
+
+        Translations:
+            label: en = "Transaction code"
+            toolTip: en = "Type of Transaction - Buy / Sell etc"
+    }
+
+    "DEPOSITORY" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 4
+            selectionEnquiry: "SC.DEP.LIST"
+        }
+
+        Translations:
+            label: en = "Depository"
+            toolTip: en = "Depository that holds/receives the Security"
+    }
+
+    "TRADE_DATE" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 5
+        }
+
+        Translations:
+            label: en = "Trade date"
+            toolTip: en = "Date of the Trade"
+    }
+
+    "VALUE_DATE" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 6
+        }
+
+        Translations:
+            label: en = "Value date"
+            toolTip: en = "Trade Date, after which Transaction can be settled"
+    }
+
+    "TRADE_CCY" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 7
+        }
+
+        Translations:
+            label: en = "Trade currency"
+            toolTip: en = "Currency that the trade is to be settled in"
+    }
+
+    "TOTAL_NOMINAL" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 8
+        }
+
+        Translations:
+            label: en = "Total nominal"
+            toolTip: en = "Total no of shares for settlement"
+    }
+
+    "TOTAL_BROKER_AMT" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 9
+        }
+
+        Translations:
+            label: en = "Total cash broker"
+            toolTip: en = "Total amt of cash to be credited/debited to Broker"
+    }
+
+    "TOTAL_CUST_AMT" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 10
+        }
+
+        Translations:
+            label: en = "Total cash cust"
+            toolTip: en = "Total amt of cash to be debited/credited to Client"
+    }
+
+    "NEW_VALUE_DATE" {
+
+        Presentation {
+            maxLength: 25
+            enrichmentLength: 35
+            column: 1
+            row: 11
+        }
+
+        Translations:
+            label: en = "New Settlement Date"
+            toolTip: en = "New value date for failed Settlement"
+    }
+
+    "*" {
+
+        Presentation {
+            column: 1
+            row: 12
+        }
+
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 13
+        }
+
+        Translations:
+            label: en = "Broker settlement details"
+    }
+
+    "BROKER_NO" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 14
+            selectionEnquiry: "SC.BROK.LIST"
+        }
+
+        Translations:
+            label: en = "Broker"
+            toolTip: en = "Broker involved in the transaction"
+        MV: 1
+    }
+
+    "BR_NOM_SETTLED" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 14
+        }
+
+        Translations:
+            label: en = "Nominal settled"
+            toolTip: en = "No of nominals settled so far for the Broker"
+        MV: 1
+    }
+
+    "BR_NOM_OUTSTAND" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 55
+            row: 15
+        }
+
+        Translations:
+            label: en = "Nom outstanding"
+            toolTip: en = "Total unsettled securities for the Broker"
+        MV: 1
+    }
+
+    "BR_NOM_RECD_DEL" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 15
+        }
+
+        default: IF ( 1 ) "NULL" THEN @
+            jBC: "@SC.SETT.FULL.DEFAULT"
+        Translations:
+            label: en = "Nominal to settle"
+            toolTip: en = "Number of Stock to be settled"
+        MV: 1
+    }
+
+    "BR_NOM_VAL_DATE" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 55
+            row: 16
+        }
+
+        default: IF ( 1 ) "NULL" THEN @
+            jBC: "@SC.SETT.FULL.DEFAULT"
+        Translations:
+            label: en = "Value date"
+            toolTip: en = "Date on which security was settled/unsettled"
+        MV: 1
+    }
+
+    "BR_AMT_SETTLED" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 17
+        }
+
+        Translations:
+            label: en = "Cash settled"
+            toolTip: en = "Total amount of cash settled for Broker"
+        MV: 1
+    }
+
+    "BR_AMT_OUTSTAND" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 55
+            row: 17
+        }
+
+        Translations:
+            label: en = "Cash outstanding"
+            toolTip: en = "Total unsettled cash for the Broker"
+        MV: 1
+    }
+
+    "BR_AMT_REC_PAID" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 18
+        }
+
+        default: IF ( 1 ) "NULL" THEN @
+            jBC: "@SC.SETT.FULL.DEFAULT"
+        Translations:
+            label: en = "Cash to settle"
+            toolTip: en = "Amt of cash to be settled to Broker"
+        MV: 1
+    }
+
+    "BR_AMT_VAL_DATE" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 55
+            row: 18
+        }
+
+        default: IF ( 1 ) "NULL" THEN @
+            jBC: "@SC.SETT.FULL.DEFAULT"
+        Translations:
+            label: en = "Value date"
+            toolTip: en = "Date on which the amt was settled/unsettled"
+        MV: 1
+    }
+
+    "BR_AUTO_SETT" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 19
+        }
+
+        Translations:
+            label: en = "Auto settle"
+            toolTip: en = "Settle Broker immediately,"
+        MV: 1
+    }
+
+    "DEPO_CONF_REF" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 20
+        }
+
+        Translations:
+            label: en = "Depo Conf Ref"
+        promptText: en = "Depo Conf Ref"
+            toolTip: en = "Identifies the depository confirmation reference"
+        MV: 1
+    }
+
+    "BR_NARRATIVE" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 21
+        }
+
+        Translations:
+            label: en = "Br Narrative"
+        promptText: en = "Br Narrative"
+            toolTip: en = "Free form text about broker narrative"
+        MV: 1
+    }
+
+    "*" {
+
+        Presentation {
+            column: 1
+            row: 22
+        }
+
+    }
+
+    "*" {
+
+        Presentation {
+            maxLength: 39
+            column: 1
+            row: 23
+        }
+
+        Translations:
+            label: en = "Client settlement details"
+    }
+
+    "CU_PORTFOLIO" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 24
+        }
+
+        Translations:
+            label: en = "Client"
+            toolTip: en = "Portfolio which holds the unsettled cash/stock"
+        MV: 1
+    }
+
+    "CU_NOM_SETTLED" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 25
+        }
+
+        Translations:
+            label: en = "Nominal settled"
+            toolTip: en = "Total nominals settled so far for the portfolio"
+        MV: 1
+    }
+
+    "CU_NOM_OUTSTAND" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 55
+            row: 25
+        }
+
+        Translations:
+            label: en = "Nom outstanding"
+            toolTip: en = "Total unsettled nominals outstanding in Portfolio"
+        MV: 1
+    }
+
+    "CU_NOM_RECD_DEL" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 26
+        }
+
+        default: IF ( 1 ) "NULL" THEN @
+            jBC: "@SC.SETT.FULL.DEFAULT"
+        Translations:
+            label: en = "Nominal to settle"
+            toolTip: en = "Number/Qty of Stocks to be settled"
+        MV: 1
+    }
+
+    "CU_NOM_VAL_DATE" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 55
+            row: 26
+        }
+
+        default: IF ( 1 ) "NULL" THEN @
+            jBC: "@SC.SETT.FULL.DEFAULT"
+        Translations:
+            label: en = "Value date"
+            toolTip: en = "Value date of the settled/unsettled nominals"
+        MV: 1
+    }
+
+    "CU_AMT_SETTLED" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 27
+        }
+
+        Translations:
+            label: en = "Cash settled"
+            toolTip: en = "Total amt of cash settled so far for the portfolio"
+        MV: 1
+    }
+
+    "CU_AMT_OUTSTAND" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 55
+            row: 27
+        }
+
+        Translations:
+            label: en = "Cash outstanding"
+            toolTip: en = "Total unsettled amt outstanding for the portfolio"
+        MV: 1
+    }
+
+    "CU_AMT_REC_PAID" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 28
+        }
+
+        default: IF ( 1 ) "NULL" THEN @
+            jBC: "@SC.SETT.FULL.DEFAULT"
+        Translations:
+            label: en = "Cash to settle"
+            toolTip: en = "Amt of cash to be settled for the portfolio"
+        MV: 1
+    }
+
+    "CU_AMT_VAL_DATE" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 55
+            row: 28
+        }
+
+        default: IF ( 1 ) "NULL" THEN @
+            jBC: "@SC.SETT.FULL.DEFAULT"
+        Translations:
+            label: en = "Value date"
+            toolTip: en = "Value date of settled/unsettled amount"
+        MV: 1
+    }
+
+    "CU_AUTO_SETT" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 35
+            column: 1
+            row: 29
+        }
+
+        Translations:
+            label: en = "Auto settle"
+            toolTip: en = "Should Client side be settled immediately,"
+        MV: 1
+    }
+
+    "BW_AMT_SETTLED" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 1
+            row: 30
+        }
+
+        Translations:
+            label: en = "Borrow Amt Settled"
+            toolTip: en = "Borrow Amount Settled"
+        MV: 1
+    }
+
+    "BW_AMT_OUTSTAND" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 55
+            row: 30
+        }
+
+        Translations:
+            label: en = "Borrow Amt Outstand"
+            toolTip: en = "Borrowed Amount Outstanding"
+        MV: 1
+    }
+
+    "BW_AMT_REC_PAID" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 1
+            row: 31
+        }
+
+        Translations:
+            label: en = "Cash to Settle"
+            toolTip: en = "Customer Borrow Amount Settled"
+        MV: 1
+    }
+
+    "BW_REV_AMT" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 55
+            row: 31
+        }
+
+        Translations:
+            label: en = "Borrow Amt Rev"
+            toolTip: en = "Customer Settled Borrrow Amount Reversed"
+        MV: 1
+    }
+
+    "BW_AMT_VAL_DT" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 1
+            row: 32
+        }
+
+        Translations:
+            label: en = "Value Date"
+            toolTip: en = "Settlement/Reversal Date for Borrow Amount"
+        MV: 1
+    }
+
+    "LT_AMT_SETTLED" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 1
+            row: 33
+        }
+
+        Translations:
+            label: en = "Lent Amt Settled"
+            toolTip: en = "Lending Amount Settled"
+        MV: 1
+    }
+
+    "LT_AMT_OUTSTAND" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 55
+            row: 33
+        }
+
+        Translations:
+            label: en = "Lent Amt Outstand"
+            toolTip: en = "Lending Amount to be settled"
+        MV: 1
+    }
+
+    "LT_AMT_REC_PAID" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 1
+            row: 34
+        }
+
+        Translations:
+            label: en = "Lent Amt Settled"
+            toolTip: en = "Lending Amount being settled"
+        MV: 1
+    }
+
+    "LT_AMT_REV" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 55
+            row: 34
+        }
+
+        Translations:
+            label: en = "Lent Amt Reversed"
+            toolTip: en = "Lent Amount Reversed"
+        MV: 1
+    }
+
+    "LT_AMT_VAL_DT" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 1
+            row: 35
+        }
+
+        Translations:
+            label: en = "Value Date"
+            toolTip: en = "Settlement/Reversal Date for lending amount"
+        MV: 1
+    }
+
+    "GEN_SETT_DEL" {
+
+        Presentation {
+            maxLength: 20
+            column: 1
+            row: 36
+        }
+
+        Translations:
+            label: en = "Gen Sett Del?"
+            toolTip: en = "Generate Settlement Delivery?"
+        MV: 1
+    }
+
+    "CPTY_LIMIT" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 1
+            row: 37
+        }
+
+        Translations:
+            label: en = "Cpty Limit"
+            toolTip: en = "Counterparty Limit"
+    }
+
+    "CPTY_LIMIT_REF" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 1
+            row: 38
+        }
+
+        Translations:
+            label: en = "Cpty Limit Ref"
+            toolTip: en = "Counterparty Limit Reference"
+    }
+
+    "PARENT_TXN_ID" {
+
+        Presentation {
+            maxLength: 20
+            enrichmentLength: 8
+            column: 1
+            row: 38
+        }
+
+        Translations:
+            label: en = "Parent Txn Id"
+            toolTip: en = "Parent Txn Id"
+    }
+
+}
